@@ -1,7 +1,7 @@
 /**
  * Lógica da Apresentação de Propostas
  */
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const btn = document.getElementById('btn-approve');
     const sections = document.querySelectorAll('.proposal-page');
     const wrapper = document.querySelector('.proposal-wrapper');
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (entry.isIntersecting) {
                 entry.target.classList.add('is-visible');
                 entry.target.classList.remove('is-leaving');
-                
+
                 // Toggle on-dark class based on section type
                 if (entry.target.classList.contains('dark-page')) {
                     document.body.classList.add('on-dark');
@@ -41,6 +41,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 // Se saiu para cima (scroll down), marca como leaving
+                if (entry.boundingClientRect.top < 0) {
+                    entry.target.classList.add('is-leaving');
+                } else {
+                    entry.target.classList.remove('is-leaving');
+                }
+                entry.target.classList.remove('is-visible');
+            }
+        });
+    }, observerOptions);
 
     sections.forEach(section => observer.observe(section));
 
@@ -55,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (btn) {
         showButton(); // Mostrar ao carregar
-        
+
         // Também mostrar ao mover o mouse ou rolar dentro do wrapper
         wrapper.addEventListener('scroll', showButton);
         window.addEventListener('mousemove', showButton);

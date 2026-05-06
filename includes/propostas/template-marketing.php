@@ -6,13 +6,13 @@
 <div class="theme-marketing">
     <!-- Slide 1: Hero (Capa seguindo o modelo exato) -->
     <section class="proposal-page">
-        <div class="page-content" style="padding-top: 10vh; align-items: center; text-align: center;">
-            <div style="max-width: 80%;">
-                <h1 style="font-family: var(--font-heading); font-weight: 800; font-size: 56px; line-height: 1; margin-bottom: 20px; text-transform: uppercase; letter-spacing: -2px; color: #000;">
-                    <?= $proposta['titulo'] ?>
+        <div class="page-content" style="padding-top: 15vh; align-items: flex-start; justify-content: flex-start;">
+            <div style="width: 38%; padding-left: 0;">
+                <h1 style="font-family: var(--font-heading); font-weight: 800; font-size: 48px; line-height: 1; margin: 0; text-transform: uppercase; letter-spacing: -2px; color: #000;">
+                    <?= !empty($proposta['titulo']) ? $proposta['titulo'] : 'PROPOSTA ESTRATÉGICA' ?>
                 </h1>
                 <?php if (!empty($proposta['subtitulo'])): ?>
-                <p style="font-size: 18px; text-transform: uppercase; letter-spacing: 4px; color: rgba(0,0,0,0.5); font-weight: 400; margin-top: 20px;">
+                <p style="font-size: 14px; text-transform: uppercase; letter-spacing: 3px; color: rgba(0,0,0,0.4); font-weight: 700; margin-top: 30px; line-height: 1.4;">
                     <?= $proposta['subtitulo'] ?>
                 </p>
                 <?php endif; ?>

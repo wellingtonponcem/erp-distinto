@@ -214,13 +214,17 @@ body.on-dark .logo-text { color: #fff; }
     align-items: center;
 }
 .logo-container img { 
-    height: 24px; 
-    transition: opacity 0.4s ease;
+    height: 32px; /* Aumentado levemente para impacto */
+    transition: all 0.4s ease;
+    filter: brightness(0); /* Garante que seja preto no fundo claro */
+}
+body.on-dark .logo-container img {
+    filter: brightness(0) invert(1); /* Garante que seja branco no fundo escuro */
 }
 .logo-text { 
     display: none; 
     font-weight: 800; 
-    font-size: 12px;
+    font-size: 14px;
     letter-spacing: 1px;
     white-space: nowrap;
 }

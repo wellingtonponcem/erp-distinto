@@ -55,7 +55,7 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $proposta['titulo'] ?> — <?= $cliente ?></title>
     
-    <link rel="stylesheet" href="<?= APP_URL ?>/assets/css/propostas.css">
+    <link rel="stylesheet" href="<?= raizUrl('/assets/css/propostas.css') ?>">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -66,7 +66,7 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
         <div class="frame-item">
             <div class="frame-top"><?= $categoriaProjeto ?></div>
             <div class="frame-bottom logo-container" id="dynamic-logo">
-                <img src="<?= APP_URL ?>/assets/distinto_logo.svg" alt="Distinto" id="logo-svg">
+                <img src="<?= raizUrl('/assets/distinto_logo.svg') ?>" alt="Distinto" id="logo-svg">
                 <span class="logo-text">PONCEM STUDIO | DISTINTO</span>
             </div>
         </div>
@@ -95,6 +95,6 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
         // Inicializar ícones
         lucide.createIcons();
     </script>
-    <script src="<?= APP_URL ?>/assets/js/propostas.js"></script>
+    <script src="<?= raizUrl('/assets/js/propostas.js') ?>"></script>
 </body>
 </html>
