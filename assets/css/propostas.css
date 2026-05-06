@@ -204,9 +204,8 @@ body.on-dark .logo-text { color: #fff; }
 .frame-item:first-child { padding-left: 0; }
 .frame-item:last-child { 
     padding-right: 0; 
-    padding-left: 20px;
-    text-align: left;
-    align-items: flex-start;
+    text-align: right;
+    align-items: flex-end;
 }
 
 .frame-top { opacity: 0.8; }
