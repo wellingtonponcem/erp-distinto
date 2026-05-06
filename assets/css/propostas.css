@@ -11,6 +11,10 @@
     --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -24,15 +28,16 @@ body {
 .proposal-wrapper {
     height: 100vh;
     overflow-y: auto;
+    overflow-x: hidden; /* Prevent horizontal scroll */
     scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
 }
 
 .proposal-page {
-    width: 100vw;
+    width: 100%; /* Changed from 100vw to prevent scrollbar issues */
     height: 100vh;
-    max-width: 100vw;
+    max-width: 100%;
     margin: 0;
     background: white;
     position: relative;
@@ -166,7 +171,7 @@ html {
 }
 
 @media (max-width: 768px) {
-    .proposal-wrapper { padding: 10px; }
+    .proposal-wrapper { padding: 0; }
     .btn-floating {
         bottom: 20px;
         right: 20px;
