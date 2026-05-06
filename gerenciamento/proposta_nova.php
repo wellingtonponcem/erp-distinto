@@ -1,0 +1,200 @@
+<?php
+require_once __DIR__ . '/../config/env.php';
+require_once __DIR__ . '/../config/auth.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/helpers.php';
+
+exigirAutenticacao();
+
+$tituloPagina = 'Nova Proposta';
+$db = Database::get();
+
+// Buscar clientes
+$stmtClientes = $db->query("SELECT id, nome FROM clientes ORDER BY nome ASC");
+$clientes = $stmtClientes->fetchAll();
+
+// Buscar serviços para o modelo Marketing
+$stmtServicos = $db->query("SELECT id, nome, descricao FROM servicos ORDER BY nome ASC");
+$servicos = $stmtServicos->fetchAll();
+
+include __DIR__ . '/../includes/layout/head.php';
+?>
+
+<div id="app-wrapper">
+    <?php include __DIR__ . '/../includes/layout/sidebar.php'; ?>
+
+    <main id="main-content" class="content-sheet">
+        <div class="app-topbar">
+            <div class="top-nav">
+                <a href="<?= raizUrl('/dashboard.php') ?>">Visão Geral</a>
+                <a href="<?= raizUrl('/gerenciamento/propostas.php') ?>">Propostas</a>
+                <a href="#" class="active">Nova Proposta</a>
+            </div>
+        </div>
+
+        <div class="mb-8">
+            <h1 class="page-title">Criar Nova Proposta</h1>
+            <p class="page-subtitle">Preencha os dados abaixo para gerar uma proposta personalizada com IA.</p>
+        </div>
+
+        <form id="formGerarProposta" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 space-y-6">
+                <section class="card p-6">
+                    <h3 class="text-sm font-bold text-zinc-900 mb-4">Informações Básicas</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label class="label">Cliente</label>
+                            <select name="cliente_id" class="input" required>
+                                <option value="">Selecione um cliente...</option>
+                                <?php foreach ($clientes as $c): ?>
+                                    <option value="<?= $c['id'] ?>"><?= sanitizar($c['nome']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Título da Proposta</label>
+                            <input type="text" name="titulo" class="input" placeholder="Ex: Gestão de Tráfego 2024" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Tipo de Serviço</label>
+                            <select name="tipo" id="tipoProposta" class="input" required>
+                                <option value="marketing">Marketing Digital</option>
+                                <option value="casamento">Casamento</option>
+                                <option value="15anos">15 Anos</option>
+                                <option value="filmmaker">Filmmaker (Cinematic)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Valor Total (R$)</label>
+                            <input type="number" step="0.01" name="valor_total" class="input" placeholder="0,00" required>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card p-6" id="sectionServicos">
+                    <h3 class="text-sm font-bold text-zinc-900 mb-4">Serviços Inclusos (Apenas Marketing)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <?php foreach ($servicos as $s): ?>
+                            <label class="flex items-center gap-3 p-3 border border-zinc-100 rounded-lg cursor-pointer hover:bg-zinc-50 transition-colors">
+                                <input type="checkbox" name="servicos[]" value="<?= $s['id'] ?>" class="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900">
+                                <div>
+                                    <p class="text-xs font-bold text-zinc-900"><?= sanitizar($s['nome']) ?></p>
+                                    <p class="text-[10px] text-zinc-500 line-clamp-1"><?= sanitizar($s['descricao']) ?></p>
+                                </div>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+                </section>
+
+                <section class="card p-6">
+                    <h3 class="text-sm font-bold text-zinc-900 mb-4">Briefing para IA</h3>
+                    <div class="form-group">
+                        <label class="label">Instruções Adicionais (Opcional)</label>
+                        <textarea name="briefing" class="input min-h-[120px]" placeholder="Dê detalhes sobre o cliente ou o projeto para que a IA gere textos mais precisos..."></textarea>
+                    </div>
+                </section>
+            </div>
+
+            <div class="space-y-6">
+                <section class="card p-6 bg-zinc-900 text-white">
+                    <h3 class="text-sm font-bold mb-4 opacity-80">Ações</h3>
+                    <button type="submit" id="btnGerar" class="btn-primary w-full justify-center gap-2 bg-white text-zinc-900 hover:bg-zinc-200">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        Gerar Proposta Web
+                    </button>
+                    <p class="mt-4 text-[11px] opacity-60 text-center">
+                        Ao clicar em gerar, nossa IA irá processar os dados e criar uma página exclusiva para o cliente.
+                    </p>
+                </section>
+
+                <div id="resultadoProposta" class="hidden animate-fade-in">
+                    <section class="card p-6 border-2 border-emerald-500">
+                        <div class="flex items-center gap-3 text-emerald-600 mb-4">
+                            <i data-lucide="check-circle" class="w-5 h-5"></i>
+                            <span class="font-bold text-sm">Gerada com Sucesso!</span>
+                        </div>
+                        <p class="text-xs text-zinc-600 mb-4">A proposta já está online. Você pode copiar o link ou visualizar agora.</p>
+                        <div class="space-y-2">
+                            <a href="#" id="linkVisualizar" target="_blank" class="btn-secondary w-full justify-center">Visualizar</a>
+                            <button type="button" id="btnCopiarLink" class="btn-secondary w-full justify-center gap-2">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                                Copiar Link
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </form>
+    </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('formGerarProposta');
+    const tipoSelect = document.getElementById('tipoProposta');
+    const sectionServicos = document.getElementById('sectionServicos');
+    const btnGerar = document.getElementById('btnGerar');
+    const resultadoDiv = document.getElementById('resultadoProposta');
+    const linkVisualizar = document.getElementById('linkVisualizar');
+    const btnCopiarLink = document.getElementById('btnCopiarLink');
+    let linkGerado = '';
+
+    // Alternar visibilidade da seção de serviços
+    tipoSelect.addEventListener('change', function() {
+        if (this.value === 'marketing') {
+            sectionServicos.classList.remove('hidden');
+        } else {
+            sectionServicos.classList.add('hidden');
+        }
+    });
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        btnGerar.disabled = true;
+        btnGerar.innerHTML = '<i class="w-4 h-4 animate-spin"></i> Processando IA...';
+        
+        const formData = new FormData(form);
+        
+        try {
+            const response = await fetch('/api/propostas/gerar.php', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                linkGerado = `https://wedistinto.com/p/${result.slug}`;
+                linkVisualizar.href = linkGerado;
+                resultadoDiv.classList.remove('hidden');
+                
+                // Scroll para o resultado em mobile
+                resultadoDiv.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert('Erro: ' + (result.error || 'Falha ao gerar proposta.'));
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Erro na comunicação com o servidor.');
+        } finally {
+            btnGerar.disabled = false;
+            btnGerar.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4"></i> Gerar Proposta Web';
+            lucide.createIcons();
+        }
+    });
+
+    btnCopiarLink.addEventListener('click', function() {
+        navigator.clipboard.writeText(linkGerado).then(() => {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Copiado!';
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                lucide.createIcons();
+            }, 2000);
+        });
+    });
+});
+</script>
+
+<?php include __DIR__ . '/../includes/layout/footer.php'; ?>

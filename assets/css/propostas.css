@@ -1,0 +1,151 @@
+/* Estilos Base para Propostas Premium */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Montserrat:wght@400;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;700&family=Dancing+Script:wght@700&display=swap');
+
+:root {
+    --font-sans: 'Inter', sans-serif;
+    --font-heading: 'Montserrat', sans-serif;
+    --font-serif: 'Playfair Display', serif;
+    --font-cinematic: 'Cinzel', serif;
+    --font-script: 'Dancing Script', cursive;
+    
+    --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-sans);
+    color: #333;
+    background-color: #f0f0f0;
+    overflow-x: hidden;
+}
+
+/* Container de Slides (estilo PDF) */
+.proposal-wrapper {
+    background: #e5e5e5;
+    padding: 40px 0;
+}
+
+.proposal-page {
+    width: 100%;
+    max-width: 1200px;
+    min-height: 675px; /* Aspect Ratio 16:9 aproximado */
+    margin: 0 auto 40px;
+    background: white;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Tema Marketing (Innovare Solar) */
+.theme-marketing {
+    --bg: #ffffff;
+    --text: #000000;
+    --accent: #000000;
+}
+
+.theme-marketing.dark-page {
+    background: #000000;
+    color: #ffffff;
+}
+
+.marketing-aura {
+    position: absolute;
+    right: -100px;
+    top: -100px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(0,212,255,0.4) 0%, rgba(255,212,0,0.2) 50%, rgba(255,255,255,0) 100%);
+    filter: blur(80px);
+    z-index: 1;
+}
+
+/* Tema Casamento (Rodolfo & Rhuana) */
+.theme-casamento {
+    --bg: #fdfbf7;
+    --text: #2c3e50;
+    --accent: #d4af37;
+    font-family: var(--font-serif);
+}
+
+.theme-casamento h1, .theme-casamento h2 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+}
+
+/* Tema Filmmaker (Cinematic Dark/Orange) */
+.theme-filmmaker {
+    --bg: #0a0a0a;
+    --text: #ffffff;
+    --accent: #ff6b00;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.theme-filmmaker .highlight {
+    color: var(--accent);
+    font-family: var(--font-script);
+    font-size: 1.2em;
+}
+
+.theme-filmmaker h1 {
+    font-family: var(--font-cinematic);
+    letter-spacing: 2px;
+}
+
+/* Botão Flutuante */
+.btn-floating {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #000;
+    color: white;
+    padding: 18px 35px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    font-family: var(--font-heading);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease;
+    opacity: 0;
+    transform: translateY(100px);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 14px;
+}
+
+.theme-filmmaker .btn-floating { background: var(--accent); }
+.theme-casamento .btn-floating { background: #2c3e50; }
+
+.btn-floating.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.btn-floating:hover {
+    transform: scale(1.08) translateY(-5px);
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+    .proposal-page {
+        min-height: auto;
+        margin: 0 0 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .proposal-wrapper { padding: 10px; }
+    .btn-floating {
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        font-size: 12px;
+    }
+}

@@ -123,6 +123,12 @@ function menuAtivo(string $path): string {
             <span class="nav-label">Consultor IA</span>
         </a>
 
+        <div class="nav-section">Comercial</div>
+        <a href="<?= raizUrl('/gerenciamento/proposta_nova.php') ?>" class="nav-link <?= menuAtivo('/gerenciamento/proposta') ?>">
+            <i data-lucide="file-text" style="width:17px;height:17px;"></i>
+            <span class="nav-label">Propostas Web</span>
+        </a>
+
         <div class="nav-section">Sistema</div>
         <a href="<?= raizUrl('/configuracoes.php') ?>" class="nav-link <?= menuAtivo('/configuracoes') ?>">
             <i data-lucide="settings" style="width:17px;height:17px;"></i>

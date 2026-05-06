@@ -14,6 +14,9 @@ ServerSignature Off
     # Bloquear acesso direto a config/
     RewriteRule ^config/ - [F,L]
 
+    # Rota para propostas: /p/slug-da-proposta
+    RewriteRule ^p/([a-zA-Z0-9_-]+)/?$ p.php?slug=$1 [QSA,L]
+
     # PHP charset
     AddDefaultCharset UTF-8
 </IfModule>
