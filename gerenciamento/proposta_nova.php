@@ -270,7 +270,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             if (result.success) {
-                linkGerado = `https://wedistinto.com/p/${result.slug}`;
+                // Usar a URL base do sistema para o link
+                const baseUrl = window.location.origin + window.location.pathname.split('/gerenciamento/')[0];
+                linkGerado = `${baseUrl}/p/${result.slug}`;
                 linkVisualizar.href = linkGerado;
                 resultadoDiv.classList.remove('hidden');
                 
