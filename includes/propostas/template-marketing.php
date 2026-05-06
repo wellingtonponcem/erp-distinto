@@ -7,7 +7,8 @@
     <!-- Slide 1: Hero -->
     <section class="proposal-page dark-page">
         <div class="marketing-aura"></div>
-        <div style="padding: 100px 80px; position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; justify-content: center;">
+        
+        <div class="page-content">
             <div style="font-family: var(--font-heading); font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 20px; color: rgba(255,255,255,0.6);">
                 Proposta Comercial
             </div>
@@ -18,7 +19,9 @@
                 Estratégia de crescimento acelerado para <strong style="color: #fff; border-bottom: 2px solid #fff;"><?= $cliente ?></strong>
             </p>
         </div>
-        <div style="padding: 40px 80px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2;">
+
+        <!-- Rodapé do Slide 1 -->
+        <div style="padding: 40px 10vw; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2;">
             <img src="/assets/img/logo-white.png" alt="Distinto" style="height: 30px; opacity: 0.8;">
             <span style="font-size: 12px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.5;"><?= date('Y') ?></span>
         </div>
@@ -26,7 +29,7 @@
 
     <!-- Slide 2: O Desafio -->
     <section class="proposal-page">
-        <div style="padding: 80px; flex: 1;">
+        <div class="page-content">
             <div style="font-family: var(--font-heading); font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #000; margin-bottom: 60px;">
                 01. O Cenário Atual
             </div>
@@ -46,7 +49,7 @@
     <!-- Slide 3: Serviços -->
     <?php if (!empty($dados['servicos'])): ?>
     <section class="proposal-page dark-page">
-        <div style="padding: 80px; flex: 1;">
+        <div class="page-content" style="justify-content: flex-start; padding-top: 15vh;">
             <div style="font-family: var(--font-heading); font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.6); margin-bottom: 60px;">
                 02. Escopo de Atuação
             </div>
@@ -65,7 +68,7 @@
 
     <!-- Slide 4: Investimento -->
     <section class="proposal-page">
-        <div style="padding: 80px; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+        <div class="page-content" style="align-items: center; text-align: center;">
             <div style="font-family: var(--font-heading); font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #000; margin-bottom: 40px;">
                 03. Investimento & Parceria
             </div>
