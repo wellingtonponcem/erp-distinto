@@ -124,7 +124,7 @@ function menuAtivo(string $path): string {
         </a>
 
         <div class="nav-section">Comercial</div>
-        <a href="<?= raizUrl('/gerenciamento/proposta_nova.php') ?>" class="nav-link <?= menuAtivo('/gerenciamento/proposta') ?>">
+        <a href="<?= raizUrl('/gerenciamento/propostas.php') ?>" class="nav-link <?= menuAtivo('/gerenciamento/propostas') ?>">
             <i data-lucide="file-text" style="width:17px;height:17px;"></i>
             <span class="nav-label">Propostas Web</span>
         </a>
