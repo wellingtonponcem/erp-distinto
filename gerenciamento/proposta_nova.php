@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(form);
         
         try {
-            const response = await fetch('/api/propostas/gerar.php', {
+            const response = await fetch('<?= raizUrl('/api/propostas/gerar.php') ?>', {
                 method: 'POST',
                 body: formData
             });
