@@ -9,3 +9,6 @@ config/env.php
 Thumbs.db
 .DS_Store
 *.log
+
+# Pasta dos pdf
+modelos_propostas_pdf
