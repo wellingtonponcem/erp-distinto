@@ -6,8 +6,8 @@
 <div class="theme-marketing">
     <!-- Slide 1: Hero (Capa seguindo o modelo exato) -->
     <section class="proposal-page">
-        <div class="page-content" style="grid-column: 1;">
-            <h1 style="font-family: var(--font-heading); font-weight: 800; font-size: 72px; line-height: 0.85; margin: 0; text-transform: uppercase; letter-spacing: -4px; color: #000;">
+        <div class="page-content" style="grid-column: 1; justify-content: center; padding: 0;">
+            <h1 style="font-family: var(--font-heading);font-weight: 800;font-size: 60px;line-height: 1;margin: 0;text-transform: uppercase;letter-spacing: -2px;color: #000; width: 80%;">
                 <?= !empty($proposta['titulo_refinado']) ? $proposta['titulo_refinado'] : (!empty($proposta['titulo']) ? $proposta['titulo'] : 'PROPOSTA ESTRATÉGICA') ?>
             </h1>
             <?php if (!empty($proposta['subtitulo'])): ?>
