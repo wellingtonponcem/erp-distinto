@@ -17,6 +17,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 entry.target.classList.add('is-visible');
                 entry.target.classList.remove('is-leaving');
                 
+                // Toggle on-dark class based on section type
+                if (entry.target.classList.contains('dark-page')) {
+                    document.body.classList.add('on-dark');
+                } else {
+                    document.body.classList.remove('on-dark');
+                }
+
                 // Toggle scrolled class for HUD logo switch (based on first slide)
                 if (entry.target === sections[0]) {
                     document.body.classList.remove('scrolled');

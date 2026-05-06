@@ -6,11 +6,16 @@
 <div class="theme-marketing">
     <!-- Slide 1: Hero (Capa seguindo o modelo exato) -->
     <section class="proposal-page">
-        <div class="page-content" style="padding-top: 20vh; justify-content: flex-start;">
-            <div style="max-width: 38%; /* Alinhado com a primeira coluna da HUD */">
-                <h1 style="font-family: var(--font-heading); font-weight: 800; font-size: 42px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000;">
+        <div class="page-content" style="padding-top: 10vh; align-items: center; text-align: center;">
+            <div style="max-width: 80%;">
+                <h1 style="font-family: var(--font-heading); font-weight: 800; font-size: 56px; line-height: 1; margin-bottom: 20px; text-transform: uppercase; letter-spacing: -2px; color: #000;">
                     <?= $proposta['titulo'] ?>
                 </h1>
+                <?php if (!empty($proposta['subtitulo'])): ?>
+                <p style="font-size: 18px; text-transform: uppercase; letter-spacing: 4px; color: rgba(0,0,0,0.5); font-weight: 400; margin-top: 20px;">
+                    <?= $proposta['subtitulo'] ?>
+                </p>
+                <?php endif; ?>
             </div>
         </div>
     </section>
