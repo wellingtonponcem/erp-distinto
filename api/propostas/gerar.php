@@ -39,7 +39,7 @@ if ($modoCliente === 'cadastrado') {
     $cliente = $stmtCliente->fetch();
     if (!$cliente) responderJson(['erro' => 'Cliente não encontrado.'], 404);
     $clienteNome = $cliente['nome'];
-    $responsavel = ''; // No banco de clientes o responsável pode variar, mas aqui usamos o nome da empresa como principal
+    $responsavel = ''; // Para clientes cadastrados, o responsável é opcional ou fixo
 } else {
     if (empty($d['empresa_nome']) || empty($d['responsavel'])) {
         responderJson(['erro' => 'Nome da empresa e responsável são obrigatórios para novos leads.'], 422);
@@ -115,7 +115,8 @@ $stmt = $db->prepare("INSERT INTO propostas (id, cliente_nome, tipo, slug, titul
                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
 $validade = date('Y-m-d', strtotime('+15 days'));
-$titulo = $d['titulo'] ?? ("Proposta Comercial - " . $clienteNome);
+$titulo = !empty($d['titulo']) ? $d['titulo'] : ("Proposta Comercial - " . $clienteNome);
+$valorTotal = !empty($d['valor_total']) ? (float)str_replace(['.', ','], ['', '.'], $d['valor_total']) : 0.00;
 
 $stmt->execute([
     $id,
@@ -126,7 +127,7 @@ $stmt->execute([
     $d['subtitulo'] ?? '',
     $validade,
     $dadosJson,
-    $d['valor_total'] ?? 0.00,
+    $valorTotal,
     'rascunho'
 ]);
 
@@ -137,14 +138,21 @@ responderJson([
 ], 201);
 
 /**
- * Utilitário de Slug
+ * Utilitário de Slug (Versão robusta sem iconv)
  */
 function slugify($text) {
     $text = preg_replace('~[^\pL\d]+~u', '-', $text);
-    $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
-    $text = preg_replace('~[^-\w]+~', '', $text);
     $text = trim($text, '-');
-    $text = preg_replace('~-+~', '-', $text);
     $text = strtolower($text);
+    $text = preg_replace('~-+~', '-', $text);
+    
+    // Mapa de acentos básicos para evitar iconv
+    $map = [
+        'á' => 'a', 'à' => 'a', 'ã' => 'a', 'â' => 'a', 'é' => 'e', 'ê' => 'e', 'í' => 'i', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o', 'ú' => 'u', 'ü' => 'u', 'ç' => 'c',
+        'Á' => 'a', 'À' => 'a', 'Ã' => 'a', 'Â' => 'a', 'É' => 'e', 'Ê' => 'e', 'Í' => 'i', 'Ó' => 'o', 'Ô' => 'o', 'Õ' => 'o', 'Ú' => 'u', 'Ü' => 'u', 'Ç' => 'c'
+    ];
+    $text = strtr($text, $map);
+    $text = preg_replace('~[^-\w]+~', '', $text);
+    
     return empty($text) ? 'n-a' : $text;
 }
