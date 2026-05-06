@@ -35,32 +35,33 @@ body {
 }
 
 .proposal-page {
-    width: 100%; /* Changed from 100vw to prevent scrollbar issues */
+    width: 100%;
     height: 100vh;
-    max-width: 100%;
     margin: 0;
     background: white;
     position: relative;
     box-shadow: none;
-    display: flex;
-    flex-direction: column;
     scroll-snap-align: start;
     scroll-snap-stop: always;
     overflow: hidden;
+    
+    /* Grid que espelha o HUD */
+    display: grid;
+    grid-template-columns: 40% 45% 15%;
+    padding: 0 6vw;
+    box-sizing: border-box;
 }
 
 /* Margem Segura para o Conteúdo */
 .page-content {
-    flex: 1;
+    grid-column: 1 / span 2; /* Ocupa as duas primeiras colunas por padrão */
     width: 100%;
-    max-width: 1400px; /* Largura máxima para não esticar demais em telas ultra-wide */
-    margin: 0 auto;
-    padding: 8vh 6vw;
+    padding: 15vh 0; /* Padding vertical apenas, horizontal vem do grid */
     position: relative;
     z-index: 2;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     box-sizing: border-box;
     
     /* Animação Inicial */

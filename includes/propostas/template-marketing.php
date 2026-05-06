@@ -6,17 +6,15 @@
 <div class="theme-marketing">
     <!-- Slide 1: Hero (Capa seguindo o modelo exato) -->
     <section class="proposal-page">
-        <div class="page-content" style="padding-top: 15vh; align-items: flex-start; justify-content: flex-start; flex-direction: column; display: flex;">
-            <div style="width: 34vw; min-width: 320px;">
-                <h1 style="font-family: var(--font-heading); font-weight: 800; font-size: 72px; line-height: 0.85; margin: 0; text-transform: uppercase; letter-spacing: -4px; color: #000;">
-                    <?= !empty($proposta['titulo_refinado']) ? $proposta['titulo_refinado'] : (!empty($proposta['titulo']) ? $proposta['titulo'] : 'PROPOSTA ESTRATÉGICA') ?>
-                </h1>
-                <?php if (!empty($proposta['subtitulo'])): ?>
-                <p style="font-size: 14px; text-transform: uppercase; letter-spacing: 3px; color: rgba(0,0,0,0.4); font-weight: 700; margin-top: 40px; line-height: 1.4;">
-                    <?= $proposta['subtitulo'] ?>
-                </p>
-                <?php endif; ?>
-            </div>
+        <div class="page-content" style="grid-column: 1;">
+            <h1 style="font-family: var(--font-heading); font-weight: 800; font-size: 72px; line-height: 0.85; margin: 0; text-transform: uppercase; letter-spacing: -4px; color: #000;">
+                <?= !empty($proposta['titulo_refinado']) ? $proposta['titulo_refinado'] : (!empty($proposta['titulo']) ? $proposta['titulo'] : 'PROPOSTA ESTRATÉGICA') ?>
+            </h1>
+            <?php if (!empty($proposta['subtitulo'])): ?>
+            <p style="font-size: 14px; text-transform: uppercase; letter-spacing: 3px; color: rgba(0,0,0,0.4); font-weight: 700; margin-top: 40px; line-height: 1.4;">
+                <?= $proposta['subtitulo'] ?>
+            </p>
+            <?php endif; ?>
         </div>
     </section>
 
