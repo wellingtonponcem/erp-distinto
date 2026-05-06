@@ -4,26 +4,14 @@
  */
 ?>
 <div class="theme-marketing">
-    <!-- Slide 1: Hero -->
-    <section class="proposal-page dark-page">
-        <div class="marketing-aura"></div>
-        
-        <div class="page-content">
-            <div style="font-family: var(--font-heading); font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 20px; color: rgba(255,255,255,0.6);">
-                Proposta Comercial
+    <!-- Slide 1: Hero (Capa seguindo o modelo exato) -->
+    <section class="proposal-page">
+        <div class="page-content" style="padding-top: 20vh; justify-content: flex-start;">
+            <div style="max-width: 38%; /* Alinhado com a primeira coluna da HUD */">
+                <h1 style="font-family: var(--font-heading); font-weight: 800; font-size: 42px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000;">
+                    <?= $proposta['titulo'] ?>
+                </h1>
             </div>
-            <h1 style="font-family: var(--font-heading); font-weight: 800; font-size: 80px; line-height: 0.9; margin: 0; text-transform: uppercase; letter-spacing: -3px;">
-                <?= $proposta['titulo'] ?>
-            </h1>
-            <p style="font-size: 24px; margin-top: 30px; font-weight: 300; max-width: 600px; color: rgba(255,255,255,0.8);">
-                Estratégia de crescimento acelerado para <strong style="color: #fff; border-bottom: 2px solid #fff;"><?= $cliente ?></strong>
-            </p>
-        </div>
-
-        <!-- Rodapé do Slide 1 -->
-        <div style="padding: 40px 10vw; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2;">
-            <img src="/assets/img/logo-white.png" alt="Distinto" style="height: 30px; opacity: 0.8;">
-            <span style="font-size: 12px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.5;"><?= date('Y') ?></span>
         </div>
     </section>
 

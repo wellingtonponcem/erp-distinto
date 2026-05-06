@@ -17,19 +17,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 entry.target.classList.add('is-visible');
                 entry.target.classList.remove('is-leaving');
                 
+                // Toggle scrolled class for HUD logo switch (based on first slide)
+                if (entry.target === sections[0]) {
+                    document.body.classList.remove('scrolled');
+                } else {
+                    // Se qualquer outro slide entrar, e o primeiro não estiver visível, garante o scrolled
+                    // Mas o IntersectionObserver já cuida disso no 'else' abaixo ou aqui
+                }
+
                 // Mostrar botão quando entrar em uma nova seção
                 if (btn) showButton();
             } else {
-                // Se saiu para cima (scroll down), marca como leaving
-                if (entry.boundingClientRect.top < 0) {
-                    entry.target.classList.add('is-leaving');
-                } else {
-                    entry.target.classList.remove('is-leaving');
+                // Se o primeiro slide saiu de vista, ativa o modo scrolled
+                if (entry.target === sections[0] && entry.boundingClientRect.top < 0) {
+                    document.body.classList.add('scrolled');
                 }
-                entry.target.classList.remove('is-visible');
-            }
-        });
-    }, observerOptions);
+
+                // Se saiu para cima (scroll down), marca como leaving
 
     sections.forEach(section => observer.observe(section));
 

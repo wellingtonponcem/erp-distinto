@@ -76,4 +76,14 @@ class IAPropostas {
             ['role' => 'user', 'content' => $promptUsuario]
         ]);
     }
+
+    public static function refinarTitulo(string $tituloOriginal, string $servicos) {
+        $promptSistema = "Você é um estrategista de negócios sênior. Sua tarefa é transformar um título simples de proposta em um título altamente profissional, estratégico e impactante. Use termos como 'Planejamento Estratégico', 'Gestão de Performance', 'Inteligência', 'Crescimento'. Mantenha em CAIXA ALTA. Máximo 15 palavras. NUNCA use emojis.";
+        $promptUsuario = "Refine este título de proposta comercial: '$tituloOriginal'. Contexto dos serviços inclusos: $servicos. Retorne apenas o novo título, sem explicações.";
+
+        return self::chamarGroq([
+            ['role' => 'system', 'content' => $promptSistema],
+            ['role' => 'user', 'content' => $promptUsuario]
+        ]);
+    }
 }

@@ -128,7 +128,21 @@ $stmt = $db->prepare("INSERT INTO propostas (id, cliente_nome, tipo, slug, titul
                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
 $validade = date('Y-m-d', strtotime('+15 days'));
-$titulo = !empty($d['titulo']) ? $d['titulo'] : ("Proposta Comercial - " . $clienteNome);
+$tituloOriginal = !empty($d['titulo']) ? $d['titulo'] : ("Proposta Comercial - " . $clienteNome);
+
+// Refinar título via IA para marketing
+$titulo = $tituloOriginal;
+if ($d['tipo'] === 'marketing') {
+    try {
+        $tituloIA = IAPropostas::refinarTitulo($tituloOriginal, $servicosStr);
+        if ($tituloIA && !str_contains($tituloIA, 'Erro')) {
+            $titulo = $tituloIA;
+        }
+    } catch (Exception $e) {
+        // Mantém o original se der erro
+    }
+}
+
 $valorTotal = !empty($d['valor_total']) ? (float)str_replace(['.', ','], ['', '.'], $d['valor_total']) : 0.00;
 
 $stmt->execute([

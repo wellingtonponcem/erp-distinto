@@ -27,6 +27,18 @@ $dados = json_decode($proposta['dados_json'], true);
 $tipo = $proposta['tipo'];
 $cliente = $proposta['cliente_nome'];
 
+// Metadados para a Moldura
+$dataCriacao = new DateTime($proposta['created_at']);
+$mesesPt = [
+    '1' => 'JANEIRO', '2' => 'FEVEREIRO', '3' => 'MARÇO',
+    '4' => 'ABRIL', '5' => 'MAIO', '6' => 'JUNHO',
+    '7' => 'JULHO', '8' => 'AGOSTO', '9' => 'SETEMBRO',
+    '10' => 'OUTUBRO', '11' => 'NOVEMBRO', '12' => 'DEZEMBRO'
+];
+$mesNome = $mesesPt[$dataCriacao->format('n')] ?? 'JUNHO';
+$ano = $dataCriacao->format('Y');
+$categoriaProjeto = $dados['categoria_projeto'] ?? 'PROJETO DE ESTRATÉGIA';
+
 // Definir arquivo de template
 $templateFile = __DIR__ . "/includes/propostas/template-{$tipo}.php";
 if (!file_exists($templateFile)) {
@@ -48,6 +60,25 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="type-<?= $tipo ?>">
+
+    <!-- Moldura Global (HUD) -->
+    <div class="proposal-frame">
+        <div class="frame-item">
+            <div class="frame-top"><?= $categoriaProjeto ?></div>
+            <div class="frame-bottom logo-container" id="dynamic-logo">
+                <img src="<?= APP_URL ?>/assets/distinto_logo.svg" alt="Distinto" id="logo-svg">
+                <span class="logo-text">PONCEM STUDIO | DISTINTO</span>
+            </div>
+        </div>
+        <div class="frame-item">
+            <div class="frame-top"><?= $mesNome ?></div>
+            <div class="frame-bottom">CLIENTE: <?= $cliente ?></div>
+        </div>
+        <div class="frame-item">
+            <div class="frame-top"><?= $ano ?></div>
+            <div class="frame-bottom">PROPOSTA</div>
+        </div>
+    </div>
 
     <div class="proposal-wrapper">
         <?php include $templateFile; ?>
