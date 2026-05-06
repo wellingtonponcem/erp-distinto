@@ -19,22 +19,39 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // Suporte a FormData do navegador
 $d = !empty($_POST) ? $_POST : lerCorpo();
 
-if (empty($d['cliente_id']) || empty($d['tipo'])) {
-    responderJson(['erro' => 'Cliente e tipo de serviço são obrigatórios.'], 422);
+if (empty($d['tipo'])) {
+    responderJson(['erro' => 'O tipo de serviço é obrigatório.'], 422);
 }
 
 $db = Database::get();
+$modoCliente = $d['modo_cliente'] ?? 'cadastrado';
+$clienteNome = '';
+$responsavel = '';
+$isPlural = false;
 
-// 1. Buscar Dados do Cliente
-$stmtCliente = $db->prepare("SELECT nome FROM clientes WHERE id = ?");
-$stmtCliente->execute([$d['cliente_id']]);
-$cliente = $stmtCliente->fetch();
-
-if (!$cliente) {
-    responderJson(['erro' => 'Cliente não encontrado.'], 404);
+// 1. Identificar Cliente / Lead
+if ($modoCliente === 'cadastrado') {
+    if (empty($d['cliente_id'])) {
+        responderJson(['erro' => 'Selecione um cliente.'], 422);
+    }
+    $stmtCliente = $db->prepare("SELECT nome FROM clientes WHERE id = ?");
+    $stmtCliente->execute([$d['cliente_id']]);
+    $cliente = $stmtCliente->fetch();
+    if (!$cliente) responderJson(['erro' => 'Cliente não encontrado.'], 404);
+    $clienteNome = $cliente['nome'];
+    $responsavel = ''; // No banco de clientes o responsável pode variar, mas aqui usamos o nome da empresa como principal
+} else {
+    if (empty($d['empresa_nome']) || empty($d['responsavel'])) {
+        responderJson(['erro' => 'Nome da empresa e responsável são obrigatórios para novos leads.'], 422);
+    }
+    $clienteNome = $d['empresa_nome'];
+    $responsavel = $d['responsavel'];
+    
+    // Lógica de Pluralização Inteligente
+    if (strpos($responsavel, ',') !== false || stripos($responsavel, ' e ') !== false) {
+        $isPlural = true;
+    }
 }
-
-$clienteNome = $cliente['nome'];
 
 // 2. Buscar Serviços (se houver)
 $servicosInclusos = [];
@@ -64,8 +81,11 @@ $secoes = [];
 $servicosStr = implode(', ', array_column($servicosInclusos, 'nome'));
 
 try {
+    $termoResponsavel = $isPlural ? "os responsáveis" : "o responsável";
     $contexto = [
         'cliente' => $clienteNome,
+        'responsavel' => $responsavel,
+        'termo_responsavel' => $termoResponsavel,
         'detalhes' => $d['briefing'] ?? '',
         'servicos' => $servicosStr
     ];
@@ -86,7 +106,9 @@ $id = gerarId();
 $dadosJson = json_encode([
     'secoes' => $secoes,
     'servicos' => $servicosInclusos,
-    'briefing' => $d['briefing'] ?? ''
+    'briefing' => $d['briefing'] ?? '',
+    'responsavel' => $responsavel,
+    'is_plural' => $isPlural
 ], JSON_UNESCAPED_UNICODE);
 
 $stmt = $db->prepare("INSERT INTO propostas (id, cliente_nome, tipo, slug, titulo, subtitulo, validade, dados_json, valor_total, status) 

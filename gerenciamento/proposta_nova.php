@@ -41,32 +41,70 @@ include __DIR__ . '/../includes/layout/head.php';
             <div class="lg:col-span-2 space-y-6">
                 <section class="card p-6">
                     <h3 class="text-sm font-bold text-zinc-900 mb-4">Informações Básicas</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="form-group">
-                            <label class="label">Cliente</label>
-                            <select name="cliente_id" class="input" required>
+                    
+                    <div class="flex gap-6 mb-6 pb-6 border-b border-zinc-100">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="modo_cliente" value="cadastrado" checked class="w-4 h-4 border-zinc-300 text-zinc-900 focus:ring-zinc-900">
+                            <span class="text-xs font-bold text-zinc-700">Cliente Cadastrado</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="modo_cliente" value="lead" class="w-4 h-4 border-zinc-300 text-zinc-900 focus:ring-zinc-900">
+                            <span class="text-xs font-bold text-zinc-700">Novo Lead / Prospect</span>
+                        </label>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-6">
+                        <!-- Modo Cliente Cadastrado -->
+                        <div id="wrapperClienteCadastrado" class="form-group">
+                            <label class="label">Selecione o Cliente</label>
+                            <select name="cliente_id" id="cliente_id" class="input">
                                 <option value="">Selecione um cliente...</option>
                                 <?php foreach ($clientes as $c): ?>
                                     <option value="<?= $c['id'] ?>"><?= sanitizar($c['nome']) ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label class="label">Título da Proposta</label>
-                            <input type="text" name="titulo" class="input" placeholder="Ex: Gestão de Tráfego 2024" required>
+
+                        <!-- Modo Novo Lead -->
+                        <div id="wrapperNovoLead" class="hidden animate-fade-in">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="form-group">
+                                    <label class="label">Nome da Empresa / Projeto</label>
+                                    <input type="text" name="empresa_nome" class="input" placeholder="Ex: Innovare Solar">
+                                </div>
+                                <div class="form-group">
+                                    <label class="label">Responsável(is)</label>
+                                    <input type="text" name="responsavel" class="input" placeholder="Ex: João Silva, Maria Souza">
+                                    <p class="text-[10px] text-zinc-500 mt-1">Use vírgula para separar múltiplos nomes.</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label class="label">Tipo de Serviço</label>
-                            <select name="tipo" id="tipoProposta" class="input" required>
-                                <option value="marketing">Marketing Digital</option>
-                                <option value="casamento">Casamento</option>
-                                <option value="15anos">15 Anos</option>
-                                <option value="filmmaker">Filmmaker (Cinematic)</option>
-                            </select>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="form-group md:col-span-2">
+                                <label class="label">Título da Proposta</label>
+                                <input type="text" name="titulo" class="input" placeholder="Ex: Gestão de Tráfego 2024" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="label">Tipo de Serviço</label>
+                                <select name="tipo" id="tipoProposta" class="input" required>
+                                    <option value="marketing">Marketing Digital</option>
+                                    <option value="casamento">Casamento</option>
+                                    <option value="15anos">15 Anos</option>
+                                    <option value="filmmaker">Filmmaker (Cinematic)</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label class="label">Valor Total (R$)</label>
-                            <input type="number" step="0.01" name="valor_total" class="input" placeholder="0,00" required>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label class="label">Valor Total (R$)</label>
+                                <input type="number" step="0.01" name="valor_total" class="input" placeholder="0,00" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="label">Subtítulo (Opcional)</label>
+                                <input type="text" name="subtitulo" class="input" placeholder="Ex: Planejamento Estratégico Q3">
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -138,6 +176,34 @@ document.addEventListener('DOMContentLoaded', function() {
     const linkVisualizar = document.getElementById('linkVisualizar');
     const btnCopiarLink = document.getElementById('btnCopiarLink');
     let linkGerado = '';
+
+    const radiosModo = document.querySelectorAll('input[name="modo_cliente"]');
+    const wrapperCadastrado = document.getElementById('wrapperClienteCadastrado');
+    const wrapperLead = document.getElementById('wrapperNovoLead');
+    const selectCliente = document.querySelector('select[name="cliente_id"]');
+    const inputEmpresa = document.querySelector('input[name="empresa_nome"]');
+    const inputResponsavel = document.querySelector('input[name="responsavel"]');
+
+    radiosModo.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'cadastrado') {
+                wrapperCadastrado.classList.remove('hidden');
+                wrapperLead.classList.add('hidden');
+                selectCliente.required = true;
+                inputEmpresa.required = false;
+                inputResponsavel.required = false;
+            } else {
+                wrapperCadastrado.classList.add('hidden');
+                wrapperLead.classList.remove('hidden');
+                selectCliente.required = false;
+                inputEmpresa.required = true;
+                inputResponsavel.required = true;
+            }
+        });
+    });
+
+    // Iniciar com o modo correto
+    document.querySelector('input[name="modo_cliente"]:checked').dispatchEvent(new Event('change'));
 
     // Alternar visibilidade da seção de serviços
     tipoSelect.addEventListener('change', function() {

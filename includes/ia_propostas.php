@@ -44,25 +44,27 @@ class IAPropostas {
 
     public static function gerarTextoSecao(string $tipo, string $secao, array $contexto) {
         $cliente = $contexto['cliente'] ?? 'Cliente';
+        $responsavel = $contexto['responsavel'] ?? '';
+        $termoResponsavel = $contexto['termo_responsavel'] ?? 'o responsável';
         $detalhes = $contexto['detalhes'] ?? '';
         $servicos = $contexto['servicos'] ?? '';
 
         $prompts = [
             'marketing' => [
-                'intro' => "Escreva um texto impactante sobre o 'Desafio do Crescimento' para $cliente. Enfatize que postar em redes sociais sem impulsionamento é ineficiente no cenário atual e que nossa estratégia integra conteúdo e tráfego.",
-                'desafio' => "Explique para $cliente que a Gestão de Redes Sociais agora é indissociável da Gestão de Tráfego. Destaque como usaremos $servicos para unir conteúdo estratégico e anúncios pagos, garantindo que a marca não apenas apareça, mas converta.",
+                'intro' => "Escreva um texto impactante sobre o 'Desafio do Crescimento' para $cliente. Enfatize para $termoResponsavel ($responsavel) que postar em redes sociais sem impulsionamento é ineficiente no cenário atual e que nossa estratégia integra conteúdo e tráfego.",
+                'desafio' => "Explique para $termoResponsavel ($responsavel) da empresa $cliente que a Gestão de Redes Sociais agora é indissociável da Gestão de Tráfego. Destaque como usaremos $servicos para unir conteúdo estratégico e anúncios pagos, garantindo que a marca não apenas apareça, mas converta.",
             ],
             'casamento' => [
-                'intro' => "Escreva uma introdução emocional e sofisticada para uma proposta de casamento para o casal $cliente. Foco em sonhos e exclusividade.",
-                'visao' => "Descreva a visão artística e o cuidado com os detalhes (como se fosse um filme) para o casamento de $cliente. Detalhes: $detalhes.",
+                'intro' => "Escreva uma introdução emocional e sofisticada para uma proposta de casamento para $responsavel. Foco em sonhos, exclusividade e na importância de cada detalhe para o grande dia.",
+                'visao' => "Descreva a visão artística e o cuidado com os detalhes para o evento de $responsavel. Detalhes: $detalhes.",
             ],
             'filmmaker' => [
-                'intro' => "Crie uma introdução cinemática para uma proposta de filme/vídeo para $cliente. Use termos como 'storytelling', 'narrativa visual' e 'emoção em cada frame'.",
-                'visao' => "Descreva a 'Visão Criativa' para o projeto de vídeo de $cliente. Explique como transformaremos o evento em uma obra de cinema. Contexto: $detalhes.",
+                'intro' => "Crie uma introdução cinemática para uma proposta de filme/vídeo para $cliente, endereçada a $responsavel. Use termos como 'storytelling', 'narrativa visual' e 'emoção em cada frame'.",
+                'visao' => "Descreva a 'Visão Criativa' para o projeto de vídeo de $cliente e $responsavel. Explique como transformaremos o evento em uma obra de cinema. Contexto: $detalhes.",
             ],
             '15anos' => [
-                'intro' => "Escreva uma introdução moderna e vibrante para uma proposta de festa de 15 anos para $cliente. Foco em experiência única e tendência.",
-                'experiencia' => "Descreva como a festa de 15 anos de $cliente será inesquecível e tecnológica. Detalhes: $detalhes.",
+                'intro' => "Escreva uma introdução moderna e vibrante para uma proposta de festa de 15 anos para $cliente e $responsavel. Foco em experiência única e tendência.",
+                'experiencia' => "Descreva como a festa de 15 anos de $responsavel será inesquecível e tecnológica. Detalhes: $detalhes.",
             ]
         ];
 
