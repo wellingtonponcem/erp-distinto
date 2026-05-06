@@ -10,13 +10,26 @@ require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../includes/helpers.php';
 require_once __DIR__ . '/../../includes/ia_propostas.php';
 
+// Ativar captura de erros para retornar JSON sempre
+set_error_handler(function($severity, $message, $file, $line) {
+    if (!(error_reporting() & $severity)) return;
+    responderJson(['erro' => "PHP Error: $message in $file on line $line"], 500);
+});
+
+register_shutdown_function(function() {
+    $error = error_get_last();
+    if ($error && ($error['type'] === E_ERROR || $error['type'] === E_PARSE || $error['type'] === E_COMPILE_ERROR)) {
+        header('Content-Type: application/json');
+        echo json_encode(['erro' => "PHP Fatal Error: " . $error['message'] . " in " . $error['file'] . " on line " . $error['line']]);
+    }
+});
+
 exigirAutenticacao();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     responderJson(['erro' => 'Método não permitido'], 405);
 }
 
-// Suporte a FormData do navegador
 $d = !empty($_POST) ? $_POST : lerCorpo();
 
 if (empty($d['tipo'])) {

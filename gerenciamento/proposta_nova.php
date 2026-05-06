@@ -256,7 +256,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: formData
             });
             
-            const result = await response.json();
+            const responseText = await response.text();
+            let result;
+            try {
+                result = JSON.parse(responseText);
+            } catch (e) {
+                console.error('Erro ao processar JSON:', responseText);
+                throw new Error('O servidor retornou uma resposta inválida (não JSON). Verifique o console para detalhes.');
+            }
+            
+            if (!response.ok) {
+                throw new Error(result.erro || 'Erro desconhecido no servidor.');
+            }
             
             if (result.success) {
                 linkGerado = `https://wedistinto.com/p/${result.slug}`;
