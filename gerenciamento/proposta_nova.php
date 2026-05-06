@@ -148,6 +148,34 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Regra de Negócio: Redes Sociais exige Gestão de Tráfego
+    sectionServicos.addEventListener('change', function(e) {
+        if (e.target.type === 'checkbox') {
+            const labelText = e.target.closest('label').innerText.toLowerCase();
+            const isSocialMedia = labelText.includes('redes sociais') || labelText.includes('instagram') || labelText.includes('facebook');
+            
+            if (isSocialMedia && e.target.checked) {
+                // Procurar o checkbox de tráfego
+                const checkboxes = sectionServicos.querySelectorAll('input[type="checkbox"]');
+                let trafficSelected = false;
+                
+                checkboxes.forEach(cb => {
+                    const cbLabel = cb.closest('label').innerText.toLowerCase();
+                    if (cbLabel.includes('tráfego') || cbLabel.includes('trafego') || cbLabel.includes('ads')) {
+                        if (!cb.checked) {
+                            cb.checked = true;
+                            trafficSelected = true;
+                        }
+                    }
+                });
+
+                if (trafficSelected) {
+                    alert('Aviso: Atualmente a Gestão de Redes Sociais é vendida obrigatoriamente com Gestão de Tráfego para garantir o impulsionamento e resultados reais.');
+                }
+            }
+        }
+    });
+
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
         

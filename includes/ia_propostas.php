@@ -49,8 +49,8 @@ class IAPropostas {
 
         $prompts = [
             'marketing' => [
-                'intro' => "Escreva um texto curto e impactante (máx 300 caracteres) sobre o 'Desafio do Crescimento' para $cliente. Fale sobre como o mercado atual exige velocidade e precisão.",
-                'desafio' => "Descreva em 2 parágrafos os gargalos comuns que impedem empresas como $cliente de escalarem, focando em como a Distinto resolve isso com $servicos.",
+                'intro' => "Escreva um texto impactante sobre o 'Desafio do Crescimento' para $cliente. Enfatize que postar em redes sociais sem impulsionamento é ineficiente no cenário atual e que nossa estratégia integra conteúdo e tráfego.",
+                'desafio' => "Explique para $cliente que a Gestão de Redes Sociais agora é indissociável da Gestão de Tráfego. Destaque como usaremos $servicos para unir conteúdo estratégico e anúncios pagos, garantindo que a marca não apenas apareça, mas converta.",
             ],
             'casamento' => [
                 'intro' => "Escreva uma introdução emocional e sofisticada para uma proposta de casamento para o casal $cliente. Foco em sonhos e exclusividade.",
