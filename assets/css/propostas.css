@@ -47,7 +47,7 @@ body {
     
     /* Grid que espelha o HUD */
     display: grid;
-    grid-template-columns: 40% 45% 15%;
+    grid-template-columns: 40% 40% 20%;
     padding: 0 6vw;
     box-sizing: border-box;
 }
@@ -155,7 +155,7 @@ html {
     pointer-events: none; /* Deixa cliques passarem para o conteúdo */
     z-index: 100;
     display: grid;
-    grid-template-columns: 40% 45% 15%;
+    grid-template-columns: 40% 40% 20%;
     padding: 6vh 6vw;
     font-family: var(--font-heading);
     text-transform: uppercase;
@@ -178,7 +178,7 @@ html {
 .proposal-frame::after {
     content: '';
     position: absolute;
-    left: 85%;
+    left: 80%;
     top: 0;
     bottom: 0;
     width: 2px; /* Engrossado para +1px */
