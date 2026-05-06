@@ -6,13 +6,16 @@
 <div class="theme-marketing">
     <!-- Slide 1: Hero (Capa seguindo o modelo exato) -->
     <section class="proposal-page">
-        <div class="page-content" style="padding-top: 15vh; align-items: flex-start; justify-content: flex-start;">
-            <div style="width: 38%; padding-left: 0;">
-                <h1 style="font-family: var(--font-heading); font-weight: 800; font-size: 48px; line-height: 1; margin: 0; text-transform: uppercase; letter-spacing: -2px; color: #000;">
-                    <?= !empty($proposta['titulo']) ? $proposta['titulo'] : 'PROPOSTA ESTRATÉGICA' ?>
+        <div class="page-content" style="padding-top: 15vh; align-items: flex-start; justify-content: flex-start; flex-direction: row; display: flex;">
+            <!-- Espaçador para alinhar o início do texto com a linha vertical do HUD (40%) -->
+            <div style="width: 40%; flex-shrink: 0;"></div>
+            
+            <div style="max-width: 450px;">
+                <h1 style="font-family: var(--font-heading); font-weight: 800; font-size: 64px; line-height: 0.9; margin: 0; text-transform: uppercase; letter-spacing: -3px; color: #000;">
+                    <?= !empty($proposta['titulo_refinado']) ? $proposta['titulo_refinado'] : (!empty($proposta['titulo']) ? $proposta['titulo'] : 'PROPOSTA ESTRATÉGICA') ?>
                 </h1>
                 <?php if (!empty($proposta['subtitulo'])): ?>
-                <p style="font-size: 14px; text-transform: uppercase; letter-spacing: 3px; color: rgba(0,0,0,0.4); font-weight: 700; margin-top: 30px; line-height: 1.4;">
+                <p style="font-size: 14px; text-transform: uppercase; letter-spacing: 3px; color: rgba(0,0,0,0.4); font-weight: 700; margin-top: 40px; line-height: 1.4;">
                     <?= $proposta['subtitulo'] ?>
                 </p>
                 <?php endif; ?>
