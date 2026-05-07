@@ -384,7 +384,7 @@ document.addEventListener('alpine:init', () => {
 
         recalcularTotal() {
             const meses = parseInt(this.mesesContrato) || 1;
-            
+
             this.servicosSelecionados.forEach(item => {
                 const servico = this.catalogoServicos.find(s => s.id == item.id);
                 const precoRecorrente = servico ? parseFloat(servico.preco_venda || 0) : 0;
@@ -403,19 +403,16 @@ document.addEventListener('alpine:init', () => {
 
             const subRaw = this.servicosSelecionados.reduce((acc, curr) => acc + (curr.valor_mensal || 0), 0);
             this.valorSubtotal = Math.round(subRaw * 100) / 100;
-            
+
             let desconto = 0;
             const sub = parseFloat(this.valorSubtotal || 0);
             const desc = parseFloat(this.descontoValor || 0);
+            if (this.descontoTipo === 'porcentagem') desconto = sub * (desc / 100);
+            else desconto = desc;
 
-            if (this.descontoTipo === 'porcentagem') {
-                desconto = sub * (desc / 100);
-            } else {
-                desconto = desc;
-            }
-            
-            const totalRaw = Math.max(0, sub - desconto);
-            this.valorTotal = Math.round(totalRaw * 100) / 100;
+            const mensalFinal = Math.max(0, sub - desconto);
+            // valor_total = total do contrato (mensal × meses) — template exibe ÷ meses para /mês
+            this.valorTotal = Math.round(mensalFinal * meses * 100) / 100;
         }
     }));
 });

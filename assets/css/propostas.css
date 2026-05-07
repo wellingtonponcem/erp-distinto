@@ -173,43 +173,41 @@ html {
     transition: color 0.4s ease;
 }
 
-/* Linhas do HUD - Acima dos slides, abaixo do frame de texto */
+/* Linhas do HUD - parte do background de cada slide (atrás do conteúdo) */
 .proposal-hud-lines {
-    position: fixed;
+    display: none; /* Substituído por ::before/::after em cada slide */
+}
+
+/* Linhas verticais como fundo de cada slide */
+.proposal-page::before,
+.proposal-page::after {
+    content: '';
+    position: absolute;
     top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    bottom: 0;
+    width: 1px;
+    background: rgba(0, 0, 0, 0.1);
     pointer-events: none;
-    z-index: 150; /* Acima dos slides (z:10), abaixo do frame HUD (z:200) */
+    z-index: 0; /* Atrás do conteúdo */
 }
 
-.proposal-hud-lines::before {
-    content: '';
-    position: absolute;
-    left: 40%;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: rgba(0, 0, 0, 0.12);
-    transition: background 0.4s ease;
+.proposal-page::before { left: 40%; }
+.proposal-page::after  { left: 85%; }
+
+/* Inversão para slides escuros */
+.dark-page::before,
+.dark-page::after {
+    background: rgba(255, 255, 255, 0.15);
 }
 
-.proposal-hud-lines::after {
-    content: '';
-    position: absolute;
-    left: 85%;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: rgba(0, 0, 0, 0.12);
-    transition: background 0.4s ease;
-}
-
-/* Inversão para Temas Escuros */
-body.on-dark .proposal-hud-lines::before,
-body.on-dark .proposal-hud-lines::after {
-    background: rgba(255, 255, 255, 0.2);
+/* Esconder linhas em templates sem HUD */
+body.type-filmmaker .proposal-page::before,
+body.type-filmmaker .proposal-page::after,
+body.type-casamento .proposal-page::before,
+body.type-casamento .proposal-page::after,
+body.type-15anos .proposal-page::before,
+body.type-15anos .proposal-page::after {
+    display: none;
 }
 
 body.on-dark .proposal-frame {

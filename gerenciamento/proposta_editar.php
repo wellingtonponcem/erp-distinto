@@ -132,8 +132,9 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="label">Valor Total (Final)</label>
-                                <input type="number" step="0.01" name="valor_total" class="input bg-zinc-100 font-bold text-zinc-900 border-zinc-300" required readonly x-model="valorTotal">
+                                <label class="label">Valor Total do Contrato</label>
+                                <input type="number" step="0.01" name="valor_total" class="input font-bold" required x-model="valorTotal" @input="calcularDescontoDoTotal()">
+                                <p class="text-[10px] text-zinc-400 mt-1" x-text="'R$ ' + (valorTotal / (parseInt(mesesContrato)||1)).toFixed(2).replace('.',',') + '/mês × ' + (parseInt(mesesContrato)||1) + ' meses'"></p>
                             </div>
                             <div class="form-group">
                                 <label class="label">Tempo de Contrato</label>
@@ -371,13 +372,7 @@ document.addEventListener('alpine:init', () => {
             this.formaPagamento = dados.forma_pagamento || 'boleto_pix';
             this.dataInicio = dados.data_inicio || '';
             this.adicional = dados.adicional || { titulo: '', valor: 0, descricao: '' };
-            
-            // Força o Alpine a processar os dados e depois recalcula
-            this.$nextTick(() => {
-                this.recalcularTotal();
-                if (window.lucide) lucide.createIcons();
-            });
-            
+
             // Carregar etapas ativas ou padrão (todas ativas se for nova ou antiga sem esse campo)
             if (dados.etapas_ativas && Array.isArray(dados.etapas_ativas) && dados.etapas_ativas.length > 0) {
                 this.etapasAtivas = dados.etapas_ativas;
@@ -385,19 +380,28 @@ document.addEventListener('alpine:init', () => {
                 this.etapasAtivas = this.etapasDisponiveis.map(e => e.id);
             }
 
-            this.valorTotal = <?= (float)$proposta['valor_total'] ?>;
-            
-            // Recalcular subtotal
-            this.recalcularTotal();
-            
-            // Tentar inferir desconto se o total for diferente do subtotal
-            const sub = this.valorSubtotal;
-            if (sub > 0 && this.valorTotal < sub) {
-                this.descontoValor = sub - this.valorTotal;
-                this.descontoTipo = 'fixo';
-            }
-
+            // Força o Alpine a processar os dados e depois recalcula
             this.$nextTick(() => {
+                // Calcular subtotal dos serviços
+                this.recalcularTotal();
+
+                const valorTotalDB = <?= (float)$proposta['valor_total'] ?>;
+                const meses = parseInt(this.mesesContrato) || 1;
+
+                // Detectar formato antigo (valor_total era mensal, não contrato total)
+                const isFormatoAntigo = dados.servicos?.some(s => 'tipo_cobranca' in s)
+                    && valorTotalDB < this.valorSubtotal * 1.5; // heurística: se menor que 1.5× mensal, era mensal
+
+                const valorContrato = isFormatoAntigo ? valorTotalDB * meses : valorTotalDB;
+                this.valorTotal = Math.round(valorContrato * 100) / 100;
+
+                // Inferir desconto do valor editado
+                const mensalImplicado = this.valorTotal / meses;
+                if (this.valorSubtotal > 0 && mensalImplicado < this.valorSubtotal - 0.01) {
+                    this.descontoValor = Math.round((this.valorSubtotal - mensalImplicado) * 100) / 100;
+                    this.descontoTipo = 'fixo';
+                }
+
                 if (window.lucide) lucide.createIcons();
             });
         },
@@ -430,38 +434,54 @@ document.addEventListener('alpine:init', () => {
 
         recalcularTotal() {
             const meses = parseInt(this.mesesContrato) || 1;
-            
+
+            // Calcular valor_mensal de cada serviço
             this.servicosSelecionados.forEach(item => {
                 const servico = this.catalogoServicos.find(s => s.id == item.id);
                 const precoRecorrente = servico ? parseFloat(servico.preco_venda || 0) : 0;
-                const precoPontual = servico ? parseFloat(servico.preco_venda_pontual || 0) : item.valor;
                 const freq = parseInt(item.frequencia) || 1;
 
                 if (item.tipo_cobranca === 'pontual') {
                     if (freq > 1) {
-                        // Se tem recorrência (ex: 2x/mês), usa o preço de contrato * frequência
                         item.valor_mensal = Math.round((precoRecorrente * freq) * 100) / 100;
                     } else {
-                        // Se é pontual único, divide o valor total pelos meses de contrato
                         item.valor_mensal = Math.round((parseFloat(item.valor) / meses) * 100) / 100;
                     }
                 } else {
-                    // Recorrente padrão
                     item.valor_mensal = Math.round(parseFloat(item.valor) * 100) / 100;
                 }
             });
 
+            // Subtotal mensal
             const subRaw = this.servicosSelecionados.reduce((acc, curr) => acc + (curr.valor_mensal || 0), 0);
             this.valorSubtotal = Math.round(subRaw * 100) / 100;
-            
+
+            // Desconto sobre o mensal
             let desconto = 0;
             const sub = parseFloat(this.valorSubtotal || 0);
             const desc = parseFloat(this.descontoValor || 0);
             if (this.descontoTipo === 'porcentagem') desconto = sub * (desc / 100);
             else desconto = desc;
-            
-            const totalRaw = Math.max(0, sub - desconto);
-            this.valorTotal = Math.round(totalRaw * 100) / 100;
+
+            const mensalFinal = Math.max(0, sub - desconto);
+
+            // valorTotal = valor total do contrato (mensal × meses)
+            this.valorTotal = Math.round(mensalFinal * meses * 100) / 100;
+        },
+
+        // Quando o usuário edita o valor total diretamente, calcula o desconto implícito
+        calcularDescontoDoTotal() {
+            const meses = parseInt(this.mesesContrato) || 1;
+            const sub = parseFloat(this.valorSubtotal || 0);
+            const total = parseFloat(this.valorTotal || 0);
+            const mensalImplicado = total / meses;
+
+            if (sub > 0 && mensalImplicado < sub) {
+                this.descontoValor = Math.round((sub - mensalImplicado) * 100) / 100;
+                this.descontoTipo = 'fixo';
+            } else {
+                this.descontoValor = 0;
+            }
         }
     }));
 });

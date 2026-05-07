@@ -469,23 +469,11 @@
         <div class="page-content" style="grid-column: 2; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 0;">
             <div style="width: 100%; max-height: 85vh; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2.5rem 0;">
             <?php
-                $mesesContrato = $dadosJson['meses_contrato'] ?? 12;
-                
-                // Se a proposta já foi salva com a nova lógica (valor_total = mensal), não dividimos
-                $isNovaLogica = false;
-                if (!empty($dadosJson['servicos'])) {
-                    foreach ($dadosJson['servicos'] as $s) {
-                        if (isset($s['tipo_cobranca'])) {
-                            $isNovaLogica = true;
-                            break;
-                        }
-                    }
-                }
+                $mesesContrato = max(1, (int)($dadosJson['meses_contrato'] ?? 12));
+                // valor_total armazena o valor total do contrato; dividimos pelos meses para exibir o valor mensal
+                $valorMensal = round($proposta['valor_total'] / $mesesContrato, 2);
 
-                $valorMensal = $isNovaLogica ? $proposta['valor_total'] : round($proposta['valor_total'] / ($mesesContrato > 0 ? $mesesContrato : 1), 2);
-                
                 $isCartao = ($dadosJson['forma_pagamento'] ?? 'boleto_pix') === 'cartao';
-                
                 if ($isCartao) {
                     $valorMensal = round($valorMensal * 1.0213, 2);
                 }
