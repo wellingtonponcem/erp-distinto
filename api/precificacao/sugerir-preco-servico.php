@@ -58,7 +58,7 @@ DADOS DA AGÊNCIA:
 REGRAS OBRIGATÓRIAS:
 1. O preço sugerido deve ser um VALOR CHEIO e arredondado (ex: R$ 1.500, R$ 2.900).
 2. NUNCA sugira um valor abaixo do PREÇO DE PISO (R$ {$precoMinimo}).
-3. Se o tipo for PONTUAL, o valor sugerido deve ser visivelmente superior ao que seria cobrado mensalmente.
+3. DIFERENCIAÇÃO RADICAL: Se o tipo for PONTUAL, o valor sugerido DEVE ser entre 30% e 70% SUPERIOR ao valor recorrente proporcional. Nunca sugira o mesmo preço para ambos os tipos de contrato.
 4. Retorne APENAS um objeto JSON no formato: {"preco": 2500.00, "markup_sugerido": 45, "justificativa": "Explique por que este valor é ideal considerando a periodicidade"}
 
 PROMPT;

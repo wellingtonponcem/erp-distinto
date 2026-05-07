@@ -61,8 +61,11 @@ include __DIR__ . '/../includes/layout/head.php';
             <template x-for="s in lista" :key="s.id">
                     <div class="table-row" style="display:grid; grid-template-columns:2fr 80px 1fr 1fr 1fr 80px 100px; align-items:center;">
                         <div class="table-cell">
-                            <div style="color:#f1f5f9; font-weight:800; font-size:13px; text-transform:uppercase; letter-spacing:0.5px; line-height:1.2;" x-text="s.nome || 'SEM NOME'"></div>
-                            <div style="color:#64748b; font-size:11px; margin-top:4px; max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" :title="s.descricao" x-text="s.descricao || ''"></div>
+                            <!-- Nome do Serviço (Título Principal) -->
+                            <div style="color:#f8fafc; font-weight:800; font-size:12px; text-transform:uppercase; letter-spacing:0.8px; line-height:1.1; margin-bottom:2px;" x-text="(s.nome || 'SEM NOME').toUpperCase()"></div>
+                            
+                            <!-- Descrição do Serviço (Detalhe Sutil) -->
+                            <div style="color:#64748b; font-size:10px; font-weight:400; max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; opacity:0.7;" :title="s.descricao" x-text="s.descricao || ''"></div>
                         </div>
                         <div class="table-cell" style="color:#94a3b8;" x-text="s.horas_estimadas + 'h'"></div>
                         <div class="table-cell" style="color:#94a3b8;" x-text="formatarMoeda(calcularPrecoMinimo(s))"></div>
@@ -247,10 +250,8 @@ include __DIR__ . '/../includes/layout/head.php';
                         <i data-lucide="sparkles" style="width:16px;height:16px;color:#fff;"></i>
                     </div>
                     <div>
-                        <div style="font-weight:700; color:#f1f5f9; font-size:14px;">Assistente Distinto</div>
-                        <div style="font-size:11px; color:#10b981; display:flex; align-items:center; gap:4px;">
-                            <span style="width:6px; height:6px; border-radius:50%; background:#10b981; display:inline-block;"></span> Online
-                        </div>
+                        <div style="font-weight:700; color:#f1f5f9; font-size:13px; text-transform:uppercase; letter-spacing:0.5px;" x-text="form.nome || 'Novo Serviço'"></div>
+                        <div style="font-size:10px; color:#a78bfa; font-weight:600; letter-spacing:0.3px;">ESTRUTURAÇÃO & PRECIFICAÇÃO</div>
                     </div>
                 </div>
                 <button @click="chatAberto=false" style="color:#6b7280; background:none; border:none; cursor:pointer;">

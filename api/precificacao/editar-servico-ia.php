@@ -38,11 +38,11 @@ DADOS ATUAIS DO SERVIÇO:
 - Preço Pontual Atual: {$s['preco_venda_pontual']}
 
 REGRAS CRÍTICAS DE NEGÓCIO:
-1. O NOME do serviço deve ser sempre em MAIÚSCULAS, SIMPLES e DIRETO.
-2. PRECIFICAÇÃO ESTRATÉGICA:
-   - Serviços PONTUAIS (projetos únicos) devem ser 30% a 60% MAIS CAROS que o valor recorrente proporcional.
-   - Sempre sugira valores que garantam uma margem saudável baseada na complexidade descrita.
-3. A DESCRIÇÃO deve ser profissional e focada em valor.
+1. O NOME do serviço deve ser sempre em MAIÚSCULAS, SIMPLES e DIRETO (Ex: GESTÃO DE TRÁFEGO, e não "Serviço de gestão de tráfego pago").
+2. PRECIFICAÇÃO ESTRATÉGICA (OBRIGATÓRIO):
+   - Serviços PONTUAIS (projetos únicos) DEVEM ser significativamente MAIS CAROS que o valor recorrente equivalente (entre 30% a 70% de acréscimo).
+   - NUNCA sugira o mesmo valor para ambos. O risco do pontual é maior, logo o preço deve refletir isso.
+3. A DESCRIÇÃO deve ser profissional, focada em valor e benefícios.
 
 FORMATO DE RESPOSTA (JSON):
 Você deve retornar SEMPRE um objeto JSON contendo:
