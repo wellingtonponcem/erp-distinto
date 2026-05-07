@@ -315,6 +315,11 @@ include __DIR__ . '/../includes/layout/head.php';
                     <button @click="copiarLink(contextMenu.item.slug); contextMenu.show = false">
                         <i data-lucide="copy" class="w-4 h-4"></i> Copiar Link
                     </button>
+                    <button @click="enviarWhatsApp(contextMenu.item)" :disabled="whatsappLoading" class="text-green-400 hover:bg-green-900/20 disabled:opacity-50">
+                        <template x-if="!whatsappLoading"><i data-lucide="message-circle" class="w-4 h-4"></i></template>
+                        <template x-if="whatsappLoading"><svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg></template>
+                        <span x-text="whatsappLoading ? 'Gerando mensagem...' : 'Enviar via WhatsApp'"></span>
+                    </button>
                     <button @click="location.href = 'proposta_editar.php?id=' + contextMenu.item.id">
                         <i data-lucide="edit-2" class="w-4 h-4"></i> Editar Dados
                     </button>
@@ -628,6 +633,42 @@ function propostasApp() {
         copiarLink(slug) {
             const link = `<?= APP_URL ?>/p/${slug}`;
             navigator.clipboard.writeText(link).then(() => alert('Link copiado!'));
+        },
+
+        whatsappLoading: false,
+
+        async enviarWhatsApp(proposta) {
+            const dados = JSON.parse(proposta.dados_json || '{}');
+            const numero = (dados.whatsapp || '').replace(/\D/g, '');
+
+            if (!numero) {
+                alert('Número de WhatsApp não cadastrado nesta proposta.\nAdicione o WhatsApp do cliente ao editar a proposta.');
+                return;
+            }
+
+            this.whatsappLoading = true;
+
+            try {
+                const res = await fetch('<?= raizUrl('/api/propostas/mensagem-whatsapp.php') ?>', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: proposta.id })
+                });
+                const json = await res.json();
+
+                if (json.erro) throw new Error(json.erro);
+
+                window.open(`https://wa.me/${numero}?text=${encodeURIComponent(json.mensagem)}`, '_blank');
+
+            } catch (e) {
+                // Fallback direto se a IA falhar
+                const primeiroNome = proposta.cliente_nome.split(' ')[0];
+                const link = `<?= APP_URL ?>/p/${proposta.slug}`;
+                const fallback = `Oi, ${primeiroNome}! Tudo bem?\n\nAcabei de subir o material do ${proposta.titulo} aqui no sistema. Deixei tudo bem visual pra você conseguir enxergar o projeto ganhando forma, exatamente como a gente conversou.\n\nDá uma olhada aqui:\n👉 ${link}`;
+                window.open(`https://wa.me/${numero}?text=${encodeURIComponent(fallback)}`, '_blank');
+            } finally {
+                this.whatsappLoading = false;
+            }
         }
     }
 }
