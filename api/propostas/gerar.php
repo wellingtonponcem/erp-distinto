@@ -54,14 +54,20 @@ if ($modoCliente === 'cadastrado') {
     $clienteNome = $cliente['nome'];
     $responsavel = ''; // Para clientes cadastrados, o responsável é opcional ou fixo
 } else {
-    if (empty($d['empresa_nome']) || empty($d['responsavel'])) {
-        responderJson(['erro' => 'Nome da empresa e responsável são obrigatórios para novos leads.'], 422);
+    // Para Casamento, empresa_nome e responsavel não são obrigatórios (usamos noivos)
+    if ($d['tipo'] !== 'casamento') {
+        if (empty($d['empresa_nome']) || empty($d['responsavel'])) {
+            responderJson(['erro' => 'Nome da empresa e responsável são obrigatórios para novos leads.'], 422);
+        }
+        $clienteNome = $d['empresa_nome'];
+        $responsavel = $d['responsavel'];
+    } else {
+        $clienteNome = ($d['nome_noivo'] && $d['nome_noiva']) ? ($d['nome_noivo'] . ' & ' . $d['nome_noiva']) : 'Novo Casamento';
+        $responsavel = $d['nome_noiva'] ?? ''; // Usamos a noiva como principal para comunicações
     }
-    $clienteNome = $d['empresa_nome'];
-    $responsavel = $d['responsavel'];
     
     // Lógica de Pluralização Inteligente
-    if (strpos($responsavel, ',') !== false || stripos($responsavel, ' e ') !== false) {
+    if (strpos($responsavel, ',') !== false || stripos($responsavel, ' e ') !== false || $d['tipo'] === 'casamento') {
         $isPlural = true;
     }
 }

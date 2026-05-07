@@ -217,7 +217,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                             </div>
                             <div class="form-group">
                                 <label class="label">Valor Total (Final)</label>
-                                <input type="number" step="0.01" name="valor_total" class="input bg-zinc-100 font-bold text-zinc-900 border-zinc-300" placeholder="0,00" required readonly x-model="valorTotal">
+                                <input type="number" step="0.01" name="valor_total" class="input bg-zinc-100 font-bold text-zinc-900 border-zinc-300" placeholder="0,00" :required="tipoProposta !== 'casamento'" readonly x-model="valorTotal">
                                 <p class="text-[10px] text-zinc-500 mt-1">Valor final após desconto.</p>
                             </div>
                             <div class="form-group" x-show="tipoProposta !== 'casamento'">
@@ -241,11 +241,11 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                         <div class="form-group">
                             <label class="label">Nome do Noivo</label>
-                            <input type="text" name="nome_noivo" class="input" x-model="nomeNoivo" placeholder="Ex: Rodolfo Elias">
+                            <input type="text" name="nome_noivo" class="input" x-model="nomeNoivo" placeholder="Ex: Rodolfo Elias" :required="tipoProposta === 'casamento'">
                         </div>
                         <div class="form-group">
                             <label class="label">Nome da Noiva</label>
-                            <input type="text" name="nome_noiva" class="input" x-model="nomeNoiva" placeholder="Ex: Rhuana Fonseca">
+                            <input type="text" name="nome_noiva" class="input" x-model="nomeNoiva" placeholder="Ex: Rhuana Fonseca" :required="tipoProposta === 'casamento'">
                         </div>
                         <div class="form-group">
                             <label class="label">Data do Casamento</label>
@@ -621,6 +621,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     radiosModo.forEach(radio => {
         radio.addEventListener('change', function() {
+            const isCasamento = document.getElementById('tipoPropostaSelect')?.value === 'casamento';
             if (this.value === 'cadastrado') {
                 wrapperCadastrado.classList.remove('hidden');
                 wrapperLead.classList.add('hidden');
@@ -631,8 +632,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 wrapperCadastrado.classList.add('hidden');
                 wrapperLead.classList.remove('hidden');
                 if(selectCliente) selectCliente.required = false;
-                if(inputEmpresa) inputEmpresa.required = true;
-                if(inputResponsavel) inputResponsavel.required = true;
+                // Só torna obrigatório se não for casamento
+                if(inputEmpresa) inputEmpresa.required = !isCasamento;
+                if(inputResponsavel) inputResponsavel.required = !isCasamento;
             }
         });
     });
@@ -640,6 +642,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Iniciar com o modo correto
     const checkedRadio = document.querySelector('input[name="modo_cliente"]:checked');
     if (checkedRadio) checkedRadio.dispatchEvent(new Event('change'));
+
+    // Reavaliar quando mudar o tipo
+    const selectTipo = document.getElementById('tipoPropostaSelect');
+    if (selectTipo) {
+        selectTipo.addEventListener('change', () => {
+            const checked = document.querySelector('input[name="modo_cliente"]:checked');
+            if (checked) checked.dispatchEvent(new Event('change'));
+        });
+    }
 
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
