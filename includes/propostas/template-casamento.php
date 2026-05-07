@@ -346,7 +346,7 @@ if (!function_exists('fmt')) {
 
         <!-- Elemento decorativo cinza (lateral ocupando 100% da altura) -->
         <div
-            style="position: absolute; right: 0; top: 0; width: 50px; height: 100%; background: #fff; z-index: 5; opacity: 0.8;">
+            style="position: absolute; right: 0; top: 0; width: 50px; height: 100%; background: #959595ff; z-index: 5; opacity: 0.8;">
         </div>
     </section>
 
