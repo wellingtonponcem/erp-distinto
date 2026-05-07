@@ -38,7 +38,7 @@
 
         <!-- Coluna 2: Texto de Boas-vindas -->
         <div class="page-content" style="grid-column: 2; justify-content: center; padding-left: 40px;">
-            <div class="mission-text" style="color: #fff; font-size: 1.3rem; line-height: 1.6; opacity: 0.9;">
+            <div class="mission-text" style="color: #fff; font-size: 1rem; line-height: 1.6; opacity: 0.9;">
                 <h3 style="font-family: var(--font-heading); font-size: 32px; font-weight: 800; margin-bottom: 25px; text-transform: uppercase; color: #fff;">
                     OLÁ <?= explode(' ', trim($proposta['cliente_nome'] ?? 'CLIENTE'))[0] ?>!
                 </h3>
