@@ -39,7 +39,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
 <div id="app-wrapper" class="<?= $isModal ? 'is-modal-layout' : '' ?>">
     <?php if (!$isModal) include __DIR__ . '/../includes/layout/sidebar.php'; ?>
 
-    <main id="main-content" class="content-sheet <?= $isModal ? 'p-0' : '' ?>">
+    <main id="main-content" class="content-sheet <?= $isModal ? 'p-0' : '' ?>" x-data="proposta">
         <?php if (!$isModal): ?>
         <div class="app-topbar">
             <div class="top-nav">
@@ -50,13 +50,70 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
         </div>
         <?php endif; ?>
 
-        <div class="<?= $isModal ? 'px-8 pt-8 mb-6' : 'mb-8' ?>">
+        <div class="<?= $isModal ? 'px-8 pt-8 mb-6' : 'mb-8' ?>" x-show="passo === 2">
             <h1 class="page-title text-2xl">Criar Nova Proposta</h1>
             <p class="page-subtitle text-zinc-500">Preencha os dados abaixo para gerar uma proposta personalizada com IA.</p>
         </div>
 
-        <form id="formGerarProposta" x-data="proposta" x-cloak class="grid grid-cols-1 lg:grid-cols-3 gap-6 <?= $isModal ? 'px-8 pb-12' : '' ?>">
-            <div class="lg:col-span-2 space-y-6">
+        <form id="formGerarProposta" x-cloak class="grid grid-cols-1 lg:grid-cols-3 gap-6 <?= $isModal ? 'px-8 pb-12' : '' ?>">
+            
+            <!-- PASSO 1: ESCOLHA DO TIPO -->
+            <div x-show="passo === 1" class="lg:col-span-3 space-y-8 animate-fade-in py-10">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-black text-zinc-900 mb-3">Qual o tipo da nova proposta?</h2>
+                    <p class="text-zinc-500 text-lg">Selecione o modelo base para começarmos a personalização.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto px-4">
+                    <!-- Marketing -->
+                    <div @click="tipoProposta = 'marketing'; passo = 2; $nextTick(() => lucide.createIcons())" 
+                         class="group cursor-pointer bg-white border-2 border-transparent hover:border-zinc-900 rounded-[2.5rem] p-8 transition-all shadow-sm hover:shadow-xl text-center border-zinc-100 flex flex-col items-center justify-center min-h-[320px]">
+                        <div class="w-24 h-24 bg-zinc-100 rounded-[2rem] flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-500 group-hover:bg-zinc-900 group-hover:text-white">
+                            <i data-lucide="megaphone" class="w-12 h-12"></i>
+                        </div>
+                        <h3 class="font-black text-xl text-zinc-900">Marketing Digital</h3>
+                        <p class="text-sm text-zinc-500 mt-3 leading-relaxed">Gestão de tráfego, social media e estratégia digital.</p>
+                    </div>
+
+                    <!-- Filmmaker -->
+                    <div @click="tipoProposta = 'filmmaker'; passo = 2; $nextTick(() => lucide.createIcons())" 
+                         class="group cursor-pointer bg-white border-2 border-transparent hover:border-zinc-900 rounded-[2.5rem] p-8 transition-all shadow-sm hover:shadow-xl text-center border-zinc-100 flex flex-col items-center justify-center min-h-[320px]">
+                        <div class="w-24 h-24 bg-zinc-100 rounded-[2rem] flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-500 group-hover:bg-zinc-900 group-hover:text-white">
+                            <i data-lucide="video" class="w-12 h-12"></i>
+                        </div>
+                        <h3 class="font-black text-xl text-zinc-900">Filmmaker</h3>
+                        <p class="text-sm text-zinc-500 mt-3 leading-relaxed">Produção de vídeos, reels e conteúdo cinematic.</p>
+                    </div>
+
+                    <!-- Casamento -->
+                    <div @click="tipoProposta = 'casamento'; passo = 2; $nextTick(() => lucide.createIcons())" 
+                         class="group cursor-pointer bg-white border-2 border-transparent hover:border-zinc-900 rounded-[2.5rem] p-8 transition-all shadow-sm hover:shadow-xl text-center border-zinc-100 flex flex-col items-center justify-center min-h-[320px]">
+                        <div class="w-24 h-24 bg-zinc-100 rounded-[2rem] flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-500 group-hover:bg-zinc-900 group-hover:text-white">
+                            <i data-lucide="heart" class="w-12 h-12"></i>
+                        </div>
+                        <h3 class="font-black text-xl text-zinc-900">Casamento</h3>
+                        <p class="text-sm text-zinc-500 mt-3 leading-relaxed">Fotografia e vídeo premium para casamentos.</p>
+                    </div>
+
+                    <!-- 15 Anos -->
+                    <div @click="tipoProposta = '15anos'; passo = 2; $nextTick(() => lucide.createIcons())" 
+                         class="group cursor-pointer bg-white border-2 border-transparent hover:border-zinc-900 rounded-[2.5rem] p-8 transition-all shadow-sm hover:shadow-xl text-center border-zinc-100 flex flex-col items-center justify-center min-h-[320px]">
+                        <div class="w-24 h-24 bg-zinc-100 rounded-[2rem] flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-500 group-hover:bg-zinc-900 group-hover:text-white">
+                            <i data-lucide="star" class="w-12 h-12"></i>
+                        </div>
+                        <h3 class="font-black text-xl text-zinc-900">15 Anos</h3>
+                        <p class="text-sm text-zinc-500 mt-3 leading-relaxed">Cobertura completa de festas de debutante.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASSO 2: DADOS DA PROPOSTA (COLUNA PRINCIPAL) -->
+            <div x-show="passo === 2" class="lg:col-span-2 space-y-6 animate-fade-in" style="display: none;">
+                <div class="flex items-center gap-2 mb-2">
+                    <button type="button" @click="passo = 1" class="text-zinc-400 hover:text-zinc-900 transition-colors flex items-center gap-1 text-xs font-bold uppercase tracking-wider">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i> Voltar para escolha de tipo
+                    </button>
+                </div>
                 <section class="card p-6">
                     <h3 class="text-sm font-bold text-zinc-900 mb-4">Informações Básicas</h3>
                     
@@ -105,7 +162,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                             </div>
                             <div class="form-group">
                                 <label class="label">Tipo de Serviço</label>
-                                <select name="tipo" id="tipoProposta" class="input" required x-model="tipoProposta">
+                                <select name="tipo" id="tipoPropostaSelect" class="input" required x-model="tipoProposta">
                                     <option value="marketing">Marketing Digital</option>
                                     <option value="casamento">Casamento</option>
                                     <option value="15anos">15 Anos</option>
@@ -147,7 +204,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                             </div>
                             <div class="form-group">
                                 <label class="label">Tempo de Contrato</label>
-                                <input type="number" name="meses_contrato" class="input" placeholder="Meses" value="12">
+                                <input type="number" name="meses_contrato" class="input" placeholder="Meses" x-model="mesesContrato" @input="recalcularTotal()">
                             </div>
                         </div>
                         <div class="form-group">
@@ -168,7 +225,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         </button>
                     </div>
 
-                    <div class="space-y-3">
+                    <div class="space-y-6">
                         <template x-for="(item, index) in servicosSelecionados" :key="index">
                             <div class="p-4 border border-zinc-100 rounded-xl bg-zinc-50/50 relative group animate-fade-in">
                                 <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
@@ -287,7 +344,8 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                 </section>
             </div>
 
-            <div class="space-y-6">
+            <!-- PASSO 2: SIDEBAR (COLUNA LATERAL) -->
+            <div x-show="passo === 2" class="lg:col-span-1 space-y-6 animate-fade-in" style="display: none;">
                 <section class="card p-6 bg-zinc-900 text-white shadow-xl shadow-zinc-900/20 border-0">
                     <h3 class="text-sm font-bold mb-4 opacity-80">Ações</h3>
                     <button type="submit" id="btnGerar" class="w-full h-12 rounded-xl font-bold bg-white text-black hover:bg-zinc-100 transition-all flex items-center justify-center gap-2 group !text-black">
@@ -307,20 +365,20 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         </div>
                         <p class="text-xs text-zinc-600 mb-4">A proposta já está online. Você pode copiar o link ou visualizar agora.</p>
                         <div class="space-y-2">
-                        <div class="grid grid-cols-1 gap-2">
-                            <a href="#" id="linkVisualizar" target="_blank" class="btn-primary w-full justify-center py-3">
-                                <i data-lucide="external-link" class="w-4 h-4"></i>
-                                Visualizar Proposta
-                            </a>
-                            <button type="button" id="btnWhatsApp" class="w-full py-3 rounded-xl bg-[#25D366] text-white font-bold hover:bg-[#20ba59] transition-all flex items-center justify-center gap-2">
-                                <i class="fab fa-whatsapp text-lg"></i>
-                                Enviar via WhatsApp
-                            </button>
-                            <button type="button" id="btnCopiarLink" class="btn-secondary w-full justify-center gap-2 py-3">
-                                <i data-lucide="copy" class="w-4 h-4"></i>
-                                Copiar Link
-                            </button>
-                        </div>
+                            <div class="grid grid-cols-1 gap-2">
+                                <a href="#" id="linkVisualizar" target="_blank" class="btn-primary w-full justify-center py-3">
+                                    <i data-lucide="external-link" class="w-4 h-4"></i>
+                                    Visualizar Proposta
+                                </a>
+                                <button type="button" id="btnWhatsApp" class="w-full py-3 rounded-xl bg-[#25D366] text-white font-bold hover:bg-[#20ba59] transition-all flex items-center justify-center gap-2">
+                                    <i class="fab fa-whatsapp text-lg"></i>
+                                    Enviar via WhatsApp
+                                </button>
+                                <button type="button" id="btnCopiarLink" class="btn-secondary w-full justify-center gap-2 py-3">
+                                    <i data-lucide="copy" class="w-4 h-4"></i>
+                                    Copiar Link
+                                </button>
+                            </div>
                         </div>
                     </section>
                 </div>
@@ -340,6 +398,7 @@ document.addEventListener('alpine:init', () => {
         descontoTipo: 'porcentagem',
         valorTotal: 0,
         tipoProposta: 'marketing',
+        passo: 1,
         mesesContrato: 12,
         
         init() {
