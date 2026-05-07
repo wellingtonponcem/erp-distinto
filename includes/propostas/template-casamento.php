@@ -351,36 +351,52 @@ if (!function_exists('fmt')) {
     </section>
 
     <!-- PÁGINA 04: PERSPECTIVA -->
-    <section class="slide" style="padding: 0; background: #fff; display: flex; flex-direction: column; overflow: hidden; position: relative;">
+    <section class="slide"
+        style="padding: 0; background: #fff; display: flex; flex-direction: column; overflow: hidden; position: relative;">
         <!-- Topo: Imagem -->
         <div style="width: 100%; aspect-ratio: 343/68; position: relative; overflow: hidden; background: #eee;">
-            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-04.jpg') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-04.jpg') ?>"
+                style="width: 100%; height: 100%; object-fit: cover;">
         </div>
 
         <!-- Base: Textos -->
-        <div style="flex: 1; padding: 8vh 10vw; background: #f4f4f4; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-            <h2 style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 6vh; text-align: center; line-height: 1.1;">
+        <div
+            style="flex: 1; padding: 8vh 10vw; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <h2
+                style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 6vh; text-align: center; line-height: 1.1;">
                 MAIS QUE UM ESTÚDIO,<br>UMA PERSPECTIVA
             </h2>
-            
-            <div style="display: flex; gap: 8vw; width: 100%; max-width: 1100px;">
-                <div style="flex: 1;">
-                    <p style="font-family: var(--wedding-montserrat); font-size: 1rem; line-height: 1.8; color: #555; text-align: justify;">
-                        Não somos apenas um estúdio que aperta botões; somos uma equipe de especialistas focada em comunicação inteligente e em transformar desafios em direção estratégica. 
-                        Não começamos com ideias soltas. Começamos com clareza. Nós analisamos a essência da história de vocês para garantir que a nossa presença seja distinta e posicionada. Nossa meta é uma só: arrepiar, entregando versões da história de vocês sob uma perspectiva que torna o casamento uma experiência totalmente nova.
+
+            <div style="display: flex; gap: 20px; width: 100%; max-width: 1100px;">
+                <div style="flex: 1; background: #d9d9d9; padding: 40px; box-sizing: border-box;">
+                    <p
+                        style="font-family: var(--wedding-montserrat); font-size: 1rem; line-height: 1.8; color: #333; text-align: left;">
+                        Não somos apenas um estúdio que aperta botões; somos uma equipe de especialistas focada em
+                        comunicação inteligente e em transformar desafios em direção estratégica.
+                        Não começamos com ideias soltas. Começamos com clareza. Nós analisamos a essência da história de
+                        vocês para garantir que a nossa presença seja distinta e posicionada. Nossa meta é uma só:
+                        arrepiar, entregando versões da história de vocês sob uma perspectiva que torna o casamento uma
+                        experiência totalmente nova.
                     </p>
                 </div>
-                <div style="flex: 1;">
-                    <p style="font-family: var(--wedding-montserrat); font-size: 1rem; line-height: 1.8; color: #555; text-align: justify;">
-                        Conteúdo com estratégia, não só estética. Acreditamos que a beleza ganha força quando tem propósito. Por isso, nosso olhar vai além do "bonito". Criamos narrativas com intenção e foco no sentir, capturando desde o sussurro do noivo até as lágrimas incontidas, em uma sequência que transporta vocês de volta para o íntimo daquele momento. 
-                        Por que ser um DISTINTO? Porque acreditamos que toda história tem sua beleza e que ela merece ser contada com clareza de posicionamento.
+                <div style="flex: 1; background: #d9d9d9; padding: 40px; box-sizing: border-box;">
+                    <p
+                        style="font-family: var(--wedding-montserrat); font-size: 1rem; line-height: 1.8; color: #333; text-align: left;">
+                        Conteúdo com estratégia, não só estética. Acreditamos que a beleza ganha força quando tem
+                        propósito. Por isso, nosso olhar vai além do "bonito". Criamos narrativas com intenção e foco no
+                        sentir, capturando desde o sussurro do noivo até as lágrimas incontidas, em uma sequência que
+                        transporta vocês de volta para o íntimo daquele momento.
+                        Por que ser um DISTINTO? Porque acreditamos que toda história tem sua beleza e que ela merece
+                        ser contada com clareza de posicionamento.
                     </p>
                 </div>
             </div>
         </div>
 
         <!-- Elemento decorativo lateral (mantendo padrão 100% altura) -->
-        <div style="position: absolute; right: 0; top: 0; width: 50px; height: 100%; background: #959595; z-index: 5; opacity: 0.8;"></div>
+        <div
+            style="position: absolute; right: 0; top: 0; width: 50px; height: 100%; background: #959595; z-index: 5; opacity: 0.8;">
+        </div>
     </section>
 
     <!-- PÁGINA 05: APRESENTAÇÃO DAS PROPOSTAS -->
