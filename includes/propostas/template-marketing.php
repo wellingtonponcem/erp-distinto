@@ -40,7 +40,29 @@
         <div class="page-content" style="grid-column: 2; justify-content: center; padding-left: 2.5rem; height: 100vh; padding-top: 0; padding-bottom: 0;">
             <div class="mission-text" style="color: #fff; font-size: clamp(14px, 0.8rem, 28px); line-height: 1.5; opacity: 0.9;">
                 <h3 style="font-family: var(--font-heading); font-size: clamp(24px, 1.75rem, 56px); font-weight: 800; margin-bottom: 1rem; text-transform: uppercase; color: #fff;">
-                    OLÁ <?= explode(' ', trim($proposta['cliente_nome'] ?? 'CLIENTE'))[0] ?>!
+                    <?php 
+                        $saudacao = 'CLIENTE';
+                        if (!empty($dados['responsavel'])) {
+                            // Tenta dividir por " e ", " E ", ou vírgulas
+                            $nomesBrutos = preg_split('/(?:\s+[eE]\s+|,\s*)/', $dados['responsavel']);
+                            $primeirosNomes = array_map(function($n) {
+                                return explode(' ', trim($n))[0];
+                            }, array_filter($nomesBrutos));
+                            
+                            $total = count($primeirosNomes);
+                            if ($total === 1) {
+                                $saudacao = $primeirosNomes[0];
+                            } elseif ($total === 2) {
+                                $saudacao = $primeirosNomes[0] . ' e ' . $primeirosNomes[1];
+                            } elseif ($total > 2) {
+                                $ultimo = array_pop($primeirosNomes);
+                                $saudacao = implode(', ', $primeirosNomes) . ' e ' . $ultimo;
+                            }
+                        } else {
+                            $saudacao = explode(' ', trim($proposta['cliente_nome'] ?? 'CLIENTE'))[0];
+                        }
+                        echo "OLÁ " . mb_strtoupper($saudacao) . "!";
+                    ?>
                 </h3>
                 <p style="font-weight: 700; margin-bottom: 1.25rem;">Seja bem-vindo à Poncem Studio | Distinto.</p>
                 <p style="margin-bottom: 0.9375rem;">Aqui, não somos apenas uma agência. Somos estrategistas que transformam negócios em marcas fortes, relevantes e altamente lucrativas.</p>

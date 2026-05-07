@@ -72,9 +72,10 @@ if (!empty($d['servicos']) && is_array($d['servicos'])) {
     foreach ($d['servicos'] as $item) {
         if (empty($item['id'])) continue;
         
-        $stmtS = $db->prepare("SELECT nome, descricao FROM servicos WHERE id = ?");
+        $stmtS = $db->prepare("SELECT id, nome, descricao FROM servicos WHERE id = ?");
         $stmtS->execute([$item['id']]);
         if ($s = $stmtS->fetch()) {
+            $s['id'] = $item['id']; // Garante que o ID seja salvo no JSON
             $s['valor_individual'] = (float)($item['valor'] ?? 0);
             $servicosInclusos[] = $s;
         }

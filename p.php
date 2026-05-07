@@ -73,7 +73,7 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
         </div>
         <div class="frame-item">
             <div class="frame-top"><?= $mesNome ?></div>
-            <div class="frame-bottom">CLIENTE: <?= $cliente ?></div>
+            <div class="frame-bottom"><?= $cliente ?><?php if (!empty($dados['responsavel'])) echo " | " . $dados['responsavel']; ?></div>
         </div>
         <div class="frame-item">
             <div class="frame-top"><?= $ano ?></div>

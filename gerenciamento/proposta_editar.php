@@ -86,8 +86,12 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="form-group">
+                                <label class="label">Responsável(is)</label>
+                                <input type="text" name="responsavel" class="input" x-model="responsavel" placeholder="Ex: João Silva ou João e Maria">
+                            </div>
+                            <div class="form-group">
                                 <label class="label">WhatsApp do Cliente</label>
-                                <input type="text" name="whatsapp" class="input" value="<?= sanitizar($dadosJson['whatsapp'] ?? '') ?>" placeholder="Ex: 27999998888">
+                                <input type="text" name="whatsapp" class="input" x-model="whatsapp" placeholder="Ex: 27999998888">
                             </div>
                             <div class="form-group">
                                 <label class="label">Tipo de Serviço</label>
@@ -272,6 +276,8 @@ document.addEventListener('alpine:init', () => {
         formaPagamento: 'boleto_pix',
         statusProposta: '<?= $proposta['status'] ?>',
         dataInicio: '',
+        responsavel: '',
+        whatsapp: '',
         adicional: { titulo: '', valor: 0, descricao: '' },
         secoes: {},
 
@@ -279,10 +285,26 @@ document.addEventListener('alpine:init', () => {
             // Carregar dados existentes
             const dados = <?= json_encode($dadosJson) ?>;
             this.secoes = dados.secoes || {};
-            this.servicosSelecionados = dados.servicos ? dados.servicos.map(s => ({ 
-                id: this.catalogoServicos.find(c => c.nome === s.nome)?.id || '', 
-                valor: s.valor_individual 
-            })) : [];
+            this.responsavel = dados.responsavel || '';
+            this.whatsapp = dados.whatsapp || '';
+            this.servicosSelecionados = dados.servicos ? dados.servicos.map(s => {
+                // Tenta encontrar pelo ID primeiro (para propostas novas)
+                let servicoEncontrado = null;
+                if (s.id) {
+                    servicoEncontrado = this.catalogoServicos.find(c => c.id == s.id);
+                }
+                
+                // Fallback: Tenta encontrar pelo nome (para propostas antigas)
+                if (!servicoEncontrado && s.nome) {
+                    const nomeBusca = s.nome.trim().toLowerCase();
+                    servicoEncontrado = this.catalogoServicos.find(c => c.nome.trim().toLowerCase() === nomeBusca);
+                }
+
+                return { 
+                    id: servicoEncontrado ? servicoEncontrado.id : '', 
+                    valor: parseFloat(s.valor_individual || 0)
+                };
+            }) : [];
             this.mesesContrato = dados.meses_contrato || 12;
             this.formaPagamento = dados.forma_pagamento || 'boleto_pix';
             this.dataInicio = dados.data_inicio || '';
