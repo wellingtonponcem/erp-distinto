@@ -630,62 +630,53 @@ body.on-dark .fixed-section-title h2 {
         display: none !important;
     }
 
-    body {
+    @page {
+        margin: 0;
+    }
+
+    body.exporting-pdf {
         background: #fff !important;
         overflow: visible !important;
+        width: 100% !important;
+        height: auto !important;
     }
 
     .proposal-wrapper {
         height: auto !important;
         overflow: visible !important;
         scroll-snap-type: none !important;
+        display: block !important;
     }
 
     .proposal-page {
+        width: 100% !important;
         height: 100vh !important;
         page-break-after: always !important;
         break-after: page !important;
-        box-shadow: none !important;
         margin: 0 !important;
-        position: relative !important;
-        overflow: hidden !important;
+        padding: 0 6vw !important; /* Mantém o grid lateral */
         display: grid !important;
+        grid-template-columns: 40% 40% 20% !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+        border: none !important;
+        border-radius: 0 !important;
     }
 
-    /* Moldura Mac M1 Simulation */
-    .export-horizontal .proposal-page {
-        border: 40px solid #000 !important; /* Bezel */
-        border-bottom-width: 60px !important; /* Chin */
-        border-radius: 40px !important;
-        box-sizing: border-box !important;
+    /* Ajuste de conteúdo para caber na página impressa */
+    .page-content {
+        opacity: 1 !important;
+        transform: none !important;
+        padding: 10vh 0 !important;
     }
 
-    .export-horizontal .proposal-page::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 150px;
-        height: 30px;
-        background: #000;
-        border-radius: 0 0 15px 15px;
-        z-index: 1000;
+    /* Gradientes no PDF */
+    .side-gradient-container {
+        display: block !important;
     }
-
-    /* Forçar Proporções no PDF */
-    @page {
-        margin: 0;
-    }
-
-    .export-horizontal {
-        size: landscape;
-    }
-
-    .export-vertical {
-        size: portrait;
+    
+    .abstract-gradient {
+        opacity: 0.6 !important; /* Suaviza para impressão */
     }
 }
 

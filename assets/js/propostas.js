@@ -91,17 +91,24 @@ window.hideExportModal = function() {
 window.exportPDF = function(orientation) {
     window.hideExportModal();
     
-    // Adiciona classe de orientação para o CSS handle
-    document.body.classList.remove('export-horizontal', 'export-vertical');
+    // 1. Cria um estilo dinâmico para forçar a orientação no @page
+    const style = document.createElement('style');
+    style.id = 'dynamic-print-style';
+    style.innerHTML = `@page { size: ${orientation === 'horizontal' ? 'landscape' : 'portrait'}; margin: 0; }`;
+    document.head.appendChild(style);
+
+    // 2. Adiciona classe de estado
     document.body.classList.add('exporting-pdf', orientation === 'horizontal' ? 'export-horizontal' : 'export-vertical');
     
     // Pequeno delay para o CSS renderizar antes do print
     setTimeout(() => {
         window.print();
         
-        // Remove as classes após o print (ou cancelamento)
+        // Remove as classes e o estilo após o print
         setTimeout(() => {
             document.body.classList.remove('exporting-pdf', 'export-horizontal', 'export-vertical');
+            const dynamicStyle = document.getElementById('dynamic-print-style');
+            if (dynamicStyle) dynamicStyle.remove();
         }, 1000);
     }, 300);
 };
