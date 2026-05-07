@@ -166,15 +166,41 @@ if (!function_exists('fmt')) {
     </section>
 
     <!-- PÁGINA 02: BOAS-VINDAS -->
-    <section class="slide center">
-        <div class="content-overlay">
-            <h3 class="uppercase text-gold"><?= $saudacaoCasal ?></h3>
-            <h2 class="text-serif mt-4">Bem-vindos ao início da memória de vocês.</h2>
-            <div class="line line-center"></div>
-            <p style="max-width: 700px;">
-                Na Distinto, entendemos que o nosso papel vai muito além de apertar um botão: 
-                nossa missão é registrar histórias de amor com autenticidade e emoção.
-            </p>
+    <section class="slide" style="padding: 0; background: #fff; overflow: hidden;">
+        <div class="grid grid-cols-1 md:grid-cols-2 h-full w-full">
+            <!-- Coluna Esquerda: Imagem -->
+            <div style="background: #f0f0f0; display: flex; align-items: center; justify-content: flex-end; padding-right: 5vw; position: relative;">
+                <!-- Retângulo decorativo cinza -->
+                <div style="position: absolute; left: 0; top: 10%; width: 50px; height: 80%; background: #dcdcdc; z-index: 1;"></div>
+                
+                <div style="width: 80%; aspect-ratio: 1/1; position: relative; z-index: 2; box-shadow: 30px 30px 0px rgba(0,0,0,0.03);">
+                    <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-02.jpg') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+            </div>
+
+            <!-- Coluna Direita: Conteúdo -->
+            <div style="padding: 15vh 6vw; display: flex; flex-direction: column; justify-content: center; position: relative;">
+                <h2 style="font-family: var(--wedding-montserrat); font-size: 4.5rem; font-weight: 300; line-height: 1.1; margin-bottom: 40px; color: #1a1a1a; text-transform: uppercase; letter-spacing: -1px;">
+                    BEM-VINDOS<br>AO INÍCIO DA<br>MEMÓRIA DE<br>VOCÊS
+                </h2>
+                
+                <div style="max-width: 480px;">
+                    <p style="font-family: var(--wedding-montserrat); font-size: 1.2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 10px;">
+                        <?= $saudacaoCasal ?>
+                    </p>
+                    <p style="font-family: var(--wedding-montserrat); font-size: 1.1rem; line-height: 1.8; color: #444; font-weight: 400;">
+                        Na Distinto, entendemos que o nosso papel vai muito além de apertar um botão: nossa missão é registrar histórias de amor com autenticidade e emoção.
+                    </p>
+                </div>
+
+                <!-- Logo Distinto no canto inferior direito -->
+                <div style="position: absolute; bottom: 8vh; right: 6vw; width: 120px;">
+                    <img src="<?= raizUrl('/assets/distinto_logo.svg') ?>" style="width: 100%; filter: brightness(0); opacity: 0.8;">
+                </div>
+
+                <!-- Elemento decorativo topo direito -->
+                <div style="position: absolute; top: 10vh; right: 0; width: 40px; height: 30px; background: #dcdcdc;"></div>
+            </div>
         </div>
     </section>
 
