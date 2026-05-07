@@ -405,7 +405,7 @@
     <!-- Slide 11: Investimento Detalhado -->
     <section class="proposal-page">
         <!-- Coluna 1: Título e Validade -->
-        <div class="page-content" style="grid-column: 1; flex-direction: column; justify-content: space-between; padding-bottom: 60px;">
+        <div class="page-content" style="grid-column: 1; flex-direction: column; justify-content: space-between; padding-bottom: 120px;">
             <div style="margin-top: auto; margin-bottom: auto;">
                 <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 90%;">
                     QUAL SERÁ O INVESTIMENTO PARA ESTE PROJETO
@@ -429,7 +429,7 @@
         </div>
 
         <!-- Coluna 2: Detalhamento -->
-        <div class="page-content" style="grid-column: 2; flex-direction: column; align-items: center; padding-top: 40px; overflow-y: auto; max-height: 85vh; scrollbar-width: none;">
+        <div class="page-content" style="grid-column: 2; flex-direction: column; align-items: center; justify-content: center; overflow-y: auto; max-height: 85vh; scrollbar-width: none;">
             <?php
                 $mesesContrato = $dados['meses_contrato'] ?? 12;
                 $valorMensal = $proposta['valor_total'] / ($mesesContrato > 0 ? $mesesContrato : 1);
@@ -522,7 +522,7 @@
         </div>
 
         <!-- Coluna 2: Detalhes do Pagamento -->
-        <div class="page-content" style="grid-column: 2; flex-direction: column; align-items: flex-start; padding-top: 100px;">
+        <div class="page-content" style="grid-column: 2; flex-direction: column; align-items: flex-start; justify-content: center;">
             <div style="padding: 8px 40px; border-radius: 50px; background: #333; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 40px;">
                 FORMA DE PAGAMENTO
             </div>
