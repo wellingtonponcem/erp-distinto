@@ -43,8 +43,8 @@
                     <?php 
                         $saudacao = 'CLIENTE';
                         if (!empty($dados['responsavel'])) {
-                            // Tenta dividir por " e ", " E ", ou vírgulas
-                            $nomesBrutos = preg_split('/(?:\s+[eE]\s+|,\s*)/', $dados['responsavel']);
+                            // Regex robusto para separar por ' e ', ' E ', vírgula ou ponto e vírgula
+                            $nomesBrutos = preg_split('/(?:\s+[eE]\s+|[,;]\s*)/', $dados['responsavel']);
                             $primeirosNomes = array_map(function($n) {
                                 return explode(' ', trim($n))[0];
                             }, array_filter($nomesBrutos));

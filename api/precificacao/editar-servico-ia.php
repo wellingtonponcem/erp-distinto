@@ -27,30 +27,36 @@ if (!$apiKey) {
 }
 
 $systemPrompt = <<<PROMPT
-Você é um especialista em estruturação de serviços para agências de marketing digital e produção audiovisual.
-Seu objetivo é conversar com o usuário para REVER e MELHORAR os detalhes de um serviço.
+Você é um especialista em estruturação de serviços para agências de marketing digital e produção audiovisual premium.
+Seu objetivo é conversar com o usuário para REVER, MELHORAR e PRECIFICAR os detalhes de um serviço.
 
 DADOS ATUAIS DO SERVIÇO:
 - Nome: {$s['nome']}
 - Descrição: {$s['descricao']}
 - Entregáveis: {$s['entregaveis']}
+- Preço Recorrente Atual: {$s['preco_venda']}
+- Preço Pontual Atual: {$s['preco_venda_pontual']}
 
-REGRAS CRÍTICAS PARA OS CAMPOS:
+REGRAS CRÍTICAS DE NEGÓCIO:
 1. O NOME do serviço deve ser sempre em MAIÚSCULAS, SIMPLES e DIRETO.
-2. A DESCRIÇÃO deve ser profissional e focada em valor.
-3. Os ENTREGÁVEIS devem ser listados de forma clara.
+2. PRECIFICAÇÃO ESTRATÉGICA:
+   - Serviços PONTUAIS (projetos únicos) devem ser 30% a 60% MAIS CAROS que o valor recorrente proporcional.
+   - Sempre sugira valores que garantam uma margem saudável baseada na complexidade descrita.
+3. A DESCRIÇÃO deve ser profissional e focada em valor.
 
-FORMATO DE RESPOSTA:
+FORMATO DE RESPOSTA (JSON):
 Você deve retornar SEMPRE um objeto JSON contendo:
 {
-  "mensagem": "Sua resposta textual para o usuário no chat",
+  "mensagem": "Sua resposta textual para o usuário no chat (consultiva e elegante)",
   "servico_atualizado": {
     "nome": "NOME EM MAIUSCULO",
     "descricao": "Texto profissional",
-    "entregaveis": "Item 1, Item 2..."
+    "entregaveis": "Item 1, Item 2...",
+    "preco_venda": 1500.00,
+    "preco_venda_pontual": 2250.00,
+    "markup": 40
   }
 }
-Se o usuário pedir apenas uma alteração simples, atualize o campo correspondente no objeto e responda no campo 'mensagem'.
 PROMPT;
 
 $historicoModel = [['role' => 'system', 'content' => $systemPrompt]];
@@ -99,5 +105,8 @@ responderJson([
     'mensagem' => $resultado['mensagem'] ?? 'Serviço atualizado.',
     'nome' => strtoupper($resultado['servico_atualizado']['nome']),
     'descricao' => $resultado['servico_atualizado']['descricao'] ?? '',
-    'entregaveis' => $resultado['servico_atualizado']['entregaveis'] ?? ''
+    'entregaveis' => $resultado['servico_atualizado']['entregaveis'] ?? '',
+    'preco_venda' => $resultado['servico_atualizado']['preco_venda'] ?? $s['preco_venda'],
+    'preco_venda_pontual' => $resultado['servico_atualizado']['preco_venda_pontual'] ?? $s['preco_venda_pontual'],
+    'markup' => $resultado['servico_atualizado']['markup'] ?? $s['markup']
 ]);

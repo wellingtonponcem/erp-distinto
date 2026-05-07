@@ -61,8 +61,8 @@ include __DIR__ . '/../includes/layout/head.php';
             <template x-for="s in lista" :key="s.id">
                     <div class="table-row" style="display:grid; grid-template-columns:2fr 80px 1fr 1fr 1fr 80px 100px; align-items:center;">
                         <div class="table-cell">
-                            <div style="color:#e2e8f0; font-weight:500;" x-text="s.nome"></div>
-                            <div style="color:#6b7280; font-size:12px; max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" x-text="s.descricao || '—'"></div>
+                            <div style="color:#f1f5f9; font-weight:800; font-size:13px; text-transform:uppercase; letter-spacing:0.5px; line-height:1.2;" x-text="s.nome || 'SEM NOME'"></div>
+                            <div style="color:#64748b; font-size:11px; margin-top:4px; max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" :title="s.descricao" x-text="s.descricao || ''"></div>
                         </div>
                         <div class="table-cell" style="color:#94a3b8;" x-text="s.horas_estimadas + 'h'"></div>
                         <div class="table-cell" style="color:#94a3b8;" x-text="formatarMoeda(calcularPrecoMinimo(s))"></div>
@@ -312,14 +312,21 @@ include __DIR__ . '/../includes/layout/head.php';
         top: 0;
         bottom: 0;
         width: 380px;
-        background: #111111;
-        border-left: 1px solid rgba(255,255,255,0.05);
+        background: #0f172a; /* Azul muito escuro e sólido para bloquear o fundo */
+        border-left: 1px solid rgba(255,255,255,0.1);
         z-index: 10001;
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+        box-shadow: -15px 0 40px rgba(0,0,0,0.7);
+        display: flex;
+        flex-direction: column;
     }
     .chat-ai-panel.active {
         right: 0;
+    }
+    /* Impedir que as linhas do HUD ou outros elementos apareçam dentro do painel */
+    .chat-ai-panel * {
+        position: relative;
+        z-index: 2;
     }
     .dot-loading {
         width: 6px;
@@ -473,6 +480,11 @@ function servicos() {
                     this.form.nome = res.nome;
                     this.form.descricao = res.descricao;
                     this.form.entregaveis = res.entregaveis;
+                    
+                    // Atualizar preços e markup sugeridos se retornados
+                    if (res.preco_venda) this.form.preco_venda = res.preco_venda;
+                    if (res.preco_venda_pontual) this.form.preco_venda_pontual = res.preco_venda_pontual;
+                    if (res.markup) this.form.markup = res.markup;
                     
                     this.$nextTick(() => {
                         const body = document.getElementById('chat-body');

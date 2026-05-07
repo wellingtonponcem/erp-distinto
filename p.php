@@ -78,13 +78,13 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
                 <?php 
                     $textoResponsavel = '';
                     if (!empty($dados['responsavel'])) {
-                        // Divide por " e ", " E ", "," ou ";"
+                        // Regex robusto para separar por ' e ', ' E ', vírgula ou ponto e vírgula
                         $partesBrutas = preg_split('/(?:\s+[eE]\s+|[,;]\s*)/', $dados['responsavel']);
                         $nomesFinais = [];
                         foreach ($partesBrutas as $p) {
                             $p = trim($p);
                             if (!$p) continue;
-                            // Pega apenas o primeiro nome (primeira palavra)
+                            // Pega apenas o primeiro nome
                             $palavras = explode(' ', $p);
                             $nomesFinais[] = $palavras[0];
                         }
@@ -99,7 +99,7 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
                             $textoResponsavel = implode(', ', $nomesFinais) . ' e ' . $ultimo;
                         }
                     }
-                    echo $cliente . ($textoResponsavel ? " | " . $textoResponsavel : "");
+                    echo mb_strtoupper($cliente) . ($textoResponsavel ? " | " . mb_strtoupper($textoResponsavel) : "");
                 ?>
             </div>
         </div>
