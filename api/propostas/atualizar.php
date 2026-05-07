@@ -57,10 +57,11 @@ if (!empty($d['servicos']) && is_array($d['servicos'])) {
         $stmtS = $db->prepare("SELECT id, nome, descricao FROM servicos WHERE id = ?");
         $stmtS->execute([$item['id']]);
         if ($s = $stmtS->fetch()) {
-            $s['id'] = $item['id']; // Garante que o ID seja salvo no JSON
+            $s['id']              = $item['id'];
             $s['valor_individual'] = (float)($item['valor'] ?? 0);
-            $s['tipo_cobranca'] = $item['tipo_cobranca'] ?? 'recorrente';
-            $s['frequencia'] = $item['frequencia'] ?? '';
+            $s['valor_mensal']    = (float)($item['valor_mensal'] ?? $item['valor'] ?? 0);
+            $s['tipo_cobranca']   = $item['tipo_cobranca'] ?? 'recorrente';
+            $s['frequencia']      = $item['frequencia'] ?? '';
             $servicosInclusos[] = $s;
         }
     }

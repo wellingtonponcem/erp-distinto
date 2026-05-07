@@ -217,6 +217,8 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                                     <div class="md:col-span-2">
                                         <label class="text-[10px] font-bold text-zinc-500 uppercase mb-1 block" x-text="item.tipo_cobranca === 'pontual' ? 'Valor Único' : 'Valor Mensal'"></label>
                                         <input type="number" step="0.01" :name="'servicos['+index+'][valor]'" class="input py-2 font-bold" x-model="item.valor" @input="recalcularTotal()">
+                                        <!-- valor_mensal calculado (enviado oculto para a API) -->
+                                        <input type="hidden" :name="'servicos['+index+'][valor_mensal]'" :value="item.valor_mensal">
                                     </div>
 
                                     <!-- Botão Remover -->

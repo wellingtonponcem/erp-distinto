@@ -473,10 +473,12 @@
                 // valor_total = total do contrato; dividimos pelos meses para exibir o valor mensal
                 $valorMensal = round($proposta['valor_total'] / $mesesContrato, 2);
 
-                // Calcular subtotal original (soma dos valor_individual dos serviços)
+                // Subtotal original = soma dos valor_mensal calculados de cada serviço
                 $subtotalMensal = 0;
                 foreach ($dados['servicos'] ?? [] as $sv) {
-                    $subtotalMensal += (float)($sv['valor_individual'] ?? 0);
+                    // valor_mensal = contribuição mensal real (considera frequência e tipo de cobrança)
+                    // fallback para valor_individual se valor_mensal não foi salvo ainda
+                    $subtotalMensal += (float)($sv['valor_mensal'] ?? $sv['valor_individual'] ?? 0);
                 }
 
                 // Percentual de desconto global
@@ -525,7 +527,7 @@
                             <?php endif; ?>
                         </div>
                         <div style="font-size: 13px; font-weight: 700; color: #000; margin-bottom: 0.9375rem; display: flex; align-items: center; gap: 8px;">
-                            <?= formatarMoeda($servico['valor_individual'] ?? 0) ?> - Inclui:
+                            <?= formatarMoeda($servico['valor_mensal'] ?? $servico['valor_individual'] ?? 0) ?> - Inclui:
                             <?php if ($percentDesconto > 0): ?>
                                 <span style="font-size: 10px; font-weight: 700; color: #fff; background: #222; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.5px;">
                                     desconto de <?= number_format($percentDesconto, 0, ',', '.') ?>%
