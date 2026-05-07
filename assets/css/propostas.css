@@ -62,7 +62,7 @@ body {
     padding: 15vh 0;
     /* Padding vertical apenas, horizontal vem do grid */
     position: relative;
-    z-index: 2;
+    z-index: 101;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
