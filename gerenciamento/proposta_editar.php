@@ -315,10 +315,16 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         <label class="label mb-3 block">Etapas Visíveis no Cronograma</label>
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
                             <template x-for="etapa in etapasDisponiveis" :key="etapa.id">
-                                <label class="flex items-center gap-3 p-3 border border-zinc-100 rounded-xl cursor-pointer hover:bg-zinc-50 transition-all" :class="etapasAtivas.includes(etapa.id) ? 'bg-emerald-50/50 border-emerald-100' : ''">
-                                    <input type="checkbox" name="etapas_ativas[]" :value="etapa.id" x-model="etapasAtivas" class="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900">
-                                    <span class="text-xs font-semibold text-zinc-700" x-text="etapa.label"></span>
-                                </label>
+                                <div class="flex flex-col gap-2 p-3 border border-zinc-100 rounded-xl transition-all" :class="etapasAtivas.includes(etapa.id) ? 'bg-emerald-50/50 border-emerald-100' : ''">
+                                    <label class="flex items-center gap-3 cursor-pointer">
+                                        <input type="checkbox" name="etapas_ativas[]" :value="etapa.id" x-model="etapasAtivas" class="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900">
+                                        <span class="text-xs font-semibold text-zinc-700" x-text="etapa.label"></span>
+                                    </label>
+                                    <div x-show="etapasAtivas.includes(etapa.id)" class="flex items-center gap-2 mt-1 animate-fade-in">
+                                        <span class="text-[10px] text-zinc-400 uppercase font-bold">Duração (dias):</span>
+                                        <input type="number" :name="'etapas_dias['+etapa.id+']'" x-model="etapasDias[etapa.id]" class="input py-1 px-2 text-xs w-16" min="0">
+                                    </div>
+                                </div>
                             </template>
                         </div>
                         <p class="text-[10px] text-zinc-400 mt-3 italic">* Desmarque as etapas que o cliente já possui ou que não fazem parte deste escopo.</p>
@@ -385,6 +391,7 @@ document.addEventListener('alpine:init', () => {
         whatsapp: '',
         adicional: { titulo: '', valor: 0, descricao: '' },
         fasesCronograma: [],
+        etapasDias: {},
         secoes: {},
         etapasDisponiveis: [
             { id: 'imersao', label: 'Imersão' },
@@ -438,6 +445,16 @@ document.addEventListener('alpine:init', () => {
             } else {
                 this.etapasAtivas = this.etapasDisponiveis.map(e => e.id);
             }
+
+            // Carregar durações das etapas (etapas_dias)
+            this.etapasDias = dados.etapas_dias || {
+                imersao: 5,
+                diagnostico: 7,
+                planejamento: 14,
+                linguagem_visual: 7,
+                entrega: 2,
+                gestao: 0
+            };
 
             // Força o Alpine a processar os dados e depois recalcula
             this.$nextTick(() => {

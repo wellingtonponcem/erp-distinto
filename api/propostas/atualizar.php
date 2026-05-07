@@ -106,7 +106,8 @@ $dadosJson = json_encode([
     'responsavel' => $d['responsavel'] ?? ($dadosAntigos['responsavel'] ?? ''),
     'whatsapp' => $d['whatsapp'] ?? ($dadosAntigos['whatsapp'] ?? ''),
     'is_plural' => $dadosAntigos['is_plural'] ?? false,
-    'etapas_ativas' => $d['etapas_ativas'] ?? ($dadosAntigos['etapas_ativas'] ?? [])
+    'etapas_ativas' => $d['etapas_ativas'] ?? ($dadosAntigos['etapas_ativas'] ?? []),
+    'etapas_dias' => $d['etapas_dias'] ?? ($dadosAntigos['etapas_dias'] ?? [])
 ], JSON_UNESCAPED_UNICODE);
 
 // 4. Atualizar no Banco

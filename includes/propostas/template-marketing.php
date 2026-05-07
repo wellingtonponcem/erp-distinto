@@ -107,7 +107,62 @@
     
     <?php 
     // Lógica de visibilidade das etapas
+    // Lógica de visibilidade e cronograma das etapas
     $etapasAtivas = $dados['etapas_ativas'] ?? ['imersao', 'diagnostico', 'planejamento', 'linguagem_visual', 'entrega', 'gestao'];
+    $etapasDias = $dados['etapas_dias'] ?? [
+        'imersao' => 14,
+        'diagnostico' => 7,
+        'planejamento' => 28,
+        'linguagem_visual' => 14,
+        'entrega' => 7,
+        'gestao' => 0
+    ];
+
+    if (!function_exists('semanaOrdinal')) {
+        function semanaOrdinal($n) {
+            $ordinais = [
+                1 => 'PRIMEIRA', 2 => 'SEGUNDA', 3 => 'TERCEIRA', 4 => 'QUARTA', 5 => 'QUINTA',
+                6 => 'SEXTA', 7 => 'SÉTIMA', 8 => 'OITAVA', 9 => 'NONA', 10 => 'DÉCIMA',
+                11 => 'DÉCIMA PRIMEIRA', 12 => 'DÉCIMA SEGUNDA', 13 => 'DÉCIMA TERCEIRA', 14 => 'DÉCIMA QUARTA', 15 => 'DÉCIMA QUINTA'
+            ];
+            return $ordinais[$n] ?? "{$n}ª";
+        }
+    }
+
+    $cronogramaEtapas = [];
+    $diaAtual = 0;
+    $etapasPossiveis = ['imersao', 'diagnostico', 'planejamento', 'linguagem_visual', 'entrega', 'gestao'];
+
+    foreach ($etapasPossiveis as $eid) {
+        if (in_array($eid, $etapasAtivas)) {
+            $dias = (int)($etapasDias[$eid] ?? 0);
+            
+            if ($eid === 'gestao') {
+                $semanaInicio = ceil(($diaAtual + 1) / 7);
+                $texto = "A PARTIR DA " . semanaOrdinal($semanaInicio) . " SEMANA";
+            } else {
+                $diaInicio = $diaAtual + 1;
+                $diaFim = $diaAtual + $dias;
+                
+                $semanaInicio = max(1, ceil($diaInicio / 7));
+                $semanaFim = max(1, ceil($diaFim / 7));
+                
+                if ($semanaInicio == $semanaFim) {
+                    $texto = semanaOrdinal($semanaInicio) . " SEMANA";
+                } elseif ($semanaFim == $semanaInicio + 1) {
+                    $texto = semanaOrdinal($semanaInicio) . " E " . semanaOrdinal($semanaFim) . " SEMANA";
+                } else {
+                    $texto = semanaOrdinal($semanaInicio) . " À " . semanaOrdinal($semanaFim) . " SEMANA";
+                }
+                
+                if ($eid === 'imersao') {
+                    $texto .= "<br>E PONTUALMENTE DURANTE O PROCESSO";
+                }
+                $diaAtual += $dias;
+            }
+            $cronogramaEtapas[$eid] = $texto;
+        }
+    }
     ?>
 
     <!-- Slide 4: Etapas do Projeto -->
@@ -146,7 +201,7 @@
                 
                 <!-- Cápsula de Tempo -->
                 <div style="padding: 15px 25px; border-radius: 3.125rem; border: 1px solid rgba(0,0,0,0.3); font-size: 11px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.3; color: #000; letter-spacing: 0.5px; width: fit-content; margin-top: 1.5rem;">
-                    PRIMEIRA E SEGUNDA SEMANA<br>E PONTUALMENTE DURANTE O PROCESSO
+                    <?= $cronogramaEtapas['imersao'] ?? 'PRIMEIRA SEMANA' ?>
                 </div>
             </div>
         </div>
@@ -194,7 +249,7 @@
                 
                 <!-- Cápsula de Tempo -->
                 <div style="padding: 15px 25px; border-radius: 3.125rem; border: 1px solid rgba(0,0,0,0.3); font-size: 11px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.3; color: #000; letter-spacing: 0.5px; width: fit-content; margin: 0 auto;">
-                    TERCEIRA SEMANA
+                    <?= $cronogramaEtapas['diagnostico'] ?? 'TERCEIRA SEMANA' ?>
                 </div>
             </div>
         </div>
@@ -254,7 +309,7 @@
                 
                 <!-- Cápsula de Tempo -->
                 <div style="margin-top: 25px; padding: 12px 20px; border-radius: 3.125rem; border: 1px solid rgba(0,0,0,0.3); font-size: 10px; font-weight: 700; text-transform: uppercase; text-align: center; color: #000; letter-spacing: 0.5px; width: fit-content;">
-                    QUARTA À SÉTIMA SEMANA
+                    <?= $cronogramaEtapas['planejamento'] ?? 'QUARTA À SÉTIMA SEMANA' ?>
                 </div>
             </div>
         </div>
@@ -305,7 +360,7 @@
                 
                 <!-- Cápsula de Tempo -->
                 <div style="padding: 15px 25px; border-radius: 3.125rem; border: 1px solid rgba(0,0,0,0.3); font-size: 11px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.3; color: #000; letter-spacing: 0.5px; width: fit-content; margin-top: 1.5rem;">
-                    QUARTA À QUINTA SEMANA
+                    <?= $cronogramaEtapas['linguagem_visual'] ?? 'QUARTA À QUINTA SEMANA' ?>
                 </div>
             </div>
         </div>
@@ -348,7 +403,7 @@
                 
                 <!-- Cápsula de Tempo -->
                 <div style="padding: 15px 25px; border-radius: 3.125rem; border: 1px solid rgba(0,0,0,0.3); font-size: 11px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.3; color: #000; letter-spacing: 0.5px; width: fit-content; margin-top: 1.5rem;">
-                    DÉCIMA PRIMEIRA SEMANA
+                    <?= $cronogramaEtapas['entrega'] ?? 'DÉCIMA PRIMEIRA SEMANA' ?>
                 </div>
             </div>
         </div>
@@ -394,7 +449,7 @@
                 
                 <!-- Cápsula de Tempo -->
                 <div style="padding: 15px 25px; border-radius: 3.125rem; border: 1px solid rgba(0,0,0,0.3); font-size: 11px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.3; color: #000; letter-spacing: 0.5px; width: fit-content; margin-top: 1.5rem;">
-                    A PARTIR DA DÉCIMA SEGUNDA SEMANA
+                    <?= $cronogramaEtapas['gestao'] ?? 'A PARTIR DA DÉCIMA SEGUNDA SEMANA' ?>
                 </div>
             </div>
         </div>
