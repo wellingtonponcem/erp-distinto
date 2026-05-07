@@ -429,7 +429,8 @@
         </div>
 
         <!-- Coluna 2: Detalhamento -->
-        <div class="page-content" style="grid-column: 2; flex-direction: column; align-items: center; justify-content: center; overflow-y: auto; max-height: 85vh; scrollbar-width: none;">
+        <div class="page-content" style="grid-column: 2; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 0;">
+            <div style="width: 100%; max-height: 85vh; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; align-items: center; padding: 40px 0;">
             <?php
                 $mesesContrato = $dados['meses_contrato'] ?? 12;
                 $valorMensal = $proposta['valor_total'] / ($mesesContrato > 0 ? $mesesContrato : 1);
@@ -522,7 +523,8 @@
         </div>
 
         <!-- Coluna 2: Detalhes do Pagamento -->
-        <div class="page-content" style="grid-column: 2; flex-direction: column; align-items: flex-start; justify-content: center;">
+        <div class="page-content" style="grid-column: 2; flex-direction: column; align-items: flex-start; justify-content: center; height: 100vh; padding: 0;">
+            <div style="width: 100%; padding: 40px 0;">
             <div style="padding: 8px 40px; border-radius: 50px; background: #333; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 40px;">
                 FORMA DE PAGAMENTO
             </div>
@@ -546,6 +548,7 @@
                 <p style="font-size: 12px; color: #666; line-height: 1.6;">
                     O valor referente ao investimento em mídia (anúncios) é de responsabilidade do cliente, sendo pago diretamente à plataforma de anúncios (Meta/Facebook Ads), via boleto bancário ou cartão de crédito cadastrado na conta de anúncios.
                 </p>
+            </div>
             </div>
         </div>
     </section>
