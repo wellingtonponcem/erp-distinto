@@ -18,7 +18,15 @@ $memoriaAtual = $config['memoria_ia'] ?? "";
 
 $historicoStr = "";
 foreach($mensagens as $m) {
+    if ($m['role'] === 'system') continue;
     $historicoStr .= "{$m['role']}: {$m['content']}\n";
+}
+
+// Responder imediatamente para a UI não travar
+if (function_exists('fastcgi_finish_request')) {
+    echo json_encode(['ok' => true, 'mensagem' => 'Otimização de memória iniciada em segundo plano']);
+    session_write_close();
+    fastcgi_finish_request();
 }
 
 $prompt = <<<PROMPT
@@ -26,12 +34,12 @@ Você é um estrategista de dados e extrator de fatos operacionais.
 Abaixo está uma conversa entre um consultor e um dono de agência, além da memória atual de fatos.
 
 SUA TAREFA:
-1. Extrair FATOS PERMANENTES (equipamentos, diárias, processos, parceiros) da conversa recente.
-2. Atualizar a MEMÓRIA ATUAL consolidando os novos fatos.
-3. CRÍTICO: Remova duplicatas. Se um fato já existe ou foi repetido com palavras diferentes, mantenha apenas a versão mais completa.
-4. CRÍTICO: Organize por categorias (Equipamentos, Custos, Equipe, Processos).
-5. CRÍTICO: Remova prefixos inúteis como "Fatos novos:", "Identifiquei que...", etc. Vá direto ao ponto.
-6. Mantenha o texto limpo, profissional e sem redundâncias.
+1. Extrair FATOS PERMANENTES E NOVOS (equipamentos, diárias, processos, parceiros) da conversa recente.
+2. ATUALIZAR a MEMÓRIA ATUAL consolidando os novos fatos.
+3. CRÍTICO: ELIMINE ABSOLUTAMENTE QUALQUER DUPLICATA. Se um fato já existe na memória atual, não o repita. Se foi dito de forma diferente, unifique na versão mais precisa.
+4. CRÍTICO: Mantenha a memória CURTA e OBJETIVA. Remova qualquer texto explicativo, introduções ou conclusões.
+5. Organize RIGOROSAMENTE por categorias: [EQUIPAMENTOS], [CUSTOS], [EQUIPE], [PROCESSOS].
+6. Se não houver fatos novos relevantes, mantenha a memória atual sem alterações.
 
 MEMÓRIA ATUAL:
 {$memoriaAtual}
@@ -80,4 +88,6 @@ try {
     $stmtHist->execute([$novaMemoria]);
 } catch (Exception $e) {}
 
-responderJson(['ok' => true, 'memoria' => $novaMemoria]);
+if (!function_exists('fastcgi_finish_request')) {
+    responderJson(['ok' => true, 'memoria' => $novaMemoria]);
+}

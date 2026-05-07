@@ -14,8 +14,9 @@ $stmtClientes = $db->query("SELECT id, nome FROM clientes ORDER BY nome ASC");
 $clientes = $stmtClientes->fetchAll();
 
 // Buscar serviços para o modelo Marketing
-$stmtServicos = $db->query("SELECT id, nome, descricao FROM servicos ORDER BY nome ASC");
+$stmtServicos = $db->query("SELECT id, nome, descricao, preco_venda FROM servicos ORDER BY nome ASC");
 $servicos = $stmtServicos->fetchAll();
+$servicosJson = json_encode($servicos);
 
 include __DIR__ . '/../includes/layout/head.php';
 ?>
@@ -75,16 +76,15 @@ include __DIR__ . '/../includes/layout/head.php';
                                 <div class="form-group">
                                     <label class="label">Responsável(is)</label>
                                     <input type="text" name="responsavel" class="input" placeholder="Ex: João Silva, Maria Souza">
-                                    <p class="text-[10px] text-zinc-500 mt-1">Use vírgula para separar múltiplos nomes.</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="form-group md:col-span-2">
-                                <label class="label">Título da Proposta</label>
-                                <input type="text" name="titulo" class="input" placeholder="Ex: Gestão de Tráfego 2024" maxlength="60" required>
-                                <p class="text-[10px] text-zinc-500 mt-1">Máximo de 60 caracteres para manter a estética na capa.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label class="label">WhatsApp do Cliente (Opcional)</label>
+                                <input type="text" name="whatsapp" class="input" placeholder="Ex: 27999998888">
+                                <p class="text-[10px] text-zinc-500 mt-1">Apenas números com DDD. Será usado para enviar a proposta.</p>
                             </div>
                             <div class="form-group">
                                 <label class="label">Tipo de Serviço</label>
@@ -99,8 +99,20 @@ include __DIR__ . '/../includes/layout/head.php';
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="form-group">
+                                <label class="label">Título da Proposta</label>
+                                <input type="text" name="titulo" class="input" placeholder="Ex: Gestão de Tráfego 2024" maxlength="60" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="label">Subtítulo (Opcional)</label>
+                                <input type="text" name="subtitulo" class="input" placeholder="Ex: Planejamento Estratégico Q3">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="form-group">
                                 <label class="label">Valor Total (R$)</label>
-                                <input type="number" step="0.01" name="valor_total" class="input" placeholder="0,00" required>
+                                <input type="number" step="0.01" name="valor_total" class="input bg-zinc-50 font-bold text-zinc-900" placeholder="0,00" required readonly x-model="valorTotal">
+                                <p class="text-[10px] text-zinc-500 mt-1">Soma automática dos serviços.</p>
                             </div>
                             <div class="form-group">
                                 <label class="label">Tempo de Contrato (Meses)</label>
@@ -113,32 +125,45 @@ include __DIR__ . '/../includes/layout/head.php';
                                     <option value="cartao">Cartão de Crédito (+2,13%)</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label class="label">Subtítulo (Opcional)</label>
-                                <input type="text" name="subtitulo" class="input" placeholder="Ex: Planejamento Estratégico Q3">
-                            </div>
                         </div>
                     </div>
                 </section>
 
                 <section class="card p-6" id="sectionServicos">
-                    <h3 class="text-sm font-bold text-zinc-900 mb-4">Serviços Inclusos (Apenas Marketing)</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <?php foreach ($servicos as $s): ?>
-                            <div class="flex flex-col gap-2 p-3 border border-zinc-100 rounded-lg hover:bg-zinc-50 transition-colors">
-                                <label class="flex items-center gap-3 cursor-pointer">
-                                    <input type="checkbox" name="servicos[]" value="<?= $s['id'] ?>" class="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900">
-                                    <div>
-                                        <p class="text-xs font-bold text-zinc-900"><?= sanitizar($s['nome']) ?></p>
-                                        <p class="text-[10px] text-zinc-500 line-clamp-1"><?= sanitizar($s['descricao']) ?></p>
-                                    </div>
-                                </label>
-                                <div class="flex items-center gap-2 mt-2 pt-2 border-t border-zinc-50">
-                                    <span class="text-[10px] text-zinc-400">Valor Sugerido:</span>
-                                    <input type="number" step="0.01" name="servico_valor[<?= $s['id'] ?>]" class="input py-1 px-2 text-[10px] w-24" placeholder="R$ 0,00">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-bold text-zinc-900">Serviços Inclusos</h3>
+                        <button type="button" @click="adicionarServico()" class="text-[10px] bg-zinc-900 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-zinc-800 transition-all flex items-center gap-1">
+                            <i data-lucide="plus" class="w-3 h-3"></i> Adicionar Serviço
+                        </button>
+                    </div>
+
+                    <div class="space-y-3">
+                        <template x-for="(item, index) in servicosSelecionados" :key="index">
+                            <div class="flex flex-col md:flex-row gap-3 p-3 border border-zinc-100 rounded-lg bg-zinc-50/50 relative group animate-fade-in">
+                                <div class="flex-1">
+                                    <label class="text-[10px] font-bold text-zinc-500 uppercase mb-1 block">Serviço</label>
+                                    <select :name="'servicos['+index+'][id]'" class="input py-2" x-model="item.id" @change="atualizarDadosServico(index)">
+                                        <option value="">Selecione um serviço...</option>
+                                        <template x-for="s in catalogoServicos" :key="s.id">
+                                            <option :value="s.id" x-text="s.nome"></option>
+                                        </template>
+                                    </select>
                                 </div>
+                                <div class="w-full md:w-32">
+                                    <label class="text-[10px] font-bold text-zinc-500 uppercase mb-1 block">Valor (R$)</label>
+                                    <input type="number" step="0.01" :name="'servicos['+index+'][valor]'" class="input py-2 font-bold" x-model="item.valor" @input="recalcularTotal()">
+                                </div>
+                                <button type="button" @click="removerServico(index)" class="absolute -top-2 -right-2 md:static md:mt-6 bg-red-50 text-red-500 p-2 rounded-lg hover:bg-red-100 transition-colors">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
                             </div>
-                        <?php endforeach; ?>
+                        </template>
+
+                        <div x-show="servicosSelecionados.length === 0" class="text-center py-8 border-2 border-dashed border-zinc-100 rounded-xl">
+                            <i data-lucide="layers" class="w-8 h-8 text-zinc-300 mx-auto mb-2"></i>
+                            <p class="text-xs text-zinc-500">Nenhum serviço adicionado ainda.</p>
+                            <button type="button" @click="adicionarServico()" class="text-xs text-zinc-900 font-bold mt-2 hover:underline">Clique para adicionar</button>
+                        </div>
                     </div>
                 </section>
 
@@ -191,10 +216,10 @@ include __DIR__ . '/../includes/layout/head.php';
             </div>
 
             <div class="space-y-6">
-                <section class="card p-6 bg-zinc-900 text-white">
+                <section class="card p-6 bg-zinc-900 text-white shadow-xl shadow-zinc-900/20 border-0">
                     <h3 class="text-sm font-bold mb-4 opacity-80">Ações</h3>
-                    <button type="submit" id="btnGerar" class="btn-primary w-full justify-center gap-2 bg-white text-zinc-900 hover:bg-zinc-200">
-                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <button type="submit" id="btnGerar" class="w-full h-12 rounded-xl font-bold bg-white text-zinc-900 hover:bg-zinc-50 transition-all flex items-center justify-center gap-2 group">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-zinc-500 group-hover:text-zinc-900 transition-colors"></i>
                         Gerar Proposta Web
                     </button>
                     <p class="mt-4 text-[11px] opacity-60 text-center">
@@ -210,11 +235,20 @@ include __DIR__ . '/../includes/layout/head.php';
                         </div>
                         <p class="text-xs text-zinc-600 mb-4">A proposta já está online. Você pode copiar o link ou visualizar agora.</p>
                         <div class="space-y-2">
-                            <a href="#" id="linkVisualizar" target="_blank" class="btn-secondary w-full justify-center">Visualizar</a>
-                            <button type="button" id="btnCopiarLink" class="btn-secondary w-full justify-center gap-2">
+                        <div class="grid grid-cols-1 gap-2">
+                            <a href="#" id="linkVisualizar" target="_blank" class="btn-primary w-full justify-center py-3">
+                                <i data-lucide="external-link" class="w-4 h-4"></i>
+                                Visualizar Proposta
+                            </a>
+                            <button type="button" id="btnWhatsApp" class="w-full py-3 rounded-xl bg-[#25D366] text-white font-bold hover:bg-[#20ba59] transition-all flex items-center justify-center gap-2">
+                                <i class="fab fa-whatsapp text-lg"></i>
+                                Enviar via WhatsApp
+                            </button>
+                            <button type="button" id="btnCopiarLink" class="btn-secondary w-full justify-center gap-2 py-3">
                                 <i data-lucide="copy" class="w-4 h-4"></i>
                                 Copiar Link
                             </button>
+                        </div>
                         </div>
                     </section>
                 </div>
@@ -271,33 +305,54 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Regra de Negócio: Redes Sociais exige Gestão de Tráfego
-    sectionServicos.addEventListener('change', function(e) {
-        if (e.target.type === 'checkbox') {
-            const labelText = e.target.closest('label').innerText.toLowerCase();
-            const isSocialMedia = labelText.includes('redes sociais') || labelText.includes('instagram') || labelText.includes('facebook');
-            
-            if (isSocialMedia && e.target.checked) {
-                // Procurar o checkbox de tráfego
-                const checkboxes = sectionServicos.querySelectorAll('input[type="checkbox"]');
-                let trafficSelected = false;
-                
-                checkboxes.forEach(cb => {
-                    const cbLabel = cb.closest('label').innerText.toLowerCase();
-                    if (cbLabel.includes('tráfego') || cbLabel.includes('trafego') || cbLabel.includes('ads')) {
-                        if (!cb.checked) {
-                            cb.checked = true;
-                            trafficSelected = true;
-                        }
-                    }
-                });
-
-                if (trafficSelected) {
-                    alert('Aviso: Atualmente a Gestão de Redes Sociais é vendida obrigatoriamente com Gestão de Tráfego para garantir o impulsionamento e resultados reais.');
-                }
+    // Alpine.js para gestão dinâmica
+    const appData = {
+        catalogoServicos: <?= $servicosJson ?>,
+        servicosSelecionados: [],
+        valorTotal: 0,
+        
+        init() {
+            // Adiciona um serviço inicial se for marketing
+            if (tipoSelect.value === 'marketing') {
+                this.adicionarServico();
             }
+        },
+
+        adicionarServico() {
+            this.servicosSelecionados.push({ id: '', valor: 0 });
+            this.$nextTick(() => lucide.createIcons());
+        },
+
+        removerServico(index) {
+            this.servicosSelecionados.splice(index, 1);
+            this.recalcularTotal();
+        },
+
+        atualizarDadosServico(index) {
+            const item = this.servicosSelecionados[index];
+            const servico = this.catalogoServicos.find(s => s.id == item.id);
+            if (servico) {
+                item.valor = parseFloat(servico.preco_venda || 0);
+            }
+            this.recalcularTotal();
+        },
+
+        recalcularTotal() {
+            this.valorTotal = this.servicosSelecionados.reduce((acc, curr) => acc + parseFloat(curr.valor || 0), 0);
         }
-    });
+    };
+
+    // Inicializar Alpine se não estiver automático
+    if (window.Alpine) {
+        Alpine.data('proposta', () => appData);
+    } else {
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('proposta', () => appData);
+        });
+    }
+
+    // Adicionar x-data ao form
+    form.setAttribute('x-data', 'proposta');
 
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -343,9 +398,21 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Erro na comunicação com o servidor.');
         } finally {
             btnGerar.disabled = false;
-            btnGerar.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4"></i> Gerar Proposta Web';
+            btnGerar.innerHTML = '<i data-lucide="sparkles" class="w-5 h-5 text-zinc-500 group-hover:text-zinc-900 transition-colors"></i> Gerar Proposta Web';
             lucide.createIcons();
         }
+    });
+
+    const btnWhatsApp = document.getElementById('btnWhatsApp');
+    btnWhatsApp.addEventListener('click', function() {
+        const whats = document.querySelector('input[name="whatsapp"]').value.replace(/\D/g, '');
+        if (!whats) {
+            alert('Por favor, preencha o número de WhatsApp do cliente no formulário.');
+            return;
+        }
+        
+        const texto = encodeURIComponent(`Olá! Preparei a sua proposta personalizada. Você pode acessar os detalhes por este link:\n\n${linkGerado}`);
+        window.open(`https://wa.me/55${whats}?text=${texto}`, '_blank');
     });
 
     btnCopiarLink.addEventListener('click', function() {

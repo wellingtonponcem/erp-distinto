@@ -69,11 +69,13 @@ if ($modoCliente === 'cadastrado') {
 // 2. Buscar Serviços (se houver)
 $servicosInclusos = [];
 if (!empty($d['servicos']) && is_array($d['servicos'])) {
-    foreach ($d['servicos'] as $sid) {
+    foreach ($d['servicos'] as $item) {
+        if (empty($item['id'])) continue;
+        
         $stmtS = $db->prepare("SELECT nome, descricao FROM servicos WHERE id = ?");
-        $stmtS->execute([$sid]);
+        $stmtS->execute([$item['id']]);
         if ($s = $stmtS->fetch()) {
-            $s['valor_individual'] = $d['servico_valor'][$sid] ?? 0;
+            $s['valor_individual'] = (float)($item['valor'] ?? 0);
             $servicosInclusos[] = $s;
         }
     }
@@ -136,6 +138,7 @@ $dadosJson = json_encode([
         'descricao' => $d['adicional_descricao'] ?? ''
     ],
     'responsavel' => $responsavel,
+    'whatsapp' => $d['whatsapp'] ?? '',
     'is_plural' => $isPlural
 ], JSON_UNESCAPED_UNICODE);
 

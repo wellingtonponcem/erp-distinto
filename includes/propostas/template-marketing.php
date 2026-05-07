@@ -405,12 +405,10 @@
     <!-- Slide 11: Investimento Detalhado -->
     <section class="proposal-page">
         <!-- Coluna 1: Título e Validade -->
-        <div class="page-content" style="grid-column: 1; flex-direction: column; justify-content: space-between; padding-bottom: 120px;">
-            <div style="margin-top: auto; margin-bottom: auto;">
-                <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 90%;">
-                    QUAL SERÁ O INVESTIMENTO PARA ESTE PROJETO
-                </h2>
-            </div>
+        <div class="page-content" style="grid-column: 1; flex-direction: column; justify-content: center; gap: 40px; height: 100vh; padding: 0;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 90%;">
+                QUAL SERÁ O INVESTIMENTO PARA ESTE PROJETO
+            </h2>
 
             <!-- Validade -->
             <?php 
@@ -430,7 +428,7 @@
 
         <!-- Coluna 2: Detalhamento -->
         <div class="page-content" style="grid-column: 2; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 0;">
-            <div style="width: 100%; max-height: 85vh; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; align-items: center; padding: 40px 0;">
+            <div style="width: 100%; max-height: 85vh; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 0;">
             <?php
                 $mesesContrato = $dados['meses_contrato'] ?? 12;
                 $valorMensal = $proposta['valor_total'] / ($mesesContrato > 0 ? $mesesContrato : 1);
@@ -499,12 +497,10 @@
     <!-- Slide 12: Condições de Pagamento -->
     <section class="proposal-page">
         <!-- Coluna 1: Título e Validade -->
-        <div class="page-content" style="grid-column: 1; flex-direction: column; justify-content: space-between; padding-bottom: 120px;">
-            <div style="margin-top: auto; margin-bottom: auto;">
-                <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 90%;">
-                    CONDIÇÕES DE<br>PAGAMENTO
-                </h2>
-            </div>
+        <div class="page-content" style="grid-column: 1; flex-direction: column; justify-content: center; gap: 40px; height: 100vh; padding: 0;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 90%;">
+                CONDIÇÕES DE<br>PAGAMENTO
+            </h2>
 
             <!-- Validade -->
             <?php 

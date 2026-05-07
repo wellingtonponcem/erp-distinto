@@ -531,39 +531,3 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <?php include __DIR__ . '/../includes/layout/footer.php'; ?>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Re-inicializar Lucide após o Alpine renderizar o template
-    // Usamos um MutationObserver ou um simples timeout para o template
-    setTimeout(() => { lucide.createIcons(); }, 100);
-});
-
-function copiarLink(slug) {
-    const link = `<?= APP_URL ?>/p/${slug}`;
-    navigator.clipboard.writeText(link).then(() => {
-        alert('Link da proposta copiado!');
-    });
-}
-
-function deletarProposta(id) {
-    if (confirm('Deseja realmente excluir esta proposta?')) {
-        fetch('../api/propostas/organizar.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'delete_proposal', id: id })
-        }).then(res => {
-            if (res.ok) {
-                location.reload();
-            }
-        });
-    }
-}
-
-// Observar mudanças no Alpine para re-renderizar ícones
-document.addEventListener('alpine:initialized', () => {
-    // Sempre que o grid for filtrado, precisamos rodar o lucide.createIcons()
-});
-</script>
-
-<?php include __DIR__ . '/../includes/layout/footer.php'; ?>

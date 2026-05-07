@@ -37,9 +37,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else {
                     document.body.classList.remove('show-etapas-title');
                 }
-
-                // Mostrar botão quando entrar em uma nova seção
-                if (btn) showButton();
             } else {
                 // Ao sair da seção
                 entry.target.classList.remove('is-visible');
@@ -56,17 +53,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
     sections.forEach(section => observer.observe(section));
 
-    // 2. Lógica do Botão Flutuante
+    // 2. Lógica do Botão Flutuante (Exclusiva por Scroll)
     let timeout;
     function showButton() {
         if (!btn) return;
-        btn.classList.add('show');
-        clearTimeout(timeout);
-        timeout = setTimeout(() => btn.classList.remove('show'), 4000);
+        
+        // Só mostra se houver algum movimento de scroll real
+        if (wrapper.scrollTop > 10) {
+            btn.classList.add('show');
+            
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                btn.classList.remove('show');
+            }, 6000); // 6 segundos de visibilidade
+        } else {
+            btn.classList.remove('show');
+        }
     }
 
     if (btn) {
-        // Também mostrar ao rolar dentro do wrapper
-        wrapper.addEventListener('scroll', showButton);
+        // Mostrar EXCLUSIVAMENTE ao rolar dentro do wrapper
+        wrapper.addEventListener('scroll', showButton, { passive: true });
     }
 });

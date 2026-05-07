@@ -134,22 +134,22 @@ require_once __DIR__ . '/../includes/layout/head.php';
                 </h3>
                 
                 <div class="relative overflow-hidden transition-all duration-500"
-                     :class="expanded ? 'max-h-[1000px]' : 'max-h-[150px]'">
+                     :class="expanded ? 'max-h-[1000px]' : 'max-h-[120px]'">
                     <div class="text-[11px] text-gray-400 whitespace-pre-wrap leading-relaxed bg-black/20 p-3 rounded-lg border border-white/5" 
                          x-text="memoria || 'A IA ainda não memorizou fatos específicos.'"></div>
                     
-                    <div x-show="!expanded && memoria.length > 200" 
-                         class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#121212] to-transparent pointer-events-none"></div>
+                    <div x-show="!expanded && memoria.length > 100" 
+                         class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#121212] to-transparent pointer-events-none"></div>
                 </div>
 
                 <div class="flex items-center justify-between mt-3">
                     <button @click="memorizar" 
                             class="text-[10px] bg-purple-600/20 text-purple-400 px-3 py-1.5 rounded-lg border border-purple-500/20 hover:bg-purple-600/40 transition-all font-bold uppercase tracking-wider"
                             :disabled="memorizando">
-                        <i data-lucide="save" class="w-3 h-3 inline mr-1"></i>
-                        <span x-text="memorizando ? 'Salvando...' : 'Memorizar'"></span>
+                        <i data-lucide="sparkles" class="w-3 h-3 inline mr-1" :class="memorizando ? 'animate-spin' : ''"></i>
+                        <span x-text="memorizando ? 'Otimizando...' : 'Otimizar Memória'"></span>
                     </button>
-                    <span class="text-[9px] text-gray-500 font-medium">Auto-otimizado por IA</span>
+                    <span class="text-[9px] text-gray-500 font-medium italic">IA Processando em Background</span>
                 </div>
             </div>
         </aside>
@@ -193,8 +193,8 @@ document.addEventListener('alpine:init', () => {
                 });
                 const res = await r.json();
                 if (res.ok) {
-                    this.memoria = res.memoria;
-                    toast('Aprendizados memorizados com sucesso!', 'sucesso');
+                    if (res.memoria) this.memoria = res.memoria;
+                    toast('Estratégia enviada para otimização em segundo plano!', 'sucesso');
                 }
             } catch(e) {
                 toast('Erro ao memorizar', 'erro');
