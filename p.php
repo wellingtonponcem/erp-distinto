@@ -89,6 +89,12 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
         <?php include $templateFile; ?>
     </div>
 
+    <!-- Botão Exportar Topo -->
+    <button class="btn-export-top no-print" onclick="window.showExportModal()">
+        <i data-lucide="file-down"></i>
+        <span>PDF</span>
+    </button>
+
     <a href="https://wa.me/<?= preg_replace('/\D/', '', $configEmpresa['telefone'] ?? '') ?>?text=Olá! Gostaria de aprovar a proposta: <?= $proposta['titulo'] ?> (Ref: <?= $slug ?>)" 
        id="btn-approve" class="btn-floating no-print">
         <span>Aprovar Proposta</span>

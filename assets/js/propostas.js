@@ -75,33 +75,33 @@ document.addEventListener('DOMContentLoaded', function () {
         // Mostrar EXCLUSIVAMENTE ao rolar dentro do wrapper
         wrapper.addEventListener('scroll', showButton, { passive: true });
     }
-
-    // 3. Funções de Exportação PDF
-    const exportModal = document.getElementById('export-modal');
-    
-    window.showExportModal = function() {
-        if (exportModal) exportModal.style.display = 'flex';
-    };
-
-    window.hideExportModal = function() {
-        if (exportModal) exportModal.style.display = 'none';
-    };
-
-    window.exportPDF = function(orientation) {
-        window.hideExportModal();
-        
-        // Adiciona classe de orientação para o CSS handle
-        document.body.classList.remove('export-horizontal', 'export-vertical');
-        document.body.classList.add('exporting-pdf', orientation === 'horizontal' ? 'export-horizontal' : 'export-vertical');
-        
-        // Pequeno delay para o CSS renderizar antes do print
-        setTimeout(() => {
-            window.print();
-            
-            // Remove as classes após o print (ou cancelamento)
-            setTimeout(() => {
-                document.body.classList.remove('exporting-pdf', 'export-horizontal', 'export-vertical');
-            }, 1000);
-        }, 300);
-    };
 });
+
+// 3. Funções de Exportação PDF (Globais para evitar erros de onclick)
+window.showExportModal = function() {
+    const modal = document.getElementById('export-modal');
+    if (modal) modal.style.display = 'flex';
+};
+
+window.hideExportModal = function() {
+    const modal = document.getElementById('export-modal');
+    if (modal) modal.style.display = 'none';
+};
+
+window.exportPDF = function(orientation) {
+    window.hideExportModal();
+    
+    // Adiciona classe de orientação para o CSS handle
+    document.body.classList.remove('export-horizontal', 'export-vertical');
+    document.body.classList.add('exporting-pdf', orientation === 'horizontal' ? 'export-horizontal' : 'export-vertical');
+    
+    // Pequeno delay para o CSS renderizar antes do print
+    setTimeout(() => {
+        window.print();
+        
+        // Remove as classes após o print (ou cancelamento)
+        setTimeout(() => {
+            document.body.classList.remove('exporting-pdf', 'export-horizontal', 'export-vertical');
+        }, 1000);
+    }, 300);
+};

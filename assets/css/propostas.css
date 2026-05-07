@@ -460,30 +460,58 @@ body.on-dark .fixed-section-title h2 {
 
 /* --- Sistema de Exportação PDF --- */
 
-/* Botão de Gatilho nos Slides */
-.btn-export-trigger {
-    display: inline-flex;
+/* Botão de Gatilho Superior (Exportação) */
+.btn-export-top {
+    position: fixed;
+    top: 15px;
+    right: 30px;
+    z-index: 1001;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
     align-items: center;
-    gap: 8px;
-    background: #000;
-    color: #fff;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-family: var(--font-heading);
-    font-weight: 700;
-    font-size: 13px;
-    text-transform: uppercase;
+    justify-content: center;
     cursor: pointer;
-    transition: var(--transition);
-    margin-top: 30px;
-    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
-.btn-export-trigger:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    background: #222;
+.btn-export-top span {
+    position: absolute;
+    right: 55px;
+    background: #000;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    letter-spacing: 1px;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.btn-export-top:hover {
+    background: #000;
+    transform: scale(1.1);
+    border-color: rgba(255,255,255,0.3);
+}
+
+.btn-export-top:hover span {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.btn-export-top svg {
+    width: 20px;
+    height: 20px;
 }
 
 /* Modal de Escolha */
@@ -624,7 +652,6 @@ body.on-dark .fixed-section-title h2 {
         display: grid !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
-        color-adjust: exact !important;
     }
 
     /* Moldura Mac M1 Simulation */

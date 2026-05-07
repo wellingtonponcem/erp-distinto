@@ -15,10 +15,6 @@
                 <?= $proposta['subtitulo'] ?>
             </p>
             <?php endif; ?>
-
-            <button class="btn-export-trigger no-print" onclick="window.showExportModal()">
-                <i data-lucide="file-down"></i> Exportar para PDF
-            </button>
         </div>
     </section>
 
@@ -578,10 +574,6 @@
                 Rod. Sol, 2780, SL 1307 - Praia de Itaparica<br>
                 Vila Velha - ES
             </div>
-
-            <button class="btn-export-trigger no-print" style="margin-top: 40px; background: #fff; color: #000;" onclick="window.showExportModal()">
-                <i data-lucide="file-down"></i> Exportar para PDF
-            </button>
         </div>
     </section>
 </div>
