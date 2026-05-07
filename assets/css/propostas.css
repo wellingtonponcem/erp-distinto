@@ -626,48 +626,79 @@ body.on-dark .fixed-section-title h2 {
 
 /* --- REGRAS DE IMPRESSÃO (PDF) --- */
 @media print {
-    .no-print {
+    /* Ocultar elementos desnecessários */
+    .no-print, 
+    .proposal-frame,
+    .btn-export-top,
+    .btn-floating,
+    #btn-approve,
+    .fixed-section-title,
+    #export-modal {
         display: none !important;
     }
 
     @page {
-        margin: 0;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    html, body {
+        background-color: #fff !important;
+        background-image: none !important;
+        color: #000 !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
     body.exporting-pdf {
         background: #fff !important;
-        overflow: visible !important;
-        width: 100% !important;
-        height: auto !important;
     }
 
+    /* Ajuste do container principal */
     .proposal-wrapper {
         height: auto !important;
         overflow: visible !important;
         scroll-snap-type: none !important;
         display: block !important;
+        background: #fff !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
 
     .proposal-page {
-        width: 100% !important;
+        width: 100vw !important;
         height: 100vh !important;
+        min-height: 100vh !important;
         page-break-after: always !important;
         break-after: page !important;
         margin: 0 !important;
-        padding: 0 6vw !important; /* Mantém o grid lateral */
+        padding: 0 6vw !important;
         display: grid !important;
         grid-template-columns: 40% 40% 20% !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
         border: none !important;
         border-radius: 0 !important;
+        box-shadow: none !important;
+        background-color: #fff !important;
+        position: relative !important;
     }
 
-    /* Ajuste de conteúdo para caber na página impressa */
+    .proposal-page.dark-page {
+        background-color: #000 !important;
+        color: #fff !important;
+    }
+
+    /* Ajuste de conteúdo */
     .page-content {
         opacity: 1 !important;
         transform: none !important;
-        padding: 10vh 0 !important;
+        padding: 8vh 0 !important;
+        visibility: visible !important;
+        display: flex !important;
     }
 
     /* Gradientes no PDF */
@@ -676,7 +707,14 @@ body.on-dark .fixed-section-title h2 {
     }
     
     .abstract-gradient {
-        opacity: 0.6 !important; /* Suaviza para impressão */
+        opacity: 0.4 !important;
+        -webkit-print-color-adjust: exact !important;
+    }
+
+    /* Forçar visibilidade de imagens */
+    img {
+        max-width: 100% !important;
+        display: block !important;
     }
 }
 

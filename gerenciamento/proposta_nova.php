@@ -55,7 +55,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
             <p class="page-subtitle text-zinc-500">Preencha os dados abaixo para gerar uma proposta personalizada com IA.</p>
         </div>
 
-        <form id="formGerarProposta" class="grid grid-cols-1 lg:grid-cols-3 gap-6 <?= $isModal ? 'px-8 pb-12' : '' ?>">
+        <form id="formGerarProposta" x-data="proposta" x-cloak class="grid grid-cols-1 lg:grid-cols-3 gap-6 <?= $isModal ? 'px-8 pb-12' : '' ?>">
             <div class="lg:col-span-2 space-y-6">
                 <section class="card p-6">
                     <h3 class="text-sm font-bold text-zinc-900 mb-4">Informações Básicas</h3>
@@ -105,7 +105,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                             </div>
                             <div class="form-group">
                                 <label class="label">Tipo de Serviço</label>
-                                <select name="tipo" id="tipoProposta" class="input" required>
+                                <select name="tipo" id="tipoProposta" class="input" required x-model="tipoProposta">
                                     <option value="marketing">Marketing Digital</option>
                                     <option value="casamento">Casamento</option>
                                     <option value="15anos">15 Anos</option>
@@ -289,72 +289,40 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('formGerarProposta');
-    const tipoSelect = document.getElementById('tipoProposta');
-    const sectionServicos = document.getElementById('sectionServicos');
-    const btnGerar = document.getElementById('btnGerar');
-    const resultadoDiv = document.getElementById('resultadoProposta');
-    const linkVisualizar = document.getElementById('linkVisualizar');
-    const btnCopiarLink = document.getElementById('btnCopiarLink');
-    let linkGerado = '';
-
-    const radiosModo = document.querySelectorAll('input[name="modo_cliente"]');
-    const wrapperCadastrado = document.getElementById('wrapperClienteCadastrado');
-    const wrapperLead = document.getElementById('wrapperNovoLead');
-    const selectCliente = document.querySelector('select[name="cliente_id"]');
-    const inputEmpresa = document.querySelector('input[name="empresa_nome"]');
-    const inputResponsavel = document.querySelector('input[name="responsavel"]');
-
-    radiosModo.forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (this.value === 'cadastrado') {
-                wrapperCadastrado.classList.remove('hidden');
-                wrapperLead.classList.add('hidden');
-                selectCliente.required = true;
-                inputEmpresa.required = false;
-                inputResponsavel.required = false;
-            } else {
-                wrapperCadastrado.classList.add('hidden');
-                wrapperLead.classList.remove('hidden');
-                selectCliente.required = false;
-                inputEmpresa.required = true;
-                inputResponsavel.required = true;
-            }
-        });
-    });
-
-    // Iniciar com o modo correto
-    document.querySelector('input[name="modo_cliente"]:checked').dispatchEvent(new Event('change'));
-
-    // Alternar visibilidade da seção de serviços
-    tipoSelect.addEventListener('change', function() {
-        if (this.value === 'marketing') {
-            sectionServicos.classList.remove('hidden');
-        } else {
-            sectionServicos.classList.add('hidden');
-        }
-    });
-
-    // Alpine.js para gestão dinâmica
-    const appData = {
+// 1. Registro do componente Alpine.js (Escopo Global)
+document.addEventListener('alpine:init', () => {
+    Alpine.data('proposta', () => ({
         catalogoServicos: <?= $servicosJson ?>,
         servicosSelecionados: [],
         valorSubtotal: 0,
         descontoValor: 0,
         descontoTipo: 'porcentagem',
         valorTotal: 0,
+        tipoProposta: 'marketing',
         
         init() {
             // Adiciona um serviço inicial se for marketing
-            if (tipoSelect.value === 'marketing') {
+            if (this.tipoProposta === 'marketing') {
                 this.adicionarServico();
             }
+            
+            // Observar mudança no tipo de proposta via DOM se necessário, 
+            // mas o ideal é usar x-model no select
+            this.$watch('tipoProposta', (value) => {
+                const section = document.getElementById('sectionServicos');
+                if (value === 'marketing') {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            });
         },
 
         adicionarServico() {
             this.servicosSelecionados.push({ id: '', valor: 0 });
-            this.$nextTick(() => lucide.createIcons());
+            this.$nextTick(() => {
+                if (window.lucide) lucide.createIcons();
+            });
         },
 
         removerServico(index) {
@@ -375,27 +343,58 @@ document.addEventListener('DOMContentLoaded', function() {
             this.valorSubtotal = this.servicosSelecionados.reduce((acc, curr) => acc + parseFloat(curr.valor || 0), 0);
             
             let desconto = 0;
+            const sub = parseFloat(this.valorSubtotal || 0);
+            const desc = parseFloat(this.descontoValor || 0);
+
             if (this.descontoTipo === 'porcentagem') {
-                desconto = this.valorSubtotal * (parseFloat(this.descontoValor || 0) / 100);
+                desconto = sub * (desc / 100);
             } else {
-                desconto = parseFloat(this.descontoValor || 0);
+                desconto = desc;
             }
             
-            this.valorTotal = Math.max(0, this.valorSubtotal - desconto);
+            this.valorTotal = Math.max(0, sub - desconto);
         }
-    };
+    }));
+});
 
-    // Inicializar Alpine se não estiver automático
-    if (window.Alpine) {
-        Alpine.data('proposta', () => appData);
-    } else {
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('proposta', () => appData);
+// 2. Lógica de Envio e UI (DOM)
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('formGerarProposta');
+    const btnGerar = document.getElementById('btnGerar');
+    const resultadoDiv = document.getElementById('resultadoProposta');
+    const linkVisualizar = document.getElementById('linkVisualizar');
+    const btnCopiarLink = document.getElementById('btnCopiarLink');
+    let linkGerado = '';
+
+    // Gestão de Clientes/Leads (Tradicional)
+    const radiosModo = document.querySelectorAll('input[name="modo_cliente"]');
+    const wrapperCadastrado = document.getElementById('wrapperClienteCadastrado');
+    const wrapperLead = document.getElementById('wrapperNovoLead');
+    const selectCliente = document.querySelector('select[name="cliente_id"]');
+    const inputEmpresa = document.querySelector('input[name="empresa_nome"]');
+    const inputResponsavel = document.querySelector('input[name="responsavel"]');
+
+    radiosModo.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'cadastrado') {
+                wrapperCadastrado.classList.remove('hidden');
+                wrapperLead.classList.add('hidden');
+                if(selectCliente) selectCliente.required = true;
+                if(inputEmpresa) inputEmpresa.required = false;
+                if(inputResponsavel) inputResponsavel.required = false;
+            } else {
+                wrapperCadastrado.classList.add('hidden');
+                wrapperLead.classList.remove('hidden');
+                if(selectCliente) selectCliente.required = false;
+                if(inputEmpresa) inputEmpresa.required = true;
+                if(inputResponsavel) inputResponsavel.required = true;
+            }
         });
-    }
+    });
 
-    // Adicionar x-data ao form
-    form.setAttribute('x-data', 'proposta');
+    // Iniciar com o modo correto
+    const checkedRadio = document.querySelector('input[name="modo_cliente"]:checked');
+    if (checkedRadio) checkedRadio.dispatchEvent(new Event('change'));
 
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -417,21 +416,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 result = JSON.parse(responseText);
             } catch (e) {
                 console.error('Erro ao processar JSON:', responseText);
-                throw new Error('O servidor retornou uma resposta inválida (não JSON). Verifique o console para detalhes.');
-            }
-            
-            if (!response.ok) {
-                throw new Error(result.erro || 'Erro desconhecido no servidor.');
+                throw new Error('Resposta inválida do servidor.');
             }
             
             if (result.success) {
-                // Usar a URL base do sistema para o link
                 const baseUrl = window.location.origin + window.location.pathname.split('/gerenciamento/')[0];
                 linkGerado = `${baseUrl}/p/${result.slug}`;
                 linkVisualizar.href = linkGerado;
                 resultadoDiv.classList.remove('hidden');
-                
-                // Scroll para o resultado em mobile
                 resultadoDiv.scrollIntoView({ behavior: 'smooth' });
             } else {
                 alert('Erro: ' + (result.error || 'Falha ao gerar proposta.'));
@@ -442,7 +434,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } finally {
             btnGerar.disabled = false;
             btnGerar.innerHTML = '<i data-lucide="sparkles" class="w-5 h-5 text-zinc-500 group-hover:text-zinc-900 transition-colors"></i> Gerar Proposta Web';
-            lucide.createIcons();
+            if (window.lucide) lucide.createIcons();
         }
     });
 
@@ -450,10 +442,9 @@ document.addEventListener('DOMContentLoaded', function() {
     btnWhatsApp.addEventListener('click', function() {
         const whats = document.querySelector('input[name="whatsapp"]').value.replace(/\D/g, '');
         if (!whats) {
-            alert('Por favor, preencha o número de WhatsApp do cliente no formulário.');
+            alert('Por favor, preencha o número de WhatsApp do cliente.');
             return;
         }
-        
         const texto = encodeURIComponent(`Olá! Preparei a sua proposta personalizada. Você pode acessar os detalhes por este link:\n\n${linkGerado}`);
         window.open(`https://wa.me/55${whats}?text=${texto}`, '_blank');
     });
@@ -464,7 +455,7 @@ document.addEventListener('DOMContentLoaded', function() {
             this.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Copiado!';
             setTimeout(() => {
                 this.innerHTML = originalText;
-                lucide.createIcons();
+                if (window.lucide) lucide.createIcons();
             }, 2000);
         });
     });
