@@ -88,9 +88,9 @@
         </div>
 
         <!-- Coluna 2 e 3: Conteúdo das Etapas -->
-        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -20%;">
+        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -7rem;">
             <!-- Lista de Pílulas -->
-            <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 13.75rem; flex-shrink: 0;">
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 14rem; flex-shrink: 0;">
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; position: relative;">
                     IMERSÃO
                     <div style="position: absolute; right: -40px; top: 50%; width: 40px; height: 1px; background: rgba(0,0,0,0.2);"></div>
@@ -129,9 +129,9 @@
         </div>
 
         <!-- Coluna 2 e 3: Conteúdo das Etapas -->
-        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -20%;">
+        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -7rem;">
             <!-- Lista de Pílulas -->
-            <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 220px; flex-shrink: 0;">
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 14rem; flex-shrink: 0;">
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; position: relative;">
                     DIAGNÓSTICO
@@ -175,9 +175,9 @@
         </div>
 
         <!-- Coluna 2 e 3: Conteúdo das Etapas -->
-        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -20%;">
+        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -7rem;">
             <!-- Lista de Pílulas -->
-            <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 220px; flex-shrink: 0;">
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 14rem; flex-shrink: 0;">
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; position: relative;">
@@ -233,9 +233,9 @@
         </div>
 
         <!-- Coluna 2 e 3: Conteúdo das Etapas -->
-        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -20%;">
+        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -7rem;">
             <!-- Lista de Pílulas -->
-            <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 220px; flex-shrink: 0;">
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 14rem; flex-shrink: 0;">
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
@@ -282,9 +282,9 @@
         </div>
 
         <!-- Coluna 2 e 3: Conteúdo das Etapas -->
-        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -20%;">
+        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -7rem;">
             <!-- Lista de Pílulas -->
-            <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 220px; flex-shrink: 0;">
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 14rem; flex-shrink: 0;">
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
@@ -323,9 +323,9 @@
         </div>
 
         <!-- Coluna 2 e 3: Conteúdo das Etapas -->
-        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -20%;">
+        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -7rem;">
             <!-- Lista de Pílulas -->
-            <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 220px; flex-shrink: 0;">
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 14rem; flex-shrink: 0;">
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
@@ -367,9 +367,9 @@
         </div>
 
         <!-- Coluna 2 e 3: Conteúdo das Etapas -->
-        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -20%;">
+        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -7rem;">
             <!-- Lista de Pílulas Ativas -->
-            <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 220px; flex-shrink: 0; position: relative;">
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 14rem; flex-shrink: 0; position: relative;">
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
