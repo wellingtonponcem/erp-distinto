@@ -280,23 +280,38 @@ if (!function_exists('fmt')) {
         </div>
     </section>
 
-    <!-- PÁGINA 03: CONCEITO 1 -->
-    <section class="slide">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
-            <div>
-                <h3 class="uppercase text-gold">Nossa Visão</h3>
-                <h2 class="text-serif mt-4 italic">A arte de capturar o que é invisível.</h2>
-                <div class="line"></div>
-                <p>
-                    Não buscamos apenas a nitidez técnica, mas a clareza do sentimento.
-                    Nossa fotografia é documental e artística, focada em momentos reais,
-                    sorrisos espontâneos e aquela lágrima que insiste em cair.
-                </p>
+    <!-- PÁGINA 03: VISÃO E MISSÃO -->
+    <section class="slide" style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; overflow: hidden;">
+        <!-- Topo: Textos -->
+        <div style="flex: 1.2; padding: 10vh 10vw; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
+            <div style="position: absolute; top: 0; left: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
+            
+            <h2 style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 10px;">VISÃO E MISSÃO</h2>
+            <p style="font-family: var(--wedding-montserrat); font-size: 1.4rem; font-weight: 300; color: #444; margin-bottom: 6vh;">A meta é arrepiar e eternizar o extraordinário.</p>
+            
+            <div style="display: flex; gap: 8vw; width: 100%; max-width: 1100px;">
+                <!-- Missão -->
+                <div style="flex: 1;">
+                    <h3 style="font-family: var(--wedding-montserrat); font-size: 1.5rem; font-weight: 700; color: #1a1a1a; margin-bottom: 15px; text-transform: uppercase;">MISSÃO</h3>
+                    <p style="font-family: var(--wedding-montserrat); font-size: 1rem; line-height: 1.8; color: #555; text-align: justify;">
+                        Nossa missão é registrar histórias de amor com autenticidade e emoção. No Distinto, não buscamos apenas o registro oficial, mas o "arrepio" que cada momento carrega. Estamos aqui para capturar o que é real, do sussurro no altar à oração silenciosa, garantindo que cada detalhe seja preservado com a verdade que ele merece, fazendo com que todas as variáveis do dia ganhem o mais bonito sentido.
+                    </p>
+                </div>
+                <!-- Visão -->
+                <div style="flex: 1;">
+                    <h3 style="font-family: var(--wedding-montserrat); font-size: 1.5rem; font-weight: 700; color: #1a1a1a; margin-bottom: 15px; text-transform: uppercase;">VISÃO</h3>
+                    <p style="font-family: var(--wedding-montserrat); font-size: 1rem; line-height: 1.8; color: #555; text-align: justify;">
+                        Ser o portal que permitirá reviverem a emoção do seu "sim" para sempre, reforçando que toda história tem sua beleza. Enxergamos o nosso trabalho como uma ferramenta para transformar o casamento de vocês em uma experiência totalmente nova, onde a nossa perspectiva artística cria uma herança visual que se torna mais valiosa a cada ano que passa.
+                    </p>
+                </div>
             </div>
-            <div class="relative h-[60vh]">
-                <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=2069"
-                    class="w-full h-full object-cover rounded-sm">
-            </div>
+        </div>
+
+        <!-- Base: Imagem -->
+        <div style="flex: 0.8; width: 100%; position: relative;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-03.jpg') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+            <!-- Elemento decorativo cinza (lateral) -->
+            <div style="position: absolute; right: 0; bottom: 0; width: 50px; height: 150px; background: #fff; z-index: 1; opacity: 0.8;"></div>
         </div>
     </section>
 
