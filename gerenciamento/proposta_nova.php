@@ -21,10 +21,26 @@ $servicosJson = json_encode($servicos);
 include __DIR__ . '/../includes/layout/head.php';
 ?>
 
-<div id="app-wrapper">
-    <?php include __DIR__ . '/../includes/layout/sidebar.php'; ?>
+<style>
+    .is-modal-layout #main-content {
+        margin-left: 0 !important;
+        padding-top: 0 !important;
+        background: transparent !important;
+    }
+    .is-modal-layout .page-title {
+        font-size: 1.5rem;
+    }
+</style>
 
-    <main id="main-content" class="content-sheet">
+<?php 
+$isModal = ($_GET['layout'] ?? '') === 'modal';
+?>
+
+<div id="app-wrapper" class="<?= $isModal ? 'is-modal-layout' : '' ?>">
+    <?php if (!$isModal) include __DIR__ . '/../includes/layout/sidebar.php'; ?>
+
+    <main id="main-content" class="content-sheet <?= $isModal ? 'p-0' : '' ?>">
+        <?php if (!$isModal): ?>
         <div class="app-topbar">
             <div class="top-nav">
                 <a href="<?= raizUrl('/dashboard.php') ?>">Visão Geral</a>
@@ -32,13 +48,14 @@ include __DIR__ . '/../includes/layout/head.php';
                 <a href="#" class="active">Nova Proposta</a>
             </div>
         </div>
+        <?php endif; ?>
 
-        <div class="mb-8">
-            <h1 class="page-title">Criar Nova Proposta</h1>
-            <p class="page-subtitle">Preencha os dados abaixo para gerar uma proposta personalizada com IA.</p>
+        <div class="<?= $isModal ? 'px-8 pt-8 mb-6' : 'mb-8' ?>">
+            <h1 class="page-title text-2xl">Criar Nova Proposta</h1>
+            <p class="page-subtitle text-zinc-500">Preencha os dados abaixo para gerar uma proposta personalizada com IA.</p>
         </div>
 
-        <form id="formGerarProposta" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <form id="formGerarProposta" class="grid grid-cols-1 lg:grid-cols-3 gap-6 <?= $isModal ? 'px-8 pb-12' : '' ?>">
             <div class="lg:col-span-2 space-y-6">
                 <section class="card p-6">
                     <h3 class="text-sm font-bold text-zinc-900 mb-4">Informações Básicas</h3>
@@ -428,4 +445,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<?php include __DIR__ . '/../includes/layout/footer.php'; ?>
+<?php if (!$isModal) include __DIR__ . '/../includes/layout/footer.php'; ?>

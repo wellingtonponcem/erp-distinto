@@ -155,7 +155,9 @@ include __DIR__ . '/../includes/layout/head.php';
                         <i data-lucide="search" class="w-5 h-5"></i>
                     </button>
                     
-                    <a href="<?= raizUrl('/gerenciamento/proposta_nova.php') ?>" class="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-full text-xs font-bold hover:bg-zinc-200 transition-all">
+                    <a href="<?= raizUrl('/gerenciamento/proposta_nova.php') ?>" 
+                       @click.prevent="if(window.innerWidth > 1024) { showModalNova = true } else { window.location.href = $el.href }"
+                       class="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-full text-xs font-bold hover:bg-zinc-200 transition-all">
                         <i data-lucide="plus" class="w-4 h-4"></i>
                         Nova Proposta
                     </a>
@@ -333,33 +335,38 @@ include __DIR__ . '/../includes/layout/head.php';
             </template>
         </div>
 
-        <!-- Modal de Confirmação de Exclusão -->
-        <template x-if="deleteModal.show">
-            <div class="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-                 @click.self="deleteModal.show = false">
-                <div class="bg-[#121212] border border-zinc-800 rounded-2xl p-8 max-w-sm w-full shadow-2xl"
+        </template>
+
+        <!-- Modal Nova Proposta (Desktop Only) -->
+        <template x-if="showModalNova">
+            <div class="fixed inset-0 z-[3000] flex items-center justify-center p-6 bg-black/90 backdrop-blur-md"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100">
+                
+                <div class="bg-white rounded-3xl w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden relative shadow-2xl border border-white/10"
                      x-transition:enter="ease-out duration-300"
-                     x-transition:enter-start="opacity-0 scale-95"
-                     x-transition:enter-end="opacity-100 scale-100">
+                     x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                     x-transition:enter-end="opacity-100 scale-100 translate-y-0">
                     
-                    <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mb-6 mx-auto">
-                        <svg class="text-red-500 w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                        </svg>
+                    <!-- Header Modal -->
+                    <div class="px-8 py-4 bg-zinc-50 border-b border-zinc-100 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+                                <i data-lucide="plus" class="w-4 h-4 text-white"></i>
+                            </div>
+                            <h2 class="text-sm font-bold text-zinc-900 uppercase tracking-wider">Registrar Nova Proposta</h2>
+                        </div>
+                        <button @click="showModalNova = false; window.location.reload()" 
+                                class="p-2 hover:bg-zinc-200 rounded-full transition-colors text-zinc-500 hover:text-zinc-900 group">
+                            <i data-lucide="x" class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300"></i>
+                        </button>
                     </div>
-                    
-                    <h3 class="text-xl font-bold text-white text-center mb-2">Confirmar Exclusão</h3>
-                    <p class="text-zinc-400 text-center text-sm mb-8" x-text="deleteModal.message"></p>
-                    
-                    <div class="flex gap-3">
-                        <button @click="deleteModal.show = false" 
-                                class="flex-1 px-4 py-3 rounded-xl bg-zinc-800 text-white font-semibold hover:bg-zinc-700 transition-colors">
-                            Cancelar
-                        </button>
-                        <button @click="confirmarExclusao()" 
-                                class="flex-1 px-4 py-3 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-500 transition-colors">
-                            Excluir
-                        </button>
+
+                    <!-- Content Iframe -->
+                    <div class="flex-1 bg-[#fcfcfc] overflow-hidden">
+                        <iframe src="<?= raizUrl('/gerenciamento/proposta_nova.php?layout=modal') ?>" 
+                                class="w-full h-full border-0"></iframe>
                     </div>
                 </div>
             </div>
@@ -373,6 +380,7 @@ function propostasApp() {
         currentFolder: null,
         showSearch: false,
         searchQuery: '',
+        showModalNova: false,
         pastas: <?= json_encode($pastas) ?>,
         propostas: <?= json_encode($propostas) ?>,
         contextMenu: { show: false, x: 0, y: 0, type: 'root', item: null },
