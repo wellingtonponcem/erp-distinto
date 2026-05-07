@@ -144,7 +144,7 @@
             </div>
 
             <!-- Texto Explicativo -->
-            <div style="margin-left: 60px; max-width: 380px;">
+            <div style="margin-left: 60px; max-width: 90%;">
                 <p style="font-size: 16px; line-height: 1.5; color: #333; margin-bottom: 20px;">
                     Depois da imersão concluída, é o momento de desenvolver o diagnóstico do negócio. Através desses resultados, teremos a definição da plataforma da marca com as seguintes entregas:
                 </p>
