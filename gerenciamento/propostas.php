@@ -320,7 +320,7 @@ include __DIR__ . '/../includes/layout/head.php';
                         <template x-if="whatsappLoading"><svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg></template>
                         <span x-text="whatsappLoading ? 'Gerando mensagem...' : 'Enviar via WhatsApp'"></span>
                     </button>
-                    <button @click="location.href = 'proposta_editar.php?id=' + contextMenu.item.id">
+                    <button @click="if(window.innerWidth > 1024) { showModalEditar = true; editUrl = 'proposta_editar.php?id=' + contextMenu.item.id + '&layout=modal'; contextMenu.show = false } else { location.href = 'proposta_editar.php?id=' + contextMenu.item.id }">
                         <i data-lucide="edit-2" class="w-4 h-4"></i> Editar Dados
                     </button>
                     <div class="relative group/submenu">
@@ -375,6 +375,41 @@ include __DIR__ . '/../includes/layout/head.php';
                     <div class="flex-1 bg-[#fcfcfc] overflow-hidden">
                         <iframe src="<?= raizUrl('/gerenciamento/proposta_nova.php?layout=modal') ?>" 
                                 class="w-full h-full border-0"></iframe>
+                    </div>
+                </div>
+            </div>
+        </template>
+        
+        <!-- Modal Editar Proposta (Desktop Only) -->
+        <template x-if="showModalEditar">
+            <div class="fixed inset-0 z-[3000] flex items-center justify-center p-6 bg-black/90 backdrop-blur-md"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100">
+                
+                <div class="bg-white rounded-3xl w-[80%] h-[90vh] flex flex-col overflow-hidden relative shadow-2xl border border-white/10"
+                     x-init="$watch('showModalEditar', v => { if(v) $nextTick(() => lucide.createIcons()) })"
+                     x-transition:enter="ease-out duration-300"
+                     x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                     x-transition:enter-end="opacity-100 scale-100 translate-y-0">
+                    
+                    <!-- Header Modal -->
+                    <div class="px-8 py-4 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <h2 class="text-sm font-bold text-white uppercase tracking-wider">Editar Proposta</h2>
+                        </div>
+                        <button @click="showModalEditar = false; window.location.reload()" 
+                                class="p-2 hover:bg-zinc-800 rounded-full transition-colors text-zinc-400 hover:text-white group flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-90 transition-transform duration-300">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Content Iframe -->
+                    <div class="flex-1 bg-[#fcfcfc] overflow-hidden">
+                        <iframe :src="editUrl" class="w-full h-full border-0"></iframe>
                     </div>
                 </div>
             </div>
@@ -475,6 +510,8 @@ function propostasApp() {
         showSearch: false,
         searchQuery: '',
         showModalNova: false,
+        showModalEditar: false,
+        editUrl: '',
         pastas: <?= json_encode($pastas) ?>,
         propostas: <?= json_encode($propostas) ?>,
         contextMenu: { show: false, x: 0, y: 0, type: 'root', item: null },
