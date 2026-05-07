@@ -62,7 +62,10 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
 </head>
 <body class="type-<?= $tipo ?>">
 
-    <!-- Moldura Global (HUD) -->
+    <!-- Linhas da Moldura (Ficam atrás do conteúdo) -->
+    <div class="proposal-lines"></div>
+
+    <!-- Moldura Global (HUD - Fica na frente do conteúdo para os textos) -->
     <div class="proposal-frame">
         <div class="frame-item">
             <div class="frame-top"><?= $categoriaProjeto ?></div>
