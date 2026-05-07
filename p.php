@@ -56,11 +56,18 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
     <title><?= $proposta['titulo'] ?> — <?= $cliente ?></title>
     
     <link rel="stylesheet" href="<?= raizUrl('/assets/css/propostas.css') ?>">
+    <link rel="stylesheet" href="<?= raizUrl('/assets/css/propostas-mobile.css') ?>">
     <!-- Bibliotecas Externas -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body class="type-<?= $tipo ?>">
+
+    <!-- Header Mobile (visível apenas em telas ≤ 768px via CSS) -->
+    <header class="mobile-header no-print" style="display: none;">
+        <span class="mobile-header-logo">DISTINTO</span>
+        <span class="mobile-header-title"><?= htmlspecialchars($proposta['titulo']) ?> — <?= htmlspecialchars($cliente) ?></span>
+    </header>
 
     <!-- Moldura Global (HUD) -->
     <div class="proposal-hud-lines"></div>
@@ -129,6 +136,19 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
         <span>Aprovar Proposta</span>
         <i data-lucide="check-circle"></i>
     </a>
+
+    <!-- Action Bar Mobile (visível apenas em telas ≤ 768px via CSS) -->
+    <div class="mobile-action-bar no-print" style="display: none;">
+        <a href="https://wa.me/<?= preg_replace('/\D/', '', $configEmpresa['telefone'] ?? '') ?>?text=<?= rawurlencode('Olá! Gostaria de aprovar a proposta: ' . $proposta['titulo'] . ' (Ref: ' . $slug . ')') ?>"
+           class="mobile-btn-approve">
+            <i data-lucide="check-circle"></i>
+            <span>Aprovar</span>
+        </a>
+        <button onclick="window.showExportModal()" class="mobile-btn-pdf">
+            <i data-lucide="file-down"></i>
+            <span>PDF</span>
+        </button>
+    </div>
 
     <!-- Modal de Exportação -->
     <div id="export-modal" class="export-modal no-print" style="display: none;">

@@ -1,0 +1,286 @@
+/**
+ * Propostas — Layout Mobile
+ * Carregado junto com propostas.css mas contém APENAS @media mobile.
+ * Não altera absolutamente nada do layout desktop (> 768px).
+ */
+
+@media (max-width: 768px) {
+
+    /* =============================================
+       RESET DO SCROLL ENGINE
+    ============================================= */
+    body {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+    }
+
+    .proposal-wrapper {
+        height: auto !important;
+        overflow: visible !important;
+        scroll-snap-type: none !important;
+    }
+
+    /* =============================================
+       SLIDES — LAYOUT VERTICAL
+    ============================================= */
+    .proposal-page {
+        height: auto !important;
+        min-height: 0 !important;
+        grid-template-columns: 1fr !important;
+        padding: 48px 24px 40px !important;
+        scroll-snap-align: none !important;
+        scroll-snap-stop: unset !important;
+        overflow: visible !important;
+    }
+
+    /* Forçar todas as colunas para coluna única */
+    .proposal-page .page-content {
+        grid-column: 1 !important;
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        margin-bottom: 24px;
+    }
+
+    /* Remover último margin */
+    .proposal-page .page-content:last-child { margin-bottom: 0; }
+
+    /* =============================================
+       HUD — OCULTAR NO MOBILE
+    ============================================= */
+    .proposal-frame,
+    .proposal-hud-lines,
+    .proposal-page::before,
+    .proposal-page::after,
+    .fixed-section-title { display: none !important; }
+
+    /* =============================================
+       MOBILE HEADER (visível só no mobile)
+    ============================================= */
+    .mobile-header {
+        display: flex !important;
+        position: sticky;
+        top: 0;
+        z-index: 600;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 14px 20px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .mobile-header-logo {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #000;
+    }
+
+    .mobile-header-title {
+        font-size: 10px;
+        color: #6b7280;
+        text-align: right;
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* =============================================
+       MOBILE ACTION BAR (visível só no mobile)
+    ============================================= */
+    .mobile-action-bar {
+        display: flex !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 600;
+        background: #000;
+        padding: 12px 20px;
+        padding-bottom: calc(12px + env(safe-area-inset-bottom));
+        gap: 10px;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+    }
+
+    .mobile-action-bar a,
+    .mobile-action-bar button {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 13px 16px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    .mobile-btn-approve {
+        background: #fff;
+        color: #000;
+    }
+
+    .mobile-btn-pdf {
+        background: rgba(255,255,255,0.1);
+        color: #fff;
+    }
+
+    /* Padding no rodapé para não cobrir conteúdo */
+    .proposal-wrapper {
+        padding-bottom: 80px !important;
+    }
+
+    /* Ocultar botões flutuantes desktop */
+    .btn-floating,
+    .btn-export-top { display: none !important; }
+
+    /* =============================================
+       TIPOGRAFIA MOBILE
+    ============================================= */
+
+    /* Hero — título grande */
+    .proposal-page h1 {
+        font-size: 2rem !important;
+        letter-spacing: -1px !important;
+    }
+
+    /* Slides escuros — título impacto */
+    .dark-page h2 {
+        font-size: 2.2rem !important;
+        line-height: 1.1 !important;
+    }
+
+    /* Slides claros */
+    .proposal-page h2 {
+        font-size: 2rem !important;
+    }
+
+    /* =============================================
+       GRADIENTE ABSTRATO — OCULTAR NO MOBILE
+    ============================================= */
+    .side-gradient-container,
+    .abstract-gradient { display: none !important; }
+
+    /* =============================================
+       SLIDE HERO (capa)
+    ============================================= */
+    .proposal-page:first-of-type {
+        min-height: 80vh !important;
+        justify-content: flex-start !important;
+    }
+
+    /* =============================================
+       SLIDE ESCURO — AJUSTES
+    ============================================= */
+    .dark-page .page-content {
+        padding: 0 !important;
+    }
+
+    /* Texto de missão — menor no mobile */
+    .mission-text {
+        font-size: 13px !important;
+    }
+
+    .mission-text h3 {
+        font-size: 1.6rem !important;
+    }
+
+    /* =============================================
+       SLIDE INVESTIMENTO
+    ============================================= */
+
+    /* Valor principal */
+    [style*="font-size: 4rem"],
+    [style*="font-size:4rem"] {
+        font-size: 3rem !important;
+    }
+
+    /* Valor riscado */
+    [style*="font-size: 1.6rem"] {
+        font-size: 1.2rem !important;
+    }
+
+    /* Serviços — ajuste de espaçamento */
+    [style*="gap: 2.5rem"] {
+        gap: 1.5rem !important;
+    }
+
+    /* =============================================
+       SLIDE CRONOGRAMA
+    ============================================= */
+    .cronograma-mobile-fix {
+        padding-left: 0 !important;
+    }
+
+    /* =============================================
+       SLIDE ETAPAS (pílulas)
+    ============================================= */
+
+    /* Pílulas de etapas em coluna */
+    [style*="width: 14rem"] {
+        width: 100% !important;
+    }
+
+    /* Bracket de conexão — ocultar no mobile */
+    [style*="border-left: 0"] { display: none !important; }
+
+    /* Texto de cronograma — ajustar margin */
+    [style*="margin-left: 2rem"] {
+        margin-left: 0 !important;
+        margin-top: 20px !important;
+    }
+
+    /* =============================================
+       SLIDE LOGO (filmmaker/marca)
+    ============================================= */
+    #dynamic-logo img {
+        max-width: 80px !important;
+    }
+
+    /* =============================================
+       SLIDE FINAL CTA
+    ============================================= */
+    .proposal-page:last-of-type {
+        min-height: 60vh !important;
+    }
+
+    /* =============================================
+       MODAL DE EXPORTAÇÃO — ADAPTAR
+    ============================================= */
+    .export-modal-content {
+        width: 90vw !important;
+        padding: 24px !important;
+    }
+
+    .export-options {
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+
+    /* =============================================
+       VALIDADE PILL
+    ============================================= */
+    [style*="border-radius: 3.125rem"][style*="border: 1px solid"] {
+        font-size: 9px !important;
+        padding: 10px 16px !important;
+    }
+
+    /* =============================================
+       BADGES DE SERVIÇO
+    ============================================= */
+    [style*="border-radius: 3.125rem"][style*="background: #333"] {
+        font-size: 9px !important;
+        padding: 6px 14px !important;
+    }
+
+} /* end @media mobile */
