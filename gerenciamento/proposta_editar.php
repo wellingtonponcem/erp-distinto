@@ -349,31 +349,33 @@ document.addEventListener('alpine:init', () => {
             this.secoes = dados.secoes || {};
             this.responsavel = dados.responsavel || '';
             this.whatsapp = dados.whatsapp || '';
+            
+            // Mapeia os serviços garantindo que o ID seja encontrado
             this.servicosSelecionados = dados.servicos ? dados.servicos.map(s => {
-                // Tenta encontrar pelo ID primeiro (para propostas novas)
-                let servicoEncontrado = null;
-                if (s.id) {
-                    servicoEncontrado = this.catalogoServicos.find(c => c.id == s.id);
-                }
+                const servicoEncontrado = this.catalogoServicos.find(cat => 
+                    (s.id && cat.id == s.id) || 
+                    (cat.nome && s.nome && cat.nome.trim().toUpperCase() === s.nome.trim().toUpperCase())
+                );
                 
-                // Fallback: Tenta encontrar pelo nome (para propostas antigas)
-                if (!servicoEncontrado && s.nome) {
-                    const nomeBusca = s.nome.trim().toLowerCase();
-                    servicoEncontrado = this.catalogoServicos.find(c => c.nome.trim().toLowerCase() === nomeBusca);
-                }
-
                 return { 
-                    id: servicoEncontrado ? servicoEncontrado.id : '', 
+                    id: servicoEncontrado ? servicoEncontrado.id : (s.id || ''), 
                     valor: parseFloat(s.valor_individual || 0),
                     tipo_cobranca: s.tipo_cobranca || (servicoEncontrado && servicoEncontrado.periodicidade === 'pontual' ? 'pontual' : 'recorrente'),
                     frequencia: parseInt(s.frequencia) || 1,
                     valor_mensal: 0
                 };
             }) : [];
+
             this.mesesContrato = parseInt(dados.meses_contrato) || 12;
             this.formaPagamento = dados.forma_pagamento || 'boleto_pix';
             this.dataInicio = dados.data_inicio || '';
             this.adicional = dados.adicional || { titulo: '', valor: 0, descricao: '' };
+            
+            // Força o Alpine a processar os dados e depois recalcula
+            this.$nextTick(() => {
+                this.recalcularTotal();
+                if (window.lucide) lucide.createIcons();
+            });
             
             // Carregar etapas ativas ou padrão (todas ativas se for nova ou antiga sem esse campo)
             if (dados.etapas_ativas && Array.isArray(dados.etapas_ativas) && dados.etapas_ativas.length > 0) {
