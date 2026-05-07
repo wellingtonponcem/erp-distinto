@@ -439,24 +439,28 @@ document.addEventListener('alpine:init', () => {
                 if (item.tipo_cobranca === 'pontual') {
                     if (freq > 1) {
                         // Se tem recorrência (ex: 2x/mês), usa o preço de contrato * frequência
-                        item.valor_mensal = precoRecorrente * freq;
+                        item.valor_mensal = Math.round((precoRecorrente * freq) * 100) / 100;
                     } else {
                         // Se é pontual único, divide o valor total pelos meses de contrato
-                        item.valor_mensal = parseFloat(item.valor) / meses;
+                        item.valor_mensal = Math.round((parseFloat(item.valor) / meses) * 100) / 100;
                     }
                 } else {
                     // Recorrente padrão
-                    item.valor_mensal = parseFloat(item.valor);
+                    item.valor_mensal = Math.round(parseFloat(item.valor) * 100) / 100;
                 }
             });
 
-            this.valorSubtotal = this.servicosSelecionados.reduce((acc, curr) => acc + (curr.valor_mensal || 0), 0);
+            const subRaw = this.servicosSelecionados.reduce((acc, curr) => acc + (curr.valor_mensal || 0), 0);
+            this.valorSubtotal = Math.round(subRaw * 100) / 100;
+            
             let desconto = 0;
             const sub = parseFloat(this.valorSubtotal || 0);
             const desc = parseFloat(this.descontoValor || 0);
             if (this.descontoTipo === 'porcentagem') desconto = sub * (desc / 100);
             else desconto = desc;
-            this.valorTotal = Math.max(0, sub - desconto);
+            
+            const totalRaw = Math.max(0, sub - desconto);
+            this.valorTotal = Math.round(totalRaw * 100) / 100;
         }
     }));
 });

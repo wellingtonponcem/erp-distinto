@@ -482,12 +482,12 @@
                     }
                 }
 
-                $valorMensal = $isNovaLogica ? $proposta['valor_total'] : ($proposta['valor_total'] / ($mesesContrato > 0 ? $mesesContrato : 1));
+                $valorMensal = $isNovaLogica ? $proposta['valor_total'] : round($proposta['valor_total'] / ($mesesContrato > 0 ? $mesesContrato : 1), 2);
                 
                 $isCartao = ($dadosJson['forma_pagamento'] ?? 'boleto_pix') === 'cartao';
                 
                 if ($isCartao) {
-                    $valorMensal = $valorMensal * 1.0213;
+                    $valorMensal = round($valorMensal * 1.0213, 2);
                 }
             ?>
 
