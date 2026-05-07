@@ -89,12 +89,36 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
         <?php include $templateFile; ?>
     </div>
 
-    <!-- Botão Flutuante de Aprovação -->
     <a href="https://wa.me/<?= preg_replace('/\D/', '', $configEmpresa['telefone'] ?? '') ?>?text=Olá! Gostaria de aprovar a proposta: <?= $proposta['titulo'] ?> (Ref: <?= $slug ?>)" 
-       id="btn-approve" class="btn-floating">
+       id="btn-approve" class="btn-floating no-print">
         <span>Aprovar Proposta</span>
         <i data-lucide="check-circle"></i>
     </a>
+
+    <!-- Modal de Exportação -->
+    <div id="export-modal" class="export-modal no-print" style="display: none;">
+        <div class="export-modal-content">
+            <h3>Exportar Proposta</h3>
+            <p>Escolha o formato de visualização para o PDF:</p>
+            
+            <div class="export-options">
+                <button onclick="window.exportPDF('horizontal')" class="export-option">
+                    <div class="option-preview horizontal">
+                        <div class="mac-screen"></div>
+                    </div>
+                    <span>Horizontal (Mac M1)</span>
+                </button>
+                <button onclick="window.exportPDF('vertical')" class="export-option">
+                    <div class="option-preview vertical">
+                        <div class="phone-screen"></div>
+                    </div>
+                    <span>Vertical (Mobile)</span>
+                </button>
+            </div>
+            
+            <button onclick="window.hideExportModal()" class="btn-cancel-export">Cancelar</button>
+        </div>
+    </div>
 
     <script>
         // Inicializar ícones

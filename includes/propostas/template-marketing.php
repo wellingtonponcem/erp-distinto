@@ -15,6 +15,10 @@
                 <?= $proposta['subtitulo'] ?>
             </p>
             <?php endif; ?>
+
+            <button class="btn-export-trigger no-print" onclick="window.showExportModal()">
+                <i data-lucide="file-down"></i> Exportar para PDF
+            </button>
         </div>
     </section>
 
@@ -571,10 +575,13 @@
                 <a href="https://wa.me/5527988586935" target="_blank" style="color: #fff; text-decoration: none; font-size: 16px; font-weight: 600;">WhatsApp: (27) 9 8858-6935</a>
             </div>
 
-            <div style="margin-top: 60px; font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6;">
                 Rod. Sol, 2780, SL 1307 - Praia de Itaparica<br>
                 Vila Velha - ES
             </div>
+
+            <button class="btn-export-trigger no-print" style="margin-top: 40px; background: #fff; color: #000;" onclick="window.showExportModal()">
+                <i data-lucide="file-down"></i> Exportar para PDF
+            </button>
         </div>
     </section>
 </div>
