@@ -187,7 +187,7 @@ html {
 .proposal-frame::after {
     content: '';
     position: absolute;
-    left: 40%;
+    left: 85%;
     top: 0;
     bottom: 0;
     width: 2px;
