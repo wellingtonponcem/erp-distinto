@@ -516,7 +516,7 @@
     <?php endif; ?>
 
     <!-- Slide 11: Investimento Detalhado -->
-    <section class="proposal-page">
+    <section class="proposal-page is-investimento">
         <!-- Coluna 1: Título e Validade -->
         <div class="page-content" style="grid-column: 1; flex-direction: column; justify-content: center; gap: 2.5rem; height: 100vh; padding: 0;">
             <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 3.25rem; line-height: 1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 90%;">
