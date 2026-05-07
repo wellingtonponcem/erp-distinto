@@ -125,6 +125,15 @@ include __DIR__ . '/../includes/layout/head.php';
                 </section>
 
                 <section class="card p-6">
+                    <h3 class="text-sm font-bold text-zinc-900 mb-4">Estratégia & Objetivo</h3>
+                    <div class="form-group">
+                        <label class="label">Objetivo do Projeto (Será refinado por IA)</label>
+                        <textarea name="objetivo" class="input min-h-[100px]" maxlength="1020" placeholder="Ex: Fortalecer a marca Innovare Solar como referência em energia limpa no ES, aumentar captação de leads e fechar novos contratos..."></textarea>
+                        <p class="text-[10px] text-zinc-500 mt-1">Máximo de 1020 caracteres. Este texto será reescrito pela IA para a Sessão 3 da proposta.</p>
+                    </div>
+                </section>
+
+                <section class="card p-6">
                     <h3 class="text-sm font-bold text-zinc-900 mb-4">Briefing para IA</h3>
                     <div class="form-group">
                         <label class="label">Instruções Adicionais (Opcional)</label>

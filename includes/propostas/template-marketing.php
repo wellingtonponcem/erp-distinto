@@ -57,11 +57,32 @@
         </div>
     </section>
 
+    <!-- Slide 3: Objetivo do Projeto -->
+    <section class="proposal-page">
+        <!-- Coluna 1: Título -->
+        <div class="page-content" style="grid-column: 1; justify-content: center;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 90%;">
+                PARA ESTE PROJETO, QUAL SERÁ O NOSSO OBJETIVO?
+            </h2>
+        </div>
+
+        <!-- Coluna 2: Texto Estratégico (IA) -->
+        <div class="page-content" style="grid-column: 2; justify-content: center; padding-left: 40px;">
+            <div class="objective-text" style="color: #333; font-size: 15px; line-height: 1.6; opacity: 0.9;">
+                <?php if (!empty($dados['secoes']['objetivo'])): ?>
+                    <?= nl2br($dados['secoes']['objetivo']) ?>
+                <?php else: ?>
+                    Após uma análise do posicionamento estratégico da marca, identificamos uma oportunidade de fortalecer sua percepção de valor e autoridade. Nosso foco é claro: gerar resultados reais e posicionar seu negócio como referência no mercado.
+                <?php endif; ?>
+            </div>
+        </div>
+    </section>
+
     <!-- Slide 4: Investimento -->
     <section class="proposal-page">
         <div class="page-content" style="align-items: center; text-align: center;">
             <div style="font-family: var(--font-heading); font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #000; margin-bottom: 40px;">
-                03. Investimento & Parceria
+                04. Investimento & Parceria
             </div>
             <div style="background: #000; color: #fff; padding: 60px 100px; border-radius: 0; position: relative;">
                 <p style="text-transform: uppercase; font-size: 14px; letter-spacing: 2px; opacity: 0.6; margin-bottom: 10px;">Valor Mensal do Projeto</p>

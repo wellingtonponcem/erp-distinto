@@ -105,6 +105,11 @@ try {
 
     if ($d['tipo'] === 'marketing') {
         $secoes['desafio'] = IAPropostas::gerarTextoSecao('marketing', 'desafio', $contexto);
+        
+        // Melhorar Objetivo com IA se fornecido
+        if (!empty($d['objetivo'])) {
+            $secoes['objetivo'] = IAPropostas::melhorarObjetivo($d['objetivo'], $contexto);
+        }
     } elseif ($d['tipo'] === 'casamento') {
         $secoes['visao'] = IAPropostas::gerarTextoSecao('casamento', 'visao', $contexto);
     } elseif ($d['tipo'] === 'filmmaker') {
@@ -120,6 +125,7 @@ $dadosJson = json_encode([
     'secoes' => $secoes,
     'servicos' => $servicosInclusos,
     'briefing' => $d['briefing'] ?? '',
+    'objetivo_original' => $d['objetivo'] ?? '',
     'responsavel' => $responsavel,
     'is_plural' => $isPlural
 ], JSON_UNESCAPED_UNICODE);

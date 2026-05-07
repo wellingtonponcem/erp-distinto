@@ -86,4 +86,18 @@ class IAPropostas {
             ['role' => 'user', 'content' => $promptUsuario]
         ]);
     }
+
+    public static function melhorarObjetivo(string $objetivoOriginal, array $contexto) {
+        $cliente = $contexto['cliente'] ?? 'o cliente';
+        $servicos = $contexto['servicos'] ?? '';
+
+        $promptSistema = "Você é um estrategista de negócios de alto padrão. Sua tarefa é melhorar o texto de objetivos informado, tornando-o narrativo, sofisticado e persuasivo para uma proposta comercial. Use Português do Brasil. NUNCA use emojis. O texto deve ser direto, focado em resultados, autoridade e clareza. Máximo de 1020 caracteres.";
+        
+        $promptUsuario = "Melhore estrategicamente o seguinte texto de objetivo para o projeto de $cliente. \n\nObjetivo original: '$objetivoOriginal'. \n\nServiços envolvidos: $servicos. \n\nInstruções: \n1. Mantenha a essência do texto original, mas refine a linguagem para ser mais profissional e estratégica. \n2. Destaque o valor da marca e os resultados esperados. \n3. Use uma linguagem que transmita exclusividade. \n4. Estruture o texto em parágrafos curtos e limpos.";
+
+        return self::chamarGroq([
+            ['role' => 'system', 'content' => $promptSistema],
+            ['role' => 'user', 'content' => $promptUsuario]
+        ]);
+    }
 }

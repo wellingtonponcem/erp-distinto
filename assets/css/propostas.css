@@ -399,8 +399,8 @@ body.type-15anos .proposal-frame {
     filter: blur(60px);
     opacity: 0.9;
     /* Máscara para garantir corte absoluto na esquerda */
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%);
-    mask-image: linear-gradient(to right, transparent 0%, black 15%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 55%);
+    mask-image: linear-gradient(to right, transparent 0%, black 55%);
 }
 
 .dark-page {
