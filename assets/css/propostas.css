@@ -172,47 +172,28 @@ html {
     transition: color 0.4s ease;
 }
 
-/* Linhas da Moldura - Camada Inferior ao Conteúdo */
-.proposal-lines {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 1; /* Atrás do wrapper */
-}
-
-.proposal-lines::before {
+.proposal-frame::before {
     content: '';
     position: absolute;
     left: 40%;
     top: 0;
     bottom: 0;
     width: 2px;
+    /* Engrossado para +1px */
     background: rgba(0, 0, 0, 0.12);
     transition: background 0.4s ease;
 }
 
-.proposal-lines::after {
+.proposal-frame::after {
     content: '';
     position: absolute;
     left: 85%;
     top: 0;
     bottom: 0;
     width: 2px;
+    /* Engrossado para +1px */
     background: rgba(0, 0, 0, 0.12);
     transition: background 0.4s ease;
-}
-
-.proposal-frame::before,
-.proposal-frame::after {
-    display: none;
-}
-
-.proposal-wrapper {
-    position: relative;
-    z-index: 10; /* No meio entre as linhas e o texto do HUD */
 }
 
 /* Inversão para Slides Escuros */
@@ -220,8 +201,8 @@ body.on-dark .proposal-frame {
     color: #fff;
 }
 
-body.on-dark .proposal-lines::before,
-body.on-dark .proposal-lines::after {
+body.on-dark .proposal-frame::before,
+body.on-dark .proposal-frame::after {
     background: rgba(255, 255, 255, 0.2);
 }
 
