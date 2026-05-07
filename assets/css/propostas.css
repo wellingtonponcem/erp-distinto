@@ -423,8 +423,8 @@ body.type-15anos .proposal-frame {
     position: fixed;
     top: 50%;
     transform: translateY(-50%);
-    left: 40px;
-    width: calc(40% - 80px);
+    left: 6vw;
+    width: calc(40% - 6vw);
     z-index: 100;
     pointer-events: none;
     opacity: 0;
