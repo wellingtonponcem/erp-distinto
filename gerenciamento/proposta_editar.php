@@ -28,8 +28,8 @@ $dadosJson = json_decode($proposta['dados_json'], true);
 $stmtClientes = $db->query("SELECT id, nome FROM clientes ORDER BY nome ASC");
 $clientes = $stmtClientes->fetchAll();
 
-// Buscar serviços (incluindo periodicidade e preço pontual)
-$stmtServicos = $db->query("SELECT id, nome, descricao, preco_venda, preco_venda_pontual, periodicidade FROM servicos ORDER BY nome ASC");
+// Buscar serviços (apenas ativos, incluindo periodicidade e preço pontual)
+$stmtServicos = $db->query("SELECT id, nome, descricao, preco_venda, preco_venda_pontual, periodicidade FROM servicos WHERE ativo = 1 ORDER BY nome ASC");
 $servicos = $stmtServicos->fetchAll();
 $servicosJson = json_encode($servicos);
 
