@@ -59,6 +59,7 @@ if (!empty($d['servicos']) && is_array($d['servicos'])) {
         if ($s = $stmtS->fetch()) {
             $s['id'] = $item['id']; // Garante que o ID seja salvo no JSON
             $s['valor_individual'] = (float)($item['valor'] ?? 0);
+            $s['tipo_cobranca'] = $item['tipo_cobranca'] ?? 'recorrente';
             $s['frequencia'] = $item['frequencia'] ?? '';
             $servicosInclusos[] = $s;
         }

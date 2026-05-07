@@ -170,23 +170,63 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
 
                     <div class="space-y-3">
                         <template x-for="(item, index) in servicosSelecionados" :key="index">
-                            <div class="flex flex-col md:flex-row gap-3 p-3 border border-zinc-100 rounded-lg bg-zinc-50/50 relative group animate-fade-in">
-                                <div class="flex-1">
-                                    <label class="text-[10px] font-bold text-zinc-500 uppercase mb-1 block">Serviço</label>
-                                    <select :name="'servicos['+index+'][id]'" class="input py-2" x-model="item.id" @change="atualizarDadosServico(index)">
-                                        <option value="">Selecione um serviço...</option>
-                                        <template x-for="s in catalogoServicos" :key="s.id">
-                                            <option :value="s.id" x-text="s.nome"></option>
-                                        </template>
-                                    </select>
+                            <div class="p-4 border border-zinc-100 rounded-xl bg-zinc-50/50 relative group animate-fade-in">
+                                <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                                    <!-- Seleção de Serviço -->
+                                    <div class="md:col-span-4">
+                                        <label class="text-[10px] font-bold text-zinc-500 uppercase mb-1 block">Serviço</label>
+                                        <select :name="'servicos['+index+'][id]'" class="input py-2" x-model="item.id" @change="atualizarDadosServico(index)">
+                                            <option value="">Selecione um serviço...</option>
+                                            <template x-for="s in catalogoServicos" :key="s.id">
+                                                <option :value="s.id" x-text="s.nome"></option>
+                                            </template>
+                                        </select>
+                                    </div>
+
+                                    <!-- Tipo de Cobrança -->
+                                    <div class="md:col-span-3">
+                                        <label class="text-[10px] font-bold text-zinc-500 uppercase mb-1 block">Modo de Cobrança</label>
+                                        <select :name="'servicos['+index+'][tipo_cobranca]'" class="input py-2" x-model="item.tipo_cobranca" @change="recalcularTotal()">
+                                            <option value="recorrente">Recorrente (Mensal)</option>
+                                            <option value="pontual">Pontual (Única/Frequência)</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Frequência (Se Pontual) -->
+                                    <div class="md:col-span-2" x-show="item.tipo_cobranca === 'pontual'">
+                                        <label class="text-[10px] font-bold text-zinc-500 uppercase mb-1 block">Frequência/Mês</label>
+                                        <input type="number" :name="'servicos['+index+'][frequencia]'" class="input py-2" x-model="item.frequencia" @input="recalcularTotal()" min="1" placeholder="Ex: 1">
+                                    </div>
+
+                                    <!-- Valor Base -->
+                                    <div class="md:col-span-2">
+                                        <label class="text-[10px] font-bold text-zinc-500 uppercase mb-1 block" x-text="item.tipo_cobranca === 'pontual' ? 'Valor Único' : 'Valor Mensal'"></label>
+                                        <input type="number" step="0.01" :name="'servicos['+index+'][valor]'" class="input py-2 font-bold" x-model="item.valor" @input="recalcularTotal()">
+                                    </div>
+
+                                    <!-- Botão Remover -->
+                                    <div class="md:col-span-1 flex items-end justify-end">
+                                        <button type="button" @click="removerServico(index)" class="bg-red-50 text-red-500 p-2 rounded-lg hover:bg-red-100 transition-colors">
+                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="w-full md:w-32">
-                                    <label class="text-[10px] font-bold text-zinc-500 uppercase mb-1 block">Valor (R$)</label>
-                                    <input type="number" step="0.01" :name="'servicos['+index+'][valor]'" class="input py-2 font-bold" x-model="item.valor" @input="recalcularTotal()">
+
+                                <!-- Resumo do Cálculo -->
+                                <div class="mt-3 pt-3 border-t border-zinc-200/50 flex items-center justify-between">
+                                    <div class="flex gap-4">
+                                        <p class="text-[10px] text-zinc-400 italic" x-show="item.tipo_cobranca === 'pontual' && item.frequencia <= 1">
+                                            * Valor único diluído em <span x-text="mesesContrato"></span> meses de contrato.
+                                        </p>
+                                        <p class="text-[10px] text-zinc-400 italic" x-show="item.tipo_cobranca === 'pontual' && item.frequencia > 1">
+                                            * Frequência mensal detectada. Usando valor de contrato.
+                                        </p>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-[10px] font-bold text-zinc-400 uppercase">Total Mensal:</span>
+                                        <span class="text-xs font-bold text-zinc-900" x-text="new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.valor_mensal || 0)"></span>
+                                    </div>
                                 </div>
-                                <button type="button" @click="removerServico(index)" class="absolute -top-2 -right-2 md:static md:mt-6 bg-red-50 text-red-500 p-2 rounded-lg hover:bg-red-100 transition-colors">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </button>
                             </div>
                         </template>
 
@@ -299,15 +339,13 @@ document.addEventListener('alpine:init', () => {
         descontoTipo: 'porcentagem',
         valorTotal: 0,
         tipoProposta: 'marketing',
+        mesesContrato: 12,
         
         init() {
-            // Adiciona um serviço inicial se for marketing
             if (this.tipoProposta === 'marketing') {
                 this.adicionarServico();
             }
             
-            // Observar mudança no tipo de proposta via DOM se necessário, 
-            // mas o ideal é usar x-model no select
             this.$watch('tipoProposta', (value) => {
                 const section = document.getElementById('sectionServicos');
                 if (value === 'marketing') {
@@ -319,10 +357,8 @@ document.addEventListener('alpine:init', () => {
         },
 
         adicionarServico() {
-            this.servicosSelecionados.push({ id: '', valor: 0 });
-            this.$nextTick(() => {
-                if (window.lucide) lucide.createIcons();
-            });
+            this.servicosSelecionados.push({ id: '', valor: 0, tipo_cobranca: 'recorrente', frequencia: 1, valor_mensal: 0 });
+            this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
         },
 
         removerServico(index) {
@@ -334,13 +370,38 @@ document.addEventListener('alpine:init', () => {
             const item = this.servicosSelecionados[index];
             const servico = this.catalogoServicos.find(s => s.id == item.id);
             if (servico) {
-                item.valor = parseFloat(servico.preco_venda || 0);
+                // Seta o tipo baseado no padrão do catálogo
+                item.tipo_cobranca = servico.periodicidade === 'pontual' ? 'pontual' : 'recorrente';
+                
+                if (item.tipo_cobranca === 'pontual') {
+                    item.valor = parseFloat(servico.preco_venda_pontual || servico.preco_venda || 0);
+                } else {
+                    item.valor = parseFloat(servico.preco_venda || 0);
+                }
             }
             this.recalcularTotal();
         },
 
         recalcularTotal() {
-            this.valorSubtotal = this.servicosSelecionados.reduce((acc, curr) => acc + parseFloat(curr.valor || 0), 0);
+            const meses = parseInt(this.mesesContrato) || 1;
+            
+            this.servicosSelecionados.forEach(item => {
+                const servico = this.catalogoServicos.find(s => s.id == item.id);
+                const precoRecorrente = servico ? parseFloat(servico.preco_venda || 0) : 0;
+                const freq = parseInt(item.frequencia) || 1;
+
+                if (item.tipo_cobranca === 'pontual') {
+                    if (freq > 1) {
+                        item.valor_mensal = precoRecorrente * freq;
+                    } else {
+                        item.valor_mensal = parseFloat(item.valor) / meses;
+                    }
+                } else {
+                    item.valor_mensal = parseFloat(item.valor);
+                }
+            });
+
+            this.valorSubtotal = this.servicosSelecionados.reduce((acc, curr) => acc + (curr.valor_mensal || 0), 0);
             
             let desconto = 0;
             const sub = parseFloat(this.valorSubtotal || 0);

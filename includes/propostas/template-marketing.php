@@ -469,9 +469,22 @@
         <div class="page-content" style="grid-column: 2; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 0;">
             <div style="width: 100%; max-height: 85vh; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2.5rem 0;">
             <?php
-                $mesesContrato = $dados['meses_contrato'] ?? 12;
-                $valorMensal = $proposta['valor_total'] / ($mesesContrato > 0 ? $mesesContrato : 1);
-                $isCartao = ($dados['forma_pagamento'] ?? 'boleto_pix') === 'cartao';
+                $mesesContrato = $dadosJson['meses_contrato'] ?? 12;
+                
+                // Se a proposta já foi salva com a nova lógica (valor_total = mensal), não dividimos
+                $isNovaLogica = false;
+                if (!empty($dadosJson['servicos'])) {
+                    foreach ($dadosJson['servicos'] as $s) {
+                        if (isset($s['tipo_cobranca'])) {
+                            $isNovaLogica = true;
+                            break;
+                        }
+                    }
+                }
+
+                $valorMensal = $isNovaLogica ? $proposta['valor_total'] : ($proposta['valor_total'] / ($mesesContrato > 0 ? $mesesContrato : 1));
+                
+                $isCartao = ($dadosJson['forma_pagamento'] ?? 'boleto_pix') === 'cartao';
                 
                 if ($isCartao) {
                     $valorMensal = $valorMensal * 1.0213;
@@ -495,10 +508,12 @@
             <div style="width: 100%; display: flex; flex-direction: column; gap: 2.5rem;">
                 <?php foreach ($dados['servicos'] ?? [] as $servico): ?>
                     <div style="width: 100%;">
-                        <div style="padding: 8px 1.875rem; border-radius: 3.125rem; background: #333; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; width: fit-content; margin-bottom: 1.25rem;">
-                            <?= $servico['nome'] ?>
-                            <?php if (!empty($servico['frequencia'])): ?>
-                                <span style="opacity: 0.7; margin-left: 5px;">• <?= $servico['frequencia'] ?></span>
+                        <div style="padding: 8px 1.25rem; border-radius: 3.125rem; background: #333; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; width: fit-content; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px;">
+                            <span><?= $servico['nome'] ?></span>
+                            <?php if (($servico['tipo_cobranca'] ?? '') === 'pontual'): ?>
+                                <span style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px; font-size: 8px;">
+                                    <?= (!empty($servico['frequencia']) && (int)$servico['frequencia'] > 1) ? $servico['frequencia'] . 'X/MÊS' : 'PONTUAL' ?>
+                                </span>
                             <?php endif; ?>
                         </div>
                         <div style="font-size: 13px; font-weight: 700; color: #000; margin-bottom: 0.9375rem;">
