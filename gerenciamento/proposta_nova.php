@@ -235,8 +235,8 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
             <div class="space-y-6">
                 <section class="card p-6 bg-zinc-900 text-white shadow-xl shadow-zinc-900/20 border-0">
                     <h3 class="text-sm font-bold mb-4 opacity-80">Ações</h3>
-                    <button type="submit" id="btnGerar" class="w-full h-12 rounded-xl font-bold bg-white text-zinc-900 hover:bg-zinc-50 transition-all flex items-center justify-center gap-2 group">
-                        <i data-lucide="sparkles" class="w-5 h-5 text-zinc-500 group-hover:text-zinc-900 transition-colors"></i>
+                    <button type="submit" id="btnGerar" class="w-full h-12 rounded-xl font-bold bg-white text-black hover:bg-zinc-100 transition-all flex items-center justify-center gap-2 group !text-black">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-zinc-500 group-hover:text-black transition-colors !text-zinc-900"></i>
                         Gerar Proposta Web
                     </button>
                     <p class="mt-4 text-[11px] opacity-60 text-center">

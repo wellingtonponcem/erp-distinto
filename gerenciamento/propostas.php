@@ -344,22 +344,23 @@ include __DIR__ . '/../includes/layout/head.php';
                  x-transition:enter-start="opacity-0"
                  x-transition:enter-end="opacity-100">
                 
-                <div class="bg-white rounded-3xl w-full max-w-6xl h-[90vh] flex flex-col overflow-hidden relative shadow-2xl border border-white/10"
+                <div class="bg-white rounded-3xl w-[80%] h-[90vh] flex flex-col overflow-hidden relative shadow-2xl border border-white/10"
+                     x-init="$watch('showModalNova', v => { if(v) $nextTick(() => lucide.createIcons()) })"
                      x-transition:enter="ease-out duration-300"
                      x-transition:enter-start="opacity-0 scale-95 translate-y-4"
                      x-transition:enter-end="opacity-100 scale-100 translate-y-0">
                     
                     <!-- Header Modal -->
-                    <div class="px-8 py-4 bg-zinc-50 border-b border-zinc-100 flex items-center justify-between">
+                    <div class="px-8 py-4 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-                                <i data-lucide="plus" class="w-4 h-4 text-white"></i>
+                            <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                                <i data-lucide="plus" class="w-4 h-4 text-black"></i>
                             </div>
-                            <h2 class="text-sm font-bold text-zinc-900 uppercase tracking-wider">Registrar Nova Proposta</h2>
+                            <h2 class="text-sm font-bold text-white uppercase tracking-wider">Registrar Nova Proposta</h2>
                         </div>
                         <button @click="showModalNova = false; window.location.reload()" 
-                                class="p-2 hover:bg-zinc-200 rounded-full transition-colors text-zinc-500 hover:text-zinc-900 group">
-                            <i data-lucide="x" class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300"></i>
+                                class="p-2 hover:bg-zinc-800 rounded-full transition-colors text-zinc-400 hover:text-white group">
+                            <i data-lucide="x" class="w-6 h-6 group-hover:rotate-90 transition-transform duration-300"></i>
                         </button>
                     </div>
 
