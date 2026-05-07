@@ -470,26 +470,64 @@
             <div style="width: 100%; max-height: 85vh; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2.5rem 0;">
             <?php
                 $mesesContrato = max(1, (int)($dadosJson['meses_contrato'] ?? 12));
-                // valor_total = total do contrato; dividimos pelos meses para exibir o valor mensal
-                $valorMensal = round($proposta['valor_total'] / $mesesContrato, 2);
+                // valor_total = total do contrato ÷ meses = valor mensal após desconto
+                $valorMensalFinal = round($proposta['valor_total'] / $mesesContrato, 2);
 
-                // Subtotal original = soma dos valor_mensal calculados de cada serviço
-                $subtotalMensal = 0;
-                foreach ($dados['servicos'] ?? [] as $sv) {
-                    // valor_mensal = contribuição mensal real (considera frequência e tipo de cobrança)
-                    // fallback para valor_individual se valor_mensal não foi salvo ainda
-                    $subtotalMensal += (float)($sv['valor_mensal'] ?? $sv['valor_individual'] ?? 0);
+                // Carregar preços do catálogo para calcular valor_mensal real de cada serviço
+                $catalogoPrecos = [];
+                $idsServicos = array_filter(array_column($dados['servicos'] ?? [], 'id'));
+                if (!empty($idsServicos)) {
+                    $placeholders = implode(',', array_fill(0, count($idsServicos), '?'));
+                    $stmtCat = $db->prepare("SELECT id, preco_venda, preco_venda_pontual FROM servicos WHERE id IN ($placeholders)");
+                    $stmtCat->execute(array_values($idsServicos));
+                    foreach ($stmtCat->fetchAll() as $sc) {
+                        $catalogoPrecos[$sc['id']] = $sc;
+                    }
                 }
 
+                // Calcular valor_mensal de cada serviço (mesmo critério do formulário JS)
+                $servicosComCalculo = [];
+                $subtotalMensal = 0;
+                foreach ($dados['servicos'] ?? [] as $sv) {
+                    $tipo  = $sv['tipo_cobranca'] ?? 'recorrente';
+                    $freq  = max(1, (int)($sv['frequencia'] ?? 1));
+                    $valIndividual = (float)($sv['valor_individual'] ?? 0);
+                    $cat   = $catalogoPrecos[$sv['id'] ?? ''] ?? null;
+
+                    if (isset($sv['valor_mensal']) && $sv['valor_mensal'] > 0) {
+                        // Já foi salvo corretamente — usar diretamente
+                        $vmCalculado = (float)$sv['valor_mensal'];
+                    } elseif ($tipo === 'pontual') {
+                        if ($freq > 1) {
+                            // Frequência mensal: usa preco_venda (recorrente) × freq
+                            $precoRecorrente = $cat ? (float)$cat['preco_venda'] : $valIndividual;
+                            $vmCalculado = round($precoRecorrente * $freq, 2);
+                        } else {
+                            // Pontual único: dilui pelo tempo de contrato
+                            $vmCalculado = round($valIndividual / $mesesContrato, 2);
+                        }
+                    } else {
+                        // Recorrente: é o próprio valor mensal
+                        $vmCalculado = $valIndividual;
+                    }
+
+                    $subtotalMensal += $vmCalculado;
+                    $servicosComCalculo[] = array_merge($sv, [
+                        '_vm'   => $vmCalculado,
+                        '_tipo' => $tipo,
+                        '_freq' => $freq,
+                        '_val_unico' => $valIndividual,
+                    ]);
+                }
+                $subtotalMensal = round($subtotalMensal, 2);
+
                 // Percentual de desconto global
-                $percentDesconto = ($subtotalMensal > 0 && $valorMensal < $subtotalMensal - 0.01)
-                    ? round((1 - $valorMensal / $subtotalMensal) * 100, 1)
+                $percentDesconto = ($subtotalMensal > 0.01 && $valorMensalFinal < $subtotalMensal - 0.01)
+                    ? round((1 - $valorMensalFinal / $subtotalMensal) * 100, 1)
                     : 0;
 
                 $isCartao = ($dadosJson['forma_pagamento'] ?? 'boleto_pix') === 'cartao';
-                if ($isCartao) {
-                    $valorMensal = round($valorMensal * 1.0213, 2);
-                }
+                $valorMensalExibido = $isCartao ? round($valorMensalFinal * 1.0213, 2) : $valorMensalFinal;
             ?>
 
             <!-- Valor Mensal -->
@@ -498,15 +536,13 @@
             </div>
 
             <?php if ($percentDesconto > 0): ?>
-            <!-- Valor original riscado -->
             <div style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 700; color: #000; opacity: 0.2; text-decoration: line-through; margin-bottom: 4px; letter-spacing: -1px;">
                 <?= formatarMoeda($subtotalMensal) ?>
             </div>
             <?php endif; ?>
 
-            <!-- Valor final -->
             <div style="font-family: var(--font-heading); font-size: 4rem; font-weight: 800; color: #000; margin-bottom: <?= $isCartao ? '5px' : '50px' ?>;">
-                <?= formatarMoeda($valorMensal) ?>
+                <?= formatarMoeda($valorMensalExibido) ?>
             </div>
             <?php if ($isCartao): ?>
                 <div style="font-size: 10px; color: #666; font-weight: 600; text-transform: uppercase; margin-bottom: 3.125rem;">
@@ -516,24 +552,32 @@
 
             <!-- Serviços Inclusos -->
             <div style="width: 100%; display: flex; flex-direction: column; gap: 2.5rem;">
-                <?php foreach ($dados['servicos'] ?? [] as $servico): ?>
+                <?php foreach ($servicosComCalculo as $servico): ?>
                     <div style="width: 100%;">
                         <div style="padding: 8px 1.25rem; border-radius: 3.125rem; background: #333; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; width: fit-content; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px;">
                             <span><?= sanitizar($servico['nome']) ?></span>
-                            <?php if (($servico['tipo_cobranca'] ?? '') === 'pontual'): ?>
+                            <?php if ($servico['_tipo'] === 'pontual'): ?>
                                 <span style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px; font-size: 8px;">
-                                    <?= (!empty($servico['frequencia']) && (int)$servico['frequencia'] > 1) ? $servico['frequencia'] . 'X/MÊS' : 'PONTUAL' ?>
+                                    <?= $servico['_freq'] > 1 ? $servico['_freq'] . 'X/MÊS' : 'PONTUAL' ?>
                                 </span>
                             <?php endif; ?>
                         </div>
-                        <div style="font-size: 13px; font-weight: 700; color: #000; margin-bottom: 0.9375rem; display: flex; align-items: center; gap: 8px;">
-                            <?= formatarMoeda($servico['valor_mensal'] ?? $servico['valor_individual'] ?? 0) ?> - Inclui:
+                        <div style="font-size: 13px; font-weight: 700; color: #000; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <?= formatarMoeda($servico['_vm']) ?>/mês
                             <?php if ($percentDesconto > 0): ?>
                                 <span style="font-size: 10px; font-weight: 700; color: #fff; background: #222; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.5px;">
                                     desconto de <?= number_format($percentDesconto, 0, ',', '.') ?>%
                                 </span>
                             <?php endif; ?>
                         </div>
+                        <?php if ($servico['_tipo'] === 'pontual' && $servico['_freq'] <= 1): ?>
+                        <div style="font-size: 11px; color: #888; margin-bottom: 0.9375rem; font-style: italic;">
+                            (valor único <?= formatarMoeda($servico['_val_unico']) ?> ÷ <?= $mesesContrato ?> meses)
+                        </div>
+                        <?php else: ?>
+                        <div style="margin-bottom: 0.6rem;"></div>
+                        <?php endif; ?>
+                        <div style="font-size: 12px; color: #555; margin-bottom: 0.5rem; font-weight: 600;">Inclui:</div>
                         <ul style="margin: 0; padding-left: 15px; list-style-type: none;">
                             <?php 
                                 // Divide a descrição em pontos se houver (por ponto final ou ponto e vírgula)
