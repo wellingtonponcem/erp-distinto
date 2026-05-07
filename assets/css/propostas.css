@@ -436,8 +436,8 @@ body.type-15anos .proposal-frame {
 .fixed-section-title h2 {
     font-family: var(--font-heading);
     font-weight: 800;
-    font-size: 2.5rem;
-    /* Reduzido de 52px para melhor ajuste */
+    font-size: 3.25rem;
+    /* Tamanho solicitado */
     line-height: 1.1;
     margin: 0;
     text-transform: uppercase;
