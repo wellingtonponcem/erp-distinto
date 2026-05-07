@@ -470,8 +470,19 @@
             <div style="width: 100%; max-height: 85vh; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2.5rem 0;">
             <?php
                 $mesesContrato = max(1, (int)($dadosJson['meses_contrato'] ?? 12));
-                // valor_total armazena o valor total do contrato; dividimos pelos meses para exibir o valor mensal
+                // valor_total = total do contrato; dividimos pelos meses para exibir o valor mensal
                 $valorMensal = round($proposta['valor_total'] / $mesesContrato, 2);
+
+                // Calcular subtotal original (soma dos valor_individual dos serviços)
+                $subtotalMensal = 0;
+                foreach ($dados['servicos'] ?? [] as $sv) {
+                    $subtotalMensal += (float)($sv['valor_individual'] ?? 0);
+                }
+
+                // Percentual de desconto global
+                $percentDesconto = ($subtotalMensal > 0 && $valorMensal < $subtotalMensal - 0.01)
+                    ? round((1 - $valorMensal / $subtotalMensal) * 100, 1)
+                    : 0;
 
                 $isCartao = ($dadosJson['forma_pagamento'] ?? 'boleto_pix') === 'cartao';
                 if ($isCartao) {
@@ -480,9 +491,18 @@
             ?>
 
             <!-- Valor Mensal -->
-            <div style="padding: 8px 40px; border-radius: 3.125rem; background: #333; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.9375rem;">
+            <div style="padding: 8px 40px; border-radius: 3.125rem; background: #333; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.75rem;">
                 VALOR INVESTIDO NO PROJETO /MÊS
             </div>
+
+            <?php if ($percentDesconto > 0): ?>
+            <!-- Valor original riscado -->
+            <div style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 700; color: #000; opacity: 0.2; text-decoration: line-through; margin-bottom: 4px; letter-spacing: -1px;">
+                <?= formatarMoeda($subtotalMensal) ?>
+            </div>
+            <?php endif; ?>
+
+            <!-- Valor final -->
             <div style="font-family: var(--font-heading); font-size: 4rem; font-weight: 800; color: #000; margin-bottom: <?= $isCartao ? '5px' : '50px' ?>;">
                 <?= formatarMoeda($valorMensal) ?>
             </div>
@@ -497,15 +517,20 @@
                 <?php foreach ($dados['servicos'] ?? [] as $servico): ?>
                     <div style="width: 100%;">
                         <div style="padding: 8px 1.25rem; border-radius: 3.125rem; background: #333; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; width: fit-content; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px;">
-                            <span><?= $servico['nome'] ?></span>
+                            <span><?= sanitizar($servico['nome']) ?></span>
                             <?php if (($servico['tipo_cobranca'] ?? '') === 'pontual'): ?>
                                 <span style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px; font-size: 8px;">
                                     <?= (!empty($servico['frequencia']) && (int)$servico['frequencia'] > 1) ? $servico['frequencia'] . 'X/MÊS' : 'PONTUAL' ?>
                                 </span>
                             <?php endif; ?>
                         </div>
-                        <div style="font-size: 13px; font-weight: 700; color: #000; margin-bottom: 0.9375rem;">
+                        <div style="font-size: 13px; font-weight: 700; color: #000; margin-bottom: 0.9375rem; display: flex; align-items: center; gap: 8px;">
                             <?= formatarMoeda($servico['valor_individual'] ?? 0) ?> - Inclui:
+                            <?php if ($percentDesconto > 0): ?>
+                                <span style="font-size: 10px; font-weight: 700; color: #fff; background: #222; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.5px;">
+                                    desconto de <?= number_format($percentDesconto, 0, ',', '.') ?>%
+                                </span>
+                            <?php endif; ?>
                         </div>
                         <ul style="margin: 0; padding-left: 15px; list-style-type: none;">
                             <?php 
