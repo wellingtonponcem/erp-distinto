@@ -365,6 +365,7 @@ body.type-15anos .proposal-frame {
     .proposal-wrapper {
         padding: 0;
     }
+
     .btn-floating {
         bottom: 20px;
         right: 20px;
@@ -376,10 +377,12 @@ body.type-15anos .proposal-frame {
 /* Gradientes Abstratos (Confinados à Coluna 3) */
 .side-gradient-container {
     grid-column: 3;
-    margin-right: -6vw; /* Encosta no canto da tela */
+    margin-right: -6vw;
+    /* Encosta no canto da tela */
     height: 100vh;
     position: relative;
-    overflow: hidden; /* Corta qualquer vazamento para a esquerda */
+    overflow: hidden;
+    /* Corta qualquer vazamento para a esquerda */
 }
 
 .abstract-gradient {
@@ -388,13 +391,16 @@ body.type-15anos .proposal-frame {
     left: 0;
     width: 100%;
     height: 100%;
-    background: 
+    background:
         radial-gradient(circle at 100% 15%, #00f2ff 0%, transparent 60%),
         radial-gradient(circle at 100% 45%, #0051ff 0%, transparent 70%),
-        radial-gradient(circle at 100% 75%, #ffaa00 0%, transparent 50%),
-        radial-gradient(circle at 100% 95%, #0022ff 0%, transparent 70%);
+        radial-gradient(circle at 100% 75%, #e7bb62 0%, transparent 50%),
+        radial-gradient(circle at 100% 95%, #030a3a 0%, transparent 70%);
     filter: blur(60px);
     opacity: 0.9;
+    /* Máscara para garantir corte absoluto na esquerda */
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%);
+    mask-image: linear-gradient(to right, transparent 0%, black 15%);
 }
 
 .dark-page {
