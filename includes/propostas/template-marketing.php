@@ -367,28 +367,22 @@
         </div>
 
         <!-- Coluna 2: Lista de Etapas (Tudo Conectado) -->
-        <div class="page-content" style="grid-column: 2; flex-direction: column; align-items: flex-start;">
-            <!-- Indicador de Mês -->
-            <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #000; margin-top: 40px; margin-bottom: 40px;">
-                <?= $mesNome ?>
-            </div>
-
-            <div style="display: flex; flex-direction: row; align-items: center; width: 100%;">
-                <!-- Lista de Pílulas Ativas -->
-                <div style="display: flex; flex-direction: column; gap: 8px; width: 180px; flex-shrink: 0; position: relative;">
-                <div style="padding: 10px 20px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
-                <div style="padding: 10px 20px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
-                <div style="padding: 10px 20px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
-                <div style="padding: 10px 20px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
-                <div style="padding: 10px 20px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
-                <div style="padding: 10px 20px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
+        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
+            <!-- Lista de Pílulas Ativas -->
+            <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0; position: relative;">
+                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
 
                 <!-- Chave de Conexão (Bracket) -->
-                <div style="position: absolute; right: -25px; top: 15px; bottom: 15px; width: 15px; border: 1px solid rgba(0,0,0,0.3); border-left: 0;"></div>
+                <div style="position: absolute; right: -40px; top: 20px; bottom: 20px; width: 20px; border: 1.5px solid rgba(0,0,0,0.3); border-left: 0;"></div>
             </div>
 
             <!-- Texto de Cronograma -->
-            <div style="margin-left: 55px; max-width: 440px;">
+            <div style="margin-left: 60px; max-width: 480px;">
                 <?php 
                     $dataInicioRaw = $dados['data_inicio'] ?? date('Y-m-d');
                     $dataObj = new DateTime($dataInicioRaw);
