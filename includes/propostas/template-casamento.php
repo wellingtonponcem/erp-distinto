@@ -342,10 +342,11 @@ if (!function_exists('fmt')) {
         <div style="width: 100%; aspect-ratio: 343/68; position: relative; overflow: hidden; background: #eee;">
             <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-03.jpg') ?>"
                 style="width: 100%; height: 100%; object-fit: cover;">
-            <!-- Elemento decorativo cinza (lateral) -->
-            <div
-                style="position: absolute; right: 0; bottom: 0; width: 50px; height: 100%; background: #fff; z-index: 1; opacity: 0.8;">
-            </div>
+        </div>
+
+        <!-- Elemento decorativo cinza (lateral ocupando 100% da altura) -->
+        <div
+            style="position: absolute; right: 0; top: 0; width: 50px; height: 100%; background: #fff; z-index: 5; opacity: 0.8;">
         </div>
     </section>
 
