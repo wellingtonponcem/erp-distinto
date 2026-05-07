@@ -15,9 +15,12 @@ $saudacaoCasal = "Olá, " . (($primeiroNomeNoivo && $primeiroNomeNoiva) ? "{$pri
 
 // Formatação de Moeda Helper
 if (!function_exists('fmt')) {
-    function fmt($valor) {
-        if (empty($valor)) return 'Sob consulta';
-        if (is_numeric($valor)) return 'R$ ' . number_format($valor, 2, ',', '.');
+    function fmt($valor)
+    {
+        if (empty($valor))
+            return 'Sob consulta';
+        if (is_numeric($valor))
+            return 'R$ ' . number_format($valor, 2, ',', '.');
         return $valor;
     }
 }
@@ -25,7 +28,9 @@ if (!function_exists('fmt')) {
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&family=Dancing+Script:wght@400..700&family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
+<link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&family=Dancing+Script:wght@400..700&family=Montserrat:wght@100..900&display=swap"
+    rel="stylesheet">
 
 <style>
     :root {
@@ -38,7 +43,9 @@ if (!function_exists('fmt')) {
         --wedding-montserrat: "Montserrat", sans-serif;
     }
 
-    body { background: #111; }
+    body {
+        background: #111;
+    }
 
     .wedding-proposal {
         background: var(--wedding-bg);
@@ -64,26 +71,75 @@ if (!function_exists('fmt')) {
     }
 
     /* Utilitários */
-    .text-serif { font-family: var(--wedding-serif); }
-    .text-gold { color: var(--wedding-gold); }
-    .uppercase { text-transform: uppercase; letter-spacing: 0.2em; }
-    .italic { font-style: italic; }
-    
-    h1 { font-size: 5rem; line-height: 1; margin: 0; }
-    h2 { font-size: 3.5rem; line-height: 1.1; margin: 0; }
-    h3 { font-size: 1.5rem; letter-spacing: 0.1em; font-weight: 300; }
-    p { font-size: 1.1rem; line-height: 1.8; color: #444; }
+    .text-serif {
+        font-family: var(--wedding-serif);
+    }
 
-    .line { width: 60px; height: 1px; background: var(--wedding-gold); margin: 30px 0; }
-    .line-center { margin-left: auto; margin-right: auto; }
+    .text-gold {
+        color: var(--wedding-gold);
+    }
+
+    .uppercase {
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+    }
+
+    .italic {
+        font-style: italic;
+    }
+
+    h1 {
+        font-size: 5rem;
+        line-height: 1;
+        margin: 0;
+    }
+
+    h2 {
+        font-size: 3.5rem;
+        line-height: 1.1;
+        margin: 0;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+        letter-spacing: 0.1em;
+        font-weight: 300;
+    }
+
+    p {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #444;
+    }
+
+    .line {
+        width: 60px;
+        height: 1px;
+        background: var(--wedding-gold);
+        margin: 30px 0;
+    }
+
+    .line-center {
+        margin-left: auto;
+        margin-right: auto;
+    }
 
     /* Estilos Específicos */
-    .bg-dark { background: #0a0a0a; color: white; }
-    .bg-dark p { color: #888; }
-    
+    .bg-dark {
+        background: #0a0a0a;
+        color: white;
+    }
+
+    .bg-dark p {
+        color: #888;
+    }
+
     .img-bg {
         position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         object-fit: cover;
         z-index: 0;
         opacity: 0.6;
@@ -95,7 +151,10 @@ if (!function_exists('fmt')) {
         max-width: 900px;
     }
 
-    .center { text-align: center; align-items: center; }
+    .center {
+        text-align: center;
+        align-items: center;
+    }
 
     /* Grid de Pacotes */
     .package-card {
@@ -104,6 +163,7 @@ if (!function_exists('fmt')) {
         border: 1px solid #eee;
         transition: all 0.5s ease;
     }
+
     .package-card:hover {
         border-color: var(--wedding-gold);
         transform: translateY(-10px);
@@ -128,9 +188,17 @@ if (!function_exists('fmt')) {
     }
 
     @media (max-width: 768px) {
-        .slide { padding: 40px 20px; }
-        h1 { font-size: 3rem; }
-        h2 { font-size: 2.5rem; }
+        .slide {
+            padding: 40px 20px;
+        }
+
+        h1 {
+            font-size: 3rem;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+        }
     }
 </style>
 
@@ -138,69 +206,53 @@ if (!function_exists('fmt')) {
 
     <!-- PÁGINA 01: CAPA -->
     <section class="slide" style="padding: 0; display: block; background: #eee;">
-        <img src="<?= raizUrl('/imagens-proposta-casamento/bg-section-01.jpg') ?>" class="img-bg" style="opacity: 1; z-index: 1;">
-        
-        <div class="content-overlay" style="height: 100%; width: 100%; display: flex; flex-direction: column; justify-content: space-between; padding: 10vh 8vw; box-sizing: border-box; max-width: 100%;">
+        <img src="<?= raizUrl('/imagens-proposta-casamento/bg-section-01.jpg') ?>" class="img-bg"
+            style="opacity: 1; z-index: 1;">
+
+        <div class="content-overlay"
+            style="height: 100%; width: 100%; display: flex; flex-direction: column; justify-content: space-between; padding: 10vh 8vw; box-sizing: border-box; max-width: 100%;">
             <!-- Topo Centro -->
             <div style="text-align: center; width: 100%;">
-                <h1 style="font-family: var(--wedding-script); font-size: 8rem; color: #1a1a1a; margin-bottom: 0; font-weight: 400; text-transform: none; letter-spacing: 0;">Casamento</h1>
-                <p style="font-family: var(--wedding-montserrat); font-size: 1.8rem; letter-spacing: 0.6em; color: #1a1a1a; margin-top: -10px; font-weight: 300;">FOTOGRAFIA E FILMMAKING</p>
+                <h1
+                    style="font-family: var(--wedding-script); font-size: 8rem; color: #1a1a1a; margin-bottom: 0; font-weight: 400; text-transform: none; letter-spacing: 0;">
+                    Casamento</h1>
+                <p
+                    style="font-family: var(--wedding-montserrat); font-size: 1.8rem; letter-spacing: 0.6em; color: #1a1a1a; margin-top: -10px; font-weight: 300;">
+                    FOTOGRAFIA E FILMMAKING</p>
             </div>
 
             <!-- Baixo Esquerda -->
             <div style="text-align: left; max-width: 500px; color: #1a1a1a;">
-                <h2 style="font-family: var(--wedding-montserrat); font-size: 2.2rem; font-weight: 800; letter-spacing: 0.05em; line-height: 1.2; margin-bottom: 20px;">
-                    <?php 
-                        $noivoUpper = mb_strtoupper($primeiroNomeNoivo);
-                        $noivaUpper = mb_strtoupper($primeiroNomeNoiva);
-                        echo "{$noivoUpper} &<br>{$noivaUpper}";
+                <h2
+                    style="font-family: var(--wedding-montserrat); font-size: 2.2rem; font-weight: 800; letter-spacing: 0.05em; line-height: 1.2; margin-bottom: 20px;">
+                    <?php
+                    $noivoUpper = mb_strtoupper($primeiroNomeNoivo);
+                    $noivaUpper = mb_strtoupper($primeiroNomeNoiva);
+                    echo "{$noivoUpper} &<br>{$noivaUpper}";
                     ?>
                 </h2>
-                <p style="font-family: var(--wedding-montserrat); font-size: 0.95rem; line-height: 1.6; font-weight: 400; margin-bottom: 20px; opacity: 0.8;">
+                <p
+                    style="font-family: var(--wedding-montserrat); font-size: 1.4rem; line-height: 1.6; font-weight: 400; margin-bottom: 20px; opacity: 0.8;">
                     Toda história tem sua beleza. Nós entregamos a nossa versão da sua sob a nossa perspectiva.
                 </p>
                 <div style="width: 40px; height: 1px; background: #1a1a1a; margin-bottom: 20px; opacity: 0.5;"></div>
-                <p style="font-family: var(--wedding-montserrat); font-size: 0.9rem; font-weight: 400; letter-spacing: 0.05em; opacity: 0.8;">by Distinto wedding</p>
+                <p
+                    style="font-family: var(--wedding-montserrat); font-size: 1rem; font-weight: 400; letter-spacing: 0.05em; opacity: 0.8;">
+                    by Distinto wedding</p>
             </div>
         </div>
     </section>
 
     <!-- PÁGINA 02: BOAS-VINDAS -->
-    <section class="slide" style="padding: 0; background: #fff; overflow: hidden;">
-        <div class="grid grid-cols-1 md:grid-cols-2 h-full w-full">
-            <!-- Coluna Esquerda: Imagem -->
-            <div style="background: #f0f0f0; display: flex; align-items: center; justify-content: flex-end; padding-right: 5vw; position: relative;">
-                <!-- Retângulo decorativo cinza -->
-                <div style="position: absolute; left: 0; top: 10%; width: 50px; height: 80%; background: #dcdcdc; z-index: 1;"></div>
-                
-                <div style="width: 80%; aspect-ratio: 1/1; position: relative; z-index: 2; box-shadow: 30px 30px 0px rgba(0,0,0,0.03);">
-                    <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-02.jpg') ?>" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-            </div>
-
-            <!-- Coluna Direita: Conteúdo -->
-            <div style="padding: 15vh 6vw; display: flex; flex-direction: column; justify-content: center; position: relative;">
-                <h2 style="font-family: var(--wedding-montserrat); font-size: 4.5rem; font-weight: 300; line-height: 1.1; margin-bottom: 40px; color: #1a1a1a; text-transform: uppercase; letter-spacing: -1px;">
-                    BEM-VINDOS<br>AO INÍCIO DA<br>MEMÓRIA DE<br>VOCÊS
-                </h2>
-                
-                <div style="max-width: 480px;">
-                    <p style="font-family: var(--wedding-montserrat); font-size: 1.2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 10px;">
-                        <?= $saudacaoCasal ?>
-                    </p>
-                    <p style="font-family: var(--wedding-montserrat); font-size: 1.1rem; line-height: 1.8; color: #444; font-weight: 400;">
-                        Na Distinto, entendemos que o nosso papel vai muito além de apertar um botão: nossa missão é registrar histórias de amor com autenticidade e emoção.
-                    </p>
-                </div>
-
-                <!-- Logo Distinto no canto inferior direito -->
-                <div style="position: absolute; bottom: 8vh; right: 6vw; width: 120px;">
-                    <img src="<?= raizUrl('/assets/distinto_logo.svg') ?>" style="width: 100%; filter: brightness(0); opacity: 0.8;">
-                </div>
-
-                <!-- Elemento decorativo topo direito -->
-                <div style="position: absolute; top: 10vh; right: 0; width: 40px; height: 30px; background: #dcdcdc;"></div>
-            </div>
+    <section class="slide center">
+        <div class="content-overlay">
+            <h3 class="uppercase text-gold"><?= $saudacaoCasal ?></h3>
+            <h2 class="text-serif mt-4">Bem-vindos ao início da memória de vocês.</h2>
+            <div class="line line-center"></div>
+            <p style="max-width: 700px;">
+                Na Distinto, entendemos que o nosso papel vai muito além de apertar um botão:
+                nossa missão é registrar histórias de amor com autenticidade e emoção.
+            </p>
         </div>
     </section>
 
@@ -212,13 +264,14 @@ if (!function_exists('fmt')) {
                 <h2 class="text-serif mt-4 italic">A arte de capturar o que é invisível.</h2>
                 <div class="line"></div>
                 <p>
-                    Não buscamos apenas a nitidez técnica, mas a clareza do sentimento. 
-                    Nossa fotografia é documental e artística, focada em momentos reais, 
+                    Não buscamos apenas a nitidez técnica, mas a clareza do sentimento.
+                    Nossa fotografia é documental e artística, focada em momentos reais,
                     sorrisos espontâneos e aquela lágrima que insiste em cair.
                 </p>
             </div>
             <div class="relative h-[60vh]">
-                <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=2069" class="w-full h-full object-cover rounded-sm">
+                <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=2069"
+                    class="w-full h-full object-cover rounded-sm">
             </div>
         </div>
     </section>
@@ -227,15 +280,16 @@ if (!function_exists('fmt')) {
     <section class="slide bg-dark">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
             <div class="relative h-[60vh] order-2 md:order-1">
-                <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=1974" class="w-full h-full object-cover rounded-sm">
+                <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=1974"
+                    class="w-full h-full object-cover rounded-sm">
             </div>
             <div class="order-1 md:order-2">
                 <h3 class="uppercase text-gold">A Intenção</h3>
                 <h2 class="text-serif mt-4 italic">Cada detalhe importa.</h2>
                 <div class="line"></div>
                 <p>
-                    Desde o toque sutil das mãos até a grandiosidade da celebração, 
-                    nossa perspectiva é moldada para que, daqui a 20 anos, vocês 
+                    Desde o toque sutil das mãos até a grandiosidade da celebração,
+                    nossa perspectiva é moldada para que, daqui a 20 anos, vocês
                     possam sentir o mesmo frio na barriga ao abrir o álbum.
                 </p>
             </div>
@@ -249,9 +303,9 @@ if (!function_exists('fmt')) {
             <h2 class="text-serif mt-4">Nossa meta é uma só: arrepiar.</h2>
             <div class="line line-center"></div>
             <p style="max-width: 800px;">
-                Na Distinto, não começamos com ideias soltas. Começamos com clareza. 
-                Apresentamos nossas propostas de investimento. Cada uma delas foi pensada para transformar 
-                o seu casamento em uma experiência totalmente nova... para que a história de 
+                Na Distinto, não começamos com ideias soltas. Começamos com clareza.
+                Apresentamos nossas propostas de investimento. Cada uma delas foi pensada para transformar
+                o seu casamento em uma experiência totalmente nova... para que a história de
                 <strong class="text-gold"><?= $nomeCasal ?></strong> seja preservada com a nobreza que merece.
             </p>
         </div>
@@ -265,27 +319,31 @@ if (!function_exists('fmt')) {
                 <h2 class="text-serif">Heritage</h2>
                 <div class="line"></div>
                 <div class="space-y-4 text-sm">
-                    <?php 
+                    <?php
                     $itensHeritage = explode(',', $dados['itens_heritage'] ?? '');
-                    foreach($itensHeritage as $item): 
-                    ?>
-                    <div class="flex items-center gap-3">
-                        <svg class="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        <span><?= trim($item) ?></span>
-                    </div>
+                    foreach ($itensHeritage as $item):
+                        ?>
+                        <div class="flex items-center gap-3">
+                            <svg class="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                                </path>
+                            </svg>
+                            <span><?= trim($item) ?></span>
+                        </div>
                     <?php endforeach; ?>
                 </div>
-                
+
                 <div class="mt-12 p-8 bg-white border border-zinc-100 shadow-sm">
                     <p class="uppercase text-[10px] font-bold text-zinc-400">Investimento Heritage</p>
                     <div class="price-tag"><?= fmt($dados['valor_heritage']) ?></div>
-                    <?php if(!empty($dados['condicao_especial'])): ?>
-                    <p class="text-xs mt-2 text-zinc-500 italic">* <?= $dados['condicao_especial'] ?></p>
+                    <?php if (!empty($dados['condicao_especial'])): ?>
+                        <p class="text-xs mt-2 text-zinc-500 italic">* <?= $dados['condicao_especial'] ?></p>
                     <?php endif; ?>
                 </div>
             </div>
             <div class="h-full">
-                <img src="https://images.unsplash.com/photo-1519225495810-751bd511ccf7?q=80&w=2070" class="w-full h-full object-cover">
+                <img src="https://images.unsplash.com/photo-1519225495810-751bd511ccf7?q=80&w=2070"
+                    class="w-full h-full object-cover">
             </div>
         </div>
     </section>
@@ -294,30 +352,34 @@ if (!function_exists('fmt')) {
     <section class="slide bg-[#f4f2ee]">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
             <div class="h-full order-2 md:order-1">
-                <img src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=2070" class="w-full h-full object-cover">
+                <img src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=2070"
+                    class="w-full h-full object-cover">
             </div>
             <div class="order-1 md:order-2">
                 <h2 class="text-serif">Cinematic</h2>
                 <div class="line"></div>
                 <div class="space-y-4 text-sm">
-                    <?php 
+                    <?php
                     $itensCinematic = explode(',', $dados['itens_cinematic'] ?? '');
-                    foreach($itensCinematic as $item): 
-                    ?>
-                    <div class="flex items-center gap-3">
-                        <svg class="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        <span><?= trim($item) ?></span>
-                    </div>
+                    foreach ($itensCinematic as $item):
+                        ?>
+                        <div class="flex items-center gap-3">
+                            <svg class="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
+                                </path>
+                            </svg>
+                            <span><?= trim($item) ?></span>
+                        </div>
                     <?php endforeach; ?>
                 </div>
-                
+
                 <div class="mt-12 p-8 bg-white border border-zinc-100 shadow-sm">
                     <p class="uppercase text-[10px] font-bold text-zinc-400">Investimento Cinematic</p>
                     <div class="price-tag"><?= fmt($dados['valor_cinematic']) ?></div>
-                    <?php if(!empty($dados['data_limite_desconto'])): ?>
-                    <p class="text-[10px] mt-4 p-2 bg-gold/10 text-gold font-bold rounded">
-                        10% DE DESCONTO PARA CONTRATOS ATÉ <?= $dados['data_limite_desconto'] ?>
-                    </p>
+                    <?php if (!empty($dados['data_limite_desconto'])): ?>
+                        <p class="text-[10px] mt-4 p-2 bg-gold/10 text-gold font-bold rounded">
+                            10% DE DESCONTO PARA CONTRATOS ATÉ <?= $dados['data_limite_desconto'] ?>
+                        </p>
                     <?php endif; ?>
                 </div>
             </div>
@@ -375,13 +437,15 @@ if (!function_exists('fmt')) {
                 <div class="p-8 border border-white/10 rounded-lg">
                     <h4 class="text-gold font-bold mb-4">Reserva de Data</h4>
                     <p class="text-sm">
-                        Para garantir a sua data em nosso calendário, solicitamos um sinal de 20% a 25% do valor total do contrato.
+                        Para garantir a sua data em nosso calendário, solicitamos um sinal de 20% a 25% do valor total
+                        do contrato.
                     </p>
                 </div>
                 <div class="p-8 border border-white/10 rounded-lg">
                     <h4 class="text-gold font-bold mb-4">Formas de Pagamento</h4>
                     <p class="text-sm">
-                        Parcelamento disponível via PIX/Boleto até 10 dias antes do evento, ou via Cartão de Crédito (consulte taxas).
+                        Parcelamento disponível via PIX/Boleto até 10 dias antes do evento, ou via Cartão de Crédito
+                        (consulte taxas).
                     </p>
                 </div>
             </div>
@@ -390,7 +454,8 @@ if (!function_exists('fmt')) {
 
     <!-- PÁGINAS 11 A 16: PORTFÓLIO (TRANSICAO) -->
     <section class="slide bg-dark center">
-        <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=2070" class="img-bg" style="opacity: 0.2;">
+        <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=2070" class="img-bg"
+            style="opacity: 0.2;">
         <div class="content-overlay">
             <h3 class="uppercase text-gold">Portfolio</h3>
             <h1 class="text-serif italic">Wedding Portfolio</h1>
@@ -402,7 +467,8 @@ if (!function_exists('fmt')) {
     <section class="slide">
         <div class="grid grid-cols-2 gap-4 h-full">
             <div class="bg-zinc-100 h-full relative overflow-hidden group">
-                <img src="https://images.unsplash.com/photo-1532712938310-34cb3982ef74?q=80&w=2070" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                <img src="https://images.unsplash.com/photo-1532712938310-34cb3982ef74?q=80&w=2070"
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                 <div class="absolute bottom-6 left-6 text-white z-10">
                     <p class="text-[10px] uppercase font-bold tracking-widest opacity-80">Wedding Stories</p>
                     <h4 class="text-serif text-xl">Lucas & Mariana</h4>
@@ -411,11 +477,13 @@ if (!function_exists('fmt')) {
             </div>
             <div class="grid grid-rows-2 gap-4">
                 <div class="bg-zinc-100 relative overflow-hidden group">
-                    <img src="https://images.unsplash.com/photo-1544078751-58fee2d8a03b?q=80&w=2070" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <img src="https://images.unsplash.com/photo-1544078751-58fee2d8a03b?q=80&w=2070"
+                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                 </div>
                 <div class="bg-zinc-100 relative overflow-hidden group">
-                    <img src="https://images.unsplash.com/photo-1510076857177-7470076d4098?q=80&w=2072" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <img src="https://images.unsplash.com/photo-1510076857177-7470076d4098?q=80&w=2072"
+                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                 </div>
             </div>
@@ -438,8 +506,11 @@ if (!function_exists('fmt')) {
             <h2 class="text-serif italic">Onde o tempo para...</h2>
             <div class="line line-center"></div>
             <p class="text-lg leading-relaxed">
-                Para nós, a melhor foto não é a mais nítida... A "melhor foto" do nosso portfólio não é um troféu na estante, mas sim aquele frame que captura o extraordinário no comum. 
-                Seja o aperto de mão firme de um pai, a lágrima contida de um amigo ou o <strong class="text-gold">brilho no olhar da <?= $primeiroNomeNoiva ?></strong> ao ver o seu grande amor no altar.
+                Para nós, a melhor foto não é a mais nítida... A "melhor foto" do nosso portfólio não é um troféu na
+                estante, mas sim aquele frame que captura o extraordinário no comum.
+                Seja o aperto de mão firme de um pai, a lágrima contida de um amigo ou o <strong
+                    class="text-gold">brilho no olhar da <?= $primeiroNomeNoiva ?></strong> ao ver o seu grande amor no
+                altar.
             </p>
         </div>
     </section>
@@ -452,13 +523,13 @@ if (!function_exists('fmt')) {
             <p class="mb-12">
                 Este é o primeiro capítulo da história oficial de <?= $nomeCasal ?>.
             </p>
-            
+
             <div class="space-y-4 text-gold uppercase tracking-widest text-sm font-bold">
                 <p>+55 27 9 8858-6935</p>
                 <p>distintoag@gmail.com</p>
                 <p>@distintoag</p>
             </div>
-            
+
             <div class="mt-20 opacity-30 text-[10px] uppercase tracking-[0.5em]">
                 Distinto Wedding © <?= date('Y') ?>
             </div>
