@@ -76,9 +76,23 @@ if (!empty($d['secoes']) && is_array($d['secoes'])) {
     }
 }
 
+// Processar fases do cronograma
+$fasesCronograma = [];
+if (!empty($d['fases']) && is_array($d['fases'])) {
+    foreach ($d['fases'] as $fase) {
+        if (empty($fase['nome'])) continue;
+        $fasesCronograma[] = [
+            'nome'      => trim($fase['nome']),
+            'dias'      => max(0, (int)($fase['dias'] ?? 0)),
+            'descricao' => trim($fase['descricao'] ?? ''),
+        ];
+    }
+}
+
 $dadosJson = json_encode([
     'secoes' => $secoes,
     'servicos' => $servicosInclusos,
+    'fases_cronograma' => $fasesCronograma ?: ($dadosAntigos['fases_cronograma'] ?? []),
     'briefing' => $d['briefing'] ?? ($dadosAntigos['briefing'] ?? ''),
     'objetivo_original' => $d['objetivo'] ?? ($dadosAntigos['objetivo_original'] ?? ''),
     'data_inicio' => $d['data_inicio'] ?? ($dadosAntigos['data_inicio'] ?? date('Y-m-d')),

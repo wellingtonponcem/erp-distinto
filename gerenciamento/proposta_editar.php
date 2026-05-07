@@ -249,6 +249,55 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     </div>
                 </section>
 
+                <!-- CRONOGRAMA DE ENTREGA -->
+                <section class="card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-sm font-bold text-zinc-900">Cronograma de Entrega</h3>
+                            <p class="text-[11px] text-zinc-400 mt-0.5">Fases detectadas automaticamente pelos serviços. Edite os prazos conforme o projeto.</p>
+                        </div>
+                        <button type="button" @click="detectarFases(true)" class="text-[10px] bg-zinc-100 text-zinc-700 px-3 py-1.5 rounded-lg font-bold hover:bg-zinc-200 transition-all flex items-center gap-1">
+                            <i data-lucide="refresh-cw" class="w-3 h-3"></i> Redetectar
+                        </button>
+                    </div>
+
+                    <div class="space-y-3" x-show="fasesCronograma.length > 0">
+                        <template x-for="(fase, idx) in fasesCronograma" :key="idx">
+                            <div class="flex items-start gap-3 p-3 border border-zinc-100 rounded-xl bg-zinc-50/50">
+                                <!-- Número da fase -->
+                                <div class="w-7 h-7 rounded-full bg-zinc-900 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0 mt-1" x-text="idx + 1"></div>
+                                <div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <div class="md:col-span-2">
+                                        <label class="text-[10px] font-bold text-zinc-500 uppercase mb-1 block">Nome da Fase</label>
+                                        <input type="text" :name="'fases['+idx+'][nome]'" class="input py-1.5 text-sm" x-model="fase.nome">
+                                    </div>
+                                    <div>
+                                        <label class="text-[10px] font-bold text-zinc-500 uppercase mb-1 block" x-text="fase.dias === 0 ? 'Duração' : 'Dias'"></label>
+                                        <input type="number" :name="'fases['+idx+'][dias]'" class="input py-1.5 text-sm" x-model="fase.dias" min="0" placeholder="0 = simultâneo">
+                                    </div>
+                                    <div class="md:col-span-3">
+                                        <label class="text-[10px] font-bold text-zinc-500 uppercase mb-1 block">Descrição (opcional)</label>
+                                        <input type="text" :name="'fases['+idx+'][descricao]'" class="input py-1.5 text-sm" x-model="fase.descricao">
+                                    </div>
+                                </div>
+                                <button type="button" @click="fasesCronograma.splice(idx,1)" class="text-zinc-300 hover:text-red-400 transition-colors mt-1 flex-shrink-0">
+                                    <i data-lucide="x" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div x-show="fasesCronograma.length === 0" class="text-center py-6 border-2 border-dashed border-zinc-100 rounded-xl">
+                        <p class="text-xs text-zinc-400">Nenhuma fase detectada. Adicione serviços ou clique em Redetectar.</p>
+                    </div>
+
+                    <div class="flex gap-2 mt-3">
+                        <button type="button" @click="adicionarFase()" class="text-[10px] text-zinc-600 font-bold hover:text-zinc-900 flex items-center gap-1">
+                            <i data-lucide="plus" class="w-3 h-3"></i> Adicionar fase manualmente
+                        </button>
+                    </div>
+                </section>
+
                 <section class="card p-6">
                     <h3 class="text-sm font-bold text-zinc-900 mb-4">Estratégia & Cronograma</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -335,6 +384,7 @@ document.addEventListener('alpine:init', () => {
         responsavel: '',
         whatsapp: '',
         adicional: { titulo: '', valor: 0, descricao: '' },
+        fasesCronograma: [],
         secoes: {},
         etapasDisponiveis: [
             { id: 'imersao', label: 'Imersão' },
@@ -374,6 +424,13 @@ document.addEventListener('alpine:init', () => {
             this.formaPagamento = dados.forma_pagamento || 'boleto_pix';
             this.dataInicio = dados.data_inicio || '';
             this.adicional = dados.adicional || { titulo: '', valor: 0, descricao: '' };
+
+            // Carregar fases do cronograma (ou auto-detectar se não existirem)
+            if (dados.fases_cronograma && dados.fases_cronograma.length > 0) {
+                this.fasesCronograma = dados.fases_cronograma;
+            } else {
+                this.$nextTick(() => this.detectarFases());
+            }
 
             // Carregar etapas ativas ou padrão (todas ativas se for nova ou antiga sem esse campo)
             if (dados.etapas_ativas && Array.isArray(dados.etapas_ativas) && dados.etapas_ativas.length > 0) {
@@ -432,6 +489,42 @@ document.addEventListener('alpine:init', () => {
                 }
             }
             this.recalcularTotal();
+        },
+
+        // Detecta fases do cronograma com base nos serviços selecionados
+        detectarFases(forcar = false) {
+            if (!forcar && this.fasesCronograma.length > 0) return; // não sobrescreve se já tem fases
+
+            const nomes = this.servicosSelecionados.map(s => {
+                const c = this.catalogoServicos.find(cat => String(cat.id) === String(s.id));
+                return (c?.nome || '').toLowerCase();
+            }).join(' ');
+
+            const temEstrategia = /estrat[eé]g|planejamento/i.test(nomes);
+            const temSocial     = /redes sociais|social media|gestão.*social|gestao.*social/i.test(nomes);
+            const temCaptacao   = /filmmaker|capta[çc][aã]o|audiovisual|filmagem|di[aá]ria film/i.test(nomes);
+
+            const fases = [];
+
+            if (temEstrategia) {
+                fases.push({ nome: 'Planejamento Estratégico', dias: 15, descricao: 'Desenvolvimento do plano estratégico, calendário editorial e aprovação com o cliente' });
+            }
+            if (temCaptacao) {
+                fases.push({ nome: 'Captação Audiovisual', dias: 0, descricao: 'Agendada imediatamente após a aprovação da estratégia — necessária para produção dos conteúdos' });
+            }
+            if (temEstrategia || temSocial) {
+                fases.push({ nome: 'Produção e Aprovação do 1º Mês', dias: 15, descricao: 'Criação do primeiro mês de conteúdo, envio para aprovação e ajustes finais' });
+            }
+            if (temSocial) {
+                fases.push({ nome: 'Início das Publicações', dias: 0, descricao: 'Publicações iniciadas após aprovação completa do material' });
+            }
+
+            if (fases.length > 0) this.fasesCronograma = fases;
+        },
+
+        adicionarFase() {
+            this.fasesCronograma.push({ nome: '', dias: 15, descricao: '' });
+            this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
         },
 
         recalcularTotal() {

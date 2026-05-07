@@ -425,26 +425,95 @@
                 <div style="position: absolute; right: -20px; top: 20px; bottom: 20px; width: 20px; border: 1.5px solid rgba(255,255,255,0.3); border-left: 0;"></div>
             </div>
 
-            <!-- Texto de Cronograma -->
+            <!-- Texto de Cronograma (legado - mantido como resumo) -->
             <div style="margin-left: 2rem; max-width: 27rem;">
-                <?php 
+                <?php
                     $dataInicioRaw = $dados['data_inicio'] ?? date('Y-m-d');
                     $dataObj = new DateTime($dataInicioRaw);
                     $diaIni = $dataObj->format('d');
                     $mesIni = $mesesPt[$dataObj->format('n')] ?? 'JUNHO';
+                    $fasesCron = $dados['fases_cronograma'] ?? [];
+                    $totalDias = array_sum(array_column($fasesCron, 'dias'));
                 ?>
                 <p style="font-size: 1rem; line-height: 1.5; color: #fff; margin-bottom: 1.5625rem;">
-                    O planejamento estratégico poderá ser iniciado a partir do dia <strong><?= $diaIni ?> DE <?= $mesIni ?></strong>, com previsão de duração de <strong>40 DIAS ÚTEIS</strong>.
+                    O projeto poderá ser iniciado a partir do dia <strong><?= $diaIni ?> DE <?= $mesIni ?></strong><?php if ($totalDias > 0): ?>, com previsão de <strong><?= $totalDias ?> DIAS</strong> até o início das publicações<?php endif; ?>.
                 </p>
-                <p style="font-size: 0.85rem; line-height: 1.5; color: rgba(255,255,255,0.7); margin-bottom: 1.5625rem;">
-                    Estas datas são uma previsão do cronograma do projeto. Porém, é possível que ocorram alterações no cronograma durante o projeto, pelos seguintes motivos: Indisponibilidade de agenda do cliente, alterações no escopo do projeto e o tempo para as aprovações de cada etapa.
-                </p>
-                <p style="font-size: 0.85rem; line-height: 1.5; color: #fff;">
-                    Já a etapa de gestão tem a duração de 9 meses, o que totaliza 12 meses de contrato. E a gestão se inicia logo após a aprovação do planejamento estratégico.
+                <p style="font-size: 0.85rem; line-height: 1.5; color: rgba(255,255,255,0.7);">
+                    As datas são uma previsão e podem ser ajustadas conforme disponibilidade de agenda, aprovações e alterações de escopo.
                 </p>
             </div>
         </div>
     </section>
+
+    <?php if (!empty($dados['fases_cronograma'])): ?>
+    <!-- Slide Cronograma de Entrega (dinâmico) -->
+    <section class="proposal-page">
+        <!-- Coluna 1: Título -->
+        <div class="page-content" style="grid-column: 1; justify-content: center; padding-right: 2rem;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 3rem; line-height: 1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000;">
+                CRONOGRAMA<br>DE<br>ENTREGA
+            </h2>
+            <?php
+                $totalDiasSlide = array_sum(array_column($dados['fases_cronograma'], 'dias'));
+                if ($totalDiasSlide > 0):
+            ?>
+            <div style="margin-top: 1.5rem; padding: 8px 18px; border-radius: 30px; background: #000; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; width: fit-content;">
+                <?= $totalDiasSlide ?> dias até o início
+            </div>
+            <?php endif; ?>
+        </div>
+
+        <!-- Coluna 2-3: Timeline das fases -->
+        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: column; justify-content: center; padding: 4vh 4vw 4vh 2vw; gap: 0;">
+            <?php
+                $diasAcumulados = 0;
+                $totalFases = count($dados['fases_cronograma']);
+            ?>
+            <?php foreach ($dados['fases_cronograma'] as $i => $fase): ?>
+            <?php
+                $diasFase = (int)($fase['dias'] ?? 0);
+                $isUltima = ($i === $totalFases - 1);
+                $isSim = ($diasFase === 0);
+            ?>
+            <div style="display: flex; align-items: stretch; gap: 0;">
+                <!-- Linha vertical + círculo -->
+                <div style="display: flex; flex-direction: column; align-items: center; width: 32px; flex-shrink: 0;">
+                    <div style="width: 28px; height: 28px; border-radius: 50%; background: <?= $isSim ? '#e5e7eb' : '#000' ?>; border: 2px solid #000; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1;">
+                        <span style="color: <?= $isSim ? '#000' : '#fff' ?>; font-size: 10px; font-weight: 800;"><?= $i + 1 ?></span>
+                    </div>
+                    <?php if (!$isUltima): ?>
+                    <div style="width: 2px; flex: 1; background: rgba(0,0,0,0.15); margin: 4px 0; min-height: 40px;"></div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Conteúdo da fase -->
+                <div style="padding: 0 0 <?= $isUltima ? '0' : '28px' ?> 16px; flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap;">
+                        <span style="font-family: var(--font-heading); font-size: 0.85rem; font-weight: 800; color: #000; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <?= sanitizar($fase['nome']) ?>
+                        </span>
+                        <?php if ($isSim): ?>
+                            <span style="font-size: 9px; font-weight: 700; color: #6b7280; background: #f3f4f6; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">simultâneo</span>
+                        <?php else: ?>
+                            <span style="font-size: 9px; font-weight: 700; color: #fff; background: #000; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">+<?= $diasFase ?> dias</span>
+                        <?php endif; ?>
+                    </div>
+                    <?php if (!empty($fase['descricao'])): ?>
+                    <p style="font-size: 0.78rem; color: #6b7280; line-height: 1.5; margin: 0;">
+                        <?= sanitizar($fase['descricao']) ?>
+                    </p>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <?php $diasAcumulados += $diasFase; ?>
+            <?php endforeach; ?>
+
+            <p style="font-size: 10px; color: #9ca3af; margin-top: 20px; padding-left: 48px; font-style: italic;">
+                * Prazos estimados. Sujeitos a ajustes conforme aprovações e disponibilidade.
+            </p>
+        </div>
+    </section>
+    <?php endif; ?>
 
     <!-- Slide 11: Investimento Detalhado -->
     <section class="proposal-page">
