@@ -332,6 +332,38 @@ include __DIR__ . '/../includes/layout/head.php';
                 </div>
             </template>
         </div>
+
+        <!-- Modal de Confirmação de Exclusão -->
+        <template x-if="deleteModal.show">
+            <div class="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+                 @click.self="deleteModal.show = false">
+                <div class="bg-[#121212] border border-zinc-800 rounded-2xl p-8 max-w-sm w-full shadow-2xl"
+                     x-transition:enter="ease-out duration-300"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100">
+                    
+                    <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mb-6 mx-auto">
+                        <svg class="text-red-500 w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold text-white text-center mb-2">Confirmar Exclusão</h3>
+                    <p class="text-zinc-400 text-center text-sm mb-8" x-text="deleteModal.message"></p>
+                    
+                    <div class="flex gap-3">
+                        <button @click="deleteModal.show = false" 
+                                class="flex-1 px-4 py-3 rounded-xl bg-zinc-800 text-white font-semibold hover:bg-zinc-700 transition-colors">
+                            Cancelar
+                        </button>
+                        <button @click="confirmarExclusao()" 
+                                class="flex-1 px-4 py-3 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-500 transition-colors">
+                            Excluir
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </template>
     </main>
 </div>
 
@@ -344,6 +376,7 @@ function propostasApp() {
         pastas: <?= json_encode($pastas) ?>,
         propostas: <?= json_encode($propostas) ?>,
         contextMenu: { show: false, x: 0, y: 0, type: 'root', item: null },
+        deleteModal: { show: false, id: null, type: '', message: '' },
         draggedItem: null,
 
         get filteredItems() {
@@ -444,31 +477,45 @@ function propostasApp() {
         },
 
         deletarPasta(id) {
-            if (confirm('Excluir esta pasta? As propostas dentro dela voltarão para a raiz.')) {
-                this.pastas = this.pastas.filter(f => f.id !== id);
-                this.propostas.forEach(p => { if(p.pasta_id === id) p.pasta_id = null; });
-                this.contextMenu.show = false;
-                if(this.currentFolder === id) this.currentFolder = null;
-
-                fetch('../api/propostas/organizar.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'delete_folder', id })
-                });
-            }
+            this.deleteModal = {
+                show: true,
+                id: id,
+                type: 'pasta',
+                message: 'Excluir esta pasta? As propostas dentro dela voltarão para a raiz.'
+            };
+            this.contextMenu.show = false;
         },
 
         deletarProposta(id) {
-            if (confirm('Deseja realmente excluir esta proposta?')) {
-                this.propostas = this.propostas.filter(p => p.id !== id);
-                this.contextMenu.show = false;
+            this.deleteModal = {
+                show: true,
+                id: id,
+                type: 'proposta',
+                message: 'Deseja realmente excluir esta proposta permanentemente?'
+            };
+            this.contextMenu.show = false;
+        },
 
+        confirmarExclusao() {
+            const { id, type } = this.deleteModal;
+            if (type === 'proposta') {
+                this.propostas = this.propostas.filter(p => p.id !== id);
                 fetch('../api/propostas/organizar.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'delete_proposal', id: id })
                 });
+            } else if (type === 'pasta') {
+                this.pastas = this.pastas.filter(f => f.id !== id);
+                this.propostas.forEach(p => { if(p.pasta_id === id) p.pasta_id = null; });
+                if(this.currentFolder === id) this.currentFolder = null;
+                fetch('../api/propostas/organizar.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'delete_folder', id: id })
+                });
             }
+            this.deleteModal.show = false;
         },
 
         copiarLink(slug) {
