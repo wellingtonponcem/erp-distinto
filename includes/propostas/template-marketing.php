@@ -87,8 +87,8 @@
             </h2>
         </div>
 
-        <!-- Coluna 2: Lista de Etapas -->
-        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0; font-size: 0.8em;">
+        <!-- Coluna 2 e 3: Conteúdo das Etapas -->
+        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; font-size: 0.8em;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 13.75rem; flex-shrink: 0;margin-left: -25%;">
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; position: relative;">
@@ -103,7 +103,7 @@
             </div>
 
             <!-- Texto Explicativo -->
-            <div style="margin-left: 3.75rem; max-width: 23.75rem;">
+            <div style="margin-left: 4rem; max-width: 45rem;">
                 <p style="font-size: 1rem; line-height: 1.5; color: #333; margin-bottom: 1.5625rem;">
                     A primeira etapa do projeto é uma imersão sobre o seu negócio. Serão dois momentos - presenciais ou online - que aplicamos juntos a nossa metodologia, para definir pontos importantes sobre seu negócio.
                 </p>
@@ -128,8 +128,8 @@
             </h2>
         </div>
 
-        <!-- Coluna 2: Lista de Etapas -->
-        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;margin-left: -25%;">
+        <!-- Coluna 2 e 3: Conteúdo das Etapas -->
+        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -20%;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 220px; flex-shrink: 0;">
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
@@ -144,7 +144,7 @@
             </div>
 
             <!-- Texto Explicativo -->
-            <div style="margin-left: 60px; max-width: 90%;">
+            <div style="margin-left: 4rem; max-width: 45rem;">
                 <p style="font-size: 1rem; line-height: 1.5; color: #333; margin-bottom: 1.25rem;">
                     Depois da imersão concluída, é o momento de desenvolver o diagnóstico do negócio. Através desses resultados, teremos a definição da plataforma da marca com as seguintes entregas:
                 </p>
@@ -174,8 +174,8 @@
             </h2>
         </div>
 
-        <!-- Coluna 2: Lista de Etapas -->
-        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;margin-left: -25%;">
+        <!-- Coluna 2 e 3: Conteúdo das Etapas -->
+        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -20%;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 220px; flex-shrink: 0;">
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
@@ -190,12 +190,12 @@
             </div>
 
             <!-- Texto Explicativo (Aprimorado) -->
-            <div style="margin-left: 60px; max-width: 480px;">
-                <p style="font-size: 15px; line-height: 1.4; color: #333; margin-bottom: 0.9375rem;">
+            <div style="margin-left: 4rem; max-width: 45rem;">
+                <p style="font-size: 1rem; line-height: 1.4; color: #333; margin-bottom: 0.9375rem;">
                     A fase de planejamento é o núcleo estratégico do projeto, onde estruturamos o "como" e o "onde" para garantir que cada ação tenha um propósito claro e mensurável. Nosso planejamento 360º abrange:
                 </p>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px;">
-                    <ul style="list-style: none; padding: 0; margin: 0; font-size: 12px; color: #000; line-height: 1.5; font-weight: 500;">
+                    <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.8rem; color: #000; line-height: 1.5; font-weight: 500;">
                         <li style="margin-bottom: 4px;">• DNA do Conteúdo da Marca</li>
                         <li style="margin-bottom: 4px;">• Definição de Personalidade e Voz</li>
                         <li style="margin-bottom: 4px;">• Canais de Atuação Estratégica</li>
@@ -204,7 +204,7 @@
                         <li style="margin-bottom: 4px;">• Pesquisa de Palavras-chave</li>
                         <li style="margin-bottom: 4px;">• Jornada de Compra</li>
                     </ul>
-                    <ul style="list-style: none; padding: 0; margin: 0; font-size: 12px; color: #000; line-height: 1.5; font-weight: 500;">
+                    <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.8rem; color: #000; line-height: 1.5; font-weight: 500;">
                         <li style="margin-bottom: 4px;">• Definição de Linguagem Visual</li>
                         <li style="margin-bottom: 4px;">• Projeto Estrutural do Site</li>
                         <li style="margin-bottom: 4px;">• Linhas Editoriais</li>
@@ -232,8 +232,8 @@
             </h2>
         </div>
 
-        <!-- Coluna 2: Lista de Etapas -->
-        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;margin-left: -25%;">
+        <!-- Coluna 2 e 3: Conteúdo das Etapas -->
+        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -20%;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 220px; flex-shrink: 0;">
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
@@ -248,7 +248,7 @@
             </div>
 
             <!-- Texto Explicativo (Aprimorado) -->
-            <div style="margin-left: 60px; max-width: 420px;">
+            <div style="margin-left: 4rem; max-width: 45rem;">
                 <p style="font-size: 1rem; line-height: 1.5; color: #333; margin-bottom: 1.25rem;">
                     A materialização da estratégia ocorre através da <strong>Linguagem Visual</strong>. Definimos um padrão estético de alta autoridade que reflete o posicionamento do seu negócio em cada ponto de contato.
                 </p>
@@ -281,8 +281,8 @@
             </h2>
         </div>
 
-        <!-- Coluna 2: Lista de Etapas -->
-        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;margin-left: -25%;">
+        <!-- Coluna 2 e 3: Conteúdo das Etapas -->
+        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -20%;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 220px; flex-shrink: 0;">
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
@@ -297,11 +297,11 @@
             </div>
 
             <!-- Texto Explicativo (Aprimorado) -->
-            <div style="margin-left: 60px; max-width: 420px;">
+            <div style="margin-left: 4rem; max-width: 45rem;">
                 <p style="font-size: 1rem; line-height: 1.5; color: #333; margin-bottom: 1.5625rem;">
                     A culminância do nosso trabalho estratégico. O <strong>Planejamento</strong> e a <strong>Identidade Visual</strong> são apresentados em uma reunião executiva, garantindo o alinhamento total de cada decisão tomada.
                 </p>
-                <p style="font-size: 15px; line-height: 1.6; color: #333; margin-bottom: 35px;">
+                <p style="font-size: 1rem; line-height: 1.6; color: #333; margin-bottom: 35px;">
                     Após a validação, todo o ecossistema do projeto é disponibilizado em uma <strong>plataforma web exclusiva</strong>. Este hub serve como guia central para sua equipe e parceiros, garantindo a integridade da marca em qualquer futura expansão.
                 </p>
                 
@@ -322,8 +322,8 @@
             </h2>
         </div>
 
-        <!-- Coluna 2: Lista de Etapas -->
-        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;margin-left: -25%;">
+        <!-- Coluna 2 e 3: Conteúdo das Etapas -->
+        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -20%;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 220px; flex-shrink: 0;">
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
@@ -338,8 +338,8 @@
             </div>
 
             <!-- Texto Explicativo (Aprimorado) -->
-            <div style="margin-left: 60px; max-width: 480px;">
-                <p style="font-size: 15px; line-height: 1.5; color: #333; margin-bottom: 1.25rem;">
+            <div style="margin-left: 4rem; max-width: 45rem;">
+                <p style="font-size: 1rem; line-height: 1.5; color: #333; margin-bottom: 1.25rem;">
                     A transição da estratégia para a alta performance. Após a entrega das diretrizes, iniciamos o processo de <strong>gestão contínua</strong>, onde a teoria se torna execução prática e resultados reais.
                 </p>
                 <p style="font-size: 0.8em; line-height: 1.6; color: #333; margin-bottom: 1.25rem;">
@@ -366,8 +366,8 @@
             </h2>
         </div>
 
-        <!-- Coluna 2: Lista de Etapas (Tudo Conectado) -->
-        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;margin-left: -25%;">
+        <!-- Coluna 2 e 3: Conteúdo das Etapas -->
+        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -20%;">
             <!-- Lista de Pílulas Ativas -->
             <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 220px; flex-shrink: 0; position: relative;">
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
@@ -382,20 +382,20 @@
             </div>
 
             <!-- Texto de Cronograma -->
-            <div style="margin-left: 60px; max-width: 480px;">
+            <div style="margin-left: 4rem; max-width: 45rem;">
                 <?php 
                     $dataInicioRaw = $dados['data_inicio'] ?? date('Y-m-d');
                     $dataObj = new DateTime($dataInicioRaw);
                     $diaIni = $dataObj->format('d');
                     $mesIni = $mesesPt[$dataObj->format('n')] ?? 'JUNHO';
                 ?>
-                <p style="font-size: 15px; line-height: 1.5; color: #fff; margin-bottom: 1.5625rem;">
+                <p style="font-size: 1rem; line-height: 1.5; color: #fff; margin-bottom: 1.5625rem;">
                     O planejamento estratégico poderá ser iniciado a partir do dia <strong><?= $diaIni ?> DE <?= $mesIni ?></strong>, com previsão de duração de <strong>40 DIAS ÚTEIS</strong>.
                 </p>
-                <p style="font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.7); margin-bottom: 1.5625rem;">
+                <p style="font-size: 0.85rem; line-height: 1.5; color: rgba(255,255,255,0.7); margin-bottom: 1.5625rem;">
                     Estas datas são uma previsão do cronograma do projeto. Porém, é possível que ocorram alterações no cronograma durante o projeto, pelos seguintes motivos: Indisponibilidade de agenda do cliente, alterações no escopo do projeto e o tempo para as aprovações de cada etapa.
                 </p>
-                <p style="font-size: 13px; line-height: 1.5; color: #fff;">
+                <p style="font-size: 0.85rem; line-height: 1.5; color: #fff;">
                     Já a etapa de gestão tem a duração de 9 meses, o que totaliza 12 meses de contrato. E a gestão se inicia logo após a aprovação do planejamento estratégico.
                 </p>
             </div>
