@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 1. Intersection Observer para Animações de Slide
     const observerOptions = {
-        threshold: 0.4 // Ativa quando 40% da seção estiver visível
+        threshold: 0.5 // Ativa quando 50% da seção estiver visível (ideal para scroll snap)
     };
 
     const observer = new IntersectionObserver((entries) => {
@@ -28,11 +28,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (entry.target === sections[0]) {
                     document.body.classList.remove('scrolled');
                 } else {
-                    // Se qualquer outro slide entrar, e o primeiro não estiver visível, garante o scrolled
-                    // Mas o IntersectionObserver já cuida disso no 'else' abaixo ou aqui
+                    document.body.classList.add('scrolled');
                 }
 
-                // Toggle show-etapas-title class
+                // Toggle show-etapas-title class - Lógica Agressiva
                 if (entry.target.classList.contains('is-etapas')) {
                     document.body.classList.add('show-etapas-title');
                 } else {
@@ -42,30 +41,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Mostrar botão quando entrar em uma nova seção
                 if (btn) showButton();
             } else {
-                // Ao sair de uma seção de etapas (scroll para cima ou para baixo)
-                if (entry.target.classList.contains('is-etapas')) {
-                    // Só remove se não houver NENHUMA outra seção de etapas visível
-                    const visibleEtapas = Array.from(sections).filter(s => 
-                        s.classList.contains('is-etapas') && 
-                        s.classList.contains('is-visible') &&
-                        s !== entry.target
-                    );
-                    if (visibleEtapas.length === 0) {
-                        document.body.classList.remove('show-etapas-title');
-                    }
-                }
-                // Se o primeiro slide saiu de vista, ativa o modo scrolled
-                if (entry.target === sections[0] && entry.boundingClientRect.top < 0) {
-                    document.body.classList.add('scrolled');
-                }
-
+                // Ao sair da seção
+                entry.target.classList.remove('is-visible');
+                
                 // Se saiu para cima (scroll down), marca como leaving
                 if (entry.boundingClientRect.top < 0) {
                     entry.target.classList.add('is-leaving');
                 } else {
                     entry.target.classList.remove('is-leaving');
                 }
-                entry.target.classList.remove('is-visible');
             }
         });
     }, observerOptions);

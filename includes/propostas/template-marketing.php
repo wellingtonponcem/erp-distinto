@@ -413,8 +413,18 @@
             </div>
 
             <!-- Validade -->
-            <div style="padding: 12px 25px; border-radius: 50px; border: 1px solid rgba(0,0,0,0.3); font-size: 10px; font-weight: 700; text-transform: uppercase; text-align: center; color: #000; letter-spacing: 1px; width: fit-content;">
-                ESTA PROPOSTA TEM VALIDADE DE 7 DIAS
+            <?php 
+            $hoje = date('Y-m-d');
+            $vencida = ($proposta['validade'] < $hoje);
+            $validadeFormatada = date('d/m/Y', strtotime($proposta['validade']));
+            ?>
+            <div style="padding: 12px 25px; border-radius: 50px; border: 1px solid <?= $vencida ? '#ff4d4d' : 'rgba(0,0,0,0.3)' ?>; font-size: 10px; font-weight: 700; text-transform: uppercase; text-align: center; color: <?= $vencida ? '#ff4d4d' : '#000' ?>; letter-spacing: 1px; width: fit-content; display: flex; align-items: center; gap: 8px;">
+                <?php if ($vencida): ?>
+                    <i data-lucide="alert-circle" style="width: 14px; height: 14px;"></i>
+                    PROPOSTA VENCIDA EM <?= $validadeFormatada ?>
+                <?php else: ?>
+                    ESTA PROPOSTA É VÁLIDA ATÉ <?= $validadeFormatada ?>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -483,13 +493,15 @@
                 <?php endif; ?>
             </div>
         </div>
+    </section>
+
     <!-- Slide 12: Condições de Pagamento -->
     <section class="proposal-page">
         <!-- Coluna 1: Título e Validade -->
         <div class="page-content" style="grid-column: 1; flex-direction: column; justify-content: space-between; padding-bottom: 120px;">
             <div style="margin-top: auto; margin-bottom: auto;">
                 <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 90%;">
-                    QUAL SERÁ O INVESTIMENTO PARA ESTE PROJETO
+                    CONDIÇÕES DE<br>PAGAMENTO
                 </h2>
             </div>
 
