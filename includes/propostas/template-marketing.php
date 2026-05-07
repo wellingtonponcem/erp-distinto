@@ -88,9 +88,9 @@
         </div>
 
         <!-- Coluna 2 e 3: Conteúdo das Etapas -->
-        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; font-size: 0.8em;">
+        <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -20%;">
             <!-- Lista de Pílulas -->
-            <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 13.75rem; flex-shrink: 0;margin-left: -25%;">
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 13.75rem; flex-shrink: 0;">
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; position: relative;">
                     IMERSÃO
                     <div style="position: absolute; right: -40px; top: 50%; width: 40px; height: 1px; background: rgba(0,0,0,0.2);"></div>
@@ -112,7 +112,7 @@
                 </p>
                 
                 <!-- Cápsula de Tempo -->
-                <div style="padding: 15px 25px; border-radius: 3.125rem; border: 1px solid rgba(0,0,0,0.3); font-size: 11px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.3; color: #000; letter-spacing: 0.5px;">
+                <div style="padding: 15px 25px; border-radius: 3.125rem; border: 1px solid rgba(0,0,0,0.3); font-size: 11px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.3; color: #000; letter-spacing: 0.5px; width: fit-content; margin-top: 1.5rem;">
                     PRIMEIRA E SEGUNDA SEMANA<br>E PONTUALMENTE DURANTE O PROCESSO
                 </div>
             </div>
@@ -265,7 +265,7 @@
                 </p>
                 
                 <!-- Cápsula de Tempo -->
-                <div style="padding: 15px 25px; border-radius: 3.125rem; border: 1px solid rgba(0,0,0,0.3); font-size: 11px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.3; color: #000; letter-spacing: 0.5px; width: fit-content;">
+                <div style="padding: 15px 25px; border-radius: 3.125rem; border: 1px solid rgba(0,0,0,0.3); font-size: 11px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.3; color: #000; letter-spacing: 0.5px; width: fit-content; margin-top: 1.5rem;">
                     QUARTA À QUINTA SEMANA
                 </div>
             </div>
@@ -306,7 +306,7 @@
                 </p>
                 
                 <!-- Cápsula de Tempo -->
-                <div style="padding: 15px 25px; border-radius: 3.125rem; border: 1px solid rgba(0,0,0,0.3); font-size: 11px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.3; color: #000; letter-spacing: 0.5px; width: fit-content;">
+                <div style="padding: 15px 25px; border-radius: 3.125rem; border: 1px solid rgba(0,0,0,0.3); font-size: 11px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.3; color: #000; letter-spacing: 0.5px; width: fit-content; margin-top: 1.5rem;">
                     DÉCIMA PRIMEIRA SEMANA
                 </div>
             </div>
@@ -350,7 +350,7 @@
                 </p>
                 
                 <!-- Cápsula de Tempo -->
-                <div style="padding: 15px 25px; border-radius: 3.125rem; border: 1px solid rgba(0,0,0,0.3); font-size: 11px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.3; color: #000; letter-spacing: 0.5px; width: fit-content;">
+                <div style="padding: 15px 25px; border-radius: 3.125rem; border: 1px solid rgba(0,0,0,0.3); font-size: 11px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.3; color: #000; letter-spacing: 0.5px; width: fit-content; margin-top: 1.5rem;">
                     A PARTIR DA DÉCIMA SEGUNDA SEMANA
                 </div>
             </div>
