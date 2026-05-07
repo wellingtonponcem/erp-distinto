@@ -416,3 +416,43 @@ body.type-15anos .proposal-frame {
 .proposal-page .page-content {
     transition: opacity 0.8s ease-out 0.2s, transform 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* Título Fixo para Seções Longas */
+.fixed-section-title {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 40px;
+    width: calc(40% - 80px);
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s ease;
+    display: flex;
+    align-items: center;
+}
+
+.fixed-section-title h2 {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 52px;
+    line-height: 1.1;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    color: #000;
+}
+
+body.show-etapas-title .fixed-section-title {
+    opacity: 1;
+}
+
+body.on-dark .fixed-section-title h2 {
+    color: #fff;
+}
+
+@media (max-width: 1024px) {
+    .fixed-section-title {
+        display: none;
+    }
+}

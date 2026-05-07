@@ -73,6 +73,7 @@ if (!empty($d['servicos']) && is_array($d['servicos'])) {
         $stmtS = $db->prepare("SELECT nome, descricao FROM servicos WHERE id = ?");
         $stmtS->execute([$sid]);
         if ($s = $stmtS->fetch()) {
+            $s['valor_individual'] = $d['servico_valor'][$sid] ?? 0;
             $servicosInclusos[] = $s;
         }
     }
@@ -127,6 +128,13 @@ $dadosJson = json_encode([
     'briefing' => $d['briefing'] ?? '',
     'objetivo_original' => $d['objetivo'] ?? '',
     'data_inicio' => $d['data_inicio'] ?? date('Y-m-d'),
+    'meses_contrato' => $d['meses_contrato'] ?? 12,
+    'forma_pagamento' => $d['forma_pagamento'] ?? 'boleto_pix',
+    'adicional' => [
+        'titulo' => $d['adicional_titulo'] ?? '',
+        'valor' => $d['adicional_valor'] ?? 0,
+        'descricao' => $d['adicional_descricao'] ?? ''
+    ],
     'responsavel' => $responsavel,
     'is_plural' => $isPlural
 ], JSON_UNESCAPED_UNICODE);
@@ -134,7 +142,7 @@ $dadosJson = json_encode([
 $stmt = $db->prepare("INSERT INTO propostas (id, cliente_nome, tipo, slug, titulo, subtitulo, validade, dados_json, valor_total, status) 
                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-$validade = date('Y-m-d', strtotime('+15 days'));
+$validade = !empty($d['validade']) ? $d['validade'] : date('Y-m-d', strtotime('+15 days'));
 $tituloOriginal = !empty($d['titulo']) ? $d['titulo'] : ("Proposta Comercial - " . $clienteNome);
 
 // Refinar título via IA para marketing

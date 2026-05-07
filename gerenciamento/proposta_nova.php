@@ -83,7 +83,8 @@ include __DIR__ . '/../includes/layout/head.php';
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="form-group md:col-span-2">
                                 <label class="label">Título da Proposta</label>
-                                <input type="text" name="titulo" class="input" placeholder="Ex: Gestão de Tráfego 2024" required>
+                                <input type="text" name="titulo" class="input" placeholder="Ex: Gestão de Tráfego 2024" maxlength="60" required>
+                                <p class="text-[10px] text-zinc-500 mt-1">Máximo de 60 caracteres para manter a estética na capa.</p>
                             </div>
                             <div class="form-group">
                                 <label class="label">Tipo de Serviço</label>
@@ -102,6 +103,17 @@ include __DIR__ . '/../includes/layout/head.php';
                                 <input type="number" step="0.01" name="valor_total" class="input" placeholder="0,00" required>
                             </div>
                             <div class="form-group">
+                                <label class="label">Tempo de Contrato (Meses)</label>
+                                <input type="number" name="meses_contrato" class="input" placeholder="Ex: 12" value="12">
+                            </div>
+                            <div class="form-group">
+                                <label class="label">Forma de Pagamento</label>
+                                <select name="forma_pagamento" class="input">
+                                    <option value="boleto_pix">Boleto / PIX</option>
+                                    <option value="cartao">Cartão de Crédito (+2,13%)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
                                 <label class="label">Subtítulo (Opcional)</label>
                                 <input type="text" name="subtitulo" class="input" placeholder="Ex: Planejamento Estratégico Q3">
                             </div>
@@ -113,13 +125,19 @@ include __DIR__ . '/../includes/layout/head.php';
                     <h3 class="text-sm font-bold text-zinc-900 mb-4">Serviços Inclusos (Apenas Marketing)</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <?php foreach ($servicos as $s): ?>
-                            <label class="flex items-center gap-3 p-3 border border-zinc-100 rounded-lg cursor-pointer hover:bg-zinc-50 transition-colors">
-                                <input type="checkbox" name="servicos[]" value="<?= $s['id'] ?>" class="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900">
-                                <div>
-                                    <p class="text-xs font-bold text-zinc-900"><?= sanitizar($s['nome']) ?></p>
-                                    <p class="text-[10px] text-zinc-500 line-clamp-1"><?= sanitizar($s['descricao']) ?></p>
+                            <div class="flex flex-col gap-2 p-3 border border-zinc-100 rounded-lg hover:bg-zinc-50 transition-colors">
+                                <label class="flex items-center gap-3 cursor-pointer">
+                                    <input type="checkbox" name="servicos[]" value="<?= $s['id'] ?>" class="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900">
+                                    <div>
+                                        <p class="text-xs font-bold text-zinc-900"><?= sanitizar($s['nome']) ?></p>
+                                        <p class="text-[10px] text-zinc-500 line-clamp-1"><?= sanitizar($s['descricao']) ?></p>
+                                    </div>
+                                </label>
+                                <div class="flex items-center gap-2 mt-2 pt-2 border-t border-zinc-50">
+                                    <span class="text-[10px] text-zinc-400">Valor Sugerido:</span>
+                                    <input type="number" step="0.01" name="servico_valor[<?= $s['id'] ?>]" class="input py-1 px-2 text-[10px] w-24" placeholder="R$ 0,00">
                                 </div>
-                            </label>
+                            </div>
                         <?php endforeach; ?>
                     </div>
                 </section>
@@ -132,11 +150,34 @@ include __DIR__ . '/../includes/layout/head.php';
                             <input type="date" name="data_inicio" class="input" value="<?= date('Y-m-d') ?>">
                             <p class="text-[10px] text-zinc-500 mt-1">Data que aparecerá no cronograma da proposta.</p>
                         </div>
+                        <div class="form-group">
+                            <label class="label">Validade da Proposta</label>
+                            <input type="date" name="validade" class="input" value="<?= date('Y-m-d', strtotime('+15 days')) ?>">
+                            <p class="text-[10px] text-zinc-500 mt-1">Até quando os valores e condições são garantidos.</p>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label class="label">Objetivo do Projeto (Será refinado por IA)</label>
                         <textarea name="objetivo" class="input min-h-[100px]" maxlength="1020" placeholder="Ex: Fortalecer a marca Innovare Solar como referência em energia limpa no ES, aumentar captação de leads e fechar novos contratos..."></textarea>
                         <p class="text-[10px] text-zinc-500 mt-1">Máximo de 1020 caracteres. Este texto será reescrito pela IA para a Sessão 3 da proposta.</p>
+                    </div>
+                </section>
+
+                <section class="card p-6">
+                    <h3 class="text-sm font-bold text-zinc-900 mb-4">Opção Adicional (Upsell)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="form-group">
+                            <label class="label">Título da Opção</label>
+                            <input type="text" name="adicional_titulo" class="input" placeholder="Ex: VÍDEOS PARA REELS">
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Valor da Opção (R$/mês)</label>
+                            <input type="number" step="0.01" name="adicional_valor" class="input" placeholder="0,00">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="label">Descrição da Opção</label>
+                        <textarea name="adicional_descricao" class="input min-h-[80px]" placeholder="Ex: Sessão mensal de até 3h de gravação com entrega de 8 vídeos para Reels..."></textarea>
                     </div>
                 </section>
 

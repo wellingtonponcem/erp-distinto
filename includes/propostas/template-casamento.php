@@ -60,7 +60,19 @@
             <div class="investment-box">
                 <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 12px; color: #a39385;">Investimento para o Grande Dia</p>
                 <div class="price"><?= formatarMoeda($proposta['valor_total']) ?></div>
-                <div style="font-size: 14px; color: #a39385;">Condições exclusivas válidas por 15 dias.</div>
+                <?php 
+                $hoje = date('Y-m-d');
+                $vencida = ($proposta['validade'] < $hoje);
+                $validadeFormatada = date('d/m/Y', strtotime($proposta['validade']));
+                ?>
+                <div style="font-size: 13px; color: <?= $vencida ? '#4a3728' : '#a39385' ?>; font-weight: <?= $vencida ? '700' : '400' ?>; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 15px;">
+                    <?php if ($vencida): ?>
+                        <i data-lucide="alert-circle" style="width: 14px; height: 14px;"></i>
+                        PROPOSTA VENCIDA EM <?= $validadeFormatada ?>
+                    <?php else: ?>
+                        Condições exclusivas válidas até <?= $validadeFormatada ?>
+                    <?php endif; ?>
+                </div>
             </div>
             <p style="margin-top: 60px; color: #a39385; font-size: 13px;">Distinto Eventos | <?= $configEmpresa['nome'] ?></p>
         </div>

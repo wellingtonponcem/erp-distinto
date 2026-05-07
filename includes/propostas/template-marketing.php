@@ -79,10 +79,10 @@
     </section>
 
     <!-- Slide 4: Etapas do Projeto -->
-    <section class="proposal-page">
+    <section class="proposal-page is-etapas">
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
-            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%; visibility: hidden;">
                 ETAPAS DO PROJETO
             </h2>
         </div>
@@ -120,10 +120,10 @@
     </section>
 
     <!-- Slide 5: Etapas do Projeto (DIAGNÓSTICO) -->
-    <section class="proposal-page">
+    <section class="proposal-page is-etapas">
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
-            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%; visibility: hidden;">
                 ETAPAS DO PROJETO
             </h2>
         </div>
@@ -166,10 +166,10 @@
     </section>
 
     <!-- Slide 6: Etapas do Projeto (PLANEJAMENTO) -->
-    <section class="proposal-page">
+    <section class="proposal-page is-etapas">
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
-            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%; visibility: hidden;">
                 ETAPAS DO PROJETO
             </h2>
         </div>
@@ -224,10 +224,10 @@
     </section>
 
     <!-- Slide 7: Etapas do Projeto (LINGUAGEM VISUAL) -->
-    <section class="proposal-page">
+    <section class="proposal-page is-etapas">
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
-            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%; visibility: hidden;">
                 ETAPAS DO PROJETO
             </h2>
         </div>
@@ -273,10 +273,10 @@
     </section>
 
     <!-- Slide 8: Etapas do Projeto (ENTREGA) -->
-    <section class="proposal-page">
+    <section class="proposal-page is-etapas">
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
-            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%; visibility: hidden;">
                 ETAPAS DO PROJETO
             </h2>
         </div>
@@ -314,10 +314,10 @@
     </section>
 
     <!-- Slide 9: Etapas do Projeto (GESTÃO) -->
-    <section class="proposal-page">
+    <section class="proposal-page is-etapas">
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
-            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%; visibility: hidden;">
                 ETAPAS DO PROJETO
             </h2>
         </div>
@@ -358,10 +358,10 @@
     </section>
 
     <!-- Slide 10: Resumo do Cronograma -->
-    <section class="proposal-page">
+    <section class="proposal-page dark-page is-etapas">
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
-            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #fff; width: 80%; visibility: hidden;">
                 ETAPAS DO PROJETO
             </h2>
         </div>
@@ -370,15 +370,15 @@
         <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
             <!-- Lista de Pílulas Ativas -->
             <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0; position: relative;">
-                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
-                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
-                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
 
                 <!-- Chave de Conexão (Bracket) -->
-                <div style="position: absolute; right: -40px; top: 20px; bottom: 20px; width: 20px; border: 1.5px solid rgba(0,0,0,0.3); border-left: 0;"></div>
+                <div style="position: absolute; right: -40px; top: 20px; bottom: 20px; width: 20px; border: 1.5px solid rgba(255,255,255,0.3); border-left: 0;"></div>
             </div>
 
             <!-- Texto de Cronograma -->
@@ -389,35 +389,181 @@
                     $diaIni = $dataObj->format('d');
                     $mesIni = $mesesPt[$dataObj->format('n')] ?? 'JUNHO';
                 ?>
-                <p style="font-size: 15px; line-height: 1.5; color: #333; margin-bottom: 25px;">
+                <p style="font-size: 15px; line-height: 1.5; color: #fff; margin-bottom: 25px;">
                     O planejamento estratégico poderá ser iniciado a partir do dia <strong><?= $diaIni ?> DE <?= $mesIni ?></strong>, com previsão de duração de <strong>40 DIAS ÚTEIS</strong>.
                 </p>
-                <p style="font-size: 13px; line-height: 1.5; color: #666; margin-bottom: 25px;">
+                <p style="font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.7); margin-bottom: 25px;">
                     Estas datas são uma previsão do cronograma do projeto. Porém, é possível que ocorram alterações no cronograma durante o projeto, pelos seguintes motivos: Indisponibilidade de agenda do cliente, alterações no escopo do projeto e o tempo para as aprovações de cada etapa.
                 </p>
-                <p style="font-size: 13px; line-height: 1.5; color: #333;">
+                <p style="font-size: 13px; line-height: 1.5; color: #fff;">
                     Já a etapa de gestão tem a duração de 9 meses, o que totaliza 12 meses de contrato. E a gestão se inicia logo após a aprovação do planejamento estratégico.
                 </p>
             </div>
         </div>
     </section>
 
-    <!-- Slide 11: Investimento -->
+    <!-- Slide 11: Investimento Detalhado -->
     <section class="proposal-page">
-        <div class="page-content" style="align-items: center; text-align: center;">
-            <div style="font-family: var(--font-heading); font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #000; margin-bottom: 40px;">
-                11. Investimento & Parceria
+        <!-- Coluna 1: Título e Validade -->
+        <div class="page-content" style="grid-column: 1; flex-direction: column; justify-content: space-between; padding-bottom: 60px;">
+            <div style="margin-top: auto; margin-bottom: auto;">
+                <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 90%;">
+                    QUAL SERÁ O INVESTIMENTO PARA ESTE PROJETO
+                </h2>
             </div>
-            <div style="background: #000; color: #fff; padding: 60px 100px; border-radius: 0; position: relative;">
-                <p style="text-transform: uppercase; font-size: 14px; letter-spacing: 2px; opacity: 0.6; margin-bottom: 10px;">Valor Mensal do Projeto</p>
-                <div style="font-family: var(--font-heading); font-size: 72px; font-weight: 800;"><?= formatarMoeda($proposta['valor_total']) ?></div>
-                <div style="margin-top: 30px; font-size: 14px; opacity: 0.5;">
-                    Válido até <?= formatarData($proposta['validade'] ?? date('Y-m-d', strtotime('+7 days'))) ?>
+
+            <!-- Validade -->
+            <div style="padding: 12px 25px; border-radius: 50px; border: 1px solid rgba(0,0,0,0.3); font-size: 10px; font-weight: 700; text-transform: uppercase; text-align: center; color: #000; letter-spacing: 1px; width: fit-content;">
+                ESTA PROPOSTA TEM VALIDADE DE 7 DIAS
+            </div>
+        </div>
+
+        <!-- Coluna 2: Detalhamento -->
+        <div class="page-content" style="grid-column: 2; flex-direction: column; align-items: center; padding-top: 40px; overflow-y: auto; max-height: 85vh; scrollbar-width: none;">
+            <?php
+                $mesesContrato = $dados['meses_contrato'] ?? 12;
+                $valorMensal = $proposta['valor_total'] / ($mesesContrato > 0 ? $mesesContrato : 1);
+                $isCartao = ($dados['forma_pagamento'] ?? 'boleto_pix') === 'cartao';
+                
+                if ($isCartao) {
+                    $valorMensal = $valorMensal * 1.0213;
+                }
+            ?>
+
+            <!-- Valor Mensal -->
+            <div style="padding: 8px 40px; border-radius: 50px; background: #333; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">
+                VALOR INVESTIDO NO PROJETO /MÊS
+            </div>
+            <div style="font-family: var(--font-heading); font-size: 64px; font-weight: 800; color: #000; margin-bottom: <?= $isCartao ? '5px' : '50px' ?>;">
+                <?= formatarMoeda($valorMensal) ?>
+            </div>
+            <?php if ($isCartao): ?>
+                <div style="font-size: 10px; color: #666; font-weight: 600; text-transform: uppercase; margin-bottom: 50px;">
+                    * VALOR COM ACRÉSCIMO DE 2,13% PARA CARTÃO
                 </div>
+            <?php endif; ?>
+
+            <!-- Serviços Inclusos -->
+            <div style="width: 100%; display: flex; flex-direction: column; gap: 40px;">
+                <?php foreach ($dados['servicos'] ?? [] as $servico): ?>
+                    <div style="width: 100%;">
+                        <div style="padding: 8px 30px; border-radius: 50px; background: #333; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; width: fit-content; margin-bottom: 20px;">
+                            <?= $servico['nome'] ?>
+                        </div>
+                        <div style="font-size: 13px; font-weight: 700; color: #000; margin-bottom: 15px;">
+                            <?= formatarMoeda($servico['valor_individual'] ?? 0) ?> - Inclui:
+                        </div>
+                        <ul style="margin: 0; padding-left: 15px; list-style-type: none;">
+                            <?php 
+                                // Divide a descrição em pontos se houver (por ponto final ou ponto e vírgula)
+                                $pontos = preg_split('/[.;\n]+/', $servico['descricao']);
+                                foreach ($pontos as $ponto): 
+                                    $ponto = trim($ponto);
+                                    if (empty($ponto)) continue;
+                            ?>
+                                <li style="font-size: 12px; color: #444; margin-bottom: 8px; position: relative;">
+                                    <span style="position: absolute; left: -15px; color: #000;">•</span>
+                                    <?= $ponto ?>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endforeach; ?>
+
+                <!-- Opção Adicional -->
+                <?php if (!empty($dados['adicional']['titulo'])): ?>
+                    <div style="width: 100%; padding: 30px; background: rgba(0,0,0,0.05); border-radius: 20px; border: 1px solid rgba(0,0,0,0.1);">
+                        <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #000; margin-bottom: 10px;">
+                            OPÇÃO ADICIONAL MENSAL – <?= $dados['adicional']['titulo'] ?> + <?= formatarMoeda($dados['adicional']['valor'] ?? 0) ?>/mês
+                        </div>
+                        <p style="font-size: 12px; color: #444; line-height: 1.5; margin: 0;">
+                            <?= nl2br($dados['adicional']['descricao'] ?? '') ?>
+                        </p>
+                    </div>
+                <?php endif; ?>
             </div>
-            <p style="margin-top: 40px; max-width: 500px; font-size: 16px; color: #666;">
-                Este investimento contempla toda a infraestrutura técnica, criativa e estratégica necessária para atingirmos os resultados propostos.
+        </div>
+    <!-- Slide 12: Condições de Pagamento -->
+    <section class="proposal-page">
+        <!-- Coluna 1: Título e Validade -->
+        <div class="page-content" style="grid-column: 1; flex-direction: column; justify-content: space-between; padding-bottom: 60px;">
+            <div style="margin-top: auto; margin-bottom: auto;">
+                <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 90%;">
+                    QUAL SERÁ O INVESTIMENTO PARA ESTE PROJETO
+                </h2>
+            </div>
+
+            <!-- Validade -->
+            <?php 
+            $hoje = date('Y-m-d');
+            $vencida = ($proposta['validade'] < $hoje);
+            $validadeFormatada = date('d/m/Y', strtotime($proposta['validade']));
+            ?>
+            <div style="padding: 12px 25px; border-radius: 50px; border: 1px solid <?= $vencida ? '#ff4d4d' : 'rgba(0,0,0,0.3)' ?>; font-size: 10px; font-weight: 700; text-transform: uppercase; text-align: center; color: <?= $vencida ? '#ff4d4d' : '#000' ?>; letter-spacing: 1px; width: fit-content; display: flex; align-items: center; gap: 8px;">
+                <?php if ($vencida): ?>
+                    <i data-lucide="alert-circle" style="width: 14px; height: 14px;"></i>
+                    PROPOSTA VENCIDA EM <?= $validadeFormatada ?>
+                <?php else: ?>
+                    ESTA PROPOSTA É VÁLIDA ATÉ <?= $validadeFormatada ?>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <!-- Coluna 2: Detalhes do Pagamento -->
+        <div class="page-content" style="grid-column: 2; flex-direction: column; align-items: flex-start; padding-top: 100px;">
+            <div style="padding: 8px 40px; border-radius: 50px; background: #333; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 40px;">
+                FORMA DE PAGAMENTO
+            </div>
+            
+            <p style="font-size: 14px; line-height: 1.6; color: #333; margin-bottom: 30px;">
+                O pagamento referente ao valor mensal do projeto deverá ser realizado no momento da assinatura do contrato, que será enviado para assinatura digital via e-mail.
             </p>
+            <p style="font-size: 14px; line-height: 1.6; color: #333; margin-bottom: 30px;">
+                A partir da confirmação do pagamento, iniciaremos o processo de estruturação e execução do plano mensal, incluindo gestão de redes sociais, tráfego pago e demais serviços contratados.
+            </p>
+
+            <?php if ($isCartao): ?>
+                <div style="padding: 20px; background: rgba(0,0,0,0.05); border-radius: 15px; border-left: 4px solid #000; margin-bottom: 30px; width: 100%;">
+                    <p style="font-size: 13px; font-weight: 700; color: #000; margin-bottom: 5px;">PAGAMENTO VIA CARTÃO DE CRÉDITO</p>
+                    <p style="font-size: 12px; color: #444; margin: 0;">Para esta modalidade, há um acréscimo de <strong>2,13%</strong> referente às taxas operacionais da plataforma de pagamento.</p>
+                </div>
+            <?php endif; ?>
+
+            <div style="margin-top: 20px;">
+                <p style="font-size: 12px; font-weight: 700; color: #000; margin-bottom: 10px;">Observação:</p>
+                <p style="font-size: 12px; color: #666; line-height: 1.6;">
+                    O valor referente ao investimento em mídia (anúncios) é de responsabilidade do cliente, sendo pago diretamente à plataforma de anúncios (Meta/Facebook Ads), via boleto bancário ou cartão de crédito cadastrado na conta de anúncios.
+                </p>
+            </div>
+        </div>
+    </section>
+    <!-- Slide 13: Finalização -->
+    <section class="proposal-page dark-page">
+        <!-- Coluna 1: Título -->
+        <div class="page-content" style="grid-column: 1; flex-direction: column; justify-content: center;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 82px; line-height: 0.9; margin: 0; text-transform: uppercase; letter-spacing: -2px; color: #fff;">
+                VAMOS JUNTOS CONSTRUIR ESTE PROJETO?
+            </h2>
+        </div>
+
+        <!-- Coluna 2: Mensagem e Contato -->
+        <div class="page-content" style="grid-column: 2; flex-direction: column; align-items: flex-start; justify-content: center; padding-left: 40px;">
+            <p style="font-size: 18px; line-height: 1.6; color: #fff; margin-bottom: 40px; font-weight: 300;">
+                Será um imenso prazer entrar com você nesta jornada e desenvolver um projeto para alavancar o seu negócio.
+            </p>
+            <p style="font-size: 16px; line-height: 1.6; color: rgba(255,255,255,0.7); margin-bottom: 60px;">
+                Qualquer dúvida sobre esta proposta ou o meu trabalho, entre em contato.
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <a href="mailto:hello@jeaneponcem.com.br" style="color: #fff; text-decoration: none; font-size: 16px; font-weight: 600;">hello@jeaneponcem.com.br</a>
+                <a href="https://wa.me/5527988586935" target="_blank" style="color: #fff; text-decoration: none; font-size: 16px; font-weight: 600;">WhatsApp: (27) 9 8858-6935</a>
+            </div>
+
+            <div style="margin-top: 60px; font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.6;">
+                Rod. Sol, 2780, SL 1307 - Praia de Itaparica<br>
+                Vila Velha - ES
+            </div>
         </div>
     </section>
 </div>

@@ -64,7 +64,21 @@
         <div class="page-content" style="align-items: center; text-align: center;">
             <div style="color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px;">O Investimento</div>
             <div class="price-tag"><?= formatarMoeda($proposta['valor_total']) ?></div>
-            <p style="color: #666; margin-top: 40px; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;">Digital Presence by DISTINTO</p>
+            <?php 
+            $hoje = date('Y-m-d');
+            $vencida = ($proposta['validade'] < $hoje);
+            $validadeFormatada = date('d/m/Y', strtotime($proposta['validade']));
+            ?>
+            <div style="margin-top: 30px; padding: 10px 20px; border: 1px solid <?= $vencida ? 'var(--accent)' : '#333' ?>; border-radius: 50px; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: <?= $vencida ? 'var(--accent)' : '#666' ?>; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <?php if ($vencida): ?>
+                    <i data-lucide="alert-circle" style="width: 14px; height: 14px;"></i>
+                    PROPOSTA VENCIDA EM <?= $validadeFormatada ?>
+                <?php else: ?>
+                    PROPOSTA VÁLIDA ATÉ: <?= $validadeFormatada ?>
+                <?php endif; ?>
+            </div>
+
+            <p style="color: #666; margin-top: 20px; font-size: 12px; letter-spacing: 2px; text-transform: uppercase;">Digital Presence by DISTINTO</p>
         </div>
     </section>
 </div>

@@ -32,9 +32,34 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Mas o IntersectionObserver já cuida disso no 'else' abaixo ou aqui
                 }
 
+                // Toggle show-etapas-title class
+                if (entry.target.classList.contains('is-etapas')) {
+                    document.body.classList.add('show-etapas-title');
+                } else {
+                    // Só remove se não houver outra seção de etapas visível
+                    const visibleEtapas = Array.from(sections).filter(s => 
+                        s.classList.contains('is-etapas') && 
+                        s.classList.contains('is-visible') && 
+                        s !== entry.target
+                    );
+                    if (visibleEtapas.length === 0) {
+                        document.body.classList.remove('show-etapas-title');
+                    }
+                }
+
                 // Mostrar botão quando entrar em uma nova seção
                 if (btn) showButton();
             } else {
+                // Ao sair de uma seção de etapas, remove a classe se for a última
+                if (entry.target.classList.contains('is-etapas')) {
+                    const visibleEtapas = Array.from(sections).filter(s => 
+                        s.classList.contains('is-etapas') && 
+                        s.classList.contains('is-visible')
+                    );
+                    if (visibleEtapas.length === 0) {
+                        document.body.classList.remove('show-etapas-title');
+                    }
+                }
                 // Se o primeiro slide saiu de vista, ativa o modo scrolled
                 if (entry.target === sections[0] && entry.boundingClientRect.top < 0) {
                     document.body.classList.add('scrolled');

@@ -79,7 +79,21 @@
                 <div style="font-family: var(--font-cinematic); font-size: 64px; font-weight: 700; color: var(--accent);"><?= formatarMoeda($proposta['valor_total']) ?></div>
                 <div style="margin-top: 20px; font-size: 14px; opacity: 0.4;">Production code: #<?= strtoupper(substr($proposta['slug'], 0, 8)) ?></div>
             </div>
-            <p style="margin-top: 40px; font-style: italic; opacity: 0.6;">"Because every frame tells a story."</p>
+            <?php 
+            $hoje = date('Y-m-d');
+            $vencida = ($proposta['validade'] < $hoje);
+            $validadeFormatada = date('d/m/Y', strtotime($proposta['validade']));
+            ?>
+            <div style="margin-top: 40px; padding: 10px 20px; border: 1px solid <?= $vencida ? 'var(--accent)' : 'rgba(255,255,255,0.2)' ?>; border-radius: 50px; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: <?= $vencida ? 'var(--accent)' : '#fff' ?>; display: flex; align-items: center; gap: 8px;">
+                <?php if ($vencida): ?>
+                    <i data-lucide="alert-circle" style="width: 14px; height: 14px;"></i>
+                    PROPOSTA VENCIDA EM <?= $validadeFormatada ?>
+                <?php else: ?>
+                    VALIDADE DA PROPOSTA: <?= $validadeFormatada ?>
+                <?php endif; ?>
+            </div>
+
+            <p style="margin-top: 20px; font-style: italic; opacity: 0.6;">"Because every frame tells a story."</p>
         </div>
     </section>
 </div>
