@@ -159,15 +159,15 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         </div>
 
                         <!-- Modo Novo Lead -->
-                        <div id="wrapperNovoLead" class="hidden animate-fade-in">
+                        <div id="wrapperNovoLead" class="hidden animate-fade-in" x-show="tipoProposta !== 'casamento'">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="form-group">
                                     <label class="label">Nome da Empresa / Projeto</label>
-                                    <input type="text" name="empresa_nome" class="input" placeholder="Ex: Innovare Solar">
+                                    <input type="text" name="empresa_nome" class="input" placeholder="Ex: Innovare Solar" :required="modoCliente === 'lead' && tipoProposta !== 'casamento'">
                                 </div>
                                 <div class="form-group">
                                     <label class="label">Responsável(is)</label>
-                                    <input type="text" name="responsavel" class="input" placeholder="Ex: João Silva, Maria Souza">
+                                    <input type="text" name="responsavel" class="input" placeholder="Ex: João Silva, Maria Souza" :required="modoCliente === 'lead' && tipoProposta !== 'casamento'">
                                 </div>
                             </div>
                         </div>
@@ -189,10 +189,10 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" x-show="tipoProposta !== 'casamento'">
                             <div class="form-group">
                                 <label class="label">Título da Proposta</label>
-                                <input type="text" name="titulo" class="input" placeholder="Ex: Gestão de Tráfego 2024" maxlength="60" required>
+                                <input type="text" name="titulo" class="input" placeholder="Ex: Gestão de Tráfego 2024" maxlength="60" :required="tipoProposta !== 'casamento'" :value="tipoProposta === 'casamento' ? (nomeNoivo + ' & ' + nomeNoiva) : ''">
                             </div>
                             <div class="form-group">
                                 <label class="label">Subtítulo (Opcional)</label>
@@ -220,7 +220,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                                 <input type="number" step="0.01" name="valor_total" class="input bg-zinc-100 font-bold text-zinc-900 border-zinc-300" placeholder="0,00" required readonly x-model="valorTotal">
                                 <p class="text-[10px] text-zinc-500 mt-1">Valor final após desconto.</p>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" x-show="tipoProposta !== 'casamento'">
                                 <label class="label">Tempo de Contrato</label>
                                 <input type="number" name="meses_contrato" class="input" placeholder="Meses" x-model="mesesContrato" @input="recalcularTotal()">
                             </div>
@@ -407,7 +407,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     </div>
                 </section>
 
-                <section class="card p-6">
+                <section class="card p-6" x-show="tipoProposta !== 'casamento'">
                     <h3 class="text-sm font-bold text-zinc-900 mb-4">Estratégia & Cronograma</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div class="form-group">
@@ -428,7 +428,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     </div>
                 </section>
 
-                <section class="card p-6">
+                <section class="card p-6" x-show="tipoProposta !== 'casamento'">
                     <h3 class="text-sm font-bold text-zinc-900 mb-4">Opção Adicional (Upsell)</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div class="form-group">
@@ -446,7 +446,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     </div>
                 </section>
 
-                <section class="card p-6">
+                <section class="card p-6" x-show="tipoProposta !== 'casamento'">
                     <h3 class="text-sm font-bold text-zinc-900 mb-4">Briefing para IA</h3>
                     <div class="form-group">
                         <label class="label">Instruções Adicionais (Opcional)</label>

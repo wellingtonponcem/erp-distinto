@@ -85,7 +85,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-group">
+                            <div class="form-group" x-show="tipoProposta !== 'casamento'">
                                 <label class="label">Responsável(is)</label>
                                 <input type="text" name="responsavel" class="input" x-model="responsavel" placeholder="Ex: João Silva ou João e Maria">
                             </div>
@@ -105,10 +105,10 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" x-show="tipoProposta !== 'casamento'">
                             <div class="form-group">
                                 <label class="label">Título da Proposta</label>
-                                <input type="text" name="titulo" class="input" value="<?= sanitizar($proposta['titulo']) ?>" maxlength="100" required>
+                                <input type="text" name="titulo" class="input" :value="tipoProposta === 'casamento' ? (nomeNoivo + ' & ' + nomeNoiva) : '<?= sanitizar($proposta['titulo']) ?>'" maxlength="100" required>
                             </div>
                             <div class="form-group">
                                 <label class="label">Subtítulo (Opcional)</label>
@@ -136,7 +136,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                                 <input type="number" step="0.01" name="valor_total" class="input font-bold" required x-model="valorTotal" @input="calcularDescontoDoTotal()">
                                 <p class="text-[10px] text-zinc-400 mt-1" x-text="'R$ ' + (valorTotal / (parseInt(mesesContrato)||1)).toFixed(2).replace('.',',') + '/mês × ' + (parseInt(mesesContrato)||1) + ' meses'"></p>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" x-show="tipoProposta !== 'casamento'">
                                 <label class="label">Tempo de Contrato</label>
                                 <input type="number" name="meses_contrato" class="input" x-model="mesesContrato">
                             </div>
@@ -163,7 +163,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                 </section>
 
                 <!-- Conteúdo Gerado pela IA (Editável) -->
-                <section class="card p-6 border-zinc-200">
+                <section class="card p-6 border-zinc-200" x-show="tipoProposta !== 'casamento'">
                     <h3 class="text-sm font-bold text-zinc-900 mb-4">Conteúdo Gerado (IA)</h3>
                     <div class="space-y-6">
                         <template x-for="(content, key) in secoes" :key="key">
@@ -391,7 +391,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     </div>
                 </section>
 
-                <section class="card p-6">
+                <section class="card p-6" x-show="tipoProposta !== 'casamento'">
                     <h3 class="text-sm font-bold text-zinc-900 mb-4">Estratégia & Cronograma</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div class="form-group">
@@ -424,7 +424,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     </div>
                 </section>
 
-                <section class="card p-6">
+                <section class="card p-6" x-show="tipoProposta !== 'casamento'">
                     <h3 class="text-sm font-bold text-zinc-900 mb-4">Opção Adicional (Upsell)</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div class="form-group">
