@@ -36,25 +36,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (entry.target.classList.contains('is-etapas')) {
                     document.body.classList.add('show-etapas-title');
                 } else {
-                    // Só remove se não houver outra seção de etapas visível
-                    const visibleEtapas = Array.from(sections).filter(s => 
-                        s.classList.contains('is-etapas') && 
-                        s.classList.contains('is-visible') && 
-                        s !== entry.target
-                    );
-                    if (visibleEtapas.length === 0) {
-                        document.body.classList.remove('show-etapas-title');
-                    }
+                    document.body.classList.remove('show-etapas-title');
                 }
 
                 // Mostrar botão quando entrar em uma nova seção
                 if (btn) showButton();
             } else {
-                // Ao sair de uma seção de etapas, remove a classe se for a última
+                // Ao sair de uma seção de etapas (scroll para cima ou para baixo)
                 if (entry.target.classList.contains('is-etapas')) {
+                    // Só remove se não houver NENHUMA outra seção de etapas visível
                     const visibleEtapas = Array.from(sections).filter(s => 
                         s.classList.contains('is-etapas') && 
-                        s.classList.contains('is-visible')
+                        s.classList.contains('is-visible') &&
+                        s !== entry.target
                     );
                     if (visibleEtapas.length === 0) {
                         document.body.classList.remove('show-etapas-title');

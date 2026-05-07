@@ -486,7 +486,7 @@
     <!-- Slide 12: Condições de Pagamento -->
     <section class="proposal-page">
         <!-- Coluna 1: Título e Validade -->
-        <div class="page-content" style="grid-column: 1; flex-direction: column; justify-content: space-between; padding-bottom: 60px;">
+        <div class="page-content" style="grid-column: 1; flex-direction: column; justify-content: space-between; padding-bottom: 120px;">
             <div style="margin-top: auto; margin-bottom: auto;">
                 <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 90%;">
                     QUAL SERÁ O INVESTIMENTO PARA ESTE PROJETO
