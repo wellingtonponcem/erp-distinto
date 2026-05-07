@@ -198,10 +198,10 @@ include __DIR__ . '/../includes/layout/head.php';
 
             <!-- DOCUMENTOS (Propostas) -->
             <template x-for="p in filteredItems" :key="p.id">
-                <div class="item-doc group" 
+                <div class="item-doc" 
                      draggable="true" 
                      @dragstart="dragStart($event, p)"
-                     @click="window.open(`<?= APP_URL ?>/p/${p.slug}`, '_blank')"
+                     @click="window.location.href = '../p/' + p.slug"
                      @contextmenu.stop.prevent="showContextMenu($event, 'proposal', p)">
                     
                     <div class="doc-visual">

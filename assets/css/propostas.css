@@ -436,7 +436,7 @@ body.type-15anos .proposal-frame {
 .fixed-section-title h2 {
     font-family: var(--font-heading);
     font-weight: 800;
-    font-size: 52px;
+    font-size: 2.5rem; /* Reduzido de 52px para melhor ajuste */
     line-height: 1.1;
     margin: 0;
     text-transform: uppercase;
@@ -644,8 +644,10 @@ body.on-dark .fixed-section-title h2 {
         margin: 0 !important;
         padding: 0 !important;
         width: 100% !important;
-        height: auto !important; /* Permite o fluxo de páginas */
+        height: auto !important;
         overflow: visible !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
 
     .proposal-wrapper {
@@ -660,17 +662,16 @@ body.on-dark .fixed-section-title h2 {
         width: 100vw !important;
         height: 100vh !important;
         min-height: 100vh !important;
+        max-height: 100vh !important; /* Força o corte se transbordar */
         page-break-after: always !important;
         break-after: page !important;
         margin: 0 !important;
-        padding: 0 8vw !important; /* Respiro lateral fixo no print */
+        padding: 0 8vw !important;
         display: grid !important;
         grid-template-columns: 45% 35% 20% !important;
         align-items: center !important;
         position: relative !important;
-        overflow: hidden !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
+        overflow: hidden !important; /* Crucial para evitar páginas extras */
         background-color: #fff !important;
         color: #000 !important;
     }
@@ -693,17 +694,30 @@ body.on-dark .fixed-section-title h2 {
         transform: none !important;
         visibility: visible !important;
         padding: 0 !important;
+        height: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
     }
 
-    /* Tipografia ajustada para o papel */
-    h1 { font-size: 3.5vw !important; line-height: 1.1 !important; margin-bottom: 2vh !important; }
-    h2 { font-size: 2.2vw !important; margin-bottom: 1.5vh !important; }
-    p { font-size: 1.4vw !important; line-height: 1.5 !important; }
+    /* Tipografia ajustada para o papel - Valores conservadores */
+    h1 { font-size: 2.2rem !important; line-height: 1.1 !important; margin-bottom: 2vh !important; }
+    h2 { font-size: 1.6rem !important; margin-bottom: 1.5vh !important; }
+    p, li, div, span { font-size: 0.9rem !important; line-height: 1.4 !important; }
 
-    /* Caso seja vertical, as fontes precisam ser maiores em relação à largura */
-    body.export-vertical h1 { font-size: 8vw !important; }
-    body.export-vertical h2 { font-size: 6vw !important; }
-    body.export-vertical p { font-size: 4vw !important; }
+    /* Ajustes específicos para Modo Vertical */
+    body.export-vertical h1 { font-size: 2rem !important; }
+    body.export-vertical h2 { font-size: 1.4rem !important; }
+    body.export-vertical p, 
+    body.export-vertical li, 
+    body.export-vertical div { font-size: 0.85rem !important; }
+
+    /* Forçar visibilidade dos títulos escondidos (Etapas) no print */
+    .proposal-page.is-etapas h2 {
+        visibility: visible !important;
+        opacity: 1 !important;
+        display: block !important;
+    }
 
     /* Gradientes */
     .side-gradient-container {
@@ -714,17 +728,8 @@ body.on-dark .fixed-section-title h2 {
     }
     
     .abstract-gradient {
-        opacity: 0.5 !important;
+        opacity: 0.4 !important;
     }
-}
-
-/* --- REGRAS DE IMPRESSÃO PADRÃO (FALLBACK) --- */
-@media print {
-    .no-print, .proposal-frame, .btn-export-top, .btn-floating, #btn-approve, .fixed-section-title, #export-modal {
-        display: none !important;
-    }
-    @page { margin: 0; }
-    html, body { background: #fff; }
 }
 
 /* Animações de Entrada do Modal */

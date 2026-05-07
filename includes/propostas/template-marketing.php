@@ -88,9 +88,9 @@
         </div>
 
         <!-- Coluna 2: Lista de Etapas -->
-        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
+        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0; font-size: 0.8em;">
             <!-- Lista de Pílulas -->
-            <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0;">
+            <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0;margin-left: -25%;">
                 <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; position: relative;">
                     IMERSÃO
                     <div style="position: absolute; right: -40px; top: 50%; width: 40px; height: 1px; background: rgba(0,0,0,0.2);"></div>
@@ -129,7 +129,7 @@
         </div>
 
         <!-- Coluna 2: Lista de Etapas -->
-        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
+        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;margin-left: -25%;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0;">
                 <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
@@ -175,7 +175,7 @@
         </div>
 
         <!-- Coluna 2: Lista de Etapas -->
-        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
+        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;margin-left: -25%;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0;">
                 <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
@@ -233,7 +233,7 @@
         </div>
 
         <!-- Coluna 2: Lista de Etapas -->
-        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
+        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;margin-left: -25%;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0;">
                 <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
@@ -282,7 +282,7 @@
         </div>
 
         <!-- Coluna 2: Lista de Etapas -->
-        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
+        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;margin-left: -25%;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0;">
                 <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
@@ -323,7 +323,7 @@
         </div>
 
         <!-- Coluna 2: Lista de Etapas -->
-        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
+        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;margin-left: -25%;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0;">
                 <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
@@ -367,7 +367,7 @@
         </div>
 
         <!-- Coluna 2: Lista de Etapas (Tudo Conectado) -->
-        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
+        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;margin-left: -25%;">
             <!-- Lista de Pílulas Ativas -->
             <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0; position: relative;">
                 <div style="padding: 12px 30px; border-radius: 50px; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
