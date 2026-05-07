@@ -22,7 +22,7 @@
     <section class="proposal-page dark-page">
         <!-- Coluna 1: Título de Impacto -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
-            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #fff;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #fff;width: 60%;">
                 <?php 
                     $tipo = strtolower($proposta['tipo_projeto'] ?? $proposta['titulo'] ?? '');
                     if (strpos($tipo, 'vídeo') !== false || strpos($tipo, 'video') !== false || strpos($tipo, 'filmmaker') !== false) {

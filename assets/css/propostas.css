@@ -375,30 +375,26 @@ body.type-15anos .proposal-frame {
 
 /* Gradientes Abstratos */
 .side-gradient-container {
+    grid-column: 3;
+    margin-right: -6vw; /* Compensa o padding para encostar na borda direita */
     height: 100vh;
-    width: 100%;
     position: relative;
     overflow: hidden;
 }
 
 .abstract-gradient {
     position: absolute;
-    top: -20%;
-    left: -20%;
-    width: 140%;
-    height: 140%;
-    background: radial-gradient(circle at 30% 20%, #0015ff 0%, transparent 40%),
-                radial-gradient(circle at 70% 60%, #ff00ea 0%, transparent 40%),
-                radial-gradient(circle at 40% 80%, #00d4ff 0%, transparent 40%),
-                radial-gradient(circle at 80% 20%, #ffb400 0%, transparent 40%);
-    filter: blur(80px);
-    opacity: 0.8;
-    animation: gradientShift 20s infinite alternate ease-in-out;
-}
-
-@keyframes gradientShift {
-    0% { transform: rotate(0deg) scale(1); }
-    100% { transform: rotate(15deg) scale(1.2); }
+    top: -10%;
+    right: -10%;
+    width: 120%;
+    height: 120%;
+    background: 
+        radial-gradient(circle at 100% 15%, #00f2ff 0%, transparent 50%),
+        radial-gradient(circle at 100% 45%, #0051ff 0%, transparent 60%),
+        radial-gradient(circle at 100% 75%, #ffaa00 0%, transparent 45%),
+        radial-gradient(circle at 100% 95%, #0022ff 0%, transparent 60%);
+    filter: blur(100px);
+    opacity: 0.85;
 }
 
 .dark-page {
