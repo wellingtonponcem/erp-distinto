@@ -119,11 +119,115 @@
         </div>
     </section>
 
-    <!-- Slide 5: Investimento -->
+    <!-- Slide 5: Etapas do Projeto (DIAGNÓSTICO) -->
+    <section class="proposal-page">
+        <!-- Coluna 1: Título -->
+        <div class="page-content" style="grid-column: 1; justify-content: center;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%;">
+                ETAPAS DO PROJETO
+            </h2>
+        </div>
+
+        <!-- Coluna 2: Lista de Etapas -->
+        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
+            <!-- Lista de Pílulas -->
+            <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0;">
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; position: relative;">
+                    DIAGNÓSTICO
+                    <div style="position: absolute; right: -40px; top: 50%; width: 40px; height: 1px; background: rgba(0,0,0,0.2);"></div>
+                </div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
+            </div>
+
+            <!-- Texto Explicativo -->
+            <div style="margin-left: 60px; max-width: 380px;">
+                <p style="font-size: 16px; line-height: 1.5; color: #333; margin-bottom: 20px;">
+                    Depois da imersão concluída, é o momento de desenvolver o diagnóstico do negócio. Através desses resultados, teremos a definição da plataforma da marca com as seguintes entregas:
+                </p>
+                <ul style="list-style: none; padding: 0; margin: 0 0 35px 0; font-size: 16px; color: #000; line-height: 1.8; font-weight: 500;">
+                    <li style="display: flex; align-items: center; gap: 8px;"><span style="width: 4px; height: 4px; background: #000; border-radius: 50%;"></span> Proposta de Marca</li>
+                    <li style="display: flex; align-items: center; gap: 8px;"><span style="width: 4px; height: 4px; background: #000; border-radius: 50%;"></span> Diferenciais estratégicos</li>
+                    <li style="display: flex; align-items: center; gap: 8px;"><span style="width: 4px; height: 4px; background: #000; border-radius: 50%;"></span> Entregas funcionais e emocionais</li>
+                    <li style="display: flex; align-items: center; gap: 8px;"><span style="width: 4px; height: 4px; background: #000; border-radius: 50%;"></span> Personalidade de marca</li>
+                    <li style="display: flex; align-items: center; gap: 8px;"><span style="width: 4px; height: 4px; background: #000; border-radius: 50%;"></span> Tom de voz</li>
+                    <li style="display: flex; align-items: center; gap: 8px;"><span style="width: 4px; height: 4px; background: #000; border-radius: 50%;"></span> *Arquétipo</li>
+                </ul>
+                
+                <!-- Cápsula de Tempo -->
+                <div style="padding: 15px 25px; border-radius: 50px; border: 1px solid rgba(0,0,0,0.3); font-size: 11px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.3; color: #000; letter-spacing: 0.5px; width: fit-content; margin: 0 auto;">
+                    TERCEIRA SEMANA
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 6: Etapas do Projeto (PLANEJAMENTO) -->
+    <section class="proposal-page">
+        <!-- Coluna 1: Título -->
+        <div class="page-content" style="grid-column: 1; justify-content: center;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%;">
+                ETAPAS DO PROJETO
+            </h2>
+        </div>
+
+        <!-- Coluna 2: Lista de Etapas -->
+        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
+            <!-- Lista de Pílulas -->
+            <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0;">
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; position: relative;">
+                    PLANEJAMENTO
+                    <div style="position: absolute; right: -40px; top: 50%; width: 40px; height: 1px; background: rgba(0,0,0,0.2);"></div>
+                </div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
+            </div>
+
+            <!-- Texto Explicativo (Aprimorado) -->
+            <div style="margin-left: 60px; max-width: 480px;">
+                <p style="font-size: 15px; line-height: 1.4; color: #333; margin-bottom: 15px;">
+                    A fase de planejamento é o núcleo estratégico do projeto, onde estruturamos o "como" e o "onde" para garantir que cada ação tenha um propósito claro e mensurável. Nosso planejamento 360º abrange:
+                </p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px;">
+                    <ul style="list-style: none; padding: 0; margin: 0; font-size: 12px; color: #000; line-height: 1.5; font-weight: 500;">
+                        <li style="margin-bottom: 4px;">• DNA do Conteúdo da Marca</li>
+                        <li style="margin-bottom: 4px;">• Definição de Personalidade e Voz</li>
+                        <li style="margin-bottom: 4px;">• Canais de Atuação Estratégica</li>
+                        <li style="margin-bottom: 4px;">• Análise de Concorrência</li>
+                        <li style="margin-bottom: 4px;">• Criação de Personas</li>
+                        <li style="margin-bottom: 4px;">• Pesquisa de Palavras-chave</li>
+                        <li style="margin-bottom: 4px;">• Jornada de Compra</li>
+                    </ul>
+                    <ul style="list-style: none; padding: 0; margin: 0; font-size: 12px; color: #000; line-height: 1.5; font-weight: 500;">
+                        <li style="margin-bottom: 4px;">• Definição de Linguagem Visual</li>
+                        <li style="margin-bottom: 4px;">• Projeto Estrutural do Site</li>
+                        <li style="margin-bottom: 4px;">• Linhas Editoriais</li>
+                        <li style="margin-bottom: 4px;">• Calendário Trimestral</li>
+                        <li style="margin-bottom: 4px;">• Estratégias por Canal</li>
+                        <li style="margin-bottom: 4px;">• Fluxos de Automação</li>
+                        <li style="margin-bottom: 4px;">• Planejamento de Tráfego</li>
+                    </ul>
+                </div>
+                
+                <!-- Cápsula de Tempo -->
+                <div style="margin-top: 25px; padding: 12px 20px; border-radius: 50px; border: 1px solid rgba(0,0,0,0.3); font-size: 10px; font-weight: 700; text-transform: uppercase; text-align: center; color: #000; letter-spacing: 0.5px; width: fit-content;">
+                    QUARTA À SÉTIMA SEMANA
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 7: Investimento -->
     <section class="proposal-page">
         <div class="page-content" style="align-items: center; text-align: center;">
             <div style="font-family: var(--font-heading); font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #000; margin-bottom: 40px;">
-                05. Investimento & Parceria
+                07. Investimento & Parceria
             </div>
             <div style="background: #000; color: #fff; padding: 60px 100px; border-radius: 0; position: relative;">
                 <p style="text-transform: uppercase; font-size: 14px; letter-spacing: 2px; opacity: 0.6; margin-bottom: 10px;">Valor Mensal do Projeto</p>
