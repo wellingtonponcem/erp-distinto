@@ -125,23 +125,37 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div class="form-group">
-                                <label class="label">Valor Total (R$)</label>
-                                <input type="number" step="0.01" name="valor_total" class="input bg-zinc-50 font-bold text-zinc-900" placeholder="0,00" required readonly x-model="valorTotal">
-                                <p class="text-[10px] text-zinc-500 mt-1">Soma automática dos serviços.</p>
+                                <label class="label">Subtotal (R$)</label>
+                                <input type="number" step="0.01" class="input bg-zinc-50 font-bold text-zinc-500" placeholder="0,00" readonly :value="valorSubtotal">
                             </div>
                             <div class="form-group">
-                                <label class="label">Tempo de Contrato (Meses)</label>
-                                <input type="number" name="meses_contrato" class="input" placeholder="Ex: 12" value="12">
+                                <label class="label">Desconto</label>
+                                <div class="flex">
+                                    <input type="number" step="0.01" name="desconto_valor" class="input rounded-r-none border-r-0" placeholder="0,00" x-model="descontoValor" @input="recalcularTotal()">
+                                    <select name="desconto_tipo" class="input rounded-l-none w-16 px-1 text-center font-bold bg-zinc-50" x-model="descontoTipo" @change="recalcularTotal()">
+                                        <option value="porcentagem">%</option>
+                                        <option value="fixo">R$</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="form-group">
-                                <label class="label">Forma de Pagamento</label>
-                                <select name="forma_pagamento" class="input">
-                                    <option value="boleto_pix">Boleto / PIX</option>
-                                    <option value="cartao">Cartão de Crédito (+2,13%)</option>
-                                </select>
+                                <label class="label">Valor Total (Final)</label>
+                                <input type="number" step="0.01" name="valor_total" class="input bg-zinc-100 font-bold text-zinc-900 border-zinc-300" placeholder="0,00" required readonly x-model="valorTotal">
+                                <p class="text-[10px] text-zinc-500 mt-1">Valor final após desconto.</p>
                             </div>
+                            <div class="form-group">
+                                <label class="label">Tempo de Contrato</label>
+                                <input type="number" name="meses_contrato" class="input" placeholder="Meses" value="12">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Forma de Pagamento</label>
+                            <select name="forma_pagamento" class="input">
+                                <option value="boleto_pix">Boleto / PIX</option>
+                                <option value="cartao">Cartão de Crédito (+2,13%)</option>
+                            </select>
                         </div>
                     </div>
                 </section>
@@ -326,6 +340,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const appData = {
         catalogoServicos: <?= $servicosJson ?>,
         servicosSelecionados: [],
+        valorSubtotal: 0,
+        descontoValor: 0,
+        descontoTipo: 'porcentagem',
         valorTotal: 0,
         
         init() {
@@ -355,7 +372,16 @@ document.addEventListener('DOMContentLoaded', function() {
         },
 
         recalcularTotal() {
-            this.valorTotal = this.servicosSelecionados.reduce((acc, curr) => acc + parseFloat(curr.valor || 0), 0);
+            this.valorSubtotal = this.servicosSelecionados.reduce((acc, curr) => acc + parseFloat(curr.valor || 0), 0);
+            
+            let desconto = 0;
+            if (this.descontoTipo === 'porcentagem') {
+                desconto = this.valorSubtotal * (parseFloat(this.descontoValor || 0) / 100);
+            } else {
+                desconto = parseFloat(this.descontoValor || 0);
+            }
+            
+            this.valorTotal = Math.max(0, this.valorSubtotal - desconto);
         }
     };
 
