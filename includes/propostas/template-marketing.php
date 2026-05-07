@@ -99,8 +99,14 @@
             </div>
         </div>
     </section>
+    
+    <?php 
+    // Lógica de visibilidade das etapas
+    $etapasAtivas = $dados['etapas_ativas'] ?? ['imersao', 'diagnostico', 'planejamento', 'linguagem_visual', 'entrega', 'gestao'];
+    ?>
 
     <!-- Slide 4: Etapas do Projeto -->
+    <?php if (in_array('imersao', $etapasAtivas)): ?>
     <section class="proposal-page is-etapas">
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
@@ -117,11 +123,11 @@
                     IMERSÃO
                     <div style="position: absolute; right: -29px; top: 50%; width: 29px; height: 1px; background: rgba(0,0,0,0.2);"></div>
                 </div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
+                <?php if (in_array('diagnostico', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div><?php endif; ?>
+                <?php if (in_array('planejamento', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div><?php endif; ?>
+                <?php if (in_array('linguagem_visual', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div><?php endif; ?>
+                <?php if (in_array('entrega', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div><?php endif; ?>
+                <?php if (in_array('gestao', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div><?php endif; ?>
             </div>
 
             <!-- Texto Explicativo -->
@@ -140,8 +146,10 @@
             </div>
         </div>
     </section>
+    <?php endif; ?>
 
     <!-- Slide 5: Etapas do Projeto (DIAGNÓSTICO) -->
+    <?php if (in_array('diagnostico', $etapasAtivas)): ?>
     <section class="proposal-page is-etapas">
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
@@ -154,15 +162,15 @@
         <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -7rem;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 14rem; flex-shrink: 0; position: relative; z-index: 9999;">
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
+                <?php if (in_array('imersao', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div><?php endif; ?>
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; position: relative;">
                     DIAGNÓSTICO
                     <div style="position: absolute; right: -29px; top: 50%; width: 29px; height: 1px; background: rgba(0,0,0,0.2);"></div>
                 </div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
+                <?php if (in_array('planejamento', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div><?php endif; ?>
+                <?php if (in_array('linguagem_visual', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div><?php endif; ?>
+                <?php if (in_array('entrega', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div><?php endif; ?>
+                <?php if (in_array('gestao', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div><?php endif; ?>
             </div>
 
             <!-- Texto Explicativo -->
@@ -186,8 +194,10 @@
             </div>
         </div>
     </section>
+    <?php endif; ?>
 
     <!-- Slide 6: Etapas do Projeto (PLANEJAMENTO) -->
+    <?php if (in_array('planejamento', $etapasAtivas)): ?>
     <section class="proposal-page is-etapas">
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
@@ -200,15 +210,15 @@
         <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -7rem;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 14rem; flex-shrink: 0; position: relative; z-index: 9999;">
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
+                <?php if (in_array('imersao', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div><?php endif; ?>
+                <?php if (in_array('diagnostico', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div><?php endif; ?>
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; position: relative;">
                     PLANEJAMENTO
                     <div style="position: absolute; right: -29px; top: 50%; width: 29px; height: 1px; background: rgba(0,0,0,0.2);"></div>
                 </div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
+                <?php if (in_array('linguagem_visual', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div><?php endif; ?>
+                <?php if (in_array('entrega', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div><?php endif; ?>
+                <?php if (in_array('gestao', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div><?php endif; ?>
             </div>
 
             <!-- Texto Explicativo (Aprimorado) -->
@@ -244,8 +254,10 @@
             </div>
         </div>
     </section>
+    <?php endif; ?>
 
     <!-- Slide 7: Etapas do Projeto (LINGUAGEM VISUAL) -->
+    <?php if (in_array('linguagem_visual', $etapasAtivas)): ?>
     <section class="proposal-page is-etapas">
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
@@ -258,15 +270,15 @@
         <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -7rem;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 14rem; flex-shrink: 0; position: relative; z-index: 9999;">
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
+                <?php if (in_array('imersao', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div><?php endif; ?>
+                <?php if (in_array('diagnostico', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div><?php endif; ?>
+                <?php if (in_array('planejamento', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div><?php endif; ?>
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; position: relative;">
                     LINGUAGEM VISUAL
                     <div style="position: absolute; right: -29px; top: 50%; width: 29px; height: 1px; background: rgba(0,0,0,0.2);"></div>
                 </div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
+                <?php if (in_array('entrega', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div><?php endif; ?>
+                <?php if (in_array('gestao', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div><?php endif; ?>
             </div>
 
             <!-- Texto Explicativo (Aprimorado) -->
@@ -293,8 +305,10 @@
             </div>
         </div>
     </section>
+    <?php endif; ?>
 
     <!-- Slide 8: Etapas do Projeto (ENTREGA) -->
+    <?php if (in_array('entrega', $etapasAtivas)): ?>
     <section class="proposal-page is-etapas">
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
@@ -307,15 +321,15 @@
         <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -7rem;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 14rem; flex-shrink: 0; position: relative; z-index: 9999;">
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
+                <?php if (in_array('imersao', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div><?php endif; ?>
+                <?php if (in_array('diagnostico', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div><?php endif; ?>
+                <?php if (in_array('planejamento', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div><?php endif; ?>
+                <?php if (in_array('linguagem_visual', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div><?php endif; ?>
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; position: relative;">
                     ENTREGA
                     <div style="position: absolute; right: -29px; top: 50%; width: 29px; height: 1px; background: rgba(0,0,0,0.2);"></div>
                 </div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
+                <?php if (in_array('gestao', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div><?php endif; ?>
             </div>
 
             <!-- Texto Explicativo (Aprimorado) -->
@@ -334,8 +348,10 @@
             </div>
         </div>
     </section>
+    <?php endif; ?>
 
     <!-- Slide 9: Etapas do Projeto (GESTÃO) -->
+    <?php if (in_array('gestao', $etapasAtivas)): ?>
     <section class="proposal-page is-etapas">
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
@@ -348,11 +364,11 @@
         <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -7rem;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 14rem; flex-shrink: 0; position: relative; z-index: 9999;">
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
+                <?php if (in_array('imersao', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div><?php endif; ?>
+                <?php if (in_array('diagnostico', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div><?php endif; ?>
+                <?php if (in_array('planejamento', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div><?php endif; ?>
+                <?php if (in_array('linguagem_visual', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div><?php endif; ?>
+                <?php if (in_array('entrega', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; border: 1.5px solid #000; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div><?php endif; ?>
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; position: relative;">
                     GESTÃO
                     <div style="position: absolute; right: -29px; top: 50%; width: 29px; height: 1px; background: rgba(0,0,0,0.2);"></div>
@@ -378,6 +394,7 @@
             </div>
         </div>
     </section>
+    <?php endif; ?>
 
     <!-- Slide 10: Resumo do Cronograma -->
     <section class="proposal-page dark-page is-etapas">
@@ -392,12 +409,12 @@
         <div class="page-content" style="grid-column: 2 / span 2; flex-direction: row; align-items: center; padding-left: 0; margin-left: -7rem;">
             <!-- Lista de Pílulas Ativas -->
             <div style="display: flex; flex-direction: column; gap: 0.75rem; width: 14rem; flex-shrink: 0; position: relative; z-index: 9999;">
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
-                <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
+                <?php if (in_array('imersao', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div><?php endif; ?>
+                <?php if (in_array('diagnostico', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div><?php endif; ?>
+                <?php if (in_array('planejamento', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div><?php endif; ?>
+                <?php if (in_array('linguagem_visual', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div><?php endif; ?>
+                <?php if (in_array('entrega', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div><?php endif; ?>
+                <?php if (in_array('gestao', $etapasAtivas)): ?><div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div><?php endif; ?>
 
                 <!-- Chave de Conexão (Bracket) -->
                 <div style="position: absolute; right: -20px; top: 20px; bottom: 20px; width: 20px; border: 1.5px solid rgba(255,255,255,0.3); border-left: 0;"></div>

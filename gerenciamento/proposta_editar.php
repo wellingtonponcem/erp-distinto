@@ -208,7 +208,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
 
                 <section class="card p-6">
                     <h3 class="text-sm font-bold text-zinc-900 mb-4">Estratégia & Cronograma</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div class="form-group">
                             <label class="label">Data Prevista de Início</label>
                             <input type="date" name="data_inicio" class="input" x-model="dataInicio">
@@ -217,6 +217,19 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                             <label class="label">Validade da Proposta</label>
                             <input type="date" name="validade" class="input" value="<?= $proposta['validade'] ?>">
                         </div>
+                    </div>
+
+                    <div class="border-t border-zinc-100 pt-4" x-show="tipoProposta === 'marketing'">
+                        <label class="label mb-3 block">Etapas Visíveis no Cronograma</label>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            <template x-for="etapa in etapasDisponiveis" :key="etapa.id">
+                                <label class="flex items-center gap-3 p-3 border border-zinc-100 rounded-xl cursor-pointer hover:bg-zinc-50 transition-all" :class="etapasAtivas.includes(etapa.id) ? 'bg-emerald-50/50 border-emerald-100' : ''">
+                                    <input type="checkbox" name="etapas_ativas[]" :value="etapa.id" x-model="etapasAtivas" class="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900">
+                                    <span class="text-xs font-semibold text-zinc-700" x-text="etapa.label"></span>
+                                </label>
+                            </template>
+                        </div>
+                        <p class="text-[10px] text-zinc-400 mt-3 italic">* Desmarque as etapas que o cliente já possui ou que não fazem parte deste escopo.</p>
                     </div>
                 </section>
 
@@ -280,6 +293,15 @@ document.addEventListener('alpine:init', () => {
         whatsapp: '',
         adicional: { titulo: '', valor: 0, descricao: '' },
         secoes: {},
+        etapasDisponiveis: [
+            { id: 'imersao', label: 'Imersão' },
+            { id: 'diagnostico', label: 'Diagnóstico' },
+            { id: 'planejamento', label: 'Planejamento' },
+            { id: 'linguagem_visual', label: 'Linguagem Visual' },
+            { id: 'entrega', label: 'Entrega' },
+            { id: 'gestao', label: 'Gestão' }
+        ],
+        etapasAtivas: [],
 
         initEdit() {
             // Carregar dados existentes
@@ -309,6 +331,14 @@ document.addEventListener('alpine:init', () => {
             this.formaPagamento = dados.forma_pagamento || 'boleto_pix';
             this.dataInicio = dados.data_inicio || '';
             this.adicional = dados.adicional || { titulo: '', valor: 0, descricao: '' };
+            
+            // Carregar etapas ativas ou padrão (todas ativas se for nova ou antiga sem esse campo)
+            if (dados.etapas_ativas && Array.isArray(dados.etapas_ativas) && dados.etapas_ativas.length > 0) {
+                this.etapasAtivas = dados.etapas_ativas;
+            } else {
+                this.etapasAtivas = this.etapasDisponiveis.map(e => e.id);
+            }
+
             this.valorTotal = <?= (float)$proposta['valor_total'] ?>;
             
             // Recalcular subtotal

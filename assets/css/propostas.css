@@ -150,7 +150,7 @@ html {
     letter-spacing: 2px;
 }
 
-/* Moldura Global (HUD) */
+/* Moldura Global (HUD) - Apenas Textos e Logo */
 .proposal-frame {
     position: fixed;
     top: 0;
@@ -158,52 +158,59 @@ html {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    /* Deixa cliques passarem para o conteúdo */
-    z-index: 100;
+    z-index: 200; /* Sempre no topo de tudo */
     display: grid;
     grid-template-columns: 40% 45% 15%;
     padding: 6vh 6vw;
     font-family: var(--font-heading);
     text-transform: uppercase;
     font-size: 1rem;
-    /* Aumentado conforme solicitado */
     letter-spacing: 2px;
     color: #000;
     transition: color 0.4s ease;
 }
 
-.proposal-frame::before {
+/* Linhas do HUD - Camada inferior ao conteúdo */
+.proposal-hud-lines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 90; /* Abaixo do .page-content (101) mas acima do fundo do slide */
+}
+
+.proposal-hud-lines::before {
     content: '';
     position: absolute;
     left: 40%;
     top: 0;
     bottom: 0;
     width: 2px;
-    /* Engrossado para +1px */
     background: rgba(0, 0, 0, 0.12);
     transition: background 0.4s ease;
 }
 
-.proposal-frame::after {
+.proposal-hud-lines::after {
     content: '';
     position: absolute;
     left: 85%;
     top: 0;
     bottom: 0;
     width: 2px;
-    /* Engrossado para +1px */
     background: rgba(0, 0, 0, 0.12);
     transition: background 0.4s ease;
 }
 
-/* Inversão para Slides Escuros */
-body.on-dark .proposal-frame {
-    color: #fff;
+/* Inversão para Temas Escuros */
+body.on-dark .proposal-hud-lines::before,
+body.on-dark .proposal-hud-lines::after {
+    background: rgba(255, 255, 255, 0.2);
 }
 
-body.on-dark .proposal-frame::before,
-body.on-dark .proposal-frame::after {
-    background: rgba(255, 255, 255, 0.2);
+body.on-dark .proposal-frame {
+    color: #fff;
 }
 
 body.on-dark .logo-text {
