@@ -124,7 +124,7 @@
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
             <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 3.25rem; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%; visibility: hidden;">
-                ETAPAS DO PROJETO
+                ETAPAS DO<br>PROJETO
             </h2>
         </div>
 
@@ -170,7 +170,7 @@
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
             <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 3.25rem; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%; visibility: hidden;">
-                ETAPAS DO PROJETO
+                ETAPAS DO<br>PROJETO
             </h2>
         </div>
 
@@ -228,7 +228,7 @@
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
             <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 3.25rem; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%; visibility: hidden;">
-                ETAPAS DO PROJETO
+                ETAPAS DO<br>PROJETO
             </h2>
         </div>
 
@@ -277,7 +277,7 @@
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
             <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 3.25rem; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%; visibility: hidden;">
-                ETAPAS DO PROJETO
+                ETAPAS DO<br>PROJETO
             </h2>
         </div>
 
@@ -318,7 +318,7 @@
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
             <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 3.25rem; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%; visibility: hidden;">
-                ETAPAS DO PROJETO
+                ETAPAS DO<br>PROJETO
             </h2>
         </div>
 
@@ -362,7 +362,7 @@
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
             <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 3.25rem; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #fff; width: 80%; visibility: hidden;">
-                ETAPAS DO PROJETO
+                ETAPAS DO<br>PROJETO
             </h2>
         </div>
 
