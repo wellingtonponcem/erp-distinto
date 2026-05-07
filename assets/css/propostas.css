@@ -173,7 +173,7 @@ html {
     transition: color 0.4s ease;
 }
 
-/* Linhas do HUD - Camada inferior ao conteúdo */
+/* Linhas do HUD - Acima dos slides, abaixo do frame de texto */
 .proposal-hud-lines {
     position: fixed;
     top: 0;
@@ -181,7 +181,7 @@ html {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: -1; /* Forçado para o fundo absoluto */
+    z-index: 150; /* Acima dos slides (z:10), abaixo do frame HUD (z:200) */
 }
 
 .proposal-hud-lines::before {
