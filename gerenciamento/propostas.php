@@ -372,6 +372,54 @@ include __DIR__ . '/../includes/layout/head.php';
                 </div>
             </div>
         </template>
+
+        <!-- Modal Gerenciar Pasta -->
+        <template x-teleport="body">
+            <div x-show="folderModal.show" 
+                 class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 style="display: none;">
+                
+                <div @click.away="folderModal.show = false" 
+                     class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                     x-transition:enter-end="opacity-100 scale-100 translate-y-0">
+                    
+                    <div class="px-6 py-6">
+                        <h3 class="text-xl font-bold text-white mb-2" x-text="folderModal.mode === 'create' ? 'Nova Pasta' : 'Renomear Pasta'"></h3>
+                        <p class="text-zinc-400 text-sm mb-6">Digite um nome para organizar suas propostas.</p>
+                        
+                        <div class="form-group">
+                            <label class="label text-zinc-400">Nome da Pasta</label>
+                            <input type="text" 
+                                   id="folderNameInput"
+                                   x-model="folderModal.nome" 
+                                   class="input bg-zinc-800 border-zinc-700 text-white focus:border-white transition-all w-full"
+                                   placeholder="Ex: Campanhas de Maio"
+                                   @keydown.enter="confirmarPasta()"
+                                   @keydown.escape="folderModal.show = false">
+                        </div>
+                    </div>
+
+                    <div class="px-6 py-4 bg-zinc-800/50 border-t border-zinc-800 flex justify-end gap-3">
+                        <button @click="folderModal.show = false" 
+                                class="px-4 py-2 text-zinc-400 hover:text-white font-medium transition-colors">
+                            Cancelar
+                        </button>
+                        <button @click="confirmarPasta()" 
+                                class="px-6 py-2 bg-white text-black font-bold rounded-lg hover:bg-zinc-200 transition-colors">
+                            Salvar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </template>
     </main>
 </div>
 
@@ -387,6 +435,7 @@ function propostasApp() {
         contextMenu: { show: false, x: 0, y: 0, type: 'root', item: null },
         deleteModal: { show: false, id: null, type: '', message: '' },
         draggedItem: null,
+        folderModal: { show: false, id: null, nome: '', mode: 'create' },
 
         get filteredItems() {
             let list = this.propostas;
@@ -456,33 +505,42 @@ function propostasApp() {
         },
 
         criarPasta() {
-            const nome = prompt('Nome da nova pasta:');
-            if (nome) {
-                const id = crypto.randomUUID();
-                const novaPasta = { id, nome, created_at: new Date().toISOString() };
-                this.pastas.push(novaPasta);
-                this.contextMenu.show = false;
-
-                fetch('../api/propostas/organizar.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'create_folder', id, nome })
-                });
-            }
+            this.folderModal = { show: true, id: null, nome: '', mode: 'create' };
+            this.contextMenu.show = false;
+            this.$nextTick(() => document.getElementById('folderNameInput').focus());
         },
 
         renomearPasta(folder) {
-            const novoNome = prompt('Novo nome da pasta:', folder.nome);
-            if (novoNome && novoNome !== folder.nome) {
-                folder.nome = novoNome;
-                this.contextMenu.show = false;
+            this.folderModal = { show: true, id: folder.id, nome: folder.nome, mode: 'rename' };
+            this.contextMenu.show = false;
+            this.$nextTick(() => document.getElementById('folderNameInput').focus());
+        },
 
+        confirmarPasta() {
+            const { id, nome, mode } = this.folderModal;
+            if (!nome.trim()) return;
+
+            if (mode === 'create') {
+                const newId = crypto.randomUUID();
+                const novaPasta = { id: newId, nome: nome.trim(), created_at: new Date().toISOString() };
+                this.pastas.push(novaPasta);
                 fetch('../api/propostas/organizar.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'rename_folder', id: folder.id, nome: novoNome })
+                    body: JSON.stringify({ action: 'create_folder', id: newId, nome: nome.trim() })
                 });
+            } else {
+                const folder = this.pastas.find(f => f.id === id);
+                if (folder) {
+                    folder.nome = nome.trim();
+                    fetch('../api/propostas/organizar.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'rename_folder', id: id, nome: nome.trim() })
+                    });
+                }
             }
+            this.folderModal.show = false;
         },
 
         deletarPasta(id) {
