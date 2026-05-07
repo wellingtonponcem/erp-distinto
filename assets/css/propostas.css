@@ -9,6 +9,15 @@
     --font-script: 'Dancing Script', cursive;
 
     --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+
+    /* Escala Fluida para 1280px até 4K */
+    font-size: clamp(14px, 1.2vw, 42px);
+}
+
+@media (max-width: 1024px) {
+    :root {
+        font-size: 16px;
+    }
 }
 
 * {
@@ -214,7 +223,7 @@ body.on-dark .logo-text {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 0 20px;
+    padding: 0 1.25rem;
 }
 
 .frame-item:first-child {
@@ -243,7 +252,7 @@ body.on-dark .logo-text {
 }
 
 .logo-container img {
-    height: 32px;
+    height: 2rem;
     /* Aumentado levemente para impacto */
     transition: all 0.4s ease;
     filter: brightness(0);
@@ -314,13 +323,13 @@ body.type-15anos .proposal-frame {
 /* Botão Flutuante */
 .btn-floating {
     position: fixed;
-    bottom: 40px;
+    bottom: 2.5rem;
     left: 50%;
     transform: translateX(-50%) translateY(100px);
     background: #000;
     color: white;
-    padding: 18px 35px;
-    border-radius: 50px;
+    padding: 1.125rem 2.1875rem;
+    border-radius: 3.125rem;
     text-decoration: none;
     font-weight: 700;
     font-family: var(--font-heading);
