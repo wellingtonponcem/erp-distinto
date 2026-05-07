@@ -7,7 +7,7 @@
     <!-- Slide 1: Hero (Capa seguindo o modelo exato) -->
     <section class="proposal-page">
         <div class="page-content" style="grid-column: 1; justify-content: center; padding: 0;">
-            <h1 style="font-family: var(--font-heading);font-weight: 800;font-size: 60px;line-height: 1;margin: 0;text-transform: uppercase;letter-spacing: -2px;color: #000; width: 80%;">
+            <h1 style="font-family: var(--font-heading);font-weight: 800;font-size: 3rem;line-height: 1;margin: 0;text-transform: uppercase;letter-spacing: -2px;color: #000; width: 80%;">
                 <?= !empty($proposta['titulo_refinado']) ? $proposta['titulo_refinado'] : (!empty($proposta['titulo']) ? $proposta['titulo'] : 'PROPOSTA ESTRATÉGICA') ?>
             </h1>
             <?php if (!empty($proposta['subtitulo'])): ?>
@@ -18,44 +18,44 @@
         </div>
     </section>
 
-    <!-- Slide 2: O Desafio -->
-    <section class="proposal-page">
-        <div class="page-content">
-            <div style="font-family: var(--font-heading); font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #000; margin-bottom: 60px;">
-                01. O Cenário Atual
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 80px;">
-                <div>
-                    <h2 style="font-family: var(--font-heading); font-size: 48px; font-weight: 800; line-height: 1; margin-bottom: 30px; text-transform: uppercase;">
-                        O Desafio do<br>Crescimento
-                    </h2>
-                </div>
-                <div style="font-size: 18px; line-height: 1.6; color: #444;">
-                    <?= $dados['secoes']['desafio'] ?? 'Análise estratégica do seu mercado e identificação de gargalos de conversão.' ?>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Slide 3: Serviços -->
-    <?php if (!empty($dados['servicos'])): ?>
+    <!-- Slide 2: Introdução / Missão -->
     <section class="proposal-page dark-page">
-        <div class="page-content" style="justify-content: flex-start; padding-top: 15vh;">
-            <div style="font-family: var(--font-heading); font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.6); margin-bottom: 60px;">
-                02. Escopo de Atuação
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px;">
-                <?php foreach ($dados['servicos'] as $index => $servico): ?>
-                <div style="background: rgba(255,255,255,0.05); padding: 40px; border-left: 4px solid #fff;">
-                    <span style="font-family: var(--font-heading); font-weight: 800; opacity: 0.3; font-size: 32px; display: block; margin-bottom: 10px;">0<?= $index + 1 ?></span>
-                    <h3 style="font-family: var(--font-heading); font-size: 24px; text-transform: uppercase; margin-bottom: 15px;"><?= $servico['nome'] ?></h3>
-                    <p style="font-size: 15px; opacity: 0.7; line-height: 1.5;"><?= $servico['descricao'] ?></p>
-                </div>
-                <?php endforeach; ?>
+        <!-- Coluna 1: Título de Impacto -->
+        <div class="page-content" style="grid-column: 1; justify-content: center;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #fff;">
+                <?php 
+                    $tipo = strtolower($proposta['tipo_projeto'] ?? $proposta['titulo'] ?? '');
+                    if (strpos($tipo, 'vídeo') !== false || strpos($tipo, 'video') !== false || strpos($tipo, 'filmmaker') !== false) {
+                        echo "CINEMATIC NARRATIVES THAT SELL.";
+                    } else if (strpos($tipo, 'design') !== false) {
+                        echo "VISUAL IDENTITY THAT COMMANDS RESPECT.";
+                    } else {
+                        echo "STRATEGIC PLANNING THAT MAKES SENSE.";
+                    }
+                ?>
+            </h2>
+        </div>
+
+        <!-- Coluna 2: Texto de Boas-vindas -->
+        <div class="page-content" style="grid-column: 2; justify-content: center; padding-left: 40px;">
+            <div class="mission-text" style="color: #fff; font-size: 15px; line-height: 1.6; opacity: 0.9;">
+                <h3 style="font-family: var(--font-heading); font-size: 32px; font-weight: 800; margin-bottom: 25px; text-transform: uppercase; color: #fff;">
+                    OLÁ <?= explode(' ', trim($proposta['cliente_nome'] ?? 'CLIENTE'))[0] ?>!
+                </h3>
+                <p style="font-weight: 700; margin-bottom: 20px;">Seja bem-vindo à Poncem Studio | Distinto.</p>
+                <p style="margin-bottom: 15px;">Aqui, não somos apenas uma agência. Somos estrategistas que transformam negócios em marcas fortes, relevantes e altamente lucrativas.</p>
+                <p style="margin-bottom: 15px;">Nossa missão é clara: traduzir a essência de empresas em posicionamento, comunicação inteligente e execução de alto padrão. Atuamos no Brasil e na Europa, impactando mercados como saúde, indústria, serviços de alto valor e automotivo.</p>
+                <p style="margin-bottom: 15px;">Nosso trabalho vai muito além de criar posts ou alimentar redes sociais. Desenvolvemos posicionamento, estratégia e narrativa. Entregamos clareza, autoridade e diferenciação para marcas que entenderam que se posicionar corretamente não é uma opção, é uma necessidade para quem busca crescimento, relevância e escala.</p>
+                <p style="margin-bottom: 15px;">Se você chegou até aqui, é porque sabe que sua empresa carrega um potencial que precisa ser visto, percebido e reconhecido. E é exatamente isso que fazemos: potencializamos negócios e transformamos marcas em referências no seu mercado.</p>
+                <p style="font-weight: 700; margin-top: 25px;">Vamos juntos?</p>
             </div>
         </div>
+
+        <!-- Coluna 3: Gradiente Abstrato -->
+        <div class="side-gradient-container" style="grid-column: 3; position: relative; height: 100%; overflow: hidden;">
+            <div class="abstract-gradient"></div>
+        </div>
     </section>
-    <?php endif; ?>
 
     <!-- Slide 4: Investimento -->
     <section class="proposal-page">
