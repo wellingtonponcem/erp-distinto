@@ -56,8 +56,9 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
     <title><?= $proposta['titulo'] ?> — <?= $cliente ?></title>
     
     <link rel="stylesheet" href="<?= raizUrl('/assets/css/propostas.css') ?>">
-    <!-- Lucide Icons -->
+    <!-- Bibliotecas Externas -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body class="type-<?= $tipo ?>">
 

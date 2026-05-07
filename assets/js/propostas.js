@@ -91,24 +91,54 @@ window.hideExportModal = function() {
 window.exportPDF = function(orientation) {
     window.hideExportModal();
     
-    // 1. Cria um estilo dinâmico para forçar a orientação no @page
-    const style = document.createElement('style');
-    style.id = 'dynamic-print-style';
-    style.innerHTML = `@page { size: ${orientation === 'horizontal' ? 'landscape' : 'portrait'}; margin: 0; }`;
-    document.head.appendChild(style);
-
-    // 2. Adiciona classe de estado
+    // Elemento que contém os slides
+    const element = document.querySelector('.proposal-wrapper');
+    const filename = `Proposta - ${document.title}.pdf`;
+    
+    // 1. Preparação: Adiciona classes para o CSS preparar o layout
     document.body.classList.add('exporting-pdf', orientation === 'horizontal' ? 'export-horizontal' : 'export-vertical');
     
-    // Pequeno delay para o CSS renderizar antes do print
+    // Garante que todas as seções estejam visíveis para a captura (sem animações pendentes)
+    const allPages = document.querySelectorAll('.proposal-page');
+    allPages.forEach(p => p.classList.add('is-visible'));
+
+    // 2. Configurações do html2pdf
+    const opt = {
+        margin:       0,
+        filename:     filename,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { 
+            scale: 2, // Aumenta a resolução
+            useCORS: true, 
+            letterRendering: true,
+            scrollY: 0,
+            scrollX: 0
+        },
+        jsPDF:        { 
+            unit: 'mm', 
+            format: 'a4', 
+            orientation: orientation === 'horizontal' ? 'landscape' : 'portrait',
+            compress: true
+        },
+        pagebreak: { 
+            mode: ['avoid-all', 'css', 'legacy'],
+            before: '.proposal-page' 
+        }
+    };
+
+    // 3. Execução
+    // Pequeno delay para garantir que o CSS de preparação foi aplicado
     setTimeout(() => {
-        window.print();
-        
-        // Remove as classes e o estilo após o print
-        setTimeout(() => {
-            document.body.classList.remove('exporting-pdf', 'export-horizontal', 'export-vertical');
-            const dynamicStyle = document.getElementById('dynamic-print-style');
-            if (dynamicStyle) dynamicStyle.remove();
-        }, 1000);
-    }, 300);
+        html2pdf()
+            .set(opt)
+            .from(element)
+            .toPdf()
+            .get('pdf')
+            .save()
+            .then(() => {
+                // 4. Limpeza: Remove as classes de exportação
+                document.body.classList.remove('exporting-pdf', 'export-horizontal', 'export-vertical');
+                // Remove o is-visible forçado se necessário (opcional, já que o scroll vai reativar)
+            });
+    }, 500);
 };
