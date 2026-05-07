@@ -497,6 +497,9 @@
                     <div style="width: 100%;">
                         <div style="padding: 8px 1.875rem; border-radius: 3.125rem; background: #333; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; width: fit-content; margin-bottom: 1.25rem;">
                             <?= $servico['nome'] ?>
+                            <?php if (!empty($servico['frequencia'])): ?>
+                                <span style="opacity: 0.7; margin-left: 5px;">• <?= $servico['frequencia'] ?></span>
+                            <?php endif; ?>
                         </div>
                         <div style="font-size: 13px; font-weight: 700; color: #000; margin-bottom: 0.9375rem;">
                             <?= formatarMoeda($servico['valor_individual'] ?? 0) ?> - Inclui:

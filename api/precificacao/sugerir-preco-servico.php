@@ -12,6 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $d = lerCorpo();
 $s = $d['servico'] ?? null;
+$tipoPreco = $d['tipo'] ?? 'recorrente'; // recorrente ou pontual
 $totalCustosFixos = $d['totalCustosFixos'] ?? 0;
 $horasMensais = $d['horasMensais'] ?? 160;
 $precoMinimo = $d['precoMinimo'] ?? 0;
@@ -19,6 +20,10 @@ $precoMinimo = $d['precoMinimo'] ?? 0;
 if (!$s || empty($s['nome'])) {
     responderJson(['erro' => 'Dados do serviço incompletos'], 422);
 }
+
+$contextoTipo = ($tipoPreco === 'pontual') 
+    ? "Este é um PROJETO PONTUAL (Único). O valor deve ser maior pois não há garantia de recorrência e exige mobilização de equipe para uma entrega isolada."
+    : "Este é um SERVIÇO RECORRENTE (Mensal). O valor deve ser equilibrado para garantir a permanência do cliente a longo prazo.";
 
 $db = Database::get();
 $configDb = $db->query("SELECT groq_api_key FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
@@ -32,14 +37,17 @@ $prompt = <<<PROMPT
 Você é um consultor sênior de precificação para agências de marketing e publicidade no Brasil.
 Seu objetivo é sugerir um PREÇO DE VENDA estratégico e realista para o serviço descrito abaixo.
 
+CONTEXTO DE PRECIFICAÇÃO:
+{$contextoTipo}
+
 DADOS DO SERVIÇO:
 - Nome: {$s['nome']}
 - Descrição: {$s['descricao']}
 - Entregáveis: {$s['entregaveis']}
 - Ferramentas: {$s['ferramentas']}
 - Terceirização: {$s['terceirizacao']}
-- Periodicidade: {$s['periodicidade']}
-- Horas Estimadas (Mês): {$s['horas_estimadas']}h
+- Periodicidade no Cadastro: {$s['periodicidade']}
+- Horas Estimadas (Mês/Projeto): {$s['horas_estimadas']}h
 - Custos Diretos (Produção + Variáveis): R$  {$s['custo_producao']} + R$ {$s['custos_variaveis']}
 
 DADOS DA AGÊNCIA:

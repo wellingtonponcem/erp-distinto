@@ -28,8 +28,8 @@ $dadosJson = json_decode($proposta['dados_json'], true);
 $stmtClientes = $db->query("SELECT id, nome FROM clientes ORDER BY nome ASC");
 $clientes = $stmtClientes->fetchAll();
 
-// Buscar serviços
-$stmtServicos = $db->query("SELECT id, nome, descricao, preco_venda FROM servicos ORDER BY nome ASC");
+// Buscar serviços (incluindo periodicidade e preço pontual)
+$stmtServicos = $db->query("SELECT id, nome, descricao, preco_venda, preco_venda_pontual, periodicidade FROM servicos ORDER BY nome ASC");
 $servicos = $stmtServicos->fetchAll();
 $servicosJson = json_encode($servicos);
 
@@ -198,6 +198,11 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                                     <label class="text-[10px] font-bold text-zinc-500 uppercase mb-1 block">Valor (R$)</label>
                                     <input type="number" step="0.01" :name="'servicos['+index+'][valor]'" class="input py-2 font-bold" x-model="item.valor" @input="recalcularTotal()">
                                 </div>
+                                <!-- Campo de Frequência para Serviços Pontuais -->
+                                <div class="flex-1" x-show="item.periodicidade !== 'mensal'">
+                                    <label class="text-[10px] font-bold text-zinc-500 uppercase mb-1 block">Frequência/Entrega</label>
+                                    <input type="text" :name="'servicos['+index+'][frequencia]'" class="input py-2" x-model="item.frequencia" placeholder="Ex: 4x por mês / Semanal">
+                                </div>
                                 <button type="button" @click="removerServico(index)" class="absolute -top-2 -right-2 md:static md:mt-6 bg-red-50 text-red-500 p-2 rounded-lg hover:bg-red-100 transition-colors">
                                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                                 </button>
@@ -324,7 +329,9 @@ document.addEventListener('alpine:init', () => {
 
                 return { 
                     id: servicoEncontrado ? servicoEncontrado.id : '', 
-                    valor: parseFloat(s.valor_individual || 0)
+                    valor: parseFloat(s.valor_individual || 0),
+                    frequencia: s.frequencia || '',
+                    periodicidade: servicoEncontrado ? servicoEncontrado.periodicidade : 'mensal'
                 };
             }) : [];
             this.mesesContrato = dados.meses_contrato || 12;
@@ -357,7 +364,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         adicionarServico() {
-            this.servicosSelecionados.push({ id: '', valor: 0 });
+            this.servicosSelecionados.push({ id: '', valor: 0, frequencia: '', periodicidade: 'mensal' });
             this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
         },
 
@@ -369,7 +376,16 @@ document.addEventListener('alpine:init', () => {
         atualizarDadosServico(index) {
             const item = this.servicosSelecionados[index];
             const servico = this.catalogoServicos.find(s => s.id == item.id);
-            if (servico) item.valor = parseFloat(servico.preco_venda || 0);
+            if (servico) {
+                // Se o serviço for pontual no catálogo, usa o preço pontual.
+                // Caso contrário (mensal), usa o preço de venda (recorrente).
+                if (servico.periodicidade === 'pontual') {
+                    item.valor = parseFloat(servico.preco_venda_pontual || servico.preco_venda || 0);
+                } else {
+                    item.valor = parseFloat(servico.preco_venda || 0);
+                }
+                item.periodicidade = servico.periodicidade;
+            }
             this.recalcularTotal();
         },
 

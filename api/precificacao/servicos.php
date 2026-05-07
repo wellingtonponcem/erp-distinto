@@ -20,7 +20,8 @@ function garantirEstruturaServicos(PDO $db): void {
         'terceirizacao'  => "TEXT NULL",
         'periodicidade'  => "VARCHAR(20) NOT NULL DEFAULT 'mensal'",
         'prazo_minimo'   => "INT NOT NULL DEFAULT 0",
-        'preco_venda'    => "DECIMAL(10,2) NOT NULL DEFAULT 0.00"
+        'preco_venda'    => "DECIMAL(10,2) NOT NULL DEFAULT 0.00",
+        'preco_venda_pontual' => "DECIMAL(10,2) NOT NULL DEFAULT 0.00"
     ];
 
     foreach ($novas as $col => $def) {
@@ -47,7 +48,7 @@ switch ($metodo) {
         if (empty($d['nome'])) responderJson(['erro' => 'Nome obrigatório'], 422);
         $id = gerarId();
         try {
-            $stmt = $db->prepare('INSERT INTO servicos (id, nome, descricao, entregaveis, ferramentas, terceirizacao, periodicidade, prazo_minimo, preco_venda, horas_estimadas, custo_producao, custos_variaveis, markup) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)');
+            $stmt = $db->prepare('INSERT INTO servicos (id, nome, descricao, entregaveis, ferramentas, terceirizacao, periodicidade, prazo_minimo, preco_venda, preco_venda_pontual, horas_estimadas, custo_producao, custos_variaveis, markup) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
             $stmt->execute([
                 $id, 
                 $d['nome'], 
@@ -58,6 +59,7 @@ switch ($metodo) {
                 $d['periodicidade'] ?? 'mensal',
                 $d['prazo_minimo'] ?? 0,
                 $d['preco_venda'] ?? 0,
+                $d['preco_venda_pontual'] ?? 0,
                 $d['horas_estimadas'] ?? 0, 
                 $d['custo_producao'] ?? 0, 
                 $d['custos_variaveis'] ?? 0, 
@@ -73,7 +75,7 @@ switch ($metodo) {
         $d = lerCorpo();
         if (empty($d['id'])) responderJson(['erro' => 'ID obrigatório'], 422);
         try {
-            $stmt = $db->prepare('UPDATE servicos SET nome=?, descricao=?, entregaveis=?, ferramentas=?, terceirizacao=?, periodicidade=?, prazo_minimo=?, preco_venda=?, horas_estimadas=?, custo_producao=?, custos_variaveis=?, markup=? WHERE id=?');
+            $stmt = $db->prepare('UPDATE servicos SET nome=?, descricao=?, entregaveis=?, ferramentas=?, terceirizacao=?, periodicidade=?, prazo_minimo=?, preco_venda=?, preco_venda_pontual=?, horas_estimadas=?, custo_producao=?, custos_variaveis=?, markup=? WHERE id=?');
             $stmt->execute([
                 $d['nome'], 
                 $d['descricao'] ?? null, 
@@ -83,6 +85,7 @@ switch ($metodo) {
                 $d['periodicidade'] ?? 'mensal',
                 $d['prazo_minimo'] ?? 0,
                 $d['preco_venda'] ?? 0,
+                $d['preco_venda_pontual'] ?? 0,
                 $d['horas_estimadas'] ?? 0, 
                 $d['custo_producao'] ?? 0, 
                 $d['custos_variaveis'] ?? 0, 

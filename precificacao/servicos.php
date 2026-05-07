@@ -43,8 +43,8 @@ include __DIR__ . '/../includes/layout/head.php';
 
         <!-- Tabela de Serviços -->
         <div class="card" style="overflow:hidden;">
-            <div class="table-header" style="display:grid; grid-template-columns:2fr 80px 1fr 1fr 80px 100px;">
-                <span>Serviço</span><span>Horas</span><span>Preço Mínimo</span><span>Preço Venda</span><span>Markup</span><span style="text-align:right;">Ações</span>
+            <div class="table-header" style="display:grid; grid-template-columns:2fr 80px 1fr 1fr 1fr 80px 100px;">
+                <span>Serviço</span><span>Horas</span><span>Preço Mínimo</span><span>P. Recorrente</span><span>P. Pontual</span><span>Markup</span><span style="text-align:right;">Ações</span>
             </div>
 
             <template x-if="carregando">
@@ -59,17 +59,18 @@ include __DIR__ . '/../includes/layout/head.php';
             </template>
 
             <template x-for="s in lista" :key="s.id">
-                <div class="table-row" style="display:grid; grid-template-columns:2fr 80px 1fr 1fr 80px 100px; align-items:center;">
-                    <div class="table-cell">
-                        <div style="color:#e2e8f0; font-weight:500;" x-text="s.nome"></div>
-                        <div style="color:#6b7280; font-size:12px; max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" x-text="s.descricao || '—'"></div>
-                    </div>
-                    <div class="table-cell" style="color:#94a3b8;" x-text="s.horas_estimadas + 'h'"></div>
-                    <div class="table-cell" style="color:#94a3b8;" x-text="formatarMoeda(calcularPrecoMinimo(s))"></div>
-                    <div class="table-cell" style="font-weight:700; color:#10b981;" x-text="s.preco_venda > 0 ? formatarMoeda(s.preco_venda) : '—'"></div>
-                    <div class="table-cell">
-                        <span style="color:#94a3b8; font-weight:600;" x-text="s.markup + '%'"></span>
-                    </div>
+                    <div class="table-row" style="display:grid; grid-template-columns:2fr 80px 1fr 1fr 1fr 80px 100px; align-items:center;">
+                        <div class="table-cell">
+                            <div style="color:#e2e8f0; font-weight:500;" x-text="s.nome"></div>
+                            <div style="color:#6b7280; font-size:12px; max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" x-text="s.descricao || '—'"></div>
+                        </div>
+                        <div class="table-cell" style="color:#94a3b8;" x-text="s.horas_estimadas + 'h'"></div>
+                        <div class="table-cell" style="color:#94a3b8;" x-text="formatarMoeda(calcularPrecoMinimo(s))"></div>
+                        <div class="table-cell" style="font-weight:700;" :style="s.periodicidade === 'mensal' ? 'color:#10b981;' : 'color:#4b5563; opacity:0.6;'" x-text="s.preco_venda > 0 ? formatarMoeda(s.preco_venda) : '—'"></div>
+                        <div class="table-cell" style="font-weight:700;" :style="s.periodicidade === 'pontual' ? 'color:#10b981;' : 'color:#4b5563; opacity:0.6;'" x-text="s.preco_venda_pontual > 0 ? formatarMoeda(s.preco_venda_pontual) : '—'"></div>
+                        <div class="table-cell">
+                            <span style="color:#94a3b8; font-weight:600;" x-text="s.markup + '%'"></span>
+                        </div>
                     <div class="table-cell" style="display:flex; gap:6px; justify-content:flex-end;">
                         <button @click="abrirModal(s)" style="color:#6b7280; background:none; border:none; cursor:pointer; padding:4px;">
                             <i data-lucide="pencil" style="width:16px;height:16px;"></i>
@@ -92,7 +93,13 @@ include __DIR__ . '/../includes/layout/head.php';
     <div class="modal-overlay" x-show="modalAberto" x-cloak @click.self="modalAberto=false">
         <div class="modal">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-                <h2 style="font-size:17px; font-weight:600; color:#f1f5f9;" x-text="form.id ? 'Editar Serviço' : 'Novo Serviço'"></h2>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <h2 style="font-size:17px; font-weight:600; color:#f1f5f9;" x-text="form.id ? 'Editar Serviço' : 'Novo Serviço'"></h2>
+                    <button type="button" @click="melhorarServicoIA()" :disabled="melhorandoIA" class="btn-secondary" style="padding:4px 10px; font-size:11px; border-color:#a78bfa; color:#a78bfa; display:flex; align-items:center; gap:6px;">
+                        <i data-lucide="sparkles" style="width:12px;height:12px;"></i>
+                        <span x-text="melhorandoIA ? 'Melhorando...' : 'Editar com IA'"></span>
+                    </button>
+                </div>
                 <button @click="modalAberto=false" style="color:#6b7280; background:none; border:none; cursor:pointer;">
                     <i data-lucide="x" style="width:18px;height:18px;"></i>
                 </button>
@@ -153,18 +160,30 @@ include __DIR__ . '/../includes/layout/head.php';
                         <input class="input" type="number" step="0.01" min="0" x-model="form.custos_variaveis" placeholder="Ferramentas, etc.">
                     </div>
                 </div>
-                <div style="margin-bottom:16px; background:rgba(167,139,250,0.05); padding:16px; border-radius:8px; border:1px solid rgba(167,139,250,0.2);">
-                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
-                        <label class="label" style="margin-bottom:0;">Preço de Venda Final (R$)</label>
-                        <button type="button" class="btn-secondary" @click="sugerirPrecoIA()" :disabled="sugerindoPreco" style="padding:4px 8px; font-size:11px; border-color:#a78bfa; color:#a78bfa;">
-                            <i data-lucide="sparkles" style="width:12px;height:12px;"></i> 
-                            <span x-text="sugerindoPreco ? 'Analisando...' : 'Sugerir com IA'"></span>
-                        </button>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;">
+                    <div style="background:rgba(167,139,250,0.05); padding:16px; border-radius:8px; border:1px solid rgba(167,139,250,0.2);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                            <label class="label" style="margin-bottom:0;">Preço Recorrente (R$)</label>
+                            <button type="button" class="btn-secondary" @click="sugerirPrecoIA('recorrente')" :disabled="sugerindoPreco" style="padding:2px 6px; font-size:10px; border-color:#a78bfa; color:#a78bfa;">
+                                <i data-lucide="sparkles" style="width:10px;height:10px;"></i> Sugerir
+                            </button>
+                        </div>
+                        <input class="input" type="number" step="0.01" x-model="form.preco_venda" style="font-size:16px; font-weight:800; color:#10b981; background:transparent; border:none; padding:0;" placeholder="0,00">
                     </div>
-                    <input class="input" type="number" step="0.01" x-model="form.preco_venda" style="font-size:18px; font-weight:800; color:#10b981; background:transparent; border:none; padding:0;" placeholder="0,00">
-                    <p style="font-size:11px; color:#6b7280; margin-top:6px;">
-                        Piso mínimo (custo + rateio): <span x-text="formatarMoeda(calcularPrecoMinimo(form))"></span>
-                    </p>
+
+                    <div style="background:rgba(167,139,250,0.05); padding:16px; border-radius:8px; border:1px solid rgba(167,139,250,0.2);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                            <label class="label" style="margin-bottom:0;">Preço Pontual (R$)</label>
+                            <button type="button" class="btn-secondary" @click="sugerirPrecoIA('pontual')" :disabled="sugerindoPreco" style="padding:2px 6px; font-size:10px; border-color:#a78bfa; color:#a78bfa;">
+                                <i data-lucide="sparkles" style="width:10px;height:10px;"></i> Sugerir
+                            </button>
+                        </div>
+                        <input class="input" type="number" step="0.01" x-model="form.preco_venda_pontual" style="font-size:16px; font-weight:800; color:#10b981; background:transparent; border:none; padding:0;" placeholder="0,00">
+                    </div>
+                </div>
+
+                <div style="font-size:11px; color:#6b7280; margin-bottom:16px; padding-left:4px;">
+                    💡 Piso mínimo (custo + rateio): <span x-text="formatarMoeda(calcularPrecoMinimo(form))"></span>
                 </div>
                 
                 <div style="margin-bottom:16px;">
@@ -233,6 +252,7 @@ function servicos() {
         
         // Sugestão de Preço IA
         sugerindoPreco: false,
+        melhorandoIA: false,
         planejador: {
             equipe: '',
             jornada: '',
@@ -284,6 +304,8 @@ function servicos() {
                 horas_estimadas:'', 
                 custo_producao:'', 
                 custos_variaveis:'0', 
+                preco_venda: 0,
+                preco_venda_pontual: 0,
                 markup:'30' 
             };
             if (this.form.id && this.form.horas_estimadas) {
@@ -298,9 +320,33 @@ function servicos() {
 
         recalcularPrecoPeloMarkup() {
             this.form.preco_venda = this.calcularPrecoMinimo(this.form);
+            this.form.preco_venda_pontual = this.form.preco_venda * 1.5; // Sugestão padrão pontual 50% mais caro
         },
 
-        async sugerirPrecoIA() {
+        async melhorarServicoIA() {
+            if (!this.form.nome) {
+                toast('Dê um nome ou descrição básica primeiro', 'aviso');
+                return;
+            }
+            this.melhorandoIA = true;
+            try {
+                const r = await fetch('<?= raizUrl('/api/precificacao/editar-servico-ia.php') ?>', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ servico: this.form })
+                });
+                const res = await r.json();
+                if (r.ok) {
+                    this.form.nome = res.nome;
+                    this.form.descricao = res.descricao;
+                    this.form.entregaveis = res.entregaveis;
+                    toast('Serviço otimizado pela IA!', 'sucesso');
+                } else { toast(res.erro || 'Erro na IA', 'erro'); }
+            } catch(e) { toast('Erro de conexão', 'erro'); }
+            this.melhorandoIA = false;
+        },
+
+        async sugerirPrecoIA(tipo = 'recorrente') {
             if (!this.form.nome || !this.form.horas_estimadas) {
                 toast('Preencha o nome e as horas primeiro', 'aviso');
                 return;
@@ -312,6 +358,7 @@ function servicos() {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         servico: this.form,
+                        tipo: tipo,
                         totalCustosFixos: this.totalCustosFixos,
                         horasMensais: this.horasMensais,
                         precoMinimo: this.calcularPrecoMinimo(this.form)
@@ -319,8 +366,12 @@ function servicos() {
                 });
                 const res = await r.json();
                 if (r.ok) {
-                    this.form.preco_venda = res.preco;
-                    this.form.markup = res.markup_sugerido;
+                    if (tipo === 'recorrente') {
+                        this.form.preco_venda = res.preco;
+                        this.form.markup = res.markup_sugerido;
+                    } else {
+                        this.form.preco_venda_pontual = res.preco;
+                    }
                     toast('Preço sugerido pela IA!', 'sucesso');
                 } else { toast(res.erro || 'Erro na IA', 'erro'); }
             } catch(e) { toast('Erro de conexão', 'erro'); }

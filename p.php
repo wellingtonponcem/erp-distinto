@@ -78,15 +78,25 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
                 <?php 
                     $textoResponsavel = '';
                     if (!empty($dados['responsavel'])) {
-                        $nomesBrutos = preg_split('/(?:\s+[eE]\s+|,\s*)/', $dados['responsavel']);
-                        $nomesLimpos = array_map('trim', array_filter($nomesBrutos));
-                        $total = count($nomesLimpos);
+                        // Divide por " e ", " E ", "," ou ";"
+                        $partesBrutas = preg_split('/(?:\s+[eE]\s+|[,;]\s*)/', $dados['responsavel']);
+                        $nomesFinais = [];
+                        foreach ($partesBrutas as $p) {
+                            $p = trim($p);
+                            if (!$p) continue;
+                            // Pega apenas o primeiro nome (primeira palavra)
+                            $palavras = explode(' ', $p);
+                            $nomesFinais[] = $palavras[0];
+                        }
                         
-                        if ($total === 1) $textoResponsavel = $nomesLimpos[0];
-                        elseif ($total === 2) $textoResponsavel = $nomesLimpos[0] . ' e ' . $nomesLimpos[1];
-                        elseif ($total > 2) {
-                            $ultimo = array_pop($nomesLimpos);
-                            $textoResponsavel = implode(', ', $nomesLimpos) . ' e ' . $ultimo;
+                        $total = count($nomesFinais);
+                        if ($total === 1) {
+                            $textoResponsavel = $nomesFinais[0];
+                        } elseif ($total === 2) {
+                            $textoResponsavel = $nomesFinais[0] . ' e ' . $nomesFinais[1];
+                        } elseif ($total > 2) {
+                            $ultimo = array_pop($nomesFinais);
+                            $textoResponsavel = implode(', ', $nomesFinais) . ' e ' . $ultimo;
                         }
                     }
                     echo $cliente . ($textoResponsavel ? " | " . $textoResponsavel : "");
