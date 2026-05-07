@@ -244,35 +244,47 @@ if (!function_exists('fmt')) {
     </section>
 
     <!-- PÁGINA 02: BOAS-VINDAS -->
-    <section class="slide" style="padding: 0; background: #fff; overflow: hidden; display: flex; flex-direction: row; height: 100vh; width: 100%;">
+    <section class="slide"
+        style="padding: 0; background: #fff; overflow: hidden; display: flex; flex-direction: row; height: 100vh; width: 100%;">
         <!-- Coluna Esquerda: Imagem -->
-        <div style="flex: 1; background: #f0f0f0; display: flex; align-items: center; justify-content: flex-end; padding-right: 5vw; position: relative; height: 100%;">
+        <div
+            style="flex: 1; background: #f0f0f0; display: flex; align-items: center; justify-content: flex-end; padding-right: 5vw; position: relative; height: 100%;">
             <!-- Retângulo decorativo cinza (esquerda) -->
-            <div style="position: absolute; left: 0; top: 0; width: 50px; height: 100%; background: #dcdcdc; z-index: 1;"></div>
-            
-            <div style="width: 75%; aspect-ratio: 3/4; position: relative; z-index: 2; overflow: hidden; box-shadow: 20px 20px 0px rgba(0,0,0,0.02);">
-                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-02.jpg') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+            <div
+                style="position: absolute; left: 0; top: 0; width: 50px; height: 100%; background: #dcdcdc; z-index: 1;">
+            </div>
+
+            <div
+                style="width: 75%; aspect-ratio: 3/4; position: relative; z-index: 2; overflow: hidden; box-shadow: 20px 20px 0px rgba(0,0,0,0.02);">
+                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-02.jpg') ?>"
+                    style="width: 100%; height: 100%; object-fit: cover;">
             </div>
         </div>
 
         <!-- Coluna Direita: Conteúdo -->
-        <div style="flex: 1.2; padding: 0 8vw; display: flex; flex-direction: column; justify-content: center; position: relative; background: #fff; height: 100%;">
-            <h2 style="font-family: var(--wedding-montserrat); font-size: 4rem; font-weight: 700; line-height: 1.1; margin-bottom: 40px; color: #1a1a1a; text-transform: uppercase; letter-spacing: -1px;">
+        <div
+            style="flex: 1.2; padding: 0 8vw; display: flex; flex-direction: column; justify-content: center; position: relative; background: #fff; height: 100%;">
+            <h2
+                style="font-family: var(--wedding-montserrat); font-size: 4rem; font-weight: 700; line-height: 1.1; margin-bottom: 40px; color: #1a1a1a; text-transform: uppercase; letter-spacing: -1px;">
                 BEM-VINDOS<br>AO INÍCIO DA<br>MEMÓRIA DE<br>VOCÊS
             </h2>
-            
+
             <div style="max-width: 480px;">
-                <p style="font-family: var(--wedding-montserrat); font-size: 1.2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 10px;">
+                <p
+                    style="font-family: var(--wedding-montserrat); font-size: 1.2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 10px;">
                     <?= $saudacaoCasal ?>
                 </p>
-                <p style="font-family: var(--wedding-montserrat); font-size: 1.1rem; line-height: 1.8; color: #444; font-weight: 400;">
-                    Na Distinto, entendemos que o nosso papel vai muito além de apertar um botão: nossa missão é registrar histórias de amor com autenticidade e emoção.
+                <p
+                    style="font-family: var(--wedding-montserrat); font-size: 1.1rem; line-height: 1.8; color: #444; font-weight: 400;">
+                    Na Distinto, entendemos que o nosso papel vai muito além de apertar um botão: nossa missão é
+                    registrar histórias de amor com autenticidade e emoção.
                 </p>
             </div>
 
             <!-- Logo Distinto no canto inferior direito -->
             <div style="position: absolute; bottom: 8vh; right: 6vw; width: 120px;">
-                <img src="<?= raizUrl('/assets/distinto_logo.svg') ?>" style="width: 100%; filter: brightness(0); opacity: 0.8;">
+                <img src="<?= raizUrl('/assets/distinto_logo.svg') ?>"
+                    style="width: 100%; filter: brightness(0); opacity: 0.8;">
             </div>
 
             <!-- Elemento decorativo cinza (topo direito) -->
@@ -281,27 +293,46 @@ if (!function_exists('fmt')) {
     </section>
 
     <!-- PÁGINA 03: VISÃO E MISSÃO -->
-    <section class="slide" style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; overflow: hidden;">
+    <section class="slide"
+        style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; overflow: hidden;">
         <!-- Topo: Textos -->
-        <div style="flex: 1.2; padding: 10vh 10vw; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
+        <div
+            style="flex: 1.2; padding: 10vh 10vw; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
             <div style="position: absolute; top: 0; left: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
-            
-            <h2 style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 10px;">VISÃO E MISSÃO</h2>
-            <p style="font-family: var(--wedding-montserrat); font-size: 1.4rem; font-weight: 300; color: #444; margin-bottom: 6vh;">A meta é arrepiar e eternizar o extraordinário.</p>
-            
+
+            <h2
+                style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase;">
+                VISÃO E MISSÃO</h2>
+            <p
+                style="font-family: var(--wedding-montserrat); font-size: 1.4rem; font-weight: 300; color: #444; margin-bottom: 6vh;">
+                A meta é arrepiar e eternizar o extraordinário.</p>
+
             <div style="display: flex; gap: 8vw; width: 100%; max-width: 1100px;">
                 <!-- Missão -->
                 <div style="flex: 1;">
-                    <h3 style="font-family: var(--wedding-montserrat); font-size: 1.5rem; font-weight: 700; color: #1a1a1a; margin-bottom: 15px; text-transform: uppercase;">MISSÃO</h3>
-                    <p style="font-family: var(--wedding-montserrat); font-size: 1rem; line-height: 1.8; color: #555; text-align: justify;">
-                        Nossa missão é registrar histórias de amor com autenticidade e emoção. No Distinto, não buscamos apenas o registro oficial, mas o "arrepio" que cada momento carrega. Estamos aqui para capturar o que é real, do sussurro no altar à oração silenciosa, garantindo que cada detalhe seja preservado com a verdade que ele merece, fazendo com que todas as variáveis do dia ganhem o mais bonito sentido.
+                    <h3
+                        style="font-family: var(--wedding-montserrat); font-size: 1.5rem; font-weight: 700; color: #1a1a1a; margin-bottom: 15px; text-transform: uppercase; text-align: center;">
+                        MISSÃO</h3>
+                    <p
+                        style="font-family: var(--wedding-montserrat); font-size: 1rem; line-height: 1.8; color: #555; text-align: justify;">
+                        Nossa missão é registrar histórias de amor com autenticidade e emoção. No Distinto, não buscamos
+                        apenas o registro oficial, mas o "arrepio" que cada momento carrega. Estamos aqui para capturar
+                        o que é real, do sussurro no altar à oração silenciosa, garantindo que cada detalhe seja
+                        preservado com a verdade que ele merece, fazendo com que todas as variáveis do dia ganhem o mais
+                        bonito sentido.
                     </p>
                 </div>
                 <!-- Visão -->
                 <div style="flex: 1;">
-                    <h3 style="font-family: var(--wedding-montserrat); font-size: 1.5rem; font-weight: 700; color: #1a1a1a; margin-bottom: 15px; text-transform: uppercase;">VISÃO</h3>
-                    <p style="font-family: var(--wedding-montserrat); font-size: 1rem; line-height: 1.8; color: #555; text-align: justify;">
-                        Ser o portal que permitirá reviverem a emoção do seu "sim" para sempre, reforçando que toda história tem sua beleza. Enxergamos o nosso trabalho como uma ferramenta para transformar o casamento de vocês em uma experiência totalmente nova, onde a nossa perspectiva artística cria uma herança visual que se torna mais valiosa a cada ano que passa.
+                    <h3
+                        style="font-family: var(--wedding-montserrat); font-size: 1.5rem; font-weight: 700; color: #1a1a1a; margin-bottom: 15px; text-transform: uppercase; text-align: center;">
+                        VISÃO</h3>
+                    <p
+                        style="font-family: var(--wedding-montserrat); font-size: 1rem; line-height: 1.8; color: #555; text-align: justify;">
+                        Ser o portal que permitirá reviverem a emoção do seu "sim" para sempre, reforçando que toda
+                        história tem sua beleza. Enxergamos o nosso trabalho como uma ferramenta para transformar o
+                        casamento de vocês em uma experiência totalmente nova, onde a nossa perspectiva artística cria
+                        uma herança visual que se torna mais valiosa a cada ano que passa.
                     </p>
                 </div>
             </div>
@@ -309,9 +340,12 @@ if (!function_exists('fmt')) {
 
         <!-- Base: Imagem -->
         <div style="width: 100%; aspect-ratio: 343/68; position: relative; overflow: hidden; background: #eee;">
-            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-03.jpg') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-03.jpg') ?>"
+                style="width: 100%; height: 100%; object-fit: cover;">
             <!-- Elemento decorativo cinza (lateral) -->
-            <div style="position: absolute; right: 0; bottom: 0; width: 50px; height: 100%; background: #fff; z-index: 1; opacity: 0.8;"></div>
+            <div
+                style="position: absolute; right: 0; bottom: 0; width: 50px; height: 100%; background: #fff; z-index: 1; opacity: 0.8;">
+            </div>
         </div>
     </section>
 
