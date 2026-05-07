@@ -106,13 +106,14 @@ window.exportPDF = function(orientation) {
     const opt = {
         margin:       0,
         filename:     filename,
-        image:        { type: 'jpeg', quality: 0.98 },
+        image:        { type: 'jpeg', quality: 1.0 },
         html2canvas:  { 
-            scale: 2, // Aumenta a resolução
+            scale: 2, 
             useCORS: true, 
             letterRendering: true,
             scrollY: 0,
-            scrollX: 0
+            scrollX: 0,
+            windowWidth: orientation === 'horizontal' ? 1122 : 794 // Forza o cálculo como se estivesse em A4
         },
         jsPDF:        { 
             unit: 'mm', 
@@ -127,18 +128,15 @@ window.exportPDF = function(orientation) {
     };
 
     // 3. Execução
-    // Pequeno delay para garantir que o CSS de preparação foi aplicado
+    // Aguarda um pouco mais para o CSS milimétrico estabilizar
     setTimeout(() => {
         html2pdf()
             .set(opt)
             .from(element)
-            .toPdf()
-            .get('pdf')
             .save()
             .then(() => {
                 // 4. Limpeza: Remove as classes de exportação
                 document.body.classList.remove('exporting-pdf', 'export-horizontal', 'export-vertical');
-                // Remove o is-visible forçado se necessário (opcional, já que o scroll vai reativar)
             });
-    }, 500);
+    }, 1000);
 };
