@@ -103,7 +103,7 @@
             </div>
 
             <!-- Texto Explicativo -->
-            <div style="margin-left: 2rem; max-width: 44rem;">
+            <div style="margin-left: 2rem; max-width: 27rem;">
                 <p style="font-size: 1rem; line-height: 1.5; color: #333; margin-bottom: 1.5625rem;">
                     A primeira etapa do projeto é uma imersão sobre o seu negócio. Serão dois momentos - presenciais ou online - que aplicamos juntos a nossa metodologia, para definir pontos importantes sobre seu negócio.
                 </p>
@@ -144,7 +144,7 @@
             </div>
 
             <!-- Texto Explicativo -->
-            <div style="margin-left: 2rem; max-width: 44rem;">
+            <div style="margin-left: 2rem; max-width: 27rem;">
                 <p style="font-size: 1rem; line-height: 1.5; color: #333; margin-bottom: 1.25rem;">
                     Depois da imersão concluída, é o momento de desenvolver o diagnóstico do negócio. Através desses resultados, teremos a definição da plataforma da marca com as seguintes entregas:
                 </p>
@@ -190,7 +190,7 @@
             </div>
 
             <!-- Texto Explicativo (Aprimorado) -->
-            <div style="margin-left: 2rem; max-width: 44rem;">
+            <div style="margin-left: 2rem; max-width: 27rem;">
                 <p style="font-size: 1rem; line-height: 1.4; color: #333; margin-bottom: 0.9375rem;">
                     A fase de planejamento é o núcleo estratégico do projeto, onde estruturamos o "como" e o "onde" para garantir que cada ação tenha um propósito claro e mensurável. Nosso planejamento 360º abrange:
                 </p>
@@ -248,7 +248,7 @@
             </div>
 
             <!-- Texto Explicativo (Aprimorado) -->
-            <div style="margin-left: 2rem; max-width: 44rem;">
+            <div style="margin-left: 2rem; max-width: 27rem;">
                 <p style="font-size: 1rem; line-height: 1.5; color: #333; margin-bottom: 1.25rem;">
                     A materialização da estratégia ocorre através da <strong>Linguagem Visual</strong>. Definimos um padrão estético de alta autoridade que reflete o posicionamento do seu negócio em cada ponto de contato.
                 </p>
@@ -297,7 +297,7 @@
             </div>
 
             <!-- Texto Explicativo (Aprimorado) -->
-            <div style="margin-left: 2rem; max-width: 44rem;">
+            <div style="margin-left: 2rem; max-width: 27rem;">
                 <p style="font-size: 1rem; line-height: 1.5; color: #333; margin-bottom: 1.5625rem;">
                     A culminância do nosso trabalho estratégico. O <strong>Planejamento</strong> e a <strong>Identidade Visual</strong> são apresentados em uma reunião executiva, garantindo o alinhamento total de cada decisão tomada.
                 </p>
@@ -338,7 +338,7 @@
             </div>
 
             <!-- Texto Explicativo (Aprimorado) -->
-            <div style="margin-left: 2rem; max-width: 44rem;">
+            <div style="margin-left: 2rem; max-width: 27rem;">
                 <p style="font-size: 1rem; line-height: 1.5; color: #333; margin-bottom: 1.25rem;">
                     A transição da estratégia para a alta performance. Após a entrega das diretrizes, iniciamos o processo de <strong>gestão contínua</strong>, onde a teoria se torna execução prática e resultados reais.
                 </p>
@@ -382,7 +382,7 @@
             </div>
 
             <!-- Texto de Cronograma -->
-            <div style="margin-left: 2rem; max-width: 44rem;">
+            <div style="margin-left: 2rem; max-width: 27rem;">
                 <?php 
                     $dataInicioRaw = $dados['data_inicio'] ?? date('Y-m-d');
                     $dataObj = new DateTime($dataInicioRaw);
