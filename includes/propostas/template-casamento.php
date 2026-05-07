@@ -250,7 +250,7 @@ if (!function_exists('fmt')) {
             <!-- Retângulo decorativo cinza (esquerda) -->
             <div style="position: absolute; left: 0; top: 0; width: 50px; height: 100%; background: #dcdcdc; z-index: 1;"></div>
             
-            <div style="width: 85%; aspect-ratio: 1/1; position: relative; z-index: 2; overflow: hidden;">
+            <div style="width: 75%; aspect-ratio: 3/4; position: relative; z-index: 2; overflow: hidden; box-shadow: 20px 20px 0px rgba(0,0,0,0.02);">
                 <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-02.jpg') ?>" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
         </div>
