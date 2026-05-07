@@ -351,20 +351,20 @@ include __DIR__ . '/../includes/layout/head.php';
                  x-transition:enter-start="opacity-0"
                  x-transition:enter-end="opacity-100">
                 
-                <div class="bg-white rounded-3xl w-[80%] h-[90vh] flex flex-col overflow-hidden relative shadow-2xl border border-white/10"
+                <div class="bg-[#0c0c0c]/90 backdrop-blur-3xl rounded-[2.5rem] w-[85%] h-[90vh] flex flex-col overflow-hidden relative shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-white/5"
                      x-init="$watch('showModalNova', v => { if(v) $nextTick(() => lucide.createIcons()) })"
                      x-transition:enter="ease-out duration-300"
                      x-transition:enter-start="opacity-0 scale-95 translate-y-4"
                      x-transition:enter-end="opacity-100 scale-100 translate-y-0">
                     
                     <!-- Header Modal -->
-                    <div class="px-8 py-4 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between">
+                    <div class="px-8 py-6 bg-transparent border-b border-white/5 flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            <h2 class="text-sm font-bold text-white uppercase tracking-wider">Registrar Nova Proposta</h2>
+                            <h2 class="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em]">Registrar Nova Proposta</h2>
                         </div>
                         <button @click="showModalNova = false; window.location.reload()" 
-                                class="p-2 hover:bg-zinc-800 rounded-full transition-colors text-zinc-400 hover:text-white group flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-90 transition-transform duration-300">
+                                class="p-2 hover:bg-white/5 rounded-full transition-colors text-zinc-500 hover:text-white group flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-90 transition-transform duration-300">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>
                             </svg>
@@ -387,7 +387,7 @@ include __DIR__ . '/../includes/layout/head.php';
                  x-transition:enter-start="opacity-0"
                  x-transition:enter-end="opacity-100">
                 
-                <div class="bg-white rounded-3xl w-[80%] h-[90vh] flex flex-col overflow-hidden relative shadow-2xl border border-white/10"
+                <div class="bg-[#0c0c0c]/90 backdrop-blur-3xl rounded-[2.5rem] w-[85%] h-[90vh] flex flex-col overflow-hidden relative shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-white/5"
                      x-init="$watch('showModalEditar', v => { if(v) $nextTick(() => lucide.createIcons()) })"
                      x-transition:enter="ease-out duration-300"
                      x-transition:enter-start="opacity-0 scale-95 translate-y-4"

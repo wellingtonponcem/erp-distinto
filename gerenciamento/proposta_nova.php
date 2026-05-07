@@ -26,9 +26,27 @@ include __DIR__ . '/../includes/layout/head.php';
         margin-left: 0 !important;
         padding-top: 0 !important;
         background: transparent !important;
+        color: white !important;
     }
     .is-modal-layout .page-title {
         font-size: 1.5rem;
+        color: white !important;
+    }
+    .is-modal-layout .card {
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        backdrop-filter: blur(10px);
+    }
+    .is-modal-layout .label {
+        color: rgba(255, 255, 255, 0.5) !important;
+    }
+    .is-modal-layout .input {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+    }
+    .is-modal-layout .input::placeholder {
+        color: rgba(255, 255, 255, 0.2) !important;
     }
 </style>
 
@@ -60,48 +78,48 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
             <!-- PASSO 1: ESCOLHA DO TIPO -->
             <div x-show="passo === 1" class="lg:col-span-3 space-y-8 animate-fade-in py-10">
                 <div class="text-center mb-12">
-                    <h2 class="text-3xl font-black text-zinc-900 mb-3">Qual o tipo da nova proposta?</h2>
+                    <h2 class="text-3xl font-black text-white mb-3 tracking-tight">Qual o tipo da nova proposta?</h2>
                     <p class="text-zinc-500 text-lg">Selecione o modelo base para começarmos a personalização.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto px-4">
                     <!-- Marketing -->
                     <div @click="tipoProposta = 'marketing'; passo = 2; $nextTick(() => lucide.createIcons())" 
-                         class="group cursor-pointer bg-white border-2 border-transparent hover:border-zinc-900 rounded-[2.5rem] p-8 transition-all shadow-sm hover:shadow-xl text-center border-zinc-100 flex flex-col items-center justify-center min-h-[320px]">
-                        <div class="w-24 h-24 bg-zinc-100 rounded-[2rem] flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-500 group-hover:bg-zinc-900 group-hover:text-white">
-                            <i data-lucide="megaphone" class="w-12 h-12"></i>
+                         class="group cursor-pointer bg-white/5 border border-white/5 hover:border-white/20 rounded-[2.5rem] p-8 transition-all hover:bg-white/[0.08] text-center flex flex-col items-center justify-center min-h-[320px] backdrop-blur-md">
+                        <div class="w-24 h-24 bg-white/5 rounded-[2.3rem] flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-500 group-hover:bg-white group-hover:text-black">
+                            <i data-lucide="megaphone" class="w-10 h-10"></i>
                         </div>
-                        <h3 class="font-black text-xl text-zinc-900">Marketing Digital</h3>
+                        <h3 class="font-black text-xl text-white">Marketing Digital</h3>
                         <p class="text-sm text-zinc-500 mt-3 leading-relaxed">Gestão de tráfego, social media e estratégia digital.</p>
                     </div>
 
                     <!-- Filmmaker -->
                     <div @click="tipoProposta = 'filmmaker'; passo = 2; $nextTick(() => lucide.createIcons())" 
-                         class="group cursor-pointer bg-white border-2 border-transparent hover:border-zinc-900 rounded-[2.5rem] p-8 transition-all shadow-sm hover:shadow-xl text-center border-zinc-100 flex flex-col items-center justify-center min-h-[320px]">
-                        <div class="w-24 h-24 bg-zinc-100 rounded-[2rem] flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-500 group-hover:bg-zinc-900 group-hover:text-white">
-                            <i data-lucide="video" class="w-12 h-12"></i>
+                         class="group cursor-pointer bg-white/5 border border-white/5 hover:border-white/20 rounded-[2.5rem] p-8 transition-all hover:bg-white/[0.08] text-center flex flex-col items-center justify-center min-h-[320px] backdrop-blur-md">
+                        <div class="w-24 h-24 bg-white/5 rounded-[2.3rem] flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-500 group-hover:bg-white group-hover:text-black">
+                            <i data-lucide="video" class="w-10 h-10"></i>
                         </div>
-                        <h3 class="font-black text-xl text-zinc-900">Filmmaker</h3>
+                        <h3 class="font-black text-xl text-white">Filmmaker</h3>
                         <p class="text-sm text-zinc-500 mt-3 leading-relaxed">Produção de vídeos, reels e conteúdo cinematic.</p>
                     </div>
 
                     <!-- Casamento -->
                     <div @click="tipoProposta = 'casamento'; passo = 2; $nextTick(() => lucide.createIcons())" 
-                         class="group cursor-pointer bg-white border-2 border-transparent hover:border-zinc-900 rounded-[2.5rem] p-8 transition-all shadow-sm hover:shadow-xl text-center border-zinc-100 flex flex-col items-center justify-center min-h-[320px]">
-                        <div class="w-24 h-24 bg-zinc-100 rounded-[2rem] flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-500 group-hover:bg-zinc-900 group-hover:text-white">
-                            <i data-lucide="heart" class="w-12 h-12"></i>
+                         class="group cursor-pointer bg-white/5 border border-white/5 hover:border-white/20 rounded-[2.5rem] p-8 transition-all hover:bg-white/[0.08] text-center flex flex-col items-center justify-center min-h-[320px] backdrop-blur-md">
+                        <div class="w-24 h-24 bg-white/5 rounded-[2.3rem] flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-500 group-hover:bg-white group-hover:text-black">
+                            <i data-lucide="heart" class="w-10 h-10"></i>
                         </div>
-                        <h3 class="font-black text-xl text-zinc-900">Casamento</h3>
+                        <h3 class="font-black text-xl text-white">Casamento</h3>
                         <p class="text-sm text-zinc-500 mt-3 leading-relaxed">Fotografia e vídeo premium para casamentos.</p>
                     </div>
 
                     <!-- 15 Anos -->
                     <div @click="tipoProposta = '15anos'; passo = 2; $nextTick(() => lucide.createIcons())" 
-                         class="group cursor-pointer bg-white border-2 border-transparent hover:border-zinc-900 rounded-[2.5rem] p-8 transition-all shadow-sm hover:shadow-xl text-center border-zinc-100 flex flex-col items-center justify-center min-h-[320px]">
-                        <div class="w-24 h-24 bg-zinc-100 rounded-[2rem] flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-500 group-hover:bg-zinc-900 group-hover:text-white">
-                            <i data-lucide="star" class="w-12 h-12"></i>
+                         class="group cursor-pointer bg-white/5 border border-white/5 hover:border-white/20 rounded-[2.5rem] p-8 transition-all hover:bg-white/[0.08] text-center flex flex-col items-center justify-center min-h-[320px] backdrop-blur-md">
+                        <div class="w-24 h-24 bg-white/5 rounded-[2.3rem] flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-500 group-hover:bg-white group-hover:text-black">
+                            <i data-lucide="star" class="w-10 h-10"></i>
                         </div>
-                        <h3 class="font-black text-xl text-zinc-900">15 Anos</h3>
+                        <h3 class="font-black text-xl text-white">15 Anos</h3>
                         <p class="text-sm text-zinc-500 mt-3 leading-relaxed">Cobertura completa de festas de debutante.</p>
                     </div>
                 </div>
