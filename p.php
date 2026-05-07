@@ -118,9 +118,11 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
 
     <div class="proposal-wrapper">
         <!-- Título Fixo para Seções Agrupadas -->
+        <?php if ($tipo !== 'casamento'): ?>
         <div class="fixed-section-title">
             <h2>ETAPAS DO<br>PROJETO</h2>
         </div>
+        <?php endif; ?>
 
         <?php include $templateFile; ?>
     </div>

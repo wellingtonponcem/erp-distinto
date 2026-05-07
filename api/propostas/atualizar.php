@@ -107,7 +107,21 @@ $dadosJson = json_encode([
     'whatsapp' => $d['whatsapp'] ?? ($dadosAntigos['whatsapp'] ?? ''),
     'is_plural' => $dadosAntigos['is_plural'] ?? false,
     'etapas_ativas' => $d['etapas_ativas'] ?? ($dadosAntigos['etapas_ativas'] ?? []),
-    'etapas_dias' => $d['etapas_dias'] ?? ($dadosAntigos['etapas_dias'] ?? [])
+    'etapas_dias' => $d['etapas_dias'] ?? ($dadosAntigos['etapas_dias'] ?? []),
+    // Campos de Casamento
+    'nome_noivo' => $d['nome_noivo'] ?? ($dadosAntigos['nome_noivo'] ?? ''),
+    'nome_noiva' => $d['nome_noiva'] ?? ($dadosAntigos['nome_noiva'] ?? ''),
+    'data_casamento' => $d['data_casamento'] ?? ($dadosAntigos['data_casamento'] ?? ''),
+    'data_limite_desconto' => $d['data_limite_desconto'] ?? ($dadosAntigos['data_limite_desconto'] ?? ''),
+    'condicao_especial' => $d['condicao_especial'] ?? ($dadosAntigos['condicao_especial'] ?? ''),
+    'valor_heritage' => $d['valor_heritage'] ?? ($dadosAntigos['valor_heritage'] ?? ''),
+    'itens_heritage' => $d['itens_heritage'] ?? ($dadosAntigos['itens_heritage'] ?? ''),
+    'valor_cinematic' => $d['valor_cinematic'] ?? ($dadosAntigos['valor_cinematic'] ?? ''),
+    'itens_cinematic' => $d['itens_cinematic'] ?? ($dadosAntigos['itens_cinematic'] ?? ''),
+    'valor_essencial' => $d['valor_essencial'] ?? ($dadosAntigos['valor_essencial'] ?? ''),
+    'itens_essencial' => $d['itens_essencial'] ?? ($dadosAntigos['itens_essencial'] ?? ''),
+    'valor_boudoir' => $d['valor_boudoir'] ?? ($dadosAntigos['valor_boudoir'] ?? ''),
+    'valor_prewedding' => $d['valor_prewedding'] ?? ($dadosAntigos['valor_prewedding'] ?? ''),
 ], JSON_UNESCAPED_UNICODE);
 
 // 4. Atualizar no Banco

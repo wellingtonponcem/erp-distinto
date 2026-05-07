@@ -142,7 +142,21 @@ $dadosJson = json_encode([
     ],
     'responsavel' => $responsavel,
     'whatsapp' => $d['whatsapp'] ?? '',
-    'is_plural' => $isPlural
+    'is_plural' => $isPlural,
+    // Campos de Casamento
+    'nome_noivo' => $d['nome_noivo'] ?? '',
+    'nome_noiva' => $d['nome_noiva'] ?? '',
+    'data_casamento' => $d['data_casamento'] ?? '',
+    'data_limite_desconto' => $d['data_limite_desconto'] ?? '',
+    'condicao_especial' => $d['condicao_especial'] ?? '',
+    'valor_heritage' => $d['valor_heritage'] ?? '',
+    'itens_heritage' => $d['itens_heritage'] ?? '',
+    'valor_cinematic' => $d['valor_cinematic'] ?? '',
+    'itens_cinematic' => $d['itens_cinematic'] ?? '',
+    'valor_essencial' => $d['valor_essencial'] ?? '',
+    'itens_essencial' => $d['itens_essencial'] ?? '',
+    'valor_boudoir' => $d['valor_boudoir'] ?? '',
+    'valor_prewedding' => $d['valor_prewedding'] ?? '',
 ], JSON_UNESCAPED_UNICODE);
 
 $stmt = $db->prepare("INSERT INTO propostas (id, cliente_nome, tipo, slug, titulo, subtitulo, validade, dados_json, valor_total, status) 

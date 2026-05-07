@@ -175,7 +175,100 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     </div>
                 </section>
 
-                <section class="card p-6" id="sectionServicos">
+                <!-- CONFIGURAÇÕES DE CASAMENTO -->
+                <section class="card p-6" x-show="tipoProposta === 'casamento'">
+                    <h3 class="text-sm font-bold text-zinc-900 mb-4">Dados do Casamento</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="form-group">
+                            <label class="label">Nome do Noivo</label>
+                            <input type="text" name="nome_noivo" class="input" x-model="nomeNoivo" placeholder="Ex: Rodolfo Elias">
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Nome da Noiva</label>
+                            <input type="text" name="nome_noiva" class="input" x-model="nomeNoiva" placeholder="Ex: Rhuana Fonseca">
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Data do Casamento</label>
+                            <input type="date" name="data_casamento" class="input" x-model="dataCasamento">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="form-group">
+                            <label class="label">Data Limite para Desconto</label>
+                            <input type="text" name="data_limite_desconto" class="input" x-model="dataLimiteDesconto" placeholder="Ex: 05/04/2026">
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Condição Especial</label>
+                            <input type="text" name="condicao_especial" class="input" x-model="condicaoEspecial" placeholder="Ex: Condição especial p/ amigos lagoinha">
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div class="p-4 border border-zinc-100 rounded-2xl bg-zinc-50/50">
+                            <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-amber-500"></span> Plano Heritage (Completo)
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div class="md:col-span-1">
+                                    <label class="label">Valor (R$)</label>
+                                    <input type="text" name="valor_heritage" class="input" x-model="valorHeritage" placeholder="7.900,00">
+                                </div>
+                                <div class="md:col-span-3">
+                                    <label class="label">Itens / Descrição</label>
+                                    <textarea name="itens_heritage" class="input text-xs" x-model="itensHeritage" rows="2"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 border border-zinc-100 rounded-2xl bg-zinc-50/50">
+                            <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-blue-500"></span> Plano Cinematic (Intermediário)
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div class="md:col-span-1">
+                                    <label class="label">Valor (R$)</label>
+                                    <input type="text" name="valor_cinematic" class="input" x-model="valorCinematic" placeholder="5.900,00">
+                                </div>
+                                <div class="md:col-span-3">
+                                    <label class="label">Itens / Descrição</label>
+                                    <textarea name="itens_cinematic" class="input text-xs" x-model="itensCinematic" rows="2"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 border border-zinc-100 rounded-2xl bg-zinc-50/50">
+                            <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-zinc-500"></span> Plano Essencial
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div class="md:col-span-1">
+                                    <label class="label">Valor (R$)</label>
+                                    <input type="text" name="valor_essencial" class="input" x-model="valorEssencial" placeholder="3.900,00">
+                                </div>
+                                <div class="md:col-span-3">
+                                    <label class="label">Itens / Descrição</label>
+                                    <textarea name="itens_essencial" class="input text-xs" x-model="itensEssencial" rows="2"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-4 border border-zinc-100 rounded-2xl bg-zinc-50/50">
+                                <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-3">Upgrade Boudoir</h4>
+                                <label class="label">Valor (R$)</label>
+                                <input type="text" name="valor_boudoir" class="input" x-model="valorBoudoir" placeholder="800,00">
+                            </div>
+                            <div class="p-4 border border-zinc-100 rounded-2xl bg-zinc-50/50">
+                                <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-3">Upgrade Pré-Wedding</h4>
+                                <label class="label">Valor (R$)</label>
+                                <input type="text" name="valor_prewedding" class="input" x-model="valorPrewedding" placeholder="1.200,00">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card p-6" id="sectionServicos" x-show="tipoProposta === 'marketing'">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-sm font-bold text-zinc-900">Serviços Inclusos</h3>
                         <button type="button" @click="adicionarServico()" class="text-[10px] bg-zinc-900 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-zinc-800 transition-all flex items-center gap-1">
@@ -393,6 +486,20 @@ document.addEventListener('alpine:init', () => {
         fasesCronograma: [],
         etapasDias: {},
         secoes: {},
+        // Campos de Casamento
+        nomeNoivo: '',
+        nomeNoiva: '',
+        dataCasamento: '',
+        dataLimiteDesconto: '',
+        condicaoEspecial: '',
+        valorHeritage: '',
+        itensHeritage: 'Cobertura Documental, Álbum Heritage, Réplicas, Filme 4K, Drone, Ecossistema Digital',
+        valorCinematic: '',
+        itensCinematic: 'Fotografia 8h, Sessão Engagement, Short Film, Social Content, Making Of, Bônus',
+        valorEssencial: '',
+        itensEssencial: 'Cobertura Fotográfica Essencial',
+        valorBoudoir: '',
+        valorPrewedding: '',
         etapasDisponiveis: [
             { id: 'imersao', label: 'Imersão' },
             { id: 'diagnostico', label: 'Diagnóstico' },
@@ -455,6 +562,21 @@ document.addEventListener('alpine:init', () => {
                 entrega: 2,
                 gestao: 0
             };
+
+            // Carregar dados de casamento
+            this.nomeNoivo = dados.nome_noivo || '';
+            this.nomeNoiva = dados.nome_noiva || '';
+            this.dataCasamento = dados.data_casamento || '';
+            this.dataLimiteDesconto = dados.data_limite_desconto || '';
+            this.condicaoEspecial = dados.condicao_especial || '';
+            this.valorHeritage = dados.valor_heritage || '';
+            this.itensHeritage = dados.itens_heritage || 'Cobertura Documental, Álbum Heritage, Réplicas, Filme 4K, Drone, Ecossistema Digital';
+            this.valorCinematic = dados.valor_cinematic || '';
+            this.itensCinematic = dados.itens_cinematic || 'Fotografia 8h, Sessão Engagement, Short Film, Social Content, Making Of, Bônus';
+            this.valorEssencial = dados.valor_essencial || '';
+            this.itensEssencial = dados.itens_essencial || 'Cobertura Fotográfica Essencial';
+            this.valorBoudoir = dados.valor_boudoir || '';
+            this.valorPrewedding = dados.valor_prewedding || '';
 
             // Força o Alpine a processar os dados e depois recalcula
             this.$nextTick(() => {
