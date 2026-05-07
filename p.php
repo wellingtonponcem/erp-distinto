@@ -84,7 +84,7 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
     <div class="proposal-wrapper">
         <!-- Título Fixo para Seções Agrupadas -->
         <div class="fixed-section-title">
-            <h2>ETAPAS DO PROJETO</h2>
+            <h2>ETAPAS DO<br>PROJETO</h2>
         </div>
 
         <?php include $templateFile; ?>
