@@ -223,11 +223,196 @@
         </div>
     </section>
 
-    <!-- Slide 7: Investimento -->
+    <!-- Slide 7: Etapas do Projeto (LINGUAGEM VISUAL) -->
+    <section class="proposal-page">
+        <!-- Coluna 1: Título -->
+        <div class="page-content" style="grid-column: 1; justify-content: center;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%;">
+                ETAPAS DO PROJETO
+            </h2>
+        </div>
+
+        <!-- Coluna 2: Lista de Etapas -->
+        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
+            <!-- Lista de Pílulas -->
+            <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0;">
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; position: relative;">
+                    LINGUAGEM VISUAL
+                    <div style="position: absolute; right: -40px; top: 50%; width: 40px; height: 1px; background: rgba(0,0,0,0.2);"></div>
+                </div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
+            </div>
+
+            <!-- Texto Explicativo (Aprimorado) -->
+            <div style="margin-left: 60px; max-width: 420px;">
+                <p style="font-size: 16px; line-height: 1.5; color: #333; margin-bottom: 20px;">
+                    A materialização da estratégia ocorre através da <strong>Linguagem Visual</strong>. Definimos um padrão estético de alta autoridade que reflete o posicionamento do seu negócio em cada ponto de contato.
+                </p>
+                <p style="font-size: 14px; color: #000; margin-bottom: 10px; font-weight: 600;">O resultado é consolidado no Manual de Identidade Visual, contemplando:</p>
+                <ul style="list-style: none; padding: 0; margin: 0 0 25px 0; font-size: 14px; color: #444; line-height: 1.8;">
+                    <li>• Tipografia Estratégica</li>
+                    <li>• Paleta de Cores com Psicologia Aplicada</li>
+                    <li>• Estilo de Elementos Gráficos</li>
+                    <li>• Referências de Aplicação</li>
+                    <li>• Modelos de Posts e Guidelines para Redes Sociais</li>
+                </ul>
+                <p style="font-size: 14px; line-height: 1.5; color: #666; margin-bottom: 30px;">
+                    Garantimos uma presença digital forte, coerente e pronta para escalar sua comunicação com profissionalismo.
+                </p>
+                
+                <!-- Cápsula de Tempo -->
+                <div style="padding: 15px 25px; border-radius: 50px; border: 1px solid rgba(0,0,0,0.3); font-size: 11px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.3; color: #000; letter-spacing: 0.5px; width: fit-content;">
+                    QUARTA À QUINTA SEMANA
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 8: Etapas do Projeto (ENTREGA) -->
+    <section class="proposal-page">
+        <!-- Coluna 1: Título -->
+        <div class="page-content" style="grid-column: 1; justify-content: center;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%;">
+                ETAPAS DO PROJETO
+            </h2>
+        </div>
+
+        <!-- Coluna 2: Lista de Etapas -->
+        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
+            <!-- Lista de Pílulas -->
+            <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0;">
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; position: relative;">
+                    ENTREGA
+                    <div style="position: absolute; right: -40px; top: 50%; width: 40px; height: 1px; background: rgba(0,0,0,0.2);"></div>
+                </div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
+            </div>
+
+            <!-- Texto Explicativo (Aprimorado) -->
+            <div style="margin-left: 60px; max-width: 420px;">
+                <p style="font-size: 16px; line-height: 1.5; color: #333; margin-bottom: 25px;">
+                    A culminância do nosso trabalho estratégico. O <strong>Planejamento</strong> e a <strong>Identidade Visual</strong> são apresentados em uma reunião executiva, garantindo o alinhamento total de cada decisão tomada.
+                </p>
+                <p style="font-size: 15px; line-height: 1.6; color: #333; margin-bottom: 35px;">
+                    Após a validação, todo o ecossistema do projeto é disponibilizado em uma <strong>plataforma web exclusiva</strong>. Este hub serve como guia central para sua equipe e parceiros, garantindo a integridade da marca em qualquer futura expansão.
+                </p>
+                
+                <!-- Cápsula de Tempo -->
+                <div style="padding: 15px 25px; border-radius: 50px; border: 1px solid rgba(0,0,0,0.3); font-size: 11px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.3; color: #000; letter-spacing: 0.5px; width: fit-content;">
+                    DÉCIMA PRIMEIRA SEMANA
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 9: Etapas do Projeto (GESTÃO) -->
+    <section class="proposal-page">
+        <!-- Coluna 1: Título -->
+        <div class="page-content" style="grid-column: 1; justify-content: center;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%;">
+                ETAPAS DO PROJETO
+            </h2>
+        </div>
+
+        <!-- Coluna 2: Lista de Etapas -->
+        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
+            <!-- Lista de Pílulas -->
+            <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0;">
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; position: relative;">
+                    GESTÃO
+                    <div style="position: absolute; right: -40px; top: 50%; width: 40px; height: 1px; background: rgba(0,0,0,0.2);"></div>
+                </div>
+            </div>
+
+            <!-- Texto Explicativo (Aprimorado) -->
+            <div style="margin-left: 60px; max-width: 480px;">
+                <p style="font-size: 15px; line-height: 1.5; color: #333; margin-bottom: 20px;">
+                    A transição da estratégia para a alta performance. Após a entrega das diretrizes, iniciamos o processo de <strong>gestão contínua</strong>, onde a teoria se torna execução prática e resultados reais.
+                </p>
+                <p style="font-size: 14px; line-height: 1.6; color: #333; margin-bottom: 20px;">
+                    Focamos na ativação dos canais, distribuição de conteúdo e <strong>gestão de tráfego pago</strong>. Nosso objetivo é claro: atrair leads qualificados e converter a autoridade construída em oportunidades de negócio.
+                </p>
+                <p style="font-size: 14px; line-height: 1.6; color: #333; margin-bottom: 30px;">
+                    Você receberá <strong>relatórios estratégicos mensais</strong> com análise de impacto, desempenho de campanhas e propostas de otimização constantes, garantindo que sua marca nunca estagne.
+                </p>
+                
+                <!-- Cápsula de Tempo -->
+                <div style="padding: 15px 25px; border-radius: 50px; border: 1px solid rgba(0,0,0,0.3); font-size: 11px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.3; color: #000; letter-spacing: 0.5px; width: fit-content;">
+                    A PARTIR DA DÉCIMA SEGUNDA SEMANA
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 10: Resumo do Cronograma -->
+    <section class="proposal-page">
+        <!-- Coluna 1: Título -->
+        <div class="page-content" style="grid-column: 1; justify-content: center;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%;">
+                ETAPAS DO PROJETO
+            </h2>
+        </div>
+
+        <!-- Coluna 2: Lista de Etapas (Tudo Conectado) -->
+        <div class="page-content" style="grid-column: 2; flex-direction: column; align-items: flex-start;">
+            <!-- Indicador de Mês -->
+            <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #000; margin-top: 40px; margin-bottom: 40px;">
+                <?= $mesNome ?>
+            </div>
+
+            <div style="display: flex; flex-direction: row; align-items: center; width: 100%;">
+                <!-- Lista de Pílulas Ativas -->
+                <div style="display: flex; flex-direction: column; gap: 8px; width: 180px; flex-shrink: 0; position: relative;">
+                <div style="padding: 10px 20px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
+                <div style="padding: 10px 20px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
+                <div style="padding: 10px 20px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
+                <div style="padding: 10px 20px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
+                <div style="padding: 10px 20px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
+                <div style="padding: 10px 20px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
+
+                <!-- Chave de Conexão (Bracket) -->
+                <div style="position: absolute; right: -25px; top: 15px; bottom: 15px; width: 15px; border: 1px solid rgba(0,0,0,0.3); border-left: 0;"></div>
+            </div>
+
+            <!-- Texto de Cronograma -->
+            <div style="margin-left: 55px; max-width: 440px;">
+                <?php 
+                    $dataInicioRaw = $dados['data_inicio'] ?? date('Y-m-d');
+                    $dataObj = new DateTime($dataInicioRaw);
+                    $diaIni = $dataObj->format('d');
+                    $mesIni = $mesesPt[$dataObj->format('n')] ?? 'JUNHO';
+                ?>
+                <p style="font-size: 15px; line-height: 1.5; color: #333; margin-bottom: 25px;">
+                    O planejamento estratégico poderá ser iniciado a partir do dia <strong><?= $diaIni ?> DE <?= $mesIni ?></strong>, com previsão de duração de <strong>40 DIAS ÚTEIS</strong>.
+                </p>
+                <p style="font-size: 13px; line-height: 1.5; color: #666; margin-bottom: 25px;">
+                    Estas datas são uma previsão do cronograma do projeto. Porém, é possível que ocorram alterações no cronograma durante o projeto, pelos seguintes motivos: Indisponibilidade de agenda do cliente, alterações no escopo do projeto e o tempo para as aprovações de cada etapa.
+                </p>
+                <p style="font-size: 13px; line-height: 1.5; color: #333;">
+                    Já a etapa de gestão tem a duração de 9 meses, o que totaliza 12 meses de contrato. E a gestão se inicia logo após a aprovação do planejamento estratégico.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 11: Investimento -->
     <section class="proposal-page">
         <div class="page-content" style="align-items: center; text-align: center;">
             <div style="font-family: var(--font-heading); font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #000; margin-bottom: 40px;">
-                07. Investimento & Parceria
+                11. Investimento & Parceria
             </div>
             <div style="background: #000; color: #fff; padding: 60px 100px; border-radius: 0; position: relative;">
                 <p style="text-transform: uppercase; font-size: 14px; letter-spacing: 2px; opacity: 0.6; margin-bottom: 10px;">Valor Mensal do Projeto</p>

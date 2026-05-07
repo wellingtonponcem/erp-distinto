@@ -125,7 +125,14 @@ include __DIR__ . '/../includes/layout/head.php';
                 </section>
 
                 <section class="card p-6">
-                    <h3 class="text-sm font-bold text-zinc-900 mb-4">Estratégia & Objetivo</h3>
+                    <h3 class="text-sm font-bold text-zinc-900 mb-4">Estratégia & Cronograma</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="form-group">
+                            <label class="label">Data Prevista de Início</label>
+                            <input type="date" name="data_inicio" class="input" value="<?= date('Y-m-d') ?>">
+                            <p class="text-[10px] text-zinc-500 mt-1">Data que aparecerá no cronograma da proposta.</p>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <label class="label">Objetivo do Projeto (Será refinado por IA)</label>
                         <textarea name="objetivo" class="input min-h-[100px]" maxlength="1020" placeholder="Ex: Fortalecer a marca Innovare Solar como referência em energia limpa no ES, aumentar captação de leads e fechar novos contratos..."></textarea>

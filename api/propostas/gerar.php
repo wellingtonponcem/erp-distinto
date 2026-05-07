@@ -126,6 +126,7 @@ $dadosJson = json_encode([
     'servicos' => $servicosInclusos,
     'briefing' => $d['briefing'] ?? '',
     'objetivo_original' => $d['objetivo'] ?? '',
+    'data_inicio' => $d['data_inicio'] ?? date('Y-m-d'),
     'responsavel' => $responsavel,
     'is_plural' => $isPlural
 ], JSON_UNESCAPED_UNICODE);
