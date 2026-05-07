@@ -65,14 +65,14 @@
                     ?>
                 </h3>
                 <p style="font-weight: 700; margin-bottom: 1.25rem;">Seja bem-vindo à Poncem Studio | Distinto.</p>
-                <p style="margin-bottom: 0.9375rem;">Mais do que uma agência, somos uma empresa de posicionamento, estratégia e direção criativa para marcas que desejam crescer com clareza, autoridade e percepção de valor.<br>
-                    Acreditamos que negócios fortes não se constroem apenas com presença digital.<break>
-                    Eles se constroem com narrativa, identidade, direção e execução inteligente.<br>
-                    Por isso, nosso trabalho vai além de produzir conteúdo ou gerenciar redes sociais.<br>
-                    Desenvolvemos marcas que comunicam com intenção, geram conexão e ocupam um espaço relevante no mercado.<br>
-                    Unimos estratégia, comunicação e audiovisual para transformar empresas em marcas percebidas, desejadas e lembradas.<br>
-                    Cada projeto que passa pela Distinto é pensado para transmitir valor de forma autêntica desde o posicionamento até a forma como a marca é vista, sentida e reconhecida pelas pessoas.<br>
-                    Atuamos com empresas que entenderam que imagem sem estratégia gera apenas movimento. Mas estratégia alinhada à comunicação certa gera autoridade, crescimento e diferenciação.<br>
+                <p style="margin-bottom: 0.9375rem;">Mais do que uma agência, somos uma empresa de posicionamento, estratégia e direção criativa para marcas que desejam crescer com clareza, autoridade e percepção de valor.<br><br>
+                    Acreditamos que negócios fortes não se constroem apenas com presença digital.<break><br>
+                    Eles se constroem com narrativa, identidade, direção e execução inteligente.<br><br>
+                    Por isso, nosso trabalho vai além de produzir conteúdo ou gerenciar redes sociais.<br><br>
+                    Desenvolvemos marcas que comunicam com intenção, geram conexão e ocupam um espaço relevante no mercado.<br><br>
+                    Unimos estratégia, comunicação e audiovisual para transformar empresas em marcas percebidas, desejadas e lembradas.<br><br>
+                    Cada projeto que passa pela Distinto é pensado para transmitir valor de forma autêntica desde o posicionamento até a forma como a marca é vista, sentida e reconhecida pelas pessoas.<br><br>
+                    Atuamos com empresas que entenderam que imagem sem estratégia gera apenas movimento. Mas estratégia alinhada à comunicação certa gera autoridade, crescimento e diferenciação.<br><br>
                     Se você chegou até aqui, provavelmente entende que sua marca possui algo valioso demais para parecer comum.</p>
                 <p style="font-weight: 700; margin-top: 1.5rem;">Vamos juntos?</p>
             </div>
