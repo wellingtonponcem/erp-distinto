@@ -25,7 +25,7 @@ if (!function_exists('fmt')) {
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100..900&family=Dancing+Script:wght@400..700&family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
 
 <style>
     :root {
@@ -34,6 +34,8 @@ if (!function_exists('fmt')) {
         --wedding-bg: #fafafa;
         --wedding-serif: "Playfair Display", serif;
         --wedding-sans: "Inter", sans-serif;
+        --wedding-script: "Dancing Script", cursive;
+        --wedding-montserrat: "Montserrat", sans-serif;
     }
 
     body { background: #111; }
@@ -135,16 +137,31 @@ if (!function_exists('fmt')) {
 <div class="wedding-proposal">
 
     <!-- PÁGINA 01: CAPA -->
-    <section class="slide bg-dark center">
-        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070" class="img-bg" style="opacity: 0.3;">
-        <div class="content-overlay">
-            <h3 class="uppercase text-gold">Distinto Wedding</h3>
-            <div class="line line-center"></div>
-            <h1 class="text-serif"><?= $nomeCasal ?></h1>
-            <p class="uppercase mt-6" style="color: white; font-size: 0.8rem;">
-                Casamento - FOTOGRAFIA E FILMMAKING.<br>
-                Toda história tem sua beleza. Nós entregamos a nossa versão da sua sob a nossa perspectiva.
-            </p>
+    <section class="slide" style="padding: 0; display: block; background: #eee;">
+        <img src="<?= raizUrl('/imagens-proposta-casamento/bg-section-01.jpg') ?>" class="img-bg" style="opacity: 1; z-index: 1;">
+        
+        <div class="content-overlay" style="height: 100%; width: 100%; display: flex; flex-direction: column; justify-content: space-between; padding: 10vh 8vw; box-sizing: border-box; max-width: 100%;">
+            <!-- Topo Centro -->
+            <div style="text-align: center; width: 100%;">
+                <h1 style="font-family: var(--wedding-script); font-size: 8rem; color: #1a1a1a; margin-bottom: 0; font-weight: 400; text-transform: none; letter-spacing: 0;">Casamento</h1>
+                <p style="font-family: var(--wedding-montserrat); font-size: 1.8rem; letter-spacing: 0.6em; color: #1a1a1a; margin-top: -10px; font-weight: 300;">FOTOGRAFIA E FILMMAKING</p>
+            </div>
+
+            <!-- Baixo Esquerda -->
+            <div style="text-align: left; max-width: 500px; color: #1a1a1a;">
+                <h2 style="font-family: var(--wedding-montserrat); font-size: 2.2rem; font-weight: 800; letter-spacing: 0.05em; line-height: 1.2; margin-bottom: 20px;">
+                    <?php 
+                        $noivoUpper = mb_strtoupper($nomeNoivo);
+                        $noivaUpper = mb_strtoupper($nomeNoiva);
+                        echo "{$noivoUpper} &<br>{$noivaUpper}";
+                    ?>
+                </h2>
+                <p style="font-family: var(--wedding-montserrat); font-size: 0.95rem; line-height: 1.6; font-weight: 400; margin-bottom: 20px; opacity: 0.8;">
+                    Toda história tem sua beleza. Nós entregamos a nossa versão da sua sob a nossa perspectiva.
+                </p>
+                <div style="width: 40px; height: 1px; background: #1a1a1a; margin-bottom: 20px; opacity: 0.5;"></div>
+                <p style="font-family: var(--wedding-montserrat); font-size: 0.9rem; font-weight: 400; letter-spacing: 0.05em; opacity: 0.8;">by Distinto wedding</p>
+            </div>
         </div>
     </section>
 
