@@ -177,9 +177,9 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                                         <label class="text-[10px] font-bold text-zinc-500 uppercase mb-1 block">Serviço</label>
                                         <select :name="'servicos['+index+'][id]'" class="input py-2" x-model="item.id" @change="atualizarDadosServico(index)">
                                             <option value="">Selecione um serviço...</option>
-                                            <template x-for="s in catalogoServicos" :key="s.id">
-                                                <option :value="s.id" x-text="s.nome"></option>
-                                            </template>
+                                            <?php foreach ($servicos as $s): ?>
+                                            <option value="<?= $s['id'] ?>"><?= sanitizar($s['nome']) ?></option>
+                                            <?php endforeach; ?>
                                         </select>
                                     </div>
 

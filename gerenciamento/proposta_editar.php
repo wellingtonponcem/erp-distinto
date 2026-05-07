@@ -191,9 +191,9 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                                         <label class="text-[10px] font-bold text-zinc-500 uppercase mb-1 block">Serviço</label>
                                         <select :name="'servicos['+index+'][id]'" class="input py-2" x-model="item.id" @change="atualizarDadosServico(index)">
                                             <option value="">Selecione um serviço...</option>
-                                            <template x-for="s in catalogoServicos" :key="s.id">
-                                                <option :value="s.id" x-text="s.nome"></option>
-                                            </template>
+                                            <?php foreach ($servicos as $s): ?>
+                                            <option value="<?= $s['id'] ?>"><?= sanitizar($s['nome']) ?></option>
+                                            <?php endforeach; ?>
                                         </select>
                                     </div>
 
@@ -350,16 +350,17 @@ document.addEventListener('alpine:init', () => {
             this.responsavel = dados.responsavel || '';
             this.whatsapp = dados.whatsapp || '';
             
-            // Mapeia os serviços garantindo que o ID seja encontrado
+            // Mapeia os serviços garantindo que o ID seja encontrado (sempre como string)
             this.servicosSelecionados = dados.servicos ? dados.servicos.map(s => {
-                const servicoEncontrado = this.catalogoServicos.find(cat => 
-                    (s.id && cat.id == s.id) || 
+                const sid = String(s.id || '');
+                const servicoEncontrado = this.catalogoServicos.find(cat =>
+                    (sid && String(cat.id) === sid) ||
                     (cat.nome && s.nome && cat.nome.trim().toUpperCase() === s.nome.trim().toUpperCase())
                 );
-                
-                return { 
-                    id: servicoEncontrado ? servicoEncontrado.id : (s.id || ''), 
-                    valor: parseFloat(s.valor_individual || 0),
+
+                return {
+                    id: servicoEncontrado ? String(servicoEncontrado.id) : sid,
+                    valor: parseFloat(s.valor_individual || s.valor || 0),
                     tipo_cobranca: s.tipo_cobranca || (servicoEncontrado && servicoEncontrado.periodicidade === 'pontual' ? 'pontual' : 'recorrente'),
                     frequencia: parseInt(s.frequencia) || 1,
                     valor_mensal: 0
