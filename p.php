@@ -73,7 +73,24 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
         </div>
         <div class="frame-item">
             <div class="frame-top"><?= $mesNome ?></div>
-            <div class="frame-bottom"><?= $cliente ?><?php if (!empty($dados['responsavel'])) echo " | " . $dados['responsavel']; ?></div>
+            <div class="frame-bottom">
+                <?php 
+                    $textoResponsavel = '';
+                    if (!empty($dados['responsavel'])) {
+                        $nomesBrutos = preg_split('/(?:\s+[eE]\s+|,\s*)/', $dados['responsavel']);
+                        $nomesLimpos = array_map('trim', array_filter($nomesBrutos));
+                        $total = count($nomesLimpos);
+                        
+                        if ($total === 1) $textoResponsavel = $nomesLimpos[0];
+                        elseif ($total === 2) $textoResponsavel = $nomesLimpos[0] . ' e ' . $nomesLimpos[1];
+                        elseif ($total > 2) {
+                            $ultimo = array_pop($nomesLimpos);
+                            $textoResponsavel = implode(', ', $nomesLimpos) . ' e ' . $ultimo;
+                        }
+                    }
+                    echo $cliente . ($textoResponsavel ? " | " . $textoResponsavel : "");
+                ?>
+            </div>
         </div>
         <div class="frame-item">
             <div class="frame-top"><?= $ano ?></div>
