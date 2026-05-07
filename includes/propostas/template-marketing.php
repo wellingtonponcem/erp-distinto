@@ -400,7 +400,7 @@
                 <div style="padding: 12px 1.875rem; border-radius: 3.125rem; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
 
                 <!-- Chave de Conexão (Bracket) -->
-                <div style="position: absolute; right: -40px; top: 20px; bottom: 20px; width: 20px; border: 1.5px solid rgba(255,255,255,0.3); border-left: 0;"></div>
+                <div style="position: absolute; right: -20px; top: 20px; bottom: 20px; width: 20px; border: 1.5px solid rgba(255,255,255,0.3); border-left: 0;"></div>
             </div>
 
             <!-- Texto de Cronograma -->
