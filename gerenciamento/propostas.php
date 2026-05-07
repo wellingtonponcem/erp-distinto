@@ -315,6 +315,9 @@ include __DIR__ . '/../includes/layout/head.php';
                     <button @click="copiarLink(contextMenu.item.slug); contextMenu.show = false">
                         <i data-lucide="copy" class="w-4 h-4"></i> Copiar Link
                     </button>
+                    <button @click="location.href = 'proposta_editar.php?id=' + contextMenu.item.id">
+                        <i data-lucide="edit-2" class="w-4 h-4"></i> Editar Dados
+                    </button>
                     <div class="relative group/submenu">
                         <button class="justify-between">
                             <span class="flex items-center gap-2"><i data-lucide="folder-input" class="w-4 h-4"></i> Mover para...</span>

@@ -1,0 +1,372 @@
+<?php
+require_once __DIR__ . '/../config/env.php';
+require_once __DIR__ . '/../config/auth.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/helpers.php';
+
+exigirAutenticacao();
+
+$id = $_GET['id'] ?? null;
+if (!$id) {
+    die("ID da proposta não informado.");
+}
+
+$db = Database::get();
+
+// Buscar proposta
+$stmt = $db->prepare("SELECT * FROM propostas WHERE id = ?");
+$stmt->execute([$id]);
+$proposta = $stmt->fetch();
+
+if (!$proposta) {
+    die("Proposta não encontrada.");
+}
+
+$dadosJson = json_decode($proposta['dados_json'], true);
+
+// Buscar clientes
+$stmtClientes = $db->query("SELECT id, nome FROM clientes ORDER BY nome ASC");
+$clientes = $stmtClientes->fetchAll();
+
+// Buscar serviços
+$stmtServicos = $db->query("SELECT id, nome, descricao, preco_venda FROM servicos ORDER BY nome ASC");
+$servicos = $stmtServicos->fetchAll();
+$servicosJson = json_encode($servicos);
+
+$tituloPagina = 'Editar Proposta - ' . $proposta['cliente_nome'];
+include __DIR__ . '/../includes/layout/head.php';
+?>
+
+<style>
+    .is-modal-layout #main-content {
+        margin-left: 0 !important;
+        padding-top: 0 !important;
+        background: transparent !important;
+    }
+    .is-modal-layout .page-title {
+        font-size: 1.5rem;
+    }
+</style>
+
+<?php 
+$isModal = ($_GET['layout'] ?? '') === 'modal';
+?>
+
+<div id="app-wrapper" class="<?= $isModal ? 'is-modal-layout' : '' ?>">
+    <?php if (!$isModal) include __DIR__ . '/../includes/layout/sidebar.php'; ?>
+
+    <main id="main-content" class="content-sheet <?= $isModal ? 'p-0' : '' ?>">
+        <?php if (!$isModal): ?>
+        <div class="app-topbar">
+            <div class="top-nav">
+                <a href="<?= raizUrl('/dashboard.php') ?>">Visão Geral</a>
+                <a href="<?= raizUrl('/gerenciamento/propostas.php') ?>">Propostas</a>
+                <a href="#" class="active">Editar Proposta</a>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <div class="<?= $isModal ? 'px-8 pt-8 mb-6' : 'mb-8' ?>">
+            <h1 class="page-title text-2xl">Editar Proposta</h1>
+            <p class="page-subtitle text-zinc-500">Ajuste os dados da proposta gerada para <?= sanitizar($proposta['cliente_nome']) ?>.</p>
+        </div>
+
+        <form id="formAtualizarProposta" x-data="proposta" x-init="initEdit()" x-cloak class="grid grid-cols-1 lg:grid-cols-3 gap-6 <?= $isModal ? 'px-8 pb-12' : '' ?>">
+            <input type="hidden" name="id" value="<?= $id ?>">
+            
+            <div class="lg:col-span-2 space-y-6">
+                <section class="card p-6">
+                    <h3 class="text-sm font-bold text-zinc-900 mb-4">Informações Básicas</h3>
+                    
+                    <div class="grid grid-cols-1 gap-6">
+                        <div class="form-group">
+                            <label class="label">Cliente</label>
+                            <input type="text" class="input bg-zinc-50 text-zinc-500" value="<?= sanitizar($proposta['cliente_nome']) ?>" readonly>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label class="label">WhatsApp do Cliente</label>
+                                <input type="text" name="whatsapp" class="input" value="<?= sanitizar($dadosJson['whatsapp'] ?? '') ?>" placeholder="Ex: 27999998888">
+                            </div>
+                            <div class="form-group">
+                                <label class="label">Tipo de Serviço</label>
+                                <select name="tipo" id="tipoProposta" class="input" required x-model="tipoProposta" disabled>
+                                    <option value="marketing">Marketing Digital</option>
+                                    <option value="casamento">Casamento</option>
+                                    <option value="15anos">15 Anos</option>
+                                    <option value="filmmaker">Filmmaker (Cinematic)</option>
+                                </select>
+                                <p class="text-[10px] text-zinc-400 mt-1">O tipo não pode ser alterado após a criação.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label class="label">Título da Proposta</label>
+                                <input type="text" name="titulo" class="input" value="<?= sanitizar($proposta['titulo']) ?>" maxlength="100" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="label">Subtítulo (Opcional)</label>
+                                <input type="text" name="subtitulo" class="input" value="<?= sanitizar($proposta['subtitulo']) ?>" placeholder="Ex: Planejamento Estratégico Q3">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="form-group">
+                                <label class="label">Subtotal (R$)</label>
+                                <input type="number" step="0.01" class="input bg-zinc-50 font-bold text-zinc-500" readonly :value="valorSubtotal">
+                            </div>
+                            <div class="form-group">
+                                <label class="label">Desconto</label>
+                                <div class="flex">
+                                    <input type="number" step="0.01" name="desconto_valor" class="input rounded-r-none border-r-0" x-model="descontoValor" @input="recalcularTotal()">
+                                    <select name="desconto_tipo" class="input rounded-l-none w-16 px-1 text-center font-bold bg-zinc-50" x-model="descontoTipo" @change="recalcularTotal()">
+                                        <option value="porcentagem">%</option>
+                                        <option value="fixo">R$</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="label">Valor Total (Final)</label>
+                                <input type="number" step="0.01" name="valor_total" class="input bg-zinc-100 font-bold text-zinc-900 border-zinc-300" required readonly x-model="valorTotal">
+                            </div>
+                            <div class="form-group">
+                                <label class="label">Tempo de Contrato</label>
+                                <input type="number" name="meses_contrato" class="input" x-model="mesesContrato">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label class="label">Forma de Pagamento</label>
+                                <select name="forma_pagamento" class="input" x-model="formaPagamento">
+                                    <option value="boleto_pix">Boleto / PIX</option>
+                                    <option value="cartao">Cartão de Crédito (+2,13%)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="label">Status</label>
+                                <select name="status" class="input" x-model="statusProposta">
+                                    <option value="rascunho">Rascunho</option>
+                                    <option value="pendente">Pendente</option>
+                                    <option value="aceita">Aceita</option>
+                                    <option value="recusada">Recusada</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Conteúdo Gerado pela IA (Editável) -->
+                <section class="card p-6 border-zinc-200">
+                    <h3 class="text-sm font-bold text-zinc-900 mb-4">Conteúdo Gerado (IA)</h3>
+                    <div class="space-y-6">
+                        <template x-for="(content, key) in secoes" :key="key">
+                            <div class="form-group">
+                                <label class="label uppercase tracking-wider text-[10px]" x-text="key"></label>
+                                <textarea :name="'secoes['+key+']'" class="input min-h-[150px] text-sm leading-relaxed" x-model="secoes[key]"></textarea>
+                            </div>
+                        </template>
+                    </div>
+                </section>
+
+                <section class="card p-6" id="sectionServicos">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-bold text-zinc-900">Serviços Inclusos</h3>
+                        <button type="button" @click="adicionarServico()" class="text-[10px] bg-zinc-900 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-zinc-800 transition-all flex items-center gap-1">
+                            <i data-lucide="plus" class="w-3 h-3"></i> Adicionar Serviço
+                        </button>
+                    </div>
+
+                    <div class="space-y-3">
+                        <template x-for="(item, index) in servicosSelecionados" :key="index">
+                            <div class="flex flex-col md:flex-row gap-3 p-3 border border-zinc-100 rounded-lg bg-zinc-50/50 relative group">
+                                <div class="flex-1">
+                                    <label class="text-[10px] font-bold text-zinc-500 uppercase mb-1 block">Serviço</label>
+                                    <select :name="'servicos['+index+'][id]'" class="input py-2" x-model="item.id" @change="atualizarDadosServico(index)">
+                                        <option value="">Selecione um serviço...</option>
+                                        <template x-for="s in catalogoServicos" :key="s.id">
+                                            <option :value="s.id" x-text="s.nome"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                                <div class="w-full md:w-32">
+                                    <label class="text-[10px] font-bold text-zinc-500 uppercase mb-1 block">Valor (R$)</label>
+                                    <input type="number" step="0.01" :name="'servicos['+index+'][valor]'" class="input py-2 font-bold" x-model="item.valor" @input="recalcularTotal()">
+                                </div>
+                                <button type="button" @click="removerServico(index)" class="absolute -top-2 -right-2 md:static md:mt-6 bg-red-50 text-red-500 p-2 rounded-lg hover:bg-red-100 transition-colors">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+                </section>
+
+                <section class="card p-6">
+                    <h3 class="text-sm font-bold text-zinc-900 mb-4">Estratégia & Cronograma</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="form-group">
+                            <label class="label">Data Prevista de Início</label>
+                            <input type="date" name="data_inicio" class="input" x-model="dataInicio">
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Validade da Proposta</label>
+                            <input type="date" name="validade" class="input" value="<?= $proposta['validade'] ?>">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card p-6">
+                    <h3 class="text-sm font-bold text-zinc-900 mb-4">Opção Adicional (Upsell)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="form-group">
+                            <label class="label">Título da Opção</label>
+                            <input type="text" name="adicional_titulo" class="input" x-model="adicional.titulo">
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Valor da Opção (R$/mês)</label>
+                            <input type="number" step="0.01" name="adicional_valor" class="input" x-model="adicional.valor">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="label">Descrição da Opção</label>
+                        <textarea name="adicional_descricao" class="input min-h-[80px]" x-model="adicional.descricao"></textarea>
+                    </div>
+                </section>
+            </div>
+
+            <div class="space-y-6">
+                <section class="card p-6 bg-zinc-900 text-white shadow-xl shadow-zinc-900/20 border-0">
+                    <h3 class="text-sm font-bold mb-4 opacity-80">Ações</h3>
+                    <button type="submit" id="btnSalvar" class="w-full h-12 rounded-xl font-bold bg-white text-black hover:bg-zinc-100 transition-all flex items-center justify-center gap-2 group !text-black">
+                        <i data-lucide="save" class="w-5 h-5 text-zinc-500 group-hover:text-black transition-colors !text-zinc-900"></i>
+                        Salvar Alterações
+                    </button>
+                    <a href="<?= raizUrl('/p/' . $proposta['slug']) ?>" target="_blank" class="w-full mt-3 h-12 rounded-xl font-bold bg-zinc-800 text-white hover:bg-zinc-700 transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="external-link" class="w-5 h-5"></i>
+                        Visualizar Atual
+                    </a>
+                </section>
+
+                <div id="statusSalvar" class="hidden animate-fade-in">
+                    <div class="p-4 bg-emerald-500/10 border border-emerald-500 text-emerald-500 rounded-xl text-center text-sm font-bold">
+                        Alterações salvas com sucesso!
+                    </div>
+                </div>
+            </div>
+        </form>
+    </main>
+</div>
+
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('proposta', () => ({
+        catalogoServicos: <?= $servicosJson ?>,
+        servicosSelecionados: [],
+        valorSubtotal: 0,
+        descontoValor: 0,
+        descontoTipo: 'porcentagem',
+        valorTotal: 0,
+        tipoProposta: '<?= $proposta['tipo'] ?>',
+        mesesContrato: 12,
+        formaPagamento: 'boleto_pix',
+        statusProposta: '<?= $proposta['status'] ?>',
+        dataInicio: '',
+        adicional: { titulo: '', valor: 0, descricao: '' },
+        secoes: {},
+
+        initEdit() {
+            // Carregar dados existentes
+            const dados = <?= json_encode($dadosJson) ?>;
+            this.secoes = dados.secoes || {};
+            this.servicosSelecionados = dados.servicos ? dados.servicos.map(s => ({ 
+                id: this.catalogoServicos.find(c => c.nome === s.nome)?.id || '', 
+                valor: s.valor_individual 
+            })) : [];
+            this.mesesContrato = dados.meses_contrato || 12;
+            this.formaPagamento = dados.forma_pagamento || 'boleto_pix';
+            this.dataInicio = dados.data_inicio || '';
+            this.adicional = dados.adicional || { titulo: '', valor: 0, descricao: '' };
+            this.valorTotal = <?= (float)$proposta['valor_total'] ?>;
+            
+            // Recalcular subtotal
+            this.recalcularTotal();
+            
+            // Tentar inferir desconto se o total for diferente do subtotal
+            const sub = this.valorSubtotal;
+            if (sub > 0 && this.valorTotal < sub) {
+                this.descontoValor = sub - this.valorTotal;
+                this.descontoTipo = 'fixo';
+            }
+
+            this.$nextTick(() => {
+                if (window.lucide) lucide.createIcons();
+            });
+        },
+
+        adicionarServico() {
+            this.servicosSelecionados.push({ id: '', valor: 0 });
+            this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
+        },
+
+        removerServico(index) {
+            this.servicosSelecionados.splice(index, 1);
+            this.recalcularTotal();
+        },
+
+        atualizarDadosServico(index) {
+            const item = this.servicosSelecionados[index];
+            const servico = this.catalogoServicos.find(s => s.id == item.id);
+            if (servico) item.valor = parseFloat(servico.preco_venda || 0);
+            this.recalcularTotal();
+        },
+
+        recalcularTotal() {
+            this.valorSubtotal = this.servicosSelecionados.reduce((acc, curr) => acc + parseFloat(curr.valor || 0), 0);
+            let desconto = 0;
+            const sub = parseFloat(this.valorSubtotal || 0);
+            const desc = parseFloat(this.descontoValor || 0);
+            if (this.descontoTipo === 'porcentagem') desconto = sub * (desc / 100);
+            else desconto = desc;
+            this.valorTotal = Math.max(0, sub - desconto);
+        }
+    }));
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('formAtualizarProposta');
+    const btnSalvar = document.getElementById('btnSalvar');
+    const statusDiv = document.getElementById('statusSalvar');
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        btnSalvar.disabled = true;
+        btnSalvar.innerHTML = '<i class="w-4 h-4 animate-spin"></i> Salvando...';
+        
+        const formData = new FormData(form);
+        
+        try {
+            const response = await fetch('<?= raizUrl('/api/propostas/atualizar.php') ?>', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+                statusDiv.classList.remove('hidden');
+                setTimeout(() => statusDiv.classList.add('hidden'), 3000);
+            } else {
+                alert('Erro: ' + (result.erro || 'Falha ao salvar.'));
+            }
+        } catch (error) {
+            alert('Erro na comunicação com o servidor.');
+        } finally {
+            btnSalvar.disabled = false;
+            btnSalvar.innerHTML = '<i data-lucide="save" class="w-5 h-5 text-zinc-500"></i> Salvar Alterações';
+            if (window.lucide) lucide.createIcons();
+        }
+    });
+});
+</script>
+
+<?php if (!$isModal) include __DIR__ . '/../includes/layout/footer.php'; ?>
