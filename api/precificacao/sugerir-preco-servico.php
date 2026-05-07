@@ -22,8 +22,8 @@ if (!$s || empty($s['nome'])) {
 }
 
 $contextoTipo = ($tipoPreco === 'pontual') 
-    ? "Este é um PROJETO PONTUAL (Único). O valor deve ser maior pois não há garantia de recorrência e exige mobilização de equipe para uma entrega isolada."
-    : "Este é um SERVIÇO RECORRENTE (Mensal). O valor deve ser equilibrado para garantir a permanência do cliente a longo prazo.";
+    ? "Este é um PROJETO PONTUAL (Único). O valor DEVE ser significativamente MAIOR (geralmente entre 30% a 60% mais caro) que o valor recorrente equivalente. Justificativa: Não há garantia de receita futura, exige esforço de setup isolado e mobilização imediata de equipe."
+    : "Este é um SERVIÇO RECORRENTE (Mensal). O valor deve ser competitivo para garantir a retenção (LTV). Considere que a previsibilidade de caixa permite uma margem ligeiramente menor comparada a um projeto único.";
 
 $db = Database::get();
 $configDb = $db->query("SELECT groq_api_key FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
@@ -37,7 +37,7 @@ $prompt = <<<PROMPT
 Você é um consultor sênior de precificação para agências de marketing e publicidade no Brasil.
 Seu objetivo é sugerir um PREÇO DE VENDA estratégico e realista para o serviço descrito abaixo.
 
-CONTEXTO DE PRECIFICAÇÃO:
+ESTRATÉGIA DE NEGÓCIO:
 {$contextoTipo}
 
 DADOS DO SERVIÇO:
@@ -46,21 +46,20 @@ DADOS DO SERVIÇO:
 - Entregáveis: {$s['entregaveis']}
 - Ferramentas: {$s['ferramentas']}
 - Terceirização: {$s['terceirizacao']}
-- Periodicidade no Cadastro: {$s['periodicidade']}
-- Horas Estimadas (Mês/Projeto): {$s['horas_estimadas']}h
-- Custos Diretos (Produção + Variáveis): R$  {$s['custo_producao']} + R$ {$s['custos_variaveis']}
+- periodicidade: {$s['periodicidade']}
+- Horas Estimadas: {$s['horas_estimadas']}h
+- Custos Diretos: R$ {$s['custo_producao']} + R$ {$s['custos_variaveis']}
 
 DADOS DA AGÊNCIA:
 - Custo Fixo Mensal Total: R$ {$totalCustosFixos}
 - Capacidade Mensal em Horas: {$horasMensais}h
-- PREÇO DE PISO (Mínimo para não ter prejuízo): R$ {$precoMinimo}
+- PREÇO DE PISO (Mínimo absoluto): R$ {$precoMinimo}
 
-REGRAS DE PRECIFICAÇÃO:
-1. O preço sugerido deve ser um VALOR CHEIO e arredondado (ex: R$ 1.500,00, R$ 2.900,00). Evite centavos quebrados.
+REGRAS OBRIGATÓRIAS:
+1. O preço sugerido deve ser um VALOR CHEIO e arredondado (ex: R$ 1.500, R$ 2.900).
 2. NUNCA sugira um valor abaixo do PREÇO DE PISO (R$ {$precoMinimo}).
-3. Considere o valor percebido no mercado brasileiro para este tipo de serviço. 
-4. Se o serviço tiver muitos entregáveis ou ferramentas caras, o preço deve refletir essa complexidade.
-5. Retorne APENAS um objeto JSON no formato: {"preco": 2500.00, "markup_sugerido": 45, "justificativa": "Texto curto"}
+3. Se o tipo for PONTUAL, o valor sugerido deve ser visivelmente superior ao que seria cobrado mensalmente.
+4. Retorne APENAS um objeto JSON no formato: {"preco": 2500.00, "markup_sugerido": 45, "justificativa": "Explique por que este valor é ideal considerando a periodicidade"}
 
 PROMPT;
 

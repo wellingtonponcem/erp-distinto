@@ -237,7 +237,107 @@ include __DIR__ . '/../includes/layout/head.php';
             </div>
         </div>
     </div>
+
+    <!-- Painel de Chat IA -->
+    <div class="chat-ai-panel" :class="chatAberto ? 'active' : ''" x-cloak>
+        <div style="display:flex; flex-direction:column; h-100; height:100%;">
+            <div style="padding:20px; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2);">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="width:32px; height:32px; border-radius:8px; background:linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%); display:flex; align-items:center; justify-content:center;">
+                        <i data-lucide="sparkles" style="width:16px;height:16px;color:#fff;"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight:700; color:#f1f5f9; font-size:14px;">Assistente Distinto</div>
+                        <div style="font-size:11px; color:#10b981; display:flex; align-items:center; gap:4px;">
+                            <span style="width:6px; height:6px; border-radius:50%; background:#10b981; display:inline-block;"></span> Online
+                        </div>
+                    </div>
+                </div>
+                <button @click="chatAberto=false" style="color:#6b7280; background:none; border:none; cursor:pointer;">
+                    <i data-lucide="chevron-right" style="width:20px;height:20px;"></i>
+                </button>
+            </div>
+
+            <!-- Corpo do Chat -->
+            <div id="chat-body" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:16px; scroll-behavior:smooth;">
+                <template x-for="msg in chatHistorico">
+                    <div :style="msg.role === 'user' ? 'align-self:flex-end; max-width:85%;' : 'align-self:flex-start; max-width:85%;'">
+                        <div :style="msg.role === 'user' 
+                            ? 'background:#a78bfa; color:#fff; padding:12px 16px; border-radius:16px 16px 4px 16px; font-size:13px; line-height:1.5;' 
+                            : 'background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#e2e8f0; padding:12px 16px; border-radius:16px 16px 16px 4px; font-size:13px; line-height:1.5;'"
+                            x-text="msg.content">
+                        </div>
+                        <div :style="msg.role === 'user' ? 'text-align:right;' : 'text-align:left;'" style="font-size:10px; color:#4b5563; margin-top:4px;" x-text="msg.role === 'user' ? 'Você' : 'Assistente IA'"></div>
+                    </div>
+                </template>
+                <div x-show="melhorandoIA" style="align-self:flex-start; background:rgba(255,255,255,0.03); padding:10px 16px; border-radius:16px; display:flex; gap:4px; align-items:center;">
+                    <span class="dot-loading"></span>
+                    <span class="dot-loading" style="animation-delay:0.2s"></span>
+                    <span class="dot-loading" style="animation-delay:0.4s"></span>
+                </div>
+            </div>
+
+            <!-- Input do Chat -->
+            <div style="padding:20px; background:rgba(0,0,0,0.2); border-top:1px solid rgba(255,255,255,0.05);">
+                <div style="position:relative;">
+                    <textarea 
+                        x-model="chatMensagem" 
+                        @keydown.enter.prevent="enviarMensagemChatIA()" 
+                        placeholder="Diga o que deseja alterar..." 
+                        rows="1" 
+                        style="width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:12px 45px 12px 16px; color:#fff; font-size:13px; outline:none; resize:none; transition:all 0.2s; focus:border-color:#a78bfa;"
+                        :disabled="melhorandoIA"
+                    ></textarea>
+                    <button 
+                        @click="enviarMensagemChatIA()" 
+                        :disabled="!chatMensagem.trim() || melhorandoIA"
+                        style="position:absolute; right:8px; top:50%; transform:translateY(-50%); width:32px; height:32px; border-radius:8px; background:#a78bfa; border:none; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s;"
+                        :style="(!chatMensagem.trim() || melhorandoIA) ? 'opacity:0.5; cursor:not-allowed;' : ''"
+                    >
+                        <i data-lucide="send" style="width:16px;height:16px;"></i>
+                    </button>
+                </div>
+                <div style="text-align:center; margin-top:10px; font-size:10px; color:#4b5563;">
+                    Pressione Enter para enviar
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    .chat-ai-panel {
+        position: fixed;
+        right: -400px;
+        top: 0;
+        bottom: 0;
+        width: 380px;
+        background: #111111;
+        border-left: 1px solid rgba(255,255,255,0.05);
+        z-index: 10001;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+    }
+    .chat-ai-panel.active {
+        right: 0;
+    }
+    .dot-loading {
+        width: 6px;
+        height: 6px;
+        background: #6b7280;
+        border-radius: 50%;
+        display: inline-block;
+        animation: dot-pulse 1.4s infinite ease-in-out;
+    }
+    @keyframes dot-pulse {
+        0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+        40% { transform: scale(1); opacity: 1; }
+    }
+    /* Estilo para garantir que o modal não fique por cima do chat se necessário */
+    .modal-overlay {
+        z-index: 10000;
+    }
+</style>
 
 <script>
 function servicos() {
@@ -253,6 +353,9 @@ function servicos() {
         // Sugestão de Preço IA
         sugerindoPreco: false,
         melhorandoIA: false,
+        chatAberto: false,
+        chatMensagem: '',
+        chatHistorico: [],
         planejador: {
             equipe: '',
             jornada: '',
@@ -314,6 +417,9 @@ function servicos() {
             if (!this.form.preco_venda) {
                 this.form.preco_venda = this.calcularPrecoMinimo(this.form);
             }
+            this.chatAberto = false;
+            this.chatHistorico = [];
+            this.chatMensagem = '';
             this.modalAberto = true;
             this.$nextTick(() => lucide.createIcons());
         },
@@ -328,21 +434,57 @@ function servicos() {
                 toast('Dê um nome ou descrição básica primeiro', 'aviso');
                 return;
             }
+            this.chatAberto = true;
+            if (this.chatHistorico.length === 0) {
+                this.chatHistorico.push({ role: 'assistant', content: `Olá! Sou seu assistente de estruturação. Como posso ajudar a melhorar o serviço "${this.form.nome}"?` });
+            }
+            this.$nextTick(() => {
+                const body = document.getElementById('chat-body');
+                if (body) body.scrollTop = body.scrollHeight;
+                if (window.lucide) lucide.createIcons();
+            });
+        },
+
+        async enviarMensagemChatIA() {
+            if (!this.chatMensagem.trim() || this.melhorandoIA) return;
+
+            const userMsg = this.chatMensagem.trim();
+            this.chatHistorico.push({ role: 'user', content: userMsg });
+            this.chatMensagem = '';
             this.melhorandoIA = true;
+
+            this.$nextTick(() => {
+                const body = document.getElementById('chat-body');
+                if (body) body.scrollTop = body.scrollHeight;
+            });
+
             try {
                 const r = await fetch('<?= raizUrl('/api/precificacao/editar-servico-ia.php') ?>', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ servico: this.form })
+                    body: JSON.stringify({ 
+                        servico: this.form,
+                        mensagens: this.chatHistorico
+                    })
                 });
                 const res = await r.json();
                 if (r.ok) {
+                    this.chatHistorico.push({ role: 'assistant', content: res.mensagem });
                     this.form.nome = res.nome;
                     this.form.descricao = res.descricao;
                     this.form.entregaveis = res.entregaveis;
-                    toast('Serviço otimizado pela IA!', 'sucesso');
-                } else { toast(res.erro || 'Erro na IA', 'erro'); }
-            } catch(e) { toast('Erro de conexão', 'erro'); }
+                    
+                    this.$nextTick(() => {
+                        const body = document.getElementById('chat-body');
+                        if (body) body.scrollTop = body.scrollHeight;
+                    });
+                } else { 
+                    toast(res.erro || 'Erro na IA', 'erro'); 
+                    this.chatHistorico.push({ role: 'assistant', content: 'Desculpe, tive um problema ao processar sua solicitação.' });
+                }
+            } catch(e) { 
+                toast('Erro de conexão', 'erro'); 
+            }
             this.melhorandoIA = false;
         },
 
