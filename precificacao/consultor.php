@@ -122,13 +122,35 @@ require_once __DIR__ . '/../includes/layout/head.php';
         </div>
 
         <aside class="flex flex-col gap-4">
-            <div class="card p-4">
-                <h3 class="text-sm font-bold mb-3 flex items-center gap-2">
-                    <i data-lucide="brain" class="w-4 h-4 text-purple-500"></i>
-                    Fatos Memorizados
+            <div class="card p-4 flex flex-col" x-data="{ expanded: false }">
+                <h3 class="text-sm font-bold mb-3 flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <i data-lucide="brain" class="w-4 h-4 text-purple-500"></i>
+                        Fatos Memorizados
+                    </span>
+                    <button @click="expanded = !expanded" class="text-[10px] text-zinc-500 hover:text-white uppercase tracking-wider font-bold">
+                        <span x-text="expanded ? 'Recolher' : 'Ver Mais'"></span>
+                    </button>
                 </h3>
-                <div class="text-[11px] text-gray-400 whitespace-pre-wrap leading-relaxed bg-black/20 p-3 rounded-lg border border-white/5" x-text="memoria || 'A IA ainda não memorizou fatos específicos.'"></div>
-                <p class="text-[10px] text-gray-500 mt-2">Clique em 'Memorizar' para salvar informações desta conversa para o futuro.</p>
+                
+                <div class="relative overflow-hidden transition-all duration-500"
+                     :class="expanded ? 'max-h-[1000px]' : 'max-h-[150px]'">
+                    <div class="text-[11px] text-gray-400 whitespace-pre-wrap leading-relaxed bg-black/20 p-3 rounded-lg border border-white/5" 
+                         x-text="memoria || 'A IA ainda não memorizou fatos específicos.'"></div>
+                    
+                    <div x-show="!expanded && memoria.length > 200" 
+                         class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-[#121212] to-transparent pointer-events-none"></div>
+                </div>
+
+                <div class="flex items-center justify-between mt-3">
+                    <button @click="memorizar" 
+                            class="text-[10px] bg-purple-600/20 text-purple-400 px-3 py-1.5 rounded-lg border border-purple-500/20 hover:bg-purple-600/40 transition-all font-bold uppercase tracking-wider"
+                            :disabled="memorizando">
+                        <i data-lucide="save" class="w-3 h-3 inline mr-1"></i>
+                        <span x-text="memorizando ? 'Salvando...' : 'Memorizar'"></span>
+                    </button>
+                    <span class="text-[9px] text-gray-500 font-medium">Auto-otimizado por IA</span>
+                </div>
             </div>
         </aside>
         </div>

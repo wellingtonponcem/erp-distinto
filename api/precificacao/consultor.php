@@ -20,10 +20,21 @@ if (empty($mensagens)) {
 // Migração e Busca de Memória
 try {
     $db = Database::get();
+    
+    // Tabela de configuração
     $stmt = $db->query("SHOW COLUMNS FROM configuracao_empresa LIKE 'memoria_ia'");
     if (!$stmt->fetch()) {
         $db->exec("ALTER TABLE configuracao_empresa ADD COLUMN memoria_ia LONGTEXT NULL");
     }
+
+    // Tabela de histórico de memórias (Armazena tudo)
+    $db->exec("CREATE TABLE IF NOT EXISTS memorias (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        conteudo TEXT NOT NULL,
+        tipo ENUM('bruto', 'consolidado') DEFAULT 'bruto',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )");
+
 } catch (Exception $e) {}
 
 $config = $db->query("SELECT groq_api_key, memoria_ia FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
@@ -107,19 +118,75 @@ $dadosIa = json_decode($resposta, true);
 $textoIa = $dadosIa['choices'][0]['message']['content'] ?? 'Desculpe, tive um problema ao processar sua resposta.';
 
 // Processar Memória Automática
+$temNovaMemoria = false;
 if (preg_match('/<memory>(.*?)<\/memory>/s', $textoIa, $matches)) {
     $novosFatos = trim($matches[1]);
     $textoIa = str_replace($matches[0], '', $textoIa); // Limpar da resposta do usuário
     
-    // Concatenar com a memória existente de forma inteligente
-    $memoriaCombinada = $memoriaAgencia . "\n" . $novosFatos;
-    
-    $stmt = $db->prepare("UPDATE configuracao_empresa SET memoria_ia = ? WHERE id = 'principal'");
-    $stmt->execute([$memoriaCombinada]);
-    $memoriaAgencia = $memoriaCombinada;
+    // 1. Salvar no histórico (Armazenar tudo)
+    $stmt = $db->prepare("INSERT INTO memorias (conteudo, tipo) VALUES (?, 'bruto')");
+    $stmt->execute([$novosFatos]);
+    $temNovaMemoria = true;
 }
 
-responderJson([
+// Responder ao usuário imediatamente
+echo json_encode([
     'resposta' => trim($textoIa),
-    'memoria' => $memoriaAgencia
+    'memoria' => $memoriaAgencia,
+    'otimizando' => $temNovaMemoria
 ]);
+
+// Se houver nova memória, rodar otimização em "segundo plano"
+if ($temNovaMemoria) {
+    if (function_exists('fastcgi_finish_request')) {
+        fastcgi_finish_request();
+    }
+
+    // Otimização via IA
+    $promptOtimizacao = <<<PROMPT
+Você é um organizador de base de conhecimento.
+MEMÓRIA ATUAL:
+{$memoriaAgencia}
+
+NOVOS FATOS:
+{$novosFatos}
+
+TAREFA:
+1. Consolide os NOVOS FATOS na MEMÓRIA ATUAL.
+2. Remova duplicatas e informações redundantes.
+3. Organize por categorias (Equipamentos, Custos, Equipe, Processos).
+4. Mantenha o texto limpo e direto ao ponto.
+Responda APENAS com a memória final consolidada.
+PROMPT;
+
+    $payloadOtimizar = json_encode([
+        'model' => GROQ_MODEL,
+        'messages' => [['role' => 'user', 'content' => $promptOtimizacao]],
+        'temperature' => 0.1
+    ]);
+
+    $ch2 = curl_init('https://api.groq.com/openai/v1/chat/completions');
+    curl_setopt_array($ch2, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => $payloadOtimizar,
+        CURLOPT_HTTPHEADER => [
+            'Authorization: Bearer ' . $apiKey,
+            'Content-Type: application/json'
+        ]
+    ]);
+
+    $resOtimizada = curl_exec($ch2);
+    $dadosOtimizados = json_decode($resOtimizada, true);
+    $novaMemoriaConsolidada = $dadosOtimizados['choices'][0]['message']['content'] ?? null;
+
+    if ($novaMemoriaConsolidada) {
+        $stmt = $db->prepare("UPDATE configuracao_empresa SET memoria_ia = ? WHERE id = 'principal'");
+        $stmt->execute([$novaMemoriaConsolidada]);
+        
+        // Salvar versão consolidada no histórico também
+        $stmt = $db->prepare("INSERT INTO memorias (conteudo, tipo) VALUES (?, 'consolidado')");
+        $stmt->execute([$novaMemoriaConsolidada]);
+    }
+}
+exit;
