@@ -502,11 +502,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnWhatsApp = document.getElementById('btnWhatsApp');
     btnWhatsApp.addEventListener('click', function() {
         const whats = document.querySelector('input[name="whatsapp"]').value.replace(/\D/g, '');
+        const responsavel = document.querySelector('input[name="responsavel"]')?.value || '';
+        
         if (!whats) {
             alert('Por favor, preencha o número de WhatsApp do cliente.');
             return;
         }
-        const texto = encodeURIComponent(`Olá! Preparei a sua proposta personalizada. Você pode acessar os detalhes por este link:\n\n${linkGerado}`);
+
+        const primeiroNome = responsavel ? responsavel.split(' ')[0] : '';
+        const saudacao = primeiroNome ? `Olá, ${primeiroNome}!` : 'Olá!';
+        
+        const texto = encodeURIComponent(`${saudacao} Preparei a sua proposta personalizada. Você pode acessar os detalhes por este link:\n\n${linkGerado}`);
         window.open(`https://wa.me/55${whats}?text=${texto}`, '_blank');
     });
 

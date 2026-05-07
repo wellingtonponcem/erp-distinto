@@ -662,7 +662,9 @@ function propostasApp() {
 
             } catch (e) {
                 // Fallback direto se a IA falhar
-                const primeiroNome = proposta.cliente_nome.split(' ')[0];
+                const dadosF = JSON.parse(proposta.dados_json || '{}');
+                const nomeF = dadosF.responsavel || proposta.cliente_nome;
+                const primeiroNome = nomeF.split(' ')[0];
                 const link = `<?= APP_URL ?>/p/${proposta.slug}`;
                 const fallback = `Oi, ${primeiroNome}! Tudo bem?\n\nAcabei de subir o material do ${proposta.titulo} aqui no sistema. Deixei tudo bem visual pra você conseguir enxergar o projeto ganhando forma, exatamente como a gente conversou.\n\nDá uma olhada aqui:\n👉 ${link}`;
                 window.open(`https://wa.me/${numero}?text=${encodeURIComponent(fallback)}`, '_blank');

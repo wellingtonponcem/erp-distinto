@@ -52,8 +52,10 @@ $briefing  = $dados['briefing'] ?? '';
 $objetivo  = $dados['objetivo_original'] ?? '';
 $meses     = $dados['meses_contrato'] ?? 12;
 
-// Primeiro nome do cliente
-$primeiroNome = explode(' ', trim($cliente))[0];
+// Primeiro nome (Prioriza responsável, se existir, senão usa o nome do cliente/empresa)
+$responsavel = $dados['responsavel'] ?? '';
+$nomeParaSaudacao = !empty($responsavel) ? $responsavel : $cliente;
+$primeiroNome = explode(' ', trim($nomeParaSaudacao))[0];
 
 // --- Chamar Groq ---
 $apiKey = GROQ_API_KEY;
