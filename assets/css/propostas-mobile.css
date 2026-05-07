@@ -223,18 +223,38 @@
        SLIDE ETAPAS (pílulas)
     ============================================= */
 
-    /* Pílulas de etapas em coluna */
+    /* Ocultar a coluna de título fantasma (visibility: hidden no desktop) */
+    .is-etapas .page-content:first-child {
+        display: none !important;
+    }
+
+    /* Empilhar pílulas + texto verticalmente e corrigir margin negativa */
+    .is-etapas .page-content {
+        flex-direction: column !important;
+        margin-left: 0 !important;
+        align-items: flex-start !important;
+    }
+
+    /* Pílulas — largura total */
     [style*="width: 14rem"] {
         width: 100% !important;
     }
 
-    /* Bracket de conexão — ocultar no mobile */
-    [style*="border-left: 0"] { display: none !important; }
+    /* Linha conectora da pílula ativa — ocultar no mobile */
+    [style*="right: -29px"] {
+        display: none !important;
+    }
 
-    /* Texto de cronograma — ajustar margin */
+    /* Texto do bloco — remover margin-left lateral */
     [style*="margin-left: 2rem"] {
         margin-left: 0 !important;
         margin-top: 20px !important;
+    }
+
+    /* Cápsula de tempo — largura total no mobile */
+    .is-etapas [style*="width: fit-content"] {
+        width: 100% !important;
+        text-align: center !important;
     }
 
     /* =============================================
