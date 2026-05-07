@@ -7,11 +7,11 @@
     <!-- Slide 1: Hero (Capa seguindo o modelo exato) -->
     <section class="proposal-page">
         <div class="page-content" style="grid-column: 1; justify-content: center; padding: 0;">
-            <h1 style="font-family: var(--font-heading);font-weight: 800;font-size: 3rem;line-height: 1;margin: 0;text-transform: uppercase;letter-spacing: -2px;color: #000; width: 80%;">
+            <h1 style="font-family: var(--font-heading);font-weight: 800;font-size: 2rem;line-height: 1;margin: 0;text-transform: uppercase;letter-spacing: -2px;color: #000; width: 80%;">
                 <?= !empty($proposta['titulo_refinado']) ? $proposta['titulo_refinado'] : (!empty($proposta['titulo']) ? $proposta['titulo'] : 'PROPOSTA ESTRATÉGICA') ?>
             </h1>
             <?php if (!empty($proposta['subtitulo'])): ?>
-            <p style="font-size: 14px; text-transform: uppercase; letter-spacing: 3px; color: rgba(0,0,0,0.4); font-weight: 700; margin-top: 40px; line-height: 1.4;">
+            <p style="font-size: 0.8em; text-transform: uppercase; letter-spacing: 3px; color: rgba(0,0,0,0.4); font-weight: 700; margin-top: 40px; line-height: 1.4;">
                 <?= $proposta['subtitulo'] ?>
             </p>
             <?php endif; ?>
@@ -38,7 +38,7 @@
 
         <!-- Coluna 2: Texto de Boas-vindas -->
         <div class="page-content" style="grid-column: 2; justify-content: center; padding-left: 40px;">
-            <div class="mission-text" style="color: #fff; font-size: 1rem; line-height: 1.6; opacity: 0.9;">
+            <div class="mission-text" style="color: #fff; font-size: 0.8em; line-height: 1.6; opacity: 0.9;">
                 <h3 style="font-family: var(--font-heading); font-size: 32px; font-weight: 800; margin-bottom: 25px; text-transform: uppercase; color: #fff;">
                     OLÁ <?= explode(' ', trim($proposta['cliente_nome'] ?? 'CLIENTE'))[0] ?>!
                 </h3>
@@ -68,7 +68,7 @@
 
         <!-- Coluna 2: Texto Estratégico (IA) -->
         <div class="page-content" style="grid-column: 2; justify-content: center; padding-left: 40px;">
-            <div class="objective-text" style="color: #333; font-size: 1.3rem; line-height: 1.6; opacity: 0.9;">
+            <div class="objective-text" style="color: #333; font-size: 0.8em; line-height: 1.6; opacity: 0.9;">
                 <?php if (!empty($dados['secoes']['objetivo'])): ?>
                     <?= nl2br($dados['secoes']['objetivo']) ?>
                 <?php else: ?>
@@ -91,15 +91,15 @@
         <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0;">
-                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; position: relative;">
+                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; position: relative;">
                     IMERSÃO
                     <div style="position: absolute; right: -40px; top: 50%; width: 40px; height: 1px; background: rgba(0,0,0,0.2);"></div>
                 </div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
             </div>
 
             <!-- Texto Explicativo -->
@@ -132,15 +132,15 @@
         <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0;">
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; position: relative;">
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; position: relative;">
                     DIAGNÓSTICO
                     <div style="position: absolute; right: -40px; top: 50%; width: 40px; height: 1px; background: rgba(0,0,0,0.2);"></div>
                 </div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
             </div>
 
             <!-- Texto Explicativo -->
@@ -178,15 +178,15 @@
         <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0;">
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; position: relative;">
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; position: relative;">
                     PLANEJAMENTO
                     <div style="position: absolute; right: -40px; top: 50%; width: 40px; height: 1px; background: rgba(0,0,0,0.2);"></div>
                 </div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
             </div>
 
             <!-- Texto Explicativo (Aprimorado) -->
@@ -236,15 +236,15 @@
         <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0;">
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; position: relative;">
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; position: relative;">
                     LINGUAGEM VISUAL
                     <div style="position: absolute; right: -40px; top: 50%; width: 40px; height: 1px; background: rgba(0,0,0,0.2);"></div>
                 </div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
             </div>
 
             <!-- Texto Explicativo (Aprimorado) -->
@@ -252,15 +252,15 @@
                 <p style="font-size: 16px; line-height: 1.5; color: #333; margin-bottom: 20px;">
                     A materialização da estratégia ocorre através da <strong>Linguagem Visual</strong>. Definimos um padrão estético de alta autoridade que reflete o posicionamento do seu negócio em cada ponto de contato.
                 </p>
-                <p style="font-size: 14px; color: #000; margin-bottom: 10px; font-weight: 600;">O resultado é consolidado no Manual de Identidade Visual, contemplando:</p>
-                <ul style="list-style: none; padding: 0; margin: 0 0 25px 0; font-size: 14px; color: #444; line-height: 1.8;">
+                <p style="font-size: 0.8em; color: #000; margin-bottom: 10px; font-weight: 600;">O resultado é consolidado no Manual de Identidade Visual, contemplando:</p>
+                <ul style="list-style: none; padding: 0; margin: 0 0 25px 0; font-size: 0.8em; color: #444; line-height: 1.8;">
                     <li>• Tipografia Estratégica</li>
                     <li>• Paleta de Cores com Psicologia Aplicada</li>
                     <li>• Estilo de Elementos Gráficos</li>
                     <li>• Referências de Aplicação</li>
                     <li>• Modelos de Posts e Guidelines para Redes Sociais</li>
                 </ul>
-                <p style="font-size: 14px; line-height: 1.5; color: #666; margin-bottom: 30px;">
+                <p style="font-size: 0.8em; line-height: 1.5; color: #666; margin-bottom: 30px;">
                     Garantimos uma presença digital forte, coerente e pronta para escalar sua comunicação com profissionalismo.
                 </p>
                 
@@ -285,15 +285,15 @@
         <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0;">
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
-                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; position: relative;">
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; position: relative;">
                     ENTREGA
                     <div style="position: absolute; right: -40px; top: 50%; width: 40px; height: 1px; background: rgba(0,0,0,0.2);"></div>
                 </div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
             </div>
 
             <!-- Texto Explicativo (Aprimorado) -->
@@ -326,12 +326,12 @@
         <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
             <!-- Lista de Pílulas -->
             <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0;">
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
-                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
-                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; position: relative;">
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; position: relative;">
                     GESTÃO
                     <div style="position: absolute; right: -40px; top: 50%; width: 40px; height: 1px; background: rgba(0,0,0,0.2);"></div>
                 </div>
@@ -342,10 +342,10 @@
                 <p style="font-size: 15px; line-height: 1.5; color: #333; margin-bottom: 20px;">
                     A transição da estratégia para a alta performance. Após a entrega das diretrizes, iniciamos o processo de <strong>gestão contínua</strong>, onde a teoria se torna execução prática e resultados reais.
                 </p>
-                <p style="font-size: 14px; line-height: 1.6; color: #333; margin-bottom: 20px;">
+                <p style="font-size: 0.8em; line-height: 1.6; color: #333; margin-bottom: 20px;">
                     Focamos na ativação dos canais, distribuição de conteúdo e <strong>gestão de tráfego pago</strong>. Nosso objetivo é claro: atrair leads qualificados e converter a autoridade construída em oportunidades de negócio.
                 </p>
-                <p style="font-size: 14px; line-height: 1.6; color: #333; margin-bottom: 30px;">
+                <p style="font-size: 0.8em; line-height: 1.6; color: #333; margin-bottom: 30px;">
                     Você receberá <strong>relatórios estratégicos mensais</strong> com análise de impacto, desempenho de campanhas e propostas de otimização constantes, garantindo que sua marca nunca estagne.
                 </p>
                 
@@ -370,12 +370,12 @@
         <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
             <!-- Lista de Pílulas Ativas -->
             <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0; position: relative;">
-                <div style="padding: 12px 30px; border-radius: 50px; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
-                <div style="padding: 12px 30px; border-radius: 50px; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
-                <div style="padding: 12px 30px; border-radius: 50px; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
-                <div style="padding: 12px 30px; border-radius: 50px; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">IMERSÃO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
+                <div style="padding: 12px 30px; border-radius: 50px; background: #fff; color: #000; text-align: center; font-weight: 700; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
 
                 <!-- Chave de Conexão (Bracket) -->
                 <div style="position: absolute; right: -40px; top: 20px; bottom: 20px; width: 20px; border: 1.5px solid rgba(255,255,255,0.3); border-left: 0;"></div>
@@ -418,7 +418,7 @@
             ?>
             <div style="padding: 12px 25px; border-radius: 50px; border: 1px solid <?= $vencida ? '#ff4d4d' : 'rgba(0,0,0,0.3)' ?>; font-size: 10px; font-weight: 700; text-transform: uppercase; text-align: center; color: <?= $vencida ? '#ff4d4d' : '#000' ?>; letter-spacing: 1px; width: fit-content; display: flex; align-items: center; gap: 8px;">
                 <?php if ($vencida): ?>
-                    <i data-lucide="alert-circle" style="width: 14px; height: 14px;"></i>
+                    <i data-lucide="alert-circle" style="width: 0.8em; height: 0.8em;"></i>
                     PROPOSTA VENCIDA EM <?= $validadeFormatada ?>
                 <?php else: ?>
                     ESTA PROPOSTA É VÁLIDA ATÉ <?= $validadeFormatada ?>
@@ -510,7 +510,7 @@
             ?>
             <div style="padding: 12px 25px; border-radius: 50px; border: 1px solid <?= $vencida ? '#ff4d4d' : 'rgba(0,0,0,0.3)' ?>; font-size: 10px; font-weight: 700; text-transform: uppercase; text-align: center; color: <?= $vencida ? '#ff4d4d' : '#000' ?>; letter-spacing: 1px; width: fit-content; display: flex; align-items: center; gap: 8px;">
                 <?php if ($vencida): ?>
-                    <i data-lucide="alert-circle" style="width: 14px; height: 14px;"></i>
+                    <i data-lucide="alert-circle" style="width: 0.8em; height: 0.8em;"></i>
                     PROPOSTA VENCIDA EM <?= $validadeFormatada ?>
                 <?php else: ?>
                     ESTA PROPOSTA É VÁLIDA ATÉ <?= $validadeFormatada ?>
@@ -525,10 +525,10 @@
                 FORMA DE PAGAMENTO
             </div>
             
-            <p style="font-size: 14px; line-height: 1.6; color: #333; margin-bottom: 30px;">
+            <p style="font-size: 0.8em; line-height: 1.6; color: #333; margin-bottom: 30px;">
                 O pagamento referente ao valor mensal do projeto deverá ser realizado no momento da assinatura do contrato, que será enviado para assinatura digital via e-mail.
             </p>
-            <p style="font-size: 14px; line-height: 1.6; color: #333; margin-bottom: 30px;">
+            <p style="font-size: 0.8em; line-height: 1.6; color: #333; margin-bottom: 30px;">
                 A partir da confirmação do pagamento, iniciaremos o processo de estruturação e execução do plano mensal, incluindo gestão de redes sociais, tráfego pago e demais serviços contratados.
             </p>
 

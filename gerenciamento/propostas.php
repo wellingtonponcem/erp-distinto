@@ -335,7 +335,6 @@ include __DIR__ . '/../includes/layout/head.php';
             </template>
         </div>
 
-        </template>
 
         <!-- Modal Nova Proposta (Desktop Only) -->
         <template x-if="showModalNova">
@@ -415,6 +414,44 @@ include __DIR__ . '/../includes/layout/head.php';
                         <button @click="confirmarPasta()" 
                                 class="px-6 py-2 bg-white text-black font-bold rounded-lg hover:bg-zinc-200 transition-colors">
                             Salvar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Modal de Confirmação de Exclusão -->
+        <template x-teleport="body">
+            <div x-show="deleteModal.show" 
+                 class="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 style="display: none;"
+                 x-init="$watch('deleteModal.show', v => { if(v) $nextTick(() => lucide.createIcons()) })">
+                
+                <div @click.away="deleteModal.show = false" 
+                     class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                     x-transition:enter-end="opacity-100 scale-100 translate-y-0">
+                    
+                    <div class="p-6 text-center">
+                        <div class="w-16 h-16 bg-red-900/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="alert-triangle" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Confirmar Exclusão</h3>
+                        <p class="text-zinc-400 text-sm" x-text="deleteModal.message"></p>
+                    </div>
+
+                    <div class="px-6 py-4 bg-zinc-800/50 border-t border-zinc-800 flex justify-center gap-3">
+                        <button @click="deleteModal.show = false" 
+                                class="px-4 py-2 text-zinc-400 hover:text-white font-medium transition-colors">
+                            Cancelar
+                        </button>
+                        <button @click="confirmarExclusao()" 
+                                class="px-6 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors">
+                            Excluir
                         </button>
                     </div>
                 </div>
