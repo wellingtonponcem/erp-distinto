@@ -174,8 +174,8 @@ html {
     padding: 6vh 6vw;
     font-family: var(--font-heading);
     text-transform: uppercase;
-    font-size: 1rem;
-    /* Aumentado conforme solicitado */
+    font-size: clamp(12px, 0.9rem, 22px);
+    /* Aumentado proporcionalmente, mas com trava para 4K */
     letter-spacing: 2px;
     color: #000;
     transition: color 0.4s ease;

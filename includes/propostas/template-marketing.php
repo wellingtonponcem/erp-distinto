@@ -37,17 +37,17 @@
         </div>
 
         <!-- Coluna 2: Texto de Boas-vindas -->
-        <div class="page-content" style="grid-column: 2; justify-content: center; padding-left: 2.5rem;">
-            <div class="mission-text" style="color: #fff; font-size: 0.8em; line-height: 1.6; opacity: 0.9;">
-                <h3 style="font-family: var(--font-heading); font-size: 2rem; font-weight: 800; margin-bottom: 1.5rem; text-transform: uppercase; color: #fff;">
+        <div class="page-content" style="grid-column: 2; justify-content: center; padding-left: 2.5rem; height: 100vh; padding-top: 0; padding-bottom: 0;">
+            <div class="mission-text" style="color: #fff; font-size: clamp(14px, 0.8rem, 28px); line-height: 1.5; opacity: 0.9;">
+                <h3 style="font-family: var(--font-heading); font-size: clamp(24px, 1.75rem, 56px); font-weight: 800; margin-bottom: 1rem; text-transform: uppercase; color: #fff;">
                     OLÁ <?= explode(' ', trim($proposta['cliente_nome'] ?? 'CLIENTE'))[0] ?>!
                 </h3>
                 <p style="font-weight: 700; margin-bottom: 1.25rem;">Seja bem-vindo à Poncem Studio | Distinto.</p>
                 <p style="margin-bottom: 0.9375rem;">Aqui, não somos apenas uma agência. Somos estrategistas que transformam negócios em marcas fortes, relevantes e altamente lucrativas.</p>
                 <p style="margin-bottom: 0.9375rem;">Nossa missão é clara: traduzir a essência de empresas em posicionamento, comunicação inteligente e execução de alto padrão. Atuamos no Brasil e na Europa, impactando mercados como saúde, indústria, serviços de alto valor e automotivo.</p>
-                <p style="margin-bottom: 0.9375rem;">Nosso trabalho vai muito além de criar posts ou alimentar redes sociais. Desenvolvemos posicionamento, estratégia e narrativa. Entregamos clareza, autoridade e diferenciação para marcas que entenderam que se posicionar corretamente não é uma opção, é uma necessidade para quem busca crescimento, relevância e escala.</p>
-                <p style="margin-bottom: 0.9375rem;">Se você chegou até aqui, é porque sabe que sua empresa carrega um potencial que precisa ser visto, percebido e reconhecido. E é exatamente isso que fazemos: potencializamos negócios e transformamos marcas em referências no seu mercado.</p>
-                <p style="font-weight: 700; margin-top: 25px;">Vamos juntos?</p>
+                <p style="margin-bottom: 0.75rem;">Nosso trabalho vai muito além de criar posts ou alimentar redes sociais. Desenvolvemos posicionamento, estratégia e narrativa. Entregamos clareza, autoridade e diferenciação para marcas que entenderam que se posicionar corretamente não é uma opção, é uma necessidade para quem busca crescimento, relevância e escala.</p>
+                <p style="margin-bottom: 0.75rem;">Se você chegou até aqui, é porque sabe que sua empresa carrega um potencial que precisa ser visto, percebido e reconhecido. E é exatamente isso que fazemos: potencializamos negócios e transformamos marcas em referências no seu mercado.</p>
+                <p style="font-weight: 700; margin-top: 1.5rem;">Vamos juntos?</p>
             </div>
         </div>
 
@@ -83,7 +83,7 @@
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; justify-content: center;">
             <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 3.25rem; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%; visibility: hidden;">
-                ETAPAS DO PROJETO
+                ETAPAS DO<br>PROJETO
             </h2>
         </div>
 
