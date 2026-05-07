@@ -552,7 +552,7 @@
     <section class="proposal-page dark-page">
         <!-- Coluna 1: Título -->
         <div class="page-content" style="grid-column: 1; flex-direction: column; justify-content: center;">
-            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 5.125rem; line-height: 0.9; margin: 0; text-transform: uppercase; letter-spacing: -2px; color: #fff;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 4rem; line-height: 0.9; margin: 0; text-transform: uppercase; letter-spacing: -2px; color: #fff;">
                 VAMOS JUNTOS CONSTRUIR ESTE PROJETO?
             </h2>
         </div>
