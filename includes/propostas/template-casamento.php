@@ -151,8 +151,8 @@ if (!function_exists('fmt')) {
             <div style="text-align: left; max-width: 500px; color: #1a1a1a;">
                 <h2 style="font-family: var(--wedding-montserrat); font-size: 2.2rem; font-weight: 800; letter-spacing: 0.05em; line-height: 1.2; margin-bottom: 20px;">
                     <?php 
-                        $noivoUpper = mb_strtoupper($nomeNoivo);
-                        $noivaUpper = mb_strtoupper($nomeNoiva);
+                        $noivoUpper = mb_strtoupper($primeiroNomeNoivo);
+                        $noivaUpper = mb_strtoupper($primeiroNomeNoiva);
                         echo "{$noivoUpper} &<br>{$noivaUpper}";
                     ?>
                 </h2>
