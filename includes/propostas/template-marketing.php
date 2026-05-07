@@ -38,7 +38,7 @@
 
         <!-- Coluna 2: Texto de Boas-vindas -->
         <div class="page-content" style="grid-column: 2; justify-content: center; padding-left: 40px;">
-            <div class="mission-text" style="color: #fff; font-size: 15px; line-height: 1.6; opacity: 0.9;">
+            <div class="mission-text" style="color: #fff; font-size: 1.3rem; line-height: 1.6; opacity: 0.9;">
                 <h3 style="font-family: var(--font-heading); font-size: 32px; font-weight: 800; margin-bottom: 25px; text-transform: uppercase; color: #fff;">
                     OLÁ <?= explode(' ', trim($proposta['cliente_nome'] ?? 'CLIENTE'))[0] ?>!
                 </h3>
@@ -68,7 +68,7 @@
 
         <!-- Coluna 2: Texto Estratégico (IA) -->
         <div class="page-content" style="grid-column: 2; justify-content: center; padding-left: 40px;">
-            <div class="objective-text" style="color: #333; font-size: 15px; line-height: 1.6; opacity: 0.9;">
+            <div class="objective-text" style="color: #333; font-size: 1.3rem; line-height: 1.6; opacity: 0.9;">
                 <?php if (!empty($dados['secoes']['objetivo'])): ?>
                     <?= nl2br($dados['secoes']['objetivo']) ?>
                 <?php else: ?>
@@ -78,11 +78,52 @@
         </div>
     </section>
 
-    <!-- Slide 4: Investimento -->
+    <!-- Slide 4: Etapas do Projeto -->
+    <section class="proposal-page">
+        <!-- Coluna 1: Título -->
+        <div class="page-content" style="grid-column: 1; justify-content: center;">
+            <h2 style="font-family: var(--font-heading); font-weight: 800; font-size: 52px; line-height: 1.1; margin: 0; text-transform: uppercase; letter-spacing: -1px; color: #000; width: 80%;">
+                ETAPAS DO PROJETO
+            </h2>
+        </div>
+
+        <!-- Coluna 2: Lista de Etapas -->
+        <div class="page-content" style="grid-column: 2; flex-direction: row; align-items: center; padding-left: 0;">
+            <!-- Lista de Pílulas -->
+            <div style="display: flex; flex-direction: column; gap: 12px; width: 220px; flex-shrink: 0;">
+                <div style="padding: 12px 30px; border-radius: 50px; background: #000; color: #fff; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; position: relative;">
+                    IMERSÃO
+                    <div style="position: absolute; right: -40px; top: 50%; width: 40px; height: 1px; background: rgba(0,0,0,0.2);"></div>
+                </div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">DIAGNÓSTICO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">PLANEJAMENTO</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">LINGUAGEM VISUAL</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">ENTREGA</div>
+                <div style="padding: 12px 30px; border-radius: 50px; border: 1.5px solid #000; color: #000; text-align: center; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">GESTÃO</div>
+            </div>
+
+            <!-- Texto Explicativo -->
+            <div style="margin-left: 60px; max-width: 380px;">
+                <p style="font-size: 16px; line-height: 1.5; color: #333; margin-bottom: 25px;">
+                    A primeira etapa do projeto é uma imersão sobre o seu negócio. Serão dois momentos - presenciais ou online - que aplicamos juntos a nossa metodologia, para definir pontos importantes sobre seu negócio.
+                </p>
+                <p style="font-size: 16px; line-height: 1.5; color: #333; margin-bottom: 35px;">
+                    Esses momentos serão importantes para reunir informações necessárias para este projeto, para servir como um guia de como expressar a marca na criação da autoridade no mercado off-line e on-line.
+                </p>
+                
+                <!-- Cápsula de Tempo -->
+                <div style="padding: 15px 25px; border-radius: 50px; border: 1px solid rgba(0,0,0,0.3); font-size: 11px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.3; color: #000; letter-spacing: 0.5px;">
+                    PRIMEIRA E SEGUNDA SEMANA<br>E PONTUALMENTE DURANTE O PROCESSO
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 5: Investimento -->
     <section class="proposal-page">
         <div class="page-content" style="align-items: center; text-align: center;">
             <div style="font-family: var(--font-heading); font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #000; margin-bottom: 40px;">
-                04. Investimento & Parceria
+                05. Investimento & Parceria
             </div>
             <div style="background: #000; color: #fff; padding: 60px 100px; border-radius: 0; position: relative;">
                 <p style="text-transform: uppercase; font-size: 14px; letter-spacing: 2px; opacity: 0.6; margin-bottom: 10px;">Valor Mensal do Projeto</p>
