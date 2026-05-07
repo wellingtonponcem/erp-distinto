@@ -624,109 +624,98 @@ body.on-dark .fixed-section-title h2 {
     color: #fff;
 }
 
-/* --- REGRAS DE EXPORTAÇÃO (PDF) --- */
+/* --- REGRAS DE IMPRESSÃO (PDF) --- */
 
-/* Esconder elementos de UI durante exportação */
-body.exporting-pdf .no-print,
-body.exporting-pdf .proposal-frame,
-body.exporting-pdf .btn-export-top,
-body.exporting-pdf .btn-floating,
-body.exporting-pdf #btn-approve,
-body.exporting-pdf .fixed-section-title,
-body.exporting-pdf #export-modal {
-    display: none !important;
-}
+@media print {
+    /* Ocultar elementos de UI */
+    .no-print, 
+    .proposal-frame, 
+    .btn-export-top, 
+    .btn-floating, 
+    #btn-approve, 
+    .fixed-section-title, 
+    #export-modal,
+    .nav-dots {
+        display: none !important;
+    }
 
-body.exporting-pdf {
-    background: #fff !important;
-    overflow: visible !important;
-}
+    html, body {
+        background: #fff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: auto !important; /* Permite o fluxo de páginas */
+        overflow: visible !important;
+    }
 
-body.exporting-pdf .proposal-wrapper {
-    height: auto !important;
-    overflow: visible !important;
-    display: block !important;
-    scroll-snap-type: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    background: #fff !important;
-}
+    .proposal-wrapper {
+        display: block !important;
+        height: auto !important;
+        overflow: visible !important;
+        scroll-snap-type: none !important;
+    }
 
-/* Forçar dimensões A4 exatas durante a captura para cada slide */
-body.export-horizontal .proposal-page {
-    width: 297mm !important;
-    height: 210mm !important;
-    min-height: 210mm !important;
-    margin: 0 !important;
-    padding: 0 20mm !important; /* Padding fixo em mm */
-    page-break-after: always !important;
-    break-after: page !important;
-    display: grid !important;
-    grid-template-columns: 45% 35% 20% !important; /* Ajuste fino das proporções */
-    align-items: center !important; /* Centraliza conteúdo verticalmente */
-    position: relative !important;
-    overflow: hidden !important;
-    border: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    box-sizing: border-box !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-}
+    /* Cada página deve ocupar exatamente uma folha */
+    .proposal-page {
+        width: 100vw !important;
+        height: 100vh !important;
+        min-height: 100vh !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        margin: 0 !important;
+        padding: 0 8vw !important; /* Respiro lateral fixo no print */
+        display: grid !important;
+        grid-template-columns: 45% 35% 20% !important;
+        align-items: center !important;
+        position: relative !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        background-color: #fff !important;
+        color: #000 !important;
+    }
 
-body.export-vertical .proposal-page {
-    width: 210mm !important;
-    height: 297mm !important;
-    min-height: 297mm !important;
-    margin: 0 !important;
-    padding: 20mm !important;
-    page-break-after: always !important;
-    break-after: page !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    position: relative !important;
-    overflow: hidden !important;
-    border: none !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    box-sizing: border-box !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-}
+    /* Cores forçadas para páginas escuras */
+    .proposal-page.dark-page {
+        background-color: #000 !important;
+        color: #fff !important;
+    }
 
-/* Ajustes de conteúdo específicos para exportação */
-body.exporting-pdf .page-content {
-    opacity: 1 !important;
-    transform: none !important;
-    visibility: visible !important;
-    display: block !important; /* Reset flex/grid interno */
-    width: 100% !important;
-    padding: 0 !important;
-}
+    /* Layout para modo vertical/retrato */
+    body.export-vertical .proposal-page {
+        grid-template-columns: 1fr !important;
+        padding: 6vh 10vw !important;
+    }
 
-/* Garante que o texto caiba e escale bem */
-body.exporting-pdf h1 { font-size: 32pt !important; line-height: 1.1 !important; }
-body.exporting-pdf h2 { font-size: 24pt !important; }
-body.exporting-pdf p { font-size: 12pt !important; line-height: 1.5 !important; }
+    /* Ajuste de conteúdo para caber na página */
+    .page-content {
+        opacity: 1 !important;
+        transform: none !important;
+        visibility: visible !important;
+        padding: 0 !important;
+    }
 
-/* Preservar cores e estados visuais */
-body.exporting-pdf .proposal-page.dark-page {
-    background-color: #000 !important;
-    color: #fff !important;
-}
+    /* Tipografia ajustada para o papel */
+    h1 { font-size: 3.5vw !important; line-height: 1.1 !important; margin-bottom: 2vh !important; }
+    h2 { font-size: 2.2vw !important; margin-bottom: 1.5vh !important; }
+    p { font-size: 1.4vw !important; line-height: 1.5 !important; }
 
-/* Gradientes no PDF */
-body.exporting-pdf .side-gradient-container {
-    display: block !important;
-    position: absolute !important;
-    top: 0; right: 0; bottom: 0; left: 0;
-    pointer-events: none;
-    z-index: 0;
-}
+    /* Caso seja vertical, as fontes precisam ser maiores em relação à largura */
+    body.export-vertical h1 { font-size: 8vw !important; }
+    body.export-vertical h2 { font-size: 6vw !important; }
+    body.export-vertical p { font-size: 4vw !important; }
 
-body.exporting-pdf .abstract-gradient {
-    opacity: 0.6 !important; /* Aumenta contraste para o PDF */
+    /* Gradientes */
+    .side-gradient-container {
+        display: block !important;
+        position: absolute !important;
+        top: 0; right: 0; bottom: 0; left: 0;
+        z-index: 0;
+    }
+    
+    .abstract-gradient {
+        opacity: 0.5 !important;
+    }
 }
 
 /* --- REGRAS DE IMPRESSÃO PADRÃO (FALLBACK) --- */

@@ -91,52 +91,36 @@ window.hideExportModal = function() {
 window.exportPDF = function(orientation) {
     window.hideExportModal();
     
-    // Elemento que contém os slides
-    const element = document.querySelector('.proposal-wrapper');
-    const filename = `Proposta - ${document.title}.pdf`;
+    // 1. Cria ou atualiza o estilo dinâmico para a orientação
+    let style = document.getElementById('print-orientation-style');
+    if (!style) {
+        style = document.createElement('style');
+        style.id = 'print-orientation-style';
+        document.head.appendChild(style);
+    }
     
-    // 1. Preparação: Adiciona classes para o CSS preparar o layout
+    // Força a orientação no @page
+    style.innerHTML = `
+        @media print {
+            @page { 
+                size: ${orientation === 'horizontal' ? 'A4 landscape' : 'A4 portrait'}; 
+                margin: 0 !important; 
+            }
+        }
+    `;
+    
+    // 2. Adiciona as classes de estado para o CSS agir
     document.body.classList.add('exporting-pdf', orientation === 'horizontal' ? 'export-horizontal' : 'export-vertical');
     
-    // Garante que todas as seções estejam visíveis para a captura (sem animações pendentes)
-    const allPages = document.querySelectorAll('.proposal-page');
-    allPages.forEach(p => p.classList.add('is-visible'));
+    // Garante que todas as páginas estejam visíveis (remove delay de animação)
+    document.querySelectorAll('.proposal-page').forEach(p => p.classList.add('is-visible'));
 
-    // 2. Configurações do html2pdf
-    const opt = {
-        margin:       0,
-        filename:     filename,
-        image:        { type: 'jpeg', quality: 1.0 },
-        html2canvas:  { 
-            scale: 2, 
-            useCORS: true, 
-            letterRendering: true,
-            scrollY: 0,
-            scrollX: 0,
-            windowWidth: orientation === 'horizontal' ? 1122 : 794 // Forza o cálculo como se estivesse em A4
-        },
-        jsPDF:        { 
-            unit: 'mm', 
-            format: 'a4', 
-            orientation: orientation === 'horizontal' ? 'landscape' : 'portrait',
-            compress: true
-        },
-        pagebreak: { 
-            mode: ['avoid-all', 'css', 'legacy'],
-            before: '.proposal-page' 
-        }
-    };
-
-    // 3. Execução
-    // Aguarda um pouco mais para o CSS milimétrico estabilizar
+    // 3. Dispara a impressão nativa
+    // Pequeno delay para o navegador processar as novas regras de CSS
     setTimeout(() => {
-        html2pdf()
-            .set(opt)
-            .from(element)
-            .save()
-            .then(() => {
-                // 4. Limpeza: Remove as classes de exportação
-                document.body.classList.remove('exporting-pdf', 'export-horizontal', 'export-vertical');
-            });
-    }, 1000);
+        window.print();
+        
+        // 4. Limpeza após fechar a janela de impressão
+        document.body.classList.remove('exporting-pdf', 'export-horizontal', 'export-vertical');
+    }, 500);
 };
