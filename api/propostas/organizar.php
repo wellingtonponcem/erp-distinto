@@ -50,6 +50,12 @@ try {
             echo json_encode(['success' => true]);
             break;
 
+        case 'delete_proposal':
+            $stmt = $db->prepare("DELETE FROM propostas WHERE id = ?");
+            $stmt->execute([$data['id']]);
+            echo json_encode(['success' => true]);
+            break;
+
         default:
             http_response_code(400);
             echo json_encode(['error' => 'Ação inválida']);

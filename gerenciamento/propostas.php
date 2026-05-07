@@ -462,7 +462,12 @@ function propostasApp() {
             if (confirm('Deseja realmente excluir esta proposta?')) {
                 this.propostas = this.propostas.filter(p => p.id !== id);
                 this.contextMenu.show = false;
-                // API Call...
+
+                fetch('../api/propostas/organizar.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'delete_proposal', id: id })
+                });
             }
         },
 
@@ -496,8 +501,15 @@ function copiarLink(slug) {
 
 function deletarProposta(id) {
     if (confirm('Deseja realmente excluir esta proposta?')) {
-        // Implementar via fetch se necessário
-        alert('Funcionalidade de exclusão em desenvolvimento.');
+        fetch('../api/propostas/organizar.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'delete_proposal', id: id })
+        }).then(res => {
+            if (res.ok) {
+                location.reload();
+            }
+        });
     }
 }
 
