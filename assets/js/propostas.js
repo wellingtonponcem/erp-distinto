@@ -66,10 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (btn) {
-        showButton(); // Mostrar ao carregar
-
-        // Também mostrar ao mover o mouse ou rolar dentro do wrapper
+        // Também mostrar ao rolar dentro do wrapper
         wrapper.addEventListener('scroll', showButton);
-        window.addEventListener('mousemove', showButton);
     }
 });

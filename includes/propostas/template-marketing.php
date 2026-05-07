@@ -571,7 +571,7 @@
             </p>
 
             <div style="display: flex; flex-direction: column; gap: 15px;">
-                <a href="mailto:hello@jeaneponcem.com.br" style="color: #fff; text-decoration: none; font-size: 16px; font-weight: 600;">hello@jeaneponcem.com.br</a>
+                <a href="mailto:contato@wedistinto.com" style="color: #fff; text-decoration: none; font-size: 16px; font-weight: 600;">contato@wedistinto.com</a>
                 <a href="https://wa.me/5527988586935" target="_blank" style="color: #fff; text-decoration: none; font-size: 16px; font-weight: 600;">WhatsApp: (27) 9 8858-6935</a>
             </div>
 
