@@ -57,7 +57,10 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
     
     <link rel="stylesheet" href="<?= raizUrl('/assets/css/propostas.css') ?>">
     <link rel="stylesheet" href="<?= raizUrl('/assets/css/propostas-mobile.css') ?>">
-    <link rel="shortcut icon" href="<?= raizUrl('/favicon.ico') ?>" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?= raizUrl('/favicon_io/apple-touch-icon.png') ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= raizUrl('/favicon_io/favicon-32x32.png') ?>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?= raizUrl('/favicon_io/favicon-16x16.png') ?>">
+    <link rel="manifest" href="<?= raizUrl('/favicon_io/site.webmanifest') ?>">
     <!-- Bibliotecas Externas -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>

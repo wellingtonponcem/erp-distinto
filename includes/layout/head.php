@@ -7,7 +7,10 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= sanitizar($tituloPagina) ?> - <?= APP_NAME ?></title>
-    <link rel="shortcut icon" href="<?= raizUrl('/favicon.ico') ?>" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?= raizUrl('/favicon_io/apple-touch-icon.png') ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= raizUrl('/favicon_io/favicon-32x32.png') ?>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?= raizUrl('/favicon_io/favicon-16x16.png') ?>">
+    <link rel="manifest" href="<?= raizUrl('/favicon_io/site.webmanifest') ?>">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
