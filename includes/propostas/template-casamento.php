@@ -465,8 +465,11 @@ if (!function_exists('fmt')) {
 
         <!-- Lado Direito: Detalhes -->
         <div style="flex: 1.2; padding: 0 6vw; display: flex; flex-direction: column; justify-content: center; position: relative; height: 100%; background: #f9f9f9;">
-            <!-- Decorativo Superior Direito -->
+            <!-- Decorativos -->
             <div style="position: absolute; top: 0; right: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
+            <div style="position: absolute; bottom: 0; right: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
+            <div style="position: absolute; top: 0; left: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
+            <div style="position: absolute; bottom: 0; left: 0; width: 140px; height: 80px; background: #dcdcdc;"></div>
             
             <h2 style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; line-height: 1.1; margin-bottom: 30px;">
                 EXPERIÊNCIA<br>HERITAGE
@@ -512,8 +515,6 @@ if (!function_exists('fmt')) {
                 </p>
             </div>
 
-            <!-- Decorativo Inferior Direito -->
-            <div style="position: absolute; bottom: 0; right: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
         </div>
     </section>
 
