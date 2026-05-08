@@ -452,64 +452,76 @@ if (!function_exists('fmt')) {
 
     <!-- PÁGINA 06: FULL IMAGE -->
     <section class="slide" style="padding: 0; background: #000;">
-        <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-06.jpg') ?>" class="img-bg" style="opacity: 1; z-index: 1;">
+        <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-06.jpg') ?>" class="img-bg"
+            style="opacity: 1; z-index: 1;">
     </section>
 
     <!-- PÁGINA 07: EXPERIÊNCIA HERITAGE -->
-    <section class="slide" style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
-        
+    <section class="slide"
+        style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
+
         <!-- Lado Esquerdo: Imagem -->
         <div style="flex: 1; height: 100%;">
-            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-07.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-07.png') ?>"
+                style="width: 100%; height: 100%; object-fit: cover;">
         </div>
 
         <!-- Lado Direito: Detalhes -->
-        <div style="flex: 1.2; padding: 0 6vw; display: flex; flex-direction: column; justify-content: center; position: relative; height: 100%; background: #f9f9f9;">
+        <div
+            style="flex: 1.2; padding: 0 6vw; display: flex; flex-direction: column; justify-content: center; position: relative; height: 100%; background: #f9f9f9;">
             <!-- Decorativos -->
             <div style="position: absolute; top: 0; right: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
             <div style="position: absolute; bottom: 0; right: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
             <div style="position: absolute; top: 0; left: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
             <div style="position: absolute; bottom: 0; left: 0; width: 140px; height: 80px; background: #dcdcdc;"></div>
-            
-            <h2 style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; line-height: 1.1; margin-bottom: 30px;">
+
+            <h2
+                style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; line-height: 1.1; margin-bottom: 30px;">
                 EXPERIÊNCIA<br>HERITAGE
             </h2>
-            
+
             <div style="font-family: var(--wedding-montserrat); font-size: 0.95rem; line-height: 1.6; color: #444;">
                 <p style="margin-bottom: 25px; font-weight: 400;">
-                    Este é o plano definitivo para casais que não aceitam lacunas. É a garantia de uma cobertura onipresente, focada na construção da herança visual da sua família, do papel à tela.
+                    Este é o plano definitivo para casais que não aceitam lacunas. É a garantia de uma cobertura
+                    onipresente, focada na construção da herança visual da sua família, do papel à tela.
                 </p>
-                
+
                 <ul style="list-style: none; padding: 0; margin-bottom: 30px;">
                     <li style="margin-bottom: 12px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Cobertura Documental Completa:</strong> Presença ilimitada no evento. Do making of à última música, sem limite de horas.
+                        <strong>Cobertura Documental Completa:</strong> Presença ilimitada no evento. Do making of à
+                        última música, sem limite de horas.
                     </li>
                     <li style="margin-bottom: 12px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>O Álbum Heritage:</strong> Álbum luxo panorâmico no tamanho 25x30cm (aberto 25x60cm), com papel fotográfico de alta gramatura e laminação especial.
+                        <strong>O Álbum Heritage:</strong> Álbum luxo panorâmico no tamanho 25x30cm (aberto 25x60cm),
+                        com papel fotográfico de alta gramatura e laminação especial.
                     </li>
                     <li style="margin-bottom: 12px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Réplicas para a Família (Presente):</strong> Inclusão de 02 Mini Álbuns réplicas, ideais para presentear os pais com a mesma qualidade do álbum principal.
+                        <strong>Réplicas para a Família (Presente):</strong> Inclusão de 02 Mini Álbuns réplicas, ideais
+                        para presentear os pais com a mesma qualidade do álbum principal.
                     </li>
                     <li style="margin-bottom: 12px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Produção Cinematográfica 4K:</strong> Filme completo (8 a 12 min) com áudio dos votos e trilha sonora licenciada.
+                        <strong>Produção Cinematográfica 4K:</strong> Filme completo (8 a 12 min) com áudio dos votos e
+                        trilha sonora licenciada.
                     </li>
                     <li style="margin-bottom: 12px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Imagens Aéreas (Drone):</strong> Perspectivas cinematográficas para contextualizar o local do seu "sim".
+                        <strong>Imagens Aéreas (Drone):</strong> Perspectivas cinematográficas para contextualizar o
+                        local do seu "sim".
                     </li>
                     <li style="margin-bottom: 12px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Ecossistema Digital e Físico:</strong> Galeria online vitalícia, e pen drive personalizado.
+                        <strong>Ecossistema Digital e Físico:</strong> Galeria online vitalícia, e pen drive
+                        personalizado.
                     </li>
                 </ul>
-                
+
                 <div style="margin-top: auto; padding-top: 20px; position: relative; z-index: 10;">
                     <p style="font-style: italic; color: #666; font-size: 1.1rem; margin: 0;">
-                        Investimento: <?= $dados['valor_heritage'] ? fmt($dados['valor_heritage']) : 'R$ 7.900,00' ?> 
+                        Investimento: <?= $dados['valor_heritage'] ? fmt($dados['valor_heritage']) : 'R$ 7.900,00' ?>
                         <?php if (!empty($dados['condicao_especial'])): ?>
                             <span style="font-size: 0.9rem;">(<?= $dados['condicao_especial'] ?>)</span>
                         <?php else: ?>
@@ -523,56 +535,66 @@ if (!function_exists('fmt')) {
     </section>
 
     <!-- PÁGINA 08: EXPERIÊNCIA CINEMATIC -->
-    <section class="slide" style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
-        
+    <section class="slide"
+        style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
+
         <!-- Lado Esquerdo: Detalhes -->
-        <div style="flex: 1; padding: 0 8vw; display: flex; flex-direction: column; justify-content: center; position: relative; height: 100%;">
+        <div
+            style="flex: 1; padding: 0 8vw; display: flex; flex-direction: column; justify-content: center; position: relative; height: 100%;">
             <!-- Decorativo Superior Esquerdo -->
             <div style="position: absolute; top: 0; left: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
-            
-            <h2 style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; line-height: 1.1; margin-bottom: 25px;">
+
+            <h2
+                style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; line-height: 1.1; margin-bottom: 25px;">
                 EXPERIÊNCIA<br>CINEMATIC
             </h2>
-            
+
             <div style="font-family: var(--wedding-montserrat); font-size: 0.95rem; line-height: 1.6; color: #444;">
                 <p style="margin-bottom: 20px; font-weight: 400;">
-                    A união entre a fotografia artística e a dinâmica do vídeo moderno. Ideal para casamentos íntimos (60 convidados) que buscam impacto visual e compartilhamento imediato.
+                    A união entre a fotografia artística e a dinâmica do vídeo moderno. Ideal para casamentos íntimos
+                    (60 convidados) que buscam impacto visual e compartilhamento imediato.
                 </p>
-                
+
                 <ul style="list-style: none; padding: 0; margin-bottom: 20px;">
                     <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Fotografia de Evento (8h):</strong> Cobertura focada na essência e na espontaneidade dos convidados.
+                        <strong>Fotografia de Evento (8h):</strong> Cobertura focada na essência e na espontaneidade dos
+                        convidados.
                     </li>
                     <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Sessão Engagement (Pré-Wedding):</strong> Ensaio de até 3h para conexão do casal com a lente antes do grande dia.
+                        <strong>Sessão Engagement (Pré-Wedding):</strong> Ensaio de até 3h para conexão do casal com a
+                        lente antes do grande dia.
                     </li>
                     <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Short Film de Cinema:</strong> Filme dinâmico (5 a 7 min) com os melhores momentos da cerimônia e recepção.
+                        <strong>Short Film de Cinema:</strong> Filme dinâmico (5 a 7 min) com os melhores momentos da
+                        cerimônia e recepção.
                     </li>
                     <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Social Content (Story Maker):</strong> Entrega de conteúdo vertical pronto para redes sociais. Seus convidados acompanham os bastidores em tempo real.
+                        <strong>Social Content (Story Maker):</strong> Entrega de conteúdo vertical pronto para redes
+                        sociais. Seus convidados acompanham os bastidores em tempo real.
                     </li>
                     <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Making Of Completo:</strong> Registro da preparação da noiva e do noivo, capturando a expectativa e os detalhes.
+                        <strong>Making Of Completo:</strong> Registro da preparação da noiva e do noivo, capturando a
+                        expectativa e os detalhes.
                     </li>
                     <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
                         <strong>Bônus:</strong> Vídeo Save-the-Date incluso para o anúncio oficial.
                     </li>
                 </ul>
-                
+
                 <div style="margin-top: auto; padding-top: 20px; position: relative; z-index: 10;">
                     <p style="font-style: italic; color: #666; font-size: 1.1rem; margin-bottom: 5px;">
-                        Investimento: <?= $dados['valor_cinematic'] ? fmt($dados['valor_cinematic']) : 'R$ 4.500,00' ?> 
+                        Investimento: <?= $dados['valor_cinematic'] ? fmt($dados['valor_cinematic']) : 'R$ 4.500,00' ?>
                         <?php if (!empty($dados['condicao_especial_cinematic'])): ?>
                             <span style="font-size: 0.9rem;">(<?= $dados['condicao_especial_cinematic'] ?>)</span>
                         <?php else: ?>
-                            <span style="font-size: 0.9rem;">(10% de desconto na entrada para contratos até 05/04/2026)</span>
+                            <span style="font-size: 0.9rem;">(10% de desconto na entrada para contratos até
+                                05/04/2026)</span>
                         <?php endif; ?>
                     </p>
 
@@ -583,74 +605,91 @@ if (!function_exists('fmt')) {
             </div>
 
             <!-- Decorativo Inferior Esquerdo -->
-            <div style="position: absolute; bottom: 0; left: 8vw; width: 180px; height: 60px; background: #dcdcdc;"></div>
+            <div style="position: absolute; bottom: 0; left: 8vw; width: 180px; height: 60px; background: #dcdcdc;">
+            </div>
         </div>
 
         <!-- Lado Direito: Imagem -->
-        <div style="flex: 1; position: relative; display: flex; align-items: center; justify-content: center; height: 100%;">
+        <div
+            style="flex: 1; position: relative; display: flex; align-items: center; justify-content: center; height: 100%;">
             <!-- Fundo Cinza Decorativo na Direita -->
-            <div style="position: absolute; top: 0; right: 0; width: 35%; height: 80%; background: #dcdcdc; z-index: 1;"></div>
-            
+            <div
+                style="position: absolute; top: 0; right: 0; width: 35%; height: 80%; background: #dcdcdc; z-index: 1;">
+            </div>
+
             <div style="width: 80%; height: 80%; position: relative; z-index: 2;">
-                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-08.png') ?>" style="width: 100%; height: 100%; object-fit: contain;">
+                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-08.png') ?>"
+                    style="width: 100%; height: 100%; object-fit: contain;">
             </div>
         </div>
     </section>
 
     <!-- PÁGINA 09: REGISTRO ESSENCIAL -->
-    <section class="slide" style="padding: 0; background: #f4f4f4; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
-        
+    <section class="slide"
+        style="padding: 0; background: #f4f4f4; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
+
         <!-- Lado Esquerdo: Imagem -->
         <div style="flex: 1; height: 100%; display: flex; align-items: center; justify-content: center;">
-            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-09.png') ?>" style="width: 100%; height: 80%; object-fit: contain;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-09.png') ?>"
+                style="width: 100%; height: 80%; object-fit: contain;">
         </div>
 
         <!-- Lado Direito: Detalhes -->
-        <div style="flex: 1.2; padding: 0 6vw; display: flex; flex-direction: column; justify-content: center; position: relative; height: 100%;">
+        <div
+            style="flex: 1.2; padding: 0 6vw; display: flex; flex-direction: column; justify-content: center; position: relative; height: 100%;">
             <!-- Decorativos -->
             <div style="position: absolute; top: 0; right: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
             <div style="position: absolute; bottom: 0; right: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
-            
-            <h2 style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; line-height: 1.1; margin-bottom: 25px;">
+
+            <h2
+                style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; line-height: 1.1; margin-bottom: 25px;">
                 REGISTRO<br>ESSENCIAL
             </h2>
-            
+
             <div style="font-family: var(--wedding-montserrat); font-size: 0.95rem; line-height: 1.5; color: #444;">
                 <p style="margin-bottom: 20px; font-weight: 400;">
-                    Um registro focado estritamente no protocolo, ideal para cerimônias curtas e objetivas que exigem um olhar profissional sobre os momentos principais.
+                    Um registro focado estritamente no protocolo, ideal para cerimônias curtas e objetivas que exigem um
+                    olhar profissional sobre os momentos principais.
                 </p>
-                
+
                 <ul style="list-style: none; padding: 0; margin-bottom: 20px;">
                     <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Fotografia de Cerimônia (4h):</strong> Cobertura pontual focada no protocolo religioso e fotos protocolares de família.
+                        <strong>Fotografia de Cerimônia (4h):</strong> Cobertura pontual focada no protocolo religioso e
+                        fotos protocolares de família.
                     </li>
                     <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Escopo Limitado:</strong> Plano focado em registros estáticos. Não inclui vídeo, drone, cobertura de preparativos ou ensaio externo.
+                        <strong>Escopo Limitado:</strong> Plano focado em registros estáticos. Não inclui vídeo, drone,
+                        cobertura de preparativos ou ensaio externo.
                     </li>
                     <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Entrega Digital:</strong> Acesso à galeria online exclusiva para download das fotos editadas.
+                        <strong>Entrega Digital:</strong> Acesso à galeria online exclusiva para download das fotos
+                        editadas.
                     </li>
                 </ul>
-                
+
                 <p style="font-style: italic; color: #333; font-size: 1.1rem; margin-bottom: 25px;">
                     Investimento: <?= $dados['valor_essencial'] ? fmt($dados['valor_essencial']) : 'R$ 2.800,00' ?>
                 </p>
 
                 <div style="margin-top: 10px; border-top: 1px solid #dcdcdc; padding-top: 20px;">
-                    <p style="font-weight: 700; color: #1a1a1a; margin-bottom: 15px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.05em;">
+                    <p
+                        style="font-weight: 700; color: #1a1a1a; margin-bottom: 15px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.05em;">
                         Upgrades que fazem toda diferença:
                     </p>
                     <ul style="list-style: none; padding: 0;">
                         <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
                             <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                            <strong>Boudoir da Noiva (no dia do casamento):</strong> Um ensaio de 1 h realizado após a maquiagem para registrar a beleza da noiva por R$ 500,00
+                            <strong>Boudoir da Noiva (no dia do casamento):</strong> Um ensaio de 1 h realizado após a
+                            maquiagem para registrar a beleza da noiva por R$ 500,00
                         </li>
                         <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
                             <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                            <strong>Ensaio Pré-Wedding:</strong> Caso desejem apenas o ensaio externo antes do casamento, ele pode ser contratado separadamente por R$ 1.100,00 (incluindo pencard e 30 fotos reveladas)
+                            <strong>Ensaio Pré-Wedding:</strong> Caso desejem apenas o ensaio externo antes do
+                            casamento, ele pode ser contratado separadamente por R$ 1.100,00 (incluindo pencard e 30
+                            fotos reveladas)
                         </li>
                     </ul>
                 </div>
@@ -659,40 +698,54 @@ if (!function_exists('fmt')) {
     </section>
 
     <!-- PÁGINA 10: INVESTIMENTO E PLANEJAMENTO -->
-    <section class="slide" style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; overflow: hidden; position: relative; height: 100vh; width: 100%;">
-        
+    <section class="slide"
+        style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; overflow: hidden; position: relative; height: 100vh; width: 100%;">
+
         <!-- Topo: Imagem -->
         <div style="height: 40%; width: 100%;">
-            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-10.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-10.png') ?>"
+                style="width: 100%; height: 100%; object-fit: cover;">
         </div>
 
         <!-- Conteúdo -->
-        <div style="flex: 1; padding: 40px 8vw; display: flex; flex-direction: column; align-items: center; text-align: center;">
-            <h2 style="font-family: var(--wedding-montserrat); font-size: 3rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 5px;">
+        <div
+            style="flex: 1; padding: 40px 8vw; display: flex; flex-direction: column; align-items: center; text-align: center;">
+            <h2
+                style="font-family: var(--wedding-montserrat); font-size: 3rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 5px;">
                 INVESTIMENTO E PLANEJAMENTO
             </h2>
-            <p style="font-family: var(--wedding-montserrat); font-size: 1.2rem; font-weight: 400; color: #444; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 40px;">
+            <p
+                style="font-family: var(--wedding-montserrat); font-size: 1.2rem; font-weight: 400; color: #444; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 40px;">
                 FORMAS DE RESERVA E PAGAMENTO
             </p>
 
             <!-- Blocos de Condições -->
             <div style="width: 100%; max-width: 1200px;">
                 <!-- Bloco Geral -->
-                <div style="background: #dcdcdc; padding: 25px 40px; margin-bottom: 15px; border-radius: 2px; text-align: left; font-family: var(--wedding-montserrat); font-size: 0.9rem; line-height: 1.6; color: #333;">
+                <div
+                    style="background: #dcdcdc; padding: 25px 40px; margin-bottom: 15px; border-radius: 2px; text-align: center; font-family: var(--wedding-montserrat); font-size: 0.9rem; line-height: 1.6; color: #333;">
                     <?= nl2br($dados['condicoes_reserva'] ?? "A reserva da data é oficializada mediante a assinatura do contrato e o pagamento do sinal (entrada), que pode ser de 20% ou 25% do valor do pacote escolhido.\nOpções de Parcelamento: Oferecemos flexibilidade para que o saldo seja quitado de forma equilibrada até a data do evento:") ?>
                 </div>
 
                 <!-- Blocos Lado a Lado -->
                 <div style="display: flex; gap: 15px; width: 100%;">
-                    <div style="flex: 1; background: #dcdcdc; padding: 25px 40px; border-radius: 2px; text-align: left;">
-                        <h4 style="font-family: var(--wedding-montserrat); font-size: 0.95rem; font-weight: 700; color: #1a1a1a; text-transform: uppercase; margin-bottom: 10px;">PARA EXPERIÊNCIA HERITAGE & EXPERIÊNCIA CINEMATIC</h4>
-                        <p style="font-family: var(--wedding-montserrat); font-size: 0.85rem; line-height: 1.5; color: #444;">
+                    <div
+                        style="flex: 1; background: #dcdcdc; padding: 25px 40px; border-radius: 2px; text-align: left;">
+                        <h4
+                            style="font-family: var(--wedding-montserrat); font-size: 0.95rem; font-weight: 700; color: #1a1a1a; text-transform: uppercase; margin-bottom: 10px;">
+                            PARA EXPERIÊNCIA HERITAGE & EXPERIÊNCIA CINEMATIC</h4>
+                        <p
+                            style="font-family: var(--wedding-montserrat); font-size: 0.85rem; line-height: 1.5; color: #444;">
                             <?= nl2br($dados['condicoes_heritage_cinematic'] ?? "Entrada de 20% + Saldo parcelado em até 6x (dependendo do pacote selecionado)") ?>
                         </p>
                     </div>
-                    <div style="flex: 1; background: #dcdcdc; padding: 25px 40px; border-radius: 2px; text-align: left;">
-                        <h4 style="font-family: var(--wedding-montserrat); font-size: 0.95rem; font-weight: 700; color: #1a1a1a; text-transform: uppercase; margin-bottom: 10px;">PARA O REGISTRO ESSENCIAL</h4>
-                        <p style="font-family: var(--wedding-montserrat); font-size: 0.85rem; line-height: 1.5; color: #444;">
+                    <div
+                        style="flex: 1; background: #dcdcdc; padding: 25px 40px; border-radius: 2px; text-align: left;">
+                        <h4
+                            style="font-family: var(--wedding-montserrat); font-size: 0.95rem; font-weight: 700; color: #1a1a1a; text-transform: uppercase; margin-bottom: 10px;">
+                            PARA O REGISTRO ESSENCIAL</h4>
+                        <p
+                            style="font-family: var(--wedding-montserrat); font-size: 0.85rem; line-height: 1.5; color: #444;">
                             <?= nl2br($dados['condicoes_essencial'] ?? "Entrada de 25% + Saldo parcelado em até 5x (dependendo do pacote selecionado)") ?>
                         </p>
                     </div>
@@ -701,14 +754,43 @@ if (!function_exists('fmt')) {
         </div>
     </section>
 
-    <!-- PÁGINAS 11 A 16: PORTFÓLIO (TRANSICAO) -->
-    <section class="slide bg-dark center">
-        <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=2070" class="img-bg"
-            style="opacity: 0.2;">
-        <div class="content-overlay">
-            <h3 class="uppercase text-gold">Portfolio</h3>
-            <h1 class="text-serif italic">Wedding Portfolio</h1>
-            <p class="uppercase mt-6">Versões da sua história</p>
+    <!-- PÁGINA 11: WEDDING PORTFOLIO CAPA -->
+    <section class="slide" style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; overflow: hidden; position: relative; height: 100vh; width: 100%;">
+        
+        <!-- Topo: Textos -->
+        <div style="height: 50%; display: flex; flex-direction: row; width: 100%;">
+            <!-- Lado Esquerdo: Manifesto -->
+            <div style="flex: 2; padding: 6vh 6vw; display: flex; flex-direction: column; justify-content: center;">
+                <div style="font-family: var(--wedding-montserrat); font-size: 1.15rem; line-height: 1.6; color: #333; font-weight: 400;">
+                    <p style="margin-bottom: 20px;">
+                        Acreditamos que, daqui a vinte anos, o que restará não serão apenas arquivos digitais, mas a sensação exata do que foi o dia <strong>do seu casamento</strong>.
+                    </p>
+                    <p style="margin-bottom: 20px;">
+                        Para nós, toda história tem sua beleza, e a beleza de vocês reside na intimidade de um <strong>'sim'</strong> compartilhado entre amigos e na fé que os une.
+                    </p>
+                    <p style="font-size: 1rem; color: #444;">
+                        Mais do que um registro, uma perspectiva. <strong>Sim</strong>, o casamento de vocês será incrível, mas queremos que o filme e as fotos sejam uma experiência à parte. Nosso olhar busca o que está nas entrelinhas. Desde o sussurro do noivo no altar até o riso solto dos convidados. Do caos vibrante do making of à paz profunda da oração antes da cerimônia. Dos detalhes das mãos que se entrelaçam às grandes paisagens que moldam o dia.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Lado Direito: Título -->
+            <div style="flex: 1.5; padding: 6vh 4vw; display: flex; flex-direction: column; justify-content: center; position: relative;">
+                <!-- Decorativo Superior Direito -->
+                <div style="position: absolute; top: 0; right: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
+                
+                <h2 style="font-family: var(--wedding-montserrat); font-size: 4.5rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; line-height: 1; margin-bottom: 5px;">
+                    WEDDING<br>PORTFOLIO
+                </h2>
+                <p style="font-family: var(--wedding-montserrat); font-size: 1.4rem; font-weight: 400; color: #444; letter-spacing: 0.2em; text-transform: uppercase;">
+                    VERSÕES DA SUA HISTÓRIA
+                </p>
+            </div>
+        </div>
+
+        <!-- Base: Grid de Fotos -->
+        <div style="height: 50%; width: 100%;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-11.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
     </section>
 
