@@ -340,21 +340,16 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                             </div>
                         </div>
 
-                        <!-- Depoimentos -->
-                        <div class="p-4 border border-zinc-100 rounded-2xl bg-zinc-50/50">
-                            <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-4">Depoimentos (Prova Social)</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="space-y-3">
-                                    <label class="label">Depoimento 01</label>
-                                    <textarea name="depoimento_01_texto" class="input text-xs" x-model="depoimento01Texto" rows="2"></textarea>
-                                    <input type="text" name="depoimento_01_autor" class="input text-xs" x-model="depoimento01Autor" placeholder="Nome do Casal">
-                                </div>
-                                <div class="space-y-3">
-                                    <label class="label">Depoimento 02</label>
-                                    <textarea name="depoimento_02_texto" class="input text-xs" x-model="depoimento02Texto" rows="2"></textarea>
-                                    <input type="text" name="depoimento_02_autor" class="input text-xs" x-model="depoimento02Autor" placeholder="Nome do Casal">
-                                </div>
+                        <!-- Depoimentos gerenciados centralmente -->
+                        <div class="p-4 border border-zinc-100 rounded-2xl bg-zinc-50/50 flex items-center justify-between gap-4">
+                            <div>
+                                <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider">Depoimentos (Prova Social)</h4>
+                                <p class="text-[11px] text-zinc-400 mt-1">Os depoimentos são escolhidos automaticamente do banco central de depoimentos da categoria Casamento.</p>
                             </div>
+                            <a href="<?= raizUrl('/gerenciamento/depoimentos.php') ?>" target="_blank"
+                                class="text-[11px] font-bold text-zinc-600 whitespace-nowrap underline underline-offset-2 hover:text-zinc-900 transition-colors">
+                                Gerenciar depoimentos →
+                            </a>
                         </div>
                     </div>
                 </section>
@@ -683,10 +678,6 @@ document.addEventListener('alpine:init', () => {
             this.instagramHandle = dados.instagram_handle || '@distintowedding';
             this.emailContato = dados.email_contato || 'contato@wedistinto.com';
             this.whatsappNumero = dados.whatsapp_numero || '+55 27 9 8858-6935';
-            this.depoimento01Texto = dados.depoimento_01_texto || 'Foi a melhor escolha que fizemos. Eles capturaram a essência do nosso dia de uma forma que nunca imaginamos.';
-            this.depoimento01Autor = dados.depoimento_01_autor || 'Fernanda & Thiago';
-            this.depoimento02Texto = dados.depoimento_02_texto || 'A sensibilidade da equipe é indescritível. Cada vez que vemos o vídeo, nos emocionamos como se estivéssemos lá de novo.';
-            this.depoimento02Autor = dados.depoimento_02_autor || 'Mariana & Lucas';
 
             // Força o Alpine a processar os dados e depois recalcula
             this.$nextTick(() => {

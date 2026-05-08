@@ -21,11 +21,27 @@ $validadeProposta = $dados['validade_proposta'] ?? '7';
 $instagramHandle = $dados['instagram_handle'] ?? '@distintowedding';
 $emailContato = $dados['email_contato'] ?? 'contato@wedistinto.com';
 $whatsappNumero = $dados['whatsapp_numero'] ?? '+55 27 9 8858-6935';
-$depoimento01Texto = $dados['depoimento_01_texto'] ?? 'Foi a melhor escolha que fizemos. Eles capturaram a essência do nosso dia de uma forma que nunca imaginamos.';
-$depoimento01Autor = $dados['depoimento_01_autor'] ?? 'Fernanda & Thiago';
-$depoimento02Texto = $dados['depoimento_02_texto'] ?? 'A sensibilidade da equipe é indescritível. Cada vez que vemos o vídeo, nos emocionamos como se estivéssemos lá de novo.';
-$depoimento02Texto = $dados['depoimento_02_texto'] ?? 'A sensibilidade da equipe é indescritível. Cada vez que vemos o vídeo, nos emocionamos como se estivéssemos lá de novo.';
-$depoimento02Autor = $dados['depoimento_02_autor'] ?? 'Mariana & Lucas';
+// Buscar 2 depoimentos ativos da categoria 'casamento' do banco
+$depoimento01Texto = 'Foi a melhor escolha que fizemos. Eles capturaram a essência do nosso dia de uma forma que nunca imaginamos.';
+$depoimento01Autor = 'Fernanda & Thiago';
+$depoimento02Texto = 'A sensibilidade da equipe é indescritível. Cada vez que vemos o vídeo, nos emocionamos como se estivéssemos lá de novo.';
+$depoimento02Autor = 'Mariana & Lucas';
+try {
+    $dbDep = Database::get();
+    $stmtDep = $dbDep->prepare("SELECT texto, autor FROM depoimentos WHERE categoria = 'casamento' AND ativo = 1 ORDER BY ordem ASC, RAND() LIMIT 2");
+    $stmtDep->execute();
+    $depRows = $stmtDep->fetchAll();
+    if (!empty($depRows[0])) {
+        $depoimento01Texto = $depRows[0]['texto'];
+        $depoimento01Autor = $depRows[0]['autor'];
+    }
+    if (!empty($depRows[1])) {
+        $depoimento02Texto = $depRows[1]['texto'];
+        $depoimento02Autor = $depRows[1]['autor'];
+    }
+} catch (Exception $e) {
+    // Usa os defaults acima se a tabela ainda não existir
+}
 
 // Itens dos Pacotes
 $itensHeritage = $dados['itens_heritage'] ?? "Cobertura Documental Completa: Presença ilimitada no evento.\nO Álbum Heritage: Álbum luxo panorâmico 25x30cm.\nRéplicas para a Família: 02 Mini Álbuns réplicas.\nProdução Cinematográfica 4K: Filme completo (8 a 12 min).\nShort Film & Teasers: Vídeos curtos para redes sociais.\nUso de Drone Profissional: Imagens aéreas cinematográficas.\nEcossistema Digital: Galeria online vitalícia.";

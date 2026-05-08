@@ -46,6 +46,19 @@ $receberMes = $resumo['receber_mes'] ?? 0;
 $pagarMes = $resumo['pagar_mes'] ?? 0;
 $resultadoPrev = $saldoAtual + $receberMes - $pagarMes;
 
+// Contagem de depoimentos por categoria para o card do dashboard
+$depoimentosResumo = [];
+try {
+    $stmtDep = $db->query("SELECT categoria, COUNT(*) as total, SUM(ativo) as ativos FROM depoimentos GROUP BY categoria");
+    foreach ($stmtDep->fetchAll() as $row) {
+        $depoimentosResumo[$row['categoria']] = $row;
+    }
+} catch (Exception $e) {
+    // Tabela ainda não existe — rode setup/migration_depoimentos.php
+}
+$totalDepoimentos = array_sum(array_column($depoimentosResumo, 'total'));
+$totalAtivos = array_sum(array_column($depoimentosResumo, 'ativos'));
+
 // Buscar contagem de itens para os KPIs
 $stmtQtdRec = $db->prepare("SELECT COUNT(*) FROM lancamentos WHERE tipo='receber' AND vencimento BETWEEN ? AND ? AND status NOT IN ('pago','cancelado')");
 $stmtQtdRec->execute([$mesInicio, $mesFim]);
@@ -289,6 +302,59 @@ include __DIR__ . '/includes/layout/head.php';
                     <?php endif; ?>
                 </div>
             </article>
+        </section>
+
+        <!-- Card: Depoimentos -->
+        <section class="card p-5 mt-5">
+            <div class="flex items-center justify-between mb-5">
+                <div>
+                    <p class="text-[12px] font-bold text-zinc-500">Prova Social</p>
+                    <h3 class="mt-1 text-[20px] font-extrabold tracking-[-0.04em] text-zinc-950">Depoimentos</h3>
+                </div>
+                <a href="<?= raizUrl('/gerenciamento/depoimentos.php') ?>" class="btn-secondary" style="min-height:32px; padding:6px 14px; font-size:12px;">
+                    <i data-lucide="settings-2" class="w-3.5 h-3.5"></i>
+                    Gerenciar
+                </a>
+            </div>
+
+            <?php if (empty($depoimentosResumo)): ?>
+                <div class="flex flex-col items-center justify-center py-8 text-zinc-400">
+                    <i data-lucide="message-square-quote" class="w-8 h-8 mb-2 opacity-30"></i>
+                    <p class="text-xs font-bold">Nenhum depoimento cadastrado</p>
+                    <a href="<?= raizUrl('/setup/migration_depoimentos.php') ?>" class="mt-3 text-xs font-bold text-zinc-500 underline">
+                        Rodar migration
+                    </a>
+                </div>
+            <?php else: ?>
+                <?php
+                $catLabels = [
+                    'casamento' => ['label' => 'Casamento',        'cor' => '#f59e0b'],
+                    'filmmaker' => ['label' => 'Filmmaker',         'cor' => '#8b5cf6'],
+                    '15anos'    => ['label' => '15 Anos',           'cor' => '#ec4899'],
+                    'marketing' => ['label' => 'Marketing Digital', 'cor' => '#10b981'],
+                ];
+                ?>
+                <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-4">
+                    <?php foreach ($catLabels as $cat => $info): ?>
+                    <?php $d = $depoimentosResumo[$cat] ?? ['total' => 0, 'ativos' => 0]; ?>
+                    <a href="<?= raizUrl('/gerenciamento/depoimentos.php') ?>?cat=<?= $cat ?>"
+                        class="rounded-xl border border-zinc-100 bg-zinc-50 p-4 hover:bg-zinc-100 transition-all">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:<?= $info['cor'] ?>;"></span>
+                            <span class="text-[11px] font-bold text-zinc-500 uppercase tracking-wide"><?= $info['label'] ?></span>
+                        </div>
+                        <p class="text-2xl font-extrabold text-zinc-900 tracking-tight"><?= $d['total'] ?></p>
+                        <p class="text-[11px] text-zinc-400 mt-0.5">
+                            <?= $d['ativos'] ?> ativo<?= $d['ativos'] != 1 ? 's' : '' ?>
+                        </p>
+                    </a>
+                    <?php endforeach; ?>
+                </div>
+                <p class="text-xs text-zinc-400">
+                    Total: <strong class="text-zinc-700"><?= $totalDepoimentos ?></strong> depoimentos &mdash;
+                    <strong class="text-emerald-600"><?= $totalAtivos ?></strong> ativos no momento.
+                </p>
+            <?php endif; ?>
         </section>
     </main>
 </div>

@@ -128,6 +128,10 @@ function menuAtivo(string $path): string {
             <i data-lucide="file-text" style="width:17px;height:17px;"></i>
             <span class="nav-label">Propostas Web</span>
         </a>
+        <a href="<?= raizUrl('/gerenciamento/depoimentos.php') ?>" class="nav-link <?= menuAtivo('/gerenciamento/depoimentos') ?>">
+            <i data-lucide="message-square-quote" style="width:17px;height:17px;"></i>
+            <span class="nav-label">Depoimentos</span>
+        </a>
 
         <div class="nav-section">Sistema</div>
         <a href="<?= raizUrl('/configuracoes.php') ?>" class="nav-link <?= menuAtivo('/configuracoes') ?>">
