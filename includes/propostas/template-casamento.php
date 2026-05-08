@@ -925,13 +925,61 @@ if (!function_exists('fmt')) {
         </div>
     </section>
 
-    <!-- PÁGINA 17: EQUIPE -->
-    <section class="slide center">
-        <div class="content-overlay">
-            <h3 class="uppercase text-gold">Os olhares por trás das lentes</h3>
-            <div class="line line-center"></div>
-            <h2 class="text-serif">Jeane Poncem, Wellington Poncem<br>& Gabryel Oliveira.</h2>
-            <p class="mt-8 italic">Uma equipe unida pela paixão de eternizar momentos.</p>
+    <!-- PÁGINA 16: OS OLHARES POR TRÁS DAS LENTES (EQUIPE) -->
+    <section class="slide" style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; position: relative; height: 100vh; width: 100%;">
+        
+        <!-- Cabeçalho -->
+        <div class="reveal-item" style="text-align: center; margin-bottom: 60px; z-index: 10;">
+            <h2 style="font-family: var(--wedding-montserrat); font-size: 4rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 10px;">
+                OS OLHARES POR TRÁS DAS LENTES
+            </h2>
+            <p style="font-family: var(--wedding-montserrat); font-size: 1.2rem; color: #888; font-weight: 400;">
+                Não somos apenas técnicos. Somos contadores de histórias.
+            </p>
+        </div>
+
+        <!-- Barra Decorativa Cinza -->
+        <div style="position: absolute; top: 50%; left: 0; width: 100%; height: 120px; background: #dcdcdc; transform: translateY(-50%); z-index: 1;"></div>
+
+        <!-- Grid da Equipe -->
+        <div style="display: flex; flex-direction: row; gap: 40px; z-index: 10; width: 90%; max-width: 1400px; justify-content: center;">
+            
+            <!-- Jeane -->
+            <div class="reveal-item" style="flex: 1; text-align: center;">
+                <div style="width: 100%; aspect-ratio: 1/1; overflow: hidden; margin-bottom: 20px; border-radius: 2px;">
+                    <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-16-jeane.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h4 style="font-family: var(--wedding-montserrat); font-size: 1.1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 5px;">Jeane Poncem</h4>
+                <p style="font-family: var(--wedding-montserrat); font-size: 0.85rem; color: #666; font-style: italic;">Curadora de Sonhos &<br>Guardiã da Narrativa</p>
+            </div>
+
+            <!-- Wellington -->
+            <div class="reveal-item" style="flex: 1; text-align: center;">
+                <div style="width: 100%; aspect-ratio: 1/1; overflow: hidden; margin-bottom: 20px; border-radius: 2px;">
+                    <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-16-wellington.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h4 style="font-family: var(--wedding-montserrat); font-size: 1.1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 5px;">Wellington Poncem</h4>
+                <p style="font-family: var(--wedding-montserrat); font-size: 0.85rem; color: #666; font-style: italic;">O Arquiteto de Emoções</p>
+            </div>
+
+            <!-- Isabelly -->
+            <div class="reveal-item" style="flex: 1; text-align: center;">
+                <div style="width: 100%; aspect-ratio: 1/1; overflow: hidden; margin-bottom: 20px; border-radius: 2px;">
+                    <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-16-isabelly.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h4 style="font-family: var(--wedding-montserrat); font-size: 1.1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 5px;">Isabelly Gomes</h4>
+                <p style="font-family: var(--wedding-montserrat); font-size: 0.85rem; color: #666; font-style: italic;">A Curadora da Verdade</p>
+            </div>
+
+            <!-- Gabryel -->
+            <div class="reveal-item" style="flex: 1; text-align: center;">
+                <div style="width: 100%; aspect-ratio: 1/1; overflow: hidden; margin-bottom: 20px; border-radius: 2px;">
+                    <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-16-gabriel.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <h4 style="font-family: var(--wedding-montserrat); font-size: 1.1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 5px;">Gabryel Oliveira</h4>
+                <p style="font-family: var(--wedding-montserrat); font-size: 0.85rem; color: #666; font-style: italic;">O Contador de Instantes</p>
+            </div>
+
         </div>
     </section>
 
