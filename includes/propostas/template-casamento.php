@@ -1095,24 +1095,79 @@ if (!function_exists('fmt')) {
         </div>
     </section>
 
-    <!-- PÁGINA 19: PRÓXIMO PASSO -->
-    <section class="slide bg-dark center">
-        <div class="content-overlay">
-            <h2 class="text-serif">Vamos dar o próximo passo?</h2>
-            <div class="line line-center"></div>
-            <p class="mb-12">
-                Este é o primeiro capítulo da história oficial de <?= $nomeCasal ?>.
-            </p>
+    <!-- PÁGINA 18: VAMOS DAR O PRÓXIMO PASSO? -->
+    <section class="slide" style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; height: 100vh; width: 100%;">
+        
+        <!-- Lado Esquerdo: Conteúdo -->
+        <div style="flex: 1; padding: 8vh 6vw; display: flex; flex-direction: column; justify-content: center; background: #f4f4f4; position: relative;">
+            <!-- Decorativos -->
+            <div style="position: absolute; top: 0; left: 0; width: 80px; height: 40px; background: #dcdcdc;"></div>
+            <div style="position: absolute; bottom: 0; left: 0; width: 40px; height: 80px; background: #dcdcdc;"></div>
 
-            <div class="space-y-4 text-gold uppercase tracking-widest text-sm font-bold">
-                <p>+55 27 9 8858-6935</p>
-                <p>distintoag@gmail.com</p>
-                <p>@distintoag</p>
+            <h2 class="reveal-item" style="font-family: var(--wedding-montserrat); font-size: 4rem; font-weight: 300; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; line-height: 1.1; margin-bottom: 40px;">
+                VAMOS DAR O<br>PRÓXIMO PASSO?
+            </h2>
+
+            <!-- Contatos -->
+            <div class="reveal-item" style="margin-bottom: 40px; font-family: var(--wedding-montserrat); font-size: 1.2rem; line-height: 2; color: #1a1a1a;">
+                <?php 
+                    $wa_msg = urlencode("Olá! Acabamos de ver a proposta da Distinto para o nosso casamento e ficamos encantados com o olhar de vocês. Gostaríamos de conversar sobre os próximos passos para garantir nossa data!");
+                    $wa_link = "https://wa.me/5527988586935?text=" . $wa_msg;
+                ?>
+                <a href="<?= $wa_link ?>" target="_blank" style="display: block; text-decoration: none; color: #1a1a1a; transition: all 0.3s;">
+                    <span style="border-bottom: 1px solid #ccc;">+55 27 9 8858-6935</span>
+                </a>
+                <a href="mailto:contato@wedistinto.com" style="display: block; text-decoration: none; color: #1a1a1a; transition: all 0.3s;">
+                    contato@wedistinto.com
+                </a>
+                <a href="https://instagram.com/distintowedding" target="_blank" style="display: block; text-decoration: none; color: #1a1a1a; transition: all 0.3s;">
+                    @distintowedding
+                </a>
             </div>
 
-            <div class="mt-20 opacity-30 text-[10px] uppercase tracking-[0.5em]">
+            <!-- Texto de Apoio -->
+            <div class="reveal-item" style="font-family: var(--wedding-montserrat); font-size: 0.95rem; line-height: 1.8; color: #555; font-style: italic; max-width: 480px;">
+                <p style="margin-bottom: 20px;">
+                    Se algo aqui ainda não fez o coração de vocês vibrar, vamos trocar uma ideia. Estamos prontos para encontrar uma solução para o seu caso em particular, moldando cada detalhe para que esta experiência seja totalmente nova e única para vocês.
+                </p>
+                <p>
+                    Este é o primeiro capítulo da história oficial de <strong><?= $nomeCasal ?></strong>, e nossa meta é uma só: fazer todas as variáveis desse dia ganharem o mais bonito sentido, garantindo que o arrepio do 'sim' dure para sempre através do nosso olhar.
+                </p>
+            </div>
+
+            <!-- Footer -->
+            <div style="margin-top: 60px; opacity: 0.3; font-family: var(--wedding-montserrat); font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase;">
                 Distinto Wedding © <?= date('Y') ?>
             </div>
+        </div>
+
+        <!-- Lado Direito: Imagem -->
+        <div class="reveal-item" style="flex: 1.2; height: 100%; position: relative;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-18.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+            <!-- Elemento decorativo topo direito -->
+            <div style="position: absolute; top: 0; right: 0; width: 60px; height: 100px; background: #dcdcdc; opacity: 0.8;"></div>
+        </div>
+    </section>
+
+    <!-- PÁGINA 19: THANK YOU -->
+    <section class="slide" style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; overflow: hidden; height: 100vh; width: 100%;">
+        
+        <!-- Topo: Mensagem de Agradecimento -->
+        <div style="height: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 4vw;">
+            <h2 class="reveal-item" style="font-family: var(--wedding-montserrat); font-size: 6rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 20px;">
+                THANK YOU
+            </h2>
+            <p class="reveal-item" style="font-family: var(--wedding-montserrat); font-size: 1.4rem; color: #333; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">
+                REGISTRANDO HISTÓRIAS DE AMOR COM AUTENTICIDADE E EMOÇÃO
+            </p>
+            <p class="reveal-item" style="font-family: var(--wedding-montserrat); font-size: 0.9rem; color: #888; letter-spacing: 0.1em;">
+                by Distinto
+            </p>
+        </div>
+
+        <!-- Base: Imagem Panorâmica -->
+        <div class="reveal-item" style="height: 50%; width: 100%; overflow: hidden;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-19.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
     </section>
 
