@@ -313,6 +313,26 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                             </div>
                         </div>
 
+                        <div class="border-t border-zinc-100 pt-6">
+                            <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-4">Condições de Pagamento (Página 10)</h4>
+                            <div class="space-y-4">
+                                <div class="form-group">
+                                    <label class="label">Texto Geral de Reserva</label>
+                                    <textarea name="condicoes_reserva" class="input text-xs" x-model="condicoesReserva" rows="3"></textarea>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="form-group">
+                                        <label class="label">Condições Heritage & Cinematic</label>
+                                        <textarea name="condicoes_heritage_cinematic" class="input text-xs" x-model="condicoesHeritageCinematic" rows="2"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="label">Condições Registro Essencial</label>
+                                        <textarea name="condicoes_essencial" class="input text-xs" x-model="condicoesEssencial" rows="2"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="p-4 border border-zinc-100 rounded-2xl bg-zinc-50/50">
                                 <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-3">Upgrade Boudoir</h4>
@@ -525,6 +545,9 @@ document.addEventListener('alpine:init', () => {
         itensEssencial: 'Cobertura Fotográfica Essencial',
         valorBoudoir: '',
         valorPrewedding: '',
+        condicoesReserva: 'A reserva da data é oficializada mediante a assinatura do contrato e o pagamento do sinal (entrada), que pode ser de 20% ou 25% do valor do pacote escolhido.\nOpções de Parcelamento: Oferecemos flexibilidade para que o saldo seja quitado de forma equilibrada até a data do evento:',
+        condicoesHeritageCinematic: 'Entrada de 20% + Saldo parcelado em até 6x (dependendo do pacote selecionado)',
+        condicoesEssencial: 'Entrada de 25% + Saldo parcelado em até 5x (dependendo do pacote selecionado)',
         
         init() {
             if (this.tipoProposta === 'marketing') {

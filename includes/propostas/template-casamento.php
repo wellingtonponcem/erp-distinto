@@ -659,25 +659,43 @@ if (!function_exists('fmt')) {
     </section>
 
     <!-- PÁGINA 10: INVESTIMENTO E PLANEJAMENTO -->
-    <section class="slide bg-dark center">
-        <div class="content-overlay">
-            <h3 class="uppercase text-gold">Planejamento</h3>
-            <h2 class="text-serif mt-4">Condições de Investimento</h2>
-            <div class="line line-center"></div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 text-left mt-12">
-                <div class="p-8 border border-white/10 rounded-lg">
-                    <h4 class="text-gold font-bold mb-4">Reserva de Data</h4>
-                    <p class="text-sm">
-                        Para garantir a sua data em nosso calendário, solicitamos um sinal de 20% a 25% do valor total
-                        do contrato.
-                    </p>
+    <section class="slide" style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; overflow: hidden; position: relative; height: 100vh; width: 100%;">
+        
+        <!-- Topo: Imagem -->
+        <div style="height: 40%; width: 100%;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-10.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+
+        <!-- Conteúdo -->
+        <div style="flex: 1; padding: 40px 8vw; display: flex; flex-direction: column; align-items: center; text-align: center;">
+            <h2 style="font-family: var(--wedding-montserrat); font-size: 3rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 5px;">
+                INVESTIMENTO E PLANEJAMENTO
+            </h2>
+            <p style="font-family: var(--wedding-montserrat); font-size: 1.2rem; font-weight: 400; color: #444; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 40px;">
+                FORMAS DE RESERVA E PAGAMENTO
+            </p>
+
+            <!-- Blocos de Condições -->
+            <div style="width: 100%; max-width: 1200px;">
+                <!-- Bloco Geral -->
+                <div style="background: #dcdcdc; padding: 25px 40px; margin-bottom: 15px; border-radius: 2px; text-align: left; font-family: var(--wedding-montserrat); font-size: 0.9rem; line-height: 1.6; color: #333;">
+                    <?= nl2br($dados['condicoes_reserva'] ?? "A reserva da data é oficializada mediante a assinatura do contrato e o pagamento do sinal (entrada), que pode ser de 20% ou 25% do valor do pacote escolhido.\nOpções de Parcelamento: Oferecemos flexibilidade para que o saldo seja quitado de forma equilibrada até a data do evento:") ?>
                 </div>
-                <div class="p-8 border border-white/10 rounded-lg">
-                    <h4 class="text-gold font-bold mb-4">Formas de Pagamento</h4>
-                    <p class="text-sm">
-                        Parcelamento disponível via PIX/Boleto até 10 dias antes do evento, ou via Cartão de Crédito
-                        (consulte taxas).
-                    </p>
+
+                <!-- Blocos Lado a Lado -->
+                <div style="display: flex; gap: 15px; width: 100%;">
+                    <div style="flex: 1; background: #dcdcdc; padding: 25px 40px; border-radius: 2px; text-align: left;">
+                        <h4 style="font-family: var(--wedding-montserrat); font-size: 0.95rem; font-weight: 700; color: #1a1a1a; text-transform: uppercase; margin-bottom: 10px;">PARA EXPERIÊNCIA HERITAGE & EXPERIÊNCIA CINEMATIC</h4>
+                        <p style="font-family: var(--wedding-montserrat); font-size: 0.85rem; line-height: 1.5; color: #444;">
+                            <?= nl2br($dados['condicoes_heritage_cinematic'] ?? "Entrada de 20% + Saldo parcelado em até 6x (dependendo do pacote selecionado)") ?>
+                        </p>
+                    </div>
+                    <div style="flex: 1; background: #dcdcdc; padding: 25px 40px; border-radius: 2px; text-align: left;">
+                        <h4 style="font-family: var(--wedding-montserrat); font-size: 0.95rem; font-weight: 700; color: #1a1a1a; text-transform: uppercase; margin-bottom: 10px;">PARA O REGISTRO ESSENCIAL</h4>
+                        <p style="font-family: var(--wedding-montserrat); font-size: 0.85rem; line-height: 1.5; color: #444;">
+                            <?= nl2br($dados['condicoes_essencial'] ?? "Entrada de 25% + Saldo parcelado em até 5x (dependendo do pacote selecionado)") ?>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
