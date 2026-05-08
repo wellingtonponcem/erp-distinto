@@ -57,6 +57,7 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
     
     <link rel="stylesheet" href="<?= raizUrl('/assets/css/propostas.css') ?>">
     <link rel="stylesheet" href="<?= raizUrl('/assets/css/propostas-mobile.css') ?>">
+    <link rel="shortcut icon" href="<?= raizUrl('/favicon.ico') ?>" type="image/x-icon">
     <!-- Bibliotecas Externas -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
