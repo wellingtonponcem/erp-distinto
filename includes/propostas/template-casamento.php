@@ -518,40 +518,73 @@ if (!function_exists('fmt')) {
         </div>
     </section>
 
-    <!-- PÁGINA 08: CINEMATIC -->
-    <section class="slide bg-[#f4f2ee]">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
-            <div class="h-full order-2 md:order-1">
-                <img src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=2070"
-                    class="w-full h-full object-cover">
-            </div>
-            <div class="order-1 md:order-2">
-                <h2 class="text-serif">Cinematic</h2>
-                <div class="line"></div>
-                <div class="space-y-4 text-sm">
-                    <?php
-                    $itensCinematic = explode(',', $dados['itens_cinematic'] ?? '');
-                    foreach ($itensCinematic as $item):
-                        ?>
-                        <div class="flex items-center gap-3">
-                            <svg class="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
-                                </path>
-                            </svg>
-                            <span><?= trim($item) ?></span>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-
-                <div class="mt-12 p-8 bg-white border border-zinc-100 shadow-sm">
-                    <p class="uppercase text-[10px] font-bold text-zinc-400">Investimento Cinematic</p>
-                    <div class="price-tag"><?= fmt($dados['valor_cinematic']) ?></div>
-                    <?php if (!empty($dados['data_limite_desconto'])): ?>
-                        <p class="text-[10px] mt-4 p-2 bg-gold/10 text-gold font-bold rounded">
-                            10% DE DESCONTO PARA CONTRATOS ATÉ <?= $dados['data_limite_desconto'] ?>
-                        </p>
+    <!-- PÁGINA 08: EXPERIÊNCIA CINEMATIC -->
+    <section class="slide" style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
+        
+        <!-- Lado Esquerdo: Detalhes -->
+        <div style="flex: 1; padding: 0 8vw; display: flex; flex-direction: column; justify-content: center; position: relative; height: 100%;">
+            <!-- Decorativo Superior Esquerdo -->
+            <div style="position: absolute; top: 0; left: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
+            
+            <h2 style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; line-height: 1.1; margin-bottom: 25px;">
+                EXPERIÊNCIA<br>CINEMATIC
+            </h2>
+            
+            <div style="font-family: var(--wedding-montserrat); font-size: 0.95rem; line-height: 1.6; color: #444;">
+                <p style="margin-bottom: 20px; font-weight: 400;">
+                    A união entre a fotografia artística e a dinâmica do vídeo moderno. Ideal para casamentos íntimos (60 convidados) que buscam impacto visual e compartilhamento imediato.
+                </p>
+                
+                <ul style="list-style: none; padding: 0; margin-bottom: 20px;">
+                    <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
+                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
+                        <strong>Fotografia de Evento (8h):</strong> Cobertura focada na essência e na espontaneidade dos convidados.
+                    </li>
+                    <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
+                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
+                        <strong>Sessão Engagement (Pré-Wedding):</strong> Ensaio de até 3h para conexão do casal com a lente antes do grande dia.
+                    </li>
+                    <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
+                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
+                        <strong>Short Film de Cinema:</strong> Filme dinâmico (5 a 7 min) com os melhores momentos da cerimônia e recepção.
+                    </li>
+                    <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
+                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
+                        <strong>Social Content (Story Maker):</strong> Entrega de conteúdo vertical pronto para redes sociais. Seus convidados acompanham os bastidores em tempo real.
+                    </li>
+                    <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
+                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
+                        <strong>Making Of Completo:</strong> Registro da preparação da noiva e do noivo, capturando a expectativa e os detalhes.
+                    </li>
+                    <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
+                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
+                        <strong>Bônus:</strong> Vídeo Save-the-Date incluso para o anúncio oficial.
+                    </li>
+                </ul>
+                
+                <p style="font-style: italic; color: #666; font-size: 1.1rem; margin-bottom: 10px;">
+                    Investimento: <?= fmt($dados['valor_cinematic']) ?> 
+                    <?php if (!empty($dados['condicao_especial_cinematic'])): ?>
+                        <span style="font-size: 0.9rem;">(<?= $dados['condicao_especial_cinematic'] ?>)</span>
                     <?php endif; ?>
-                </div>
+                </p>
+
+                <p style="font-weight: 700; color: #1a1a1a; font-size: 0.9rem;">
+                    • Upgrade Família: Adicione o Álbum Master por apenas R$ 950,00.
+                </p>
+            </div>
+
+            <!-- Decorativo Inferior Esquerdo -->
+            <div style="position: absolute; bottom: 0; left: 8vw; width: 180px; height: 60px; background: #dcdcdc;"></div>
+        </div>
+
+        <!-- Lado Direito: Imagem -->
+        <div style="flex: 1; position: relative; display: flex; align-items: center; justify-content: center; height: 100%;">
+            <!-- Fundo Cinza Decorativo na Direita -->
+            <div style="position: absolute; top: 0; right: 0; width: 35%; height: 80%; background: #dcdcdc; z-index: 1;"></div>
+            
+            <div style="width: 80%; height: 80%; position: relative; z-index: 2;">
+                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-08.png') ?>" style="width: 100%; height: 100%; object-fit: contain;">
             </div>
         </div>
     </section>
