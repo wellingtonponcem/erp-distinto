@@ -143,6 +143,17 @@ if (!function_exists('fmt')) {
         object-fit: cover;
         z-index: 0;
         opacity: 0.6;
+        pointer-events: none;
+        -webkit-user-drag: none;
+        user-select: none;
+    }
+
+    /* Proteção Geral de Imagens */
+    img {
+        -webkit-user-drag: none;
+        user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
     }
 
     .content-overlay {
@@ -989,5 +1000,21 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.slide').forEach(slide => {
         observer.observe(slide);
     });
+
+    // Bloquear clique direito em imagens
+    document.addEventListener('contextmenu', (e) => {
+        if (e.target.tagName === 'IMG') {
+            e.preventDefault();
+            return false;
+        }
+    }, false);
+
+    // Bloquear arraste de imagens
+    document.addEventListener('dragstart', (e) => {
+        if (e.target.tagName === 'IMG') {
+            e.preventDefault();
+            return false;
+        }
+    }, false);
 });
 </script>
