@@ -156,6 +156,17 @@ if (!function_exists('fmt')) {
         align-items: center;
     }
 
+    /* Animações de Revelação */
+    .reveal-item {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 1s cubic-bezier(0.21, 1, 0.36, 1);
+    }
+    .reveal-item.active {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
     /* Grid de Pacotes */
     .package-card {
         background: white;
@@ -794,30 +805,29 @@ if (!function_exists('fmt')) {
         </div>
     </section>
 
-    <!-- SLIDES DE FOTOS (SIMULADOS EM UM GRID PARA O PDF) -->
-    <section class="slide">
-        <div class="grid grid-cols-2 gap-4 h-full">
-            <div class="bg-zinc-100 h-full relative overflow-hidden group">
-                <img src="https://images.unsplash.com/photo-1532712938310-34cb3982ef74?q=80&w=2070"
-                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                <div class="absolute bottom-6 left-6 text-white z-10">
-                    <p class="text-[10px] uppercase font-bold tracking-widest opacity-80">Wedding Stories</p>
-                    <h4 class="text-serif text-xl">Lucas & Mariana</h4>
-                </div>
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-            </div>
-            <div class="grid grid-rows-2 gap-4">
-                <div class="bg-zinc-100 relative overflow-hidden group">
-                    <img src="https://images.unsplash.com/photo-1544078751-58fee2d8a03b?q=80&w=2070"
-                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                </div>
-                <div class="bg-zinc-100 relative overflow-hidden group">
-                    <img src="https://images.unsplash.com/photo-1510076857177-7470076d4098?q=80&w=2072"
-                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+    <!-- PÁGINA 12: PORTFÓLIO PEDRO E VANESSA -->
+    <section class="slide portfolio-slide" style="padding: 0; background: #000; display: flex; flex-direction: row; gap: 2px; overflow: hidden; height: 100vh; width: 100%;">
+        
+        <!-- Coluna Esquerda (Duas fotos empilhadas) -->
+        <div style="flex: 2; display: flex; flex-direction: column; gap: 2px; height: 100%;">
+            <!-- Foto Cima -->
+            <div class="reveal-item" style="flex: 1; position: relative; overflow: hidden;">
+                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-cima-12.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                <div style="position: absolute; top: 40px; left: 40px; z-index: 10;">
+                    <p style="font-family: var(--wedding-montserrat); font-size: 1rem; color: #fff; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 300; opacity: 0.8;">
+                        PEDRO E VANESSA - BEFORE THE BLOOM
+                    </p>
                 </div>
             </div>
+            <!-- Foto Baixo -->
+            <div class="reveal-item" style="flex: 1; overflow: hidden;">
+                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-baixo-12.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+        </div>
+
+        <!-- Coluna Direita (Foto inteira) -->
+        <div class="reveal-item" style="flex: 1.1; overflow: hidden; height: 100%;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-direita-12.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
     </section>
 
@@ -872,4 +882,29 @@ if (!function_exists('fmt')) {
 <script>
     // Inicializar ícones se necessário
     if (window.lucide) lucide.createIcons();
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const items = entry.target.querySelectorAll('.reveal-item');
+                items.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.classList.add('active');
+                    }, index * 150);
+                });
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.slide').forEach(slide => {
+        observer.observe(slide);
+    });
+});
 </script>
