@@ -396,44 +396,56 @@ if (!function_exists('fmt')) {
     </section>
 
     <!-- PÁGINA 05: EXPERIÊNCIAS DISTINTAS -->
-    <section class="slide" style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
-        
+    <section class="slide"
+        style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
+
         <!-- Lado Esquerdo: Textos -->
-        <div style="flex: 1; padding: 0 8vw; display: flex; flex-direction: column; justify-content: center; position: relative; height: 100%;">
+        <div
+            style="flex: 1; padding: 0 8vw; display: flex; flex-direction: column; justify-content: center; position: relative; height: 100%;">
             <!-- Decorativo Superior Esquerdo -->
             <div style="position: absolute; top: 0; left: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
-            
-            <h2 style="font-family: var(--wedding-montserrat); font-size: 4rem; font-weight: 300; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; line-height: 1.1; margin-bottom: 40px;">
+
+            <h2
+                style="font-family: var(--wedding-montserrat); font-size: 4rem; font-weight: 300; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; line-height: 1.1; margin-bottom: 40px;">
                 EXPERIÊNCIAS<br>DISTINTAS
             </h2>
-            
-            <div style="max-width: 500px; font-family: var(--wedding-montserrat); font-size: 1.1rem; line-height: 1.8; color: #444;">
+
+            <div
+                style="max-width: 700px; font-family: var(--wedding-montserrat); font-size: 1.1rem; line-height: 1.8; color: #444;">
                 <p style="margin-bottom: 20px;">Na Distinto, não começamos com ideias soltas. Começamos com clareza.</p>
-                
+
                 <p style="margin-bottom: 20px;">
-                    Desenhamos três caminhos estratégicos para que a história de <strong><?= $nomeCasal ?></strong> seja preservada com a força e a verdade que merecem.
+                    Desenhamos três caminhos estratégicos para que a história de <strong><?= $nomeCasal ?></strong> seja
+                    preservada com a força e a verdade que merecem.
                 </p>
-                
+
                 <p style="margin-bottom: 20px;">
-                    Apresentamos nossas propostas de investimento. Cada uma delas foi pensada para transformar o seu casamento em uma experiência totalmente nova, onde a nossa perspectiva artística garante que todas as variáveis do dia ganhem o mais bonito sentido.
+                    Apresentamos nossas propostas de investimento. Cada uma delas foi pensada para transformar o seu
+                    casamento em uma experiência totalmente nova, onde a nossa perspectiva artística garante que todas
+                    as variáveis do dia ganhem o mais bonito sentido.
                 </p>
-                
+
                 <p style="margin-bottom: 20px;">Escolham o caminho que melhor se conecta com o sonho de vocês.</p>
-                
+
                 <p style="font-weight: 700; color: #1a1a1a;">Nossa meta é uma só: arrepiar.</p>
             </div>
 
             <!-- Decorativo Inferior Esquerdo -->
-            <div style="position: absolute; bottom: 10vh; left: 8vw; width: 180px; height: 60px; background: #dcdcdc;"></div>
+            <div style="position: absolute; bottom: 10vh; left: 8vw; width: 180px; height: 60px; background: #dcdcdc;">
+            </div>
         </div>
 
         <!-- Lado Direito: Imagem -->
-        <div style="flex: 1; position: relative; display: flex; align-items: center; justify-content: center; height: 100%;">
+        <div
+            style="flex: 1; position: relative; display: flex; align-items: center; justify-content: center; height: 100%;">
             <!-- Fundo Cinza Decorativo na Direita -->
-            <div style="position: absolute; top: 0; right: 0; width: 35%; height: 80%; background: #dcdcdc; z-index: 1;"></div>
-            
+            <div
+                style="position: absolute; top: 0; right: 0; width: 35%; height: 80%; background: #dcdcdc; z-index: 1;">
+            </div>
+
             <div style="width: 80%; height: 80%; position: relative; z-index: 2;">
-                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-05.png') ?>" style="width: 100%; height: 100%; object-fit: contain;">
+                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-05.png') ?>"
+                    style="width: 100%; height: 100%; object-fit: contain;">
             </div>
         </div>
     </section>
