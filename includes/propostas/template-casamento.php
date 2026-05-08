@@ -13,6 +13,25 @@ $primeiroNomeNoiva = explode(' ', trim($nomeNoiva))[0];
 $primeiroNomeNoivo = explode(' ', trim($nomeNoivo))[0];
 $saudacaoCasal = "Olá, " . (($primeiroNomeNoivo && $primeiroNomeNoiva) ? "{$primeiroNomeNoivo} & {$primeiroNomeNoiva}" : $proposta['cliente_nome']) . "!";
 
+// Novas Variáveis Dinâmicas
+$mensagemPessoal = $dados['mensagem_pessoal'] ?? 'Na Distinto, entendemos que o nosso papel vai muito além de apertar um botão: nossa missão é registrar histórias de amor com autenticidade e emoção.';
+$prazoPrevias = $dados['prazo_previas'] ?? '48 horas';
+$prazoFinal = $dados['prazo_final'] ?? '60 dias úteis';
+$validadeProposta = $dados['validade_proposta'] ?? '7';
+$instagramHandle = $dados['instagram_handle'] ?? '@distintowedding';
+$emailContato = $dados['email_contato'] ?? 'contato@wedistinto.com';
+$whatsappNumero = $dados['whatsapp_numero'] ?? '+55 27 9 8858-6935';
+$depoimento01Texto = $dados['depoimento_01_texto'] ?? 'Foi a melhor escolha que fizemos. Eles capturaram a essência do nosso dia de uma forma que nunca imaginamos.';
+$depoimento01Autor = $dados['depoimento_01_autor'] ?? 'Fernanda & Thiago';
+$depoimento02Texto = $dados['depoimento_02_texto'] ?? 'A sensibilidade da equipe é indescritível. Cada vez que vemos o vídeo, nos emocionamos como se estivéssemos lá de novo.';
+$depoimento02Texto = $dados['depoimento_02_texto'] ?? 'A sensibilidade da equipe é indescritível. Cada vez que vemos o vídeo, nos emocionamos como se estivéssemos lá de novo.';
+$depoimento02Autor = $dados['depoimento_02_autor'] ?? 'Mariana & Lucas';
+
+// Itens dos Pacotes
+$itensHeritage = $dados['itens_heritage'] ?? "Cobertura Documental Completa: Presença ilimitada no evento.\nO Álbum Heritage: Álbum luxo panorâmico 25x30cm.\nRéplicas para a Família: 02 Mini Álbuns réplicas.\nProdução Cinematográfica 4K: Filme completo (8 a 12 min).\nShort Film & Teasers: Vídeos curtos para redes sociais.\nUso de Drone Profissional: Imagens aéreas cinematográficas.\nEcossistema Digital: Galeria online vitalícia.";
+$itensCinematic = $dados['itens_cinematic'] ?? "Cobertura Cinematográfica 8h: Foco narrativo e estético.\nSessão Engagement (Pré-Wedding): Ensaio externo com fotos e vídeo.\nShort Film: Filme de 4 a 6 minutos.\nSocial Content Kit: Material otimizado para Instagram.\nMaking Of Completo: Registro dos preparativos do casal.\nBônus: Pendrive de luxo com arquivos em alta resolução.";
+$itensEssencial = $dados['itens_essencial'] ?? "Cobertura Fotográfica 6h: Foco no essencial do evento.\nGaleria Online: Entrega digital em alta resolução.\nEdição Especial: Curadoria de fotos com tratamento Distinto.\nEntrega em até 45 dias.";
+
 // Formatação de Moeda Helper
 if (!function_exists('fmt')) {
     function fmt($valor)
@@ -299,8 +318,7 @@ if (!function_exists('fmt')) {
                 </p>
                 <p
                     style="font-family: var(--wedding-montserrat); font-size: 1.1rem; line-height: 1.8; color: #444; font-weight: 400;">
-                    Na Distinto, entendemos que o nosso papel vai muito além de apertar um botão: nossa missão é
-                    registrar histórias de amor com autenticidade e emoção.
+                    <?= nl2br($mensagemPessoal) ?>
                 </p>
             </div>
 
@@ -566,36 +584,15 @@ if (!function_exists('fmt')) {
                 </p>
 
                 <ul style="list-style: none; padding: 0; margin-bottom: 30px;">
+                    <?php 
+                    $linhas = explode("\n", trim($itensHeritage));
+                    foreach($linhas as $linha): if(empty($linha)) continue; 
+                    ?>
                     <li style="margin-bottom: 12px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Cobertura Documental Completa:</strong> Presença ilimitada no evento. Do making of à
-                        última música, sem limite de horas.
+                        <?= $linha ?>
                     </li>
-                    <li style="margin-bottom: 12px; position: relative; padding-left: 20px;">
-                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>O Álbum Heritage:</strong> Álbum luxo panorâmico no tamanho 25x30cm (aberto 25x60cm),
-                        com papel fotográfico de alta gramatura e laminação especial.
-                    </li>
-                    <li style="margin-bottom: 12px; position: relative; padding-left: 20px;">
-                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Réplicas para a Família (Presente):</strong> Inclusão de 02 Mini Álbuns réplicas, ideais
-                        para presentear os pais com a mesma qualidade do álbum principal.
-                    </li>
-                    <li style="margin-bottom: 12px; position: relative; padding-left: 20px;">
-                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Produção Cinematográfica 4K:</strong> Filme completo (8 a 12 min) com áudio dos votos e
-                        trilha sonora licenciada.
-                    </li>
-                    <li style="margin-bottom: 12px; position: relative; padding-left: 20px;">
-                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Imagens Aéreas (Drone):</strong> Perspectivas cinematográficas para contextualizar o
-                        local do seu "sim".
-                    </li>
-                    <li style="margin-bottom: 12px; position: relative; padding-left: 20px;">
-                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Ecossistema Digital e Físico:</strong> Galeria online vitalícia, e pen drive
-                        personalizado.
-                    </li>
+                    <?php endforeach; ?>
                 </ul>
 
                 <div style="margin-top: auto; padding-top: 20px; position: relative; z-index: 10;">
@@ -635,35 +632,15 @@ if (!function_exists('fmt')) {
                 </p>
 
                 <ul style="list-style: none; padding: 0; margin-bottom: 20px;">
+                    <?php 
+                    $linhas = explode("\n", trim($itensCinematic));
+                    foreach($linhas as $linha): if(empty($linha)) continue; 
+                    ?>
                     <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Fotografia de Evento (8h):</strong> Cobertura focada na essência e na espontaneidade dos
-                        convidados.
+                        <?= $linha ?>
                     </li>
-                    <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
-                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Sessão Engagement (Pré-Wedding):</strong> Ensaio de até 3h para conexão do casal com a
-                        lente antes do grande dia.
-                    </li>
-                    <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
-                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Short Film de Cinema:</strong> Filme dinâmico (5 a 7 min) com os melhores momentos da
-                        cerimônia e recepção.
-                    </li>
-                    <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
-                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Social Content (Story Maker):</strong> Entrega de conteúdo vertical pronto para redes
-                        sociais. Seus convidados acompanham os bastidores em tempo real.
-                    </li>
-                    <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
-                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Making Of Completo:</strong> Registro da preparação da noiva e do noivo, capturando a
-                        expectativa e os detalhes.
-                    </li>
-                    <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
-                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Bônus:</strong> Vídeo Save-the-Date incluso para o anúncio oficial.
-                    </li>
+                    <?php endforeach; ?>
                 </ul>
 
                 <div style="margin-top: auto; padding-top: 20px; position: relative; z-index: 10;">
@@ -732,21 +709,15 @@ if (!function_exists('fmt')) {
                 </p>
 
                 <ul style="list-style: none; padding: 0; margin-bottom: 20px;">
+                    <?php 
+                    $linhas = explode("\n", trim($itensEssencial));
+                    foreach($linhas as $linha): if(empty($linha)) continue; 
+                    ?>
                     <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Fotografia de Cerimônia (4h):</strong> Cobertura pontual focada no protocolo religioso e
-                        fotos protocolares de família.
+                        <?= $linha ?>
                     </li>
-                    <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
-                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Escopo Limitado:</strong> Plano focado em registros estáticos. Não inclui vídeo, drone,
-                        cobertura de preparativos ou ensaio externo.
-                    </li>
-                    <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
-                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        <strong>Entrega Digital:</strong> Acesso à galeria online exclusiva para download das fotos
-                        editadas.
-                    </li>
+                    <?php endforeach; ?>
                 </ul>
 
                 <p style="font-style: italic; color: #333; font-size: 1.1rem; margin-bottom: 25px;">
@@ -1095,7 +1066,56 @@ if (!function_exists('fmt')) {
         </div>
     </section>
 
-    <!-- PÁGINA 18: VAMOS DAR O PRÓXIMO PASSO? -->
+    <!-- PÁGINA 18: PROVA SOCIAL & COMPROMISSO -->
+    <section class="slide" style="padding: 0; background: #1a1a1a; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; position: relative; height: 100vh; width: 100%; color: #fff;">
+        
+        <div style="display: flex; flex-direction: row; width: 90%; max-width: 1200px; gap: 80px; z-index: 10;">
+            <!-- Lado Esquerdo: Depoimentos -->
+            <div style="flex: 1.5;">
+                <h2 style="font-family: var(--wedding-serif); font-size: 3rem; italic; color: var(--wedding-gold); margin-bottom: 50px;">O que dizem<br>nossos casais...</h2>
+                
+                <div class="reveal-item" style="margin-bottom: 40px; border-left: 2px solid var(--wedding-gold); padding-left: 30px;">
+                    <p style="font-family: var(--wedding-montserrat); font-size: 1.1rem; line-height: 1.6; font-style: italic; margin-bottom: 15px; opacity: 0.9;">
+                        "<?= $depoimento01Texto ?>"
+                    </p>
+                    <p style="font-family: var(--wedding-montserrat); font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--wedding-gold);">
+                        — <?= $depoimento01Autor ?>
+                    </p>
+                </div>
+
+                <div class="reveal-item" style="border-left: 2px solid var(--wedding-gold); padding-left: 30px;">
+                    <p style="font-family: var(--wedding-montserrat); font-size: 1.1rem; line-height: 1.6; font-style: italic; margin-bottom: 15px; opacity: 0.9;">
+                        "<?= $depoimento02Texto ?>"
+                    </p>
+                    <p style="font-family: var(--wedding-montserrat); font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--wedding-gold);">
+                        — <?= $depoimento02Autor ?>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Lado Direito: Cronograma -->
+            <div style="flex: 1; background: rgba(255,255,255,0.05); padding: 50px; border-radius: 4px; display: flex; flex-direction: column; justify-content: center;">
+                <h3 style="font-family: var(--wedding-montserrat); font-size: 1.2rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px;">
+                    NOSSO COMPROMISSO
+                </h3>
+                
+                <div class="reveal-item" style="margin-bottom: 30px;">
+                    <p style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: #888; margin-bottom: 5px;">Prévias do Casamento</p>
+                    <p style="font-family: var(--wedding-serif); font-size: 2rem; color: #fff;"><?= $prazoPrevias ?></p>
+                </div>
+
+                <div class="reveal-item">
+                    <p style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: #888; margin-bottom: 5px;">Material Final</p>
+                    <p style="font-family: var(--wedding-serif); font-size: 2rem; color: #fff;"><?= $prazoFinal ?></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fundo Decorativo -->
+        <div style="position: absolute; top: 0; right: 0; width: 30%; height: 100%; background: linear-gradient(to right, transparent, rgba(197, 168, 128, 0.05));"></div>
+    </section>
+
+    <!-- PÁGINA 19: VAMOS DAR O PRÓXIMO PASSO? -->
     <section class="slide" style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; height: 100vh; width: 100%;">
         
         <!-- Lado Esquerdo: Conteúdo -->
@@ -1111,17 +1131,18 @@ if (!function_exists('fmt')) {
             <!-- Contatos -->
             <div class="reveal-item" style="margin-bottom: 40px; font-family: var(--wedding-montserrat); font-size: 1.2rem; line-height: 2; color: #1a1a1a;">
                 <?php 
+                    $wa_clean = str_replace([' ', '-', '+'], '', $whatsappNumero);
                     $wa_msg = urlencode("Olá! Acabamos de ver a proposta da Distinto para o nosso casamento e ficamos encantados com o olhar de vocês. Gostaríamos de conversar sobre os próximos passos para garantir nossa data!");
-                    $wa_link = "https://wa.me/5527988586935?text=" . $wa_msg;
+                    $wa_link = "https://wa.me/{$wa_clean}?text=" . $wa_msg;
                 ?>
                 <a href="<?= $wa_link ?>" target="_blank" style="display: block; text-decoration: none; color: #1a1a1a; transition: all 0.3s;">
-                    <span style="border-bottom: 1px solid #ccc;">+55 27 9 8858-6935</span>
+                    <span style="border-bottom: 1px solid #ccc;"><?= $whatsappNumero ?></span>
                 </a>
-                <a href="mailto:contato@wedistinto.com" style="display: block; text-decoration: none; color: #1a1a1a; transition: all 0.3s;">
-                    contato@wedistinto.com
+                <a href="mailto:<?= $emailContato ?>" style="display: block; text-decoration: none; color: #1a1a1a; transition: all 0.3s;">
+                    <?= $emailContato ?>
                 </a>
-                <a href="https://instagram.com/distintowedding" target="_blank" style="display: block; text-decoration: none; color: #1a1a1a; transition: all 0.3s;">
-                    @distintowedding
+                <a href="https://instagram.com/<?= str_replace('@', '', $instagramHandle) ?>" target="_blank" style="display: block; text-decoration: none; color: #1a1a1a; transition: all 0.3s;">
+                    <?= $instagramHandle ?>
                 </a>
             </div>
 
@@ -1130,8 +1151,11 @@ if (!function_exists('fmt')) {
                 <p style="margin-bottom: 20px;">
                     Se algo aqui ainda não fez o coração de vocês vibrar, vamos trocar uma ideia. Estamos prontos para encontrar uma solução para o seu caso em particular, moldando cada detalhe para que esta experiência seja totalmente nova e única para vocês.
                 </p>
-                <p>
+                <p style="margin-bottom: 20px;">
                     Este é o primeiro capítulo da história oficial de <strong><?= $nomeCasal ?></strong>, e nossa meta é uma só: fazer todas as variáveis desse dia ganharem o mais bonito sentido, garantindo que o arrepio do 'sim' dure para sempre através do nosso olhar.
+                </p>
+                <p style="font-size: 0.8rem; color: var(--wedding-gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 10px;">
+                    * Proposta válida por <?= $validadeProposta ?> dias.
                 </p>
             </div>
 

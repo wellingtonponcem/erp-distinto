@@ -348,6 +348,77 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     </div>
                 </section>
 
+                <section class="card p-6" x-show="tipoProposta === 'marketing'">
+                    <h3 class="text-sm font-bold text-zinc-900 mb-6 flex items-center gap-2">
+                        <i data-lucide="heart" class="w-4 h-4 text-zinc-400"></i> Personalização Premium (Casamento)
+                    </h3>
+                    
+                    <div class="space-y-6">
+                        <!-- Mensagem e Validade -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="md:col-span-2">
+                                <label class="label">Mensagem Pessoal (Página 02)</label>
+                                <textarea name="mensagem_pessoal" class="input text-xs" x-model="mensagemPessoal" rows="3"></textarea>
+                            </div>
+                            <div>
+                                <label class="label">Validade da Proposta (Dias)</label>
+                                <input type="number" name="validade_proposta" class="input" x-model="validadeProposta">
+                            </div>
+                        </div>
+
+                        <!-- Prazos e Contatos -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="p-4 border border-zinc-100 rounded-2xl bg-zinc-50/50">
+                                <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-4">Cronograma de Entrega</h4>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="label">Prazo Prévias</label>
+                                        <input type="text" name="prazo_previas" class="input" x-model="prazoPrevias">
+                                    </div>
+                                    <div>
+                                        <label class="label">Prazo Material Final</label>
+                                        <input type="text" name="prazo_final" class="input" x-model="prazoFinal">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4 border border-zinc-100 rounded-2xl bg-zinc-50/50">
+                                <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-4">Contatos da Proposta</h4>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="col-span-2">
+                                        <label class="label">Instagram</label>
+                                        <input type="text" name="instagram_handle" class="input" x-model="instagramHandle">
+                                    </div>
+                                    <div>
+                                        <label class="label">E-mail</label>
+                                        <input type="text" name="email_contato" class="input" x-model="emailContato">
+                                    </div>
+                                    <div>
+                                        <label class="label">WhatsApp</label>
+                                        <input type="text" name="whatsapp_numero" class="input" x-model="whatsappNumero">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Depoimentos -->
+                        <div class="p-4 border border-zinc-100 rounded-2xl bg-zinc-50/50">
+                            <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-4">Depoimentos (Prova Social)</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="space-y-3">
+                                    <label class="label">Depoimento 01</label>
+                                    <textarea name="depoimento_01_texto" class="input text-xs" x-model="depoimento01Texto" rows="2"></textarea>
+                                    <input type="text" name="depoimento_01_autor" class="input text-xs" x-model="depoimento01Autor" placeholder="Nome do Casal">
+                                </div>
+                                <div class="space-y-3">
+                                    <label class="label">Depoimento 02</label>
+                                    <textarea name="depoimento_02_texto" class="input text-xs" x-model="depoimento02Texto" rows="2"></textarea>
+                                    <input type="text" name="depoimento_02_autor" class="input text-xs" x-model="depoimento02Autor" placeholder="Nome do Casal">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <section class="card p-6" id="sectionServicos" x-show="tipoProposta === 'marketing'">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-sm font-bold text-zinc-900">Serviços Inclusos</h3>
@@ -548,6 +619,19 @@ document.addEventListener('alpine:init', () => {
         condicoesReserva: 'A reserva da data é oficializada mediante a assinatura do contrato e o pagamento do sinal (entrada), que pode ser de 20% ou 25% do valor do pacote escolhido.\nOpções de Parcelamento: Oferecemos flexibilidade para que o saldo seja quitado de forma equilibrada até a data do evento:',
         condicoesHeritageCinematic: 'Entrada de 20% + Saldo parcelado em até 6x (dependendo do pacote selecionado)',
         condicoesEssencial: 'Entrada de 25% + Saldo parcelado em até 5x (dependendo do pacote selecionado)',
+        
+        // Novos campos dinâmicos para Proposta de Casamento
+        mensagemPessoal: 'Na Distinto, entendemos que o nosso papel vai muito além de apertar um botão: nossa missão é registrar histórias de amor com autenticidade e emoção.',
+        prazoPrevias: '48 horas',
+        prazoFinal: '60 dias úteis',
+        validadeProposta: '7',
+        instagramHandle: '@distintowedding',
+        emailContato: 'contato@wedistinto.com',
+        whatsappNumero: '+55 27 9 8858-6935',
+        depoimento01Texto: 'Foi a melhor escolha que fizemos. Eles capturaram a essência do nosso dia de uma forma que nunca imaginamos.',
+        depoimento01Autor: 'Fernanda & Thiago',
+        depoimento02Texto: 'A sensibilidade da equipe é indescritível. Cada vez que vemos o vídeo, nos emocionamos como se estivéssemos lá de novo.',
+        depoimento02Autor: 'Mariana & Lucas',
         
         init() {
             if (this.tipoProposta === 'marketing') {
