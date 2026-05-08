@@ -1084,51 +1084,53 @@ if (!function_exists('fmt')) {
 
     <!-- PÁGINA 18: PROVA SOCIAL & COMPROMISSO -->
     <section class="slide" style="padding: 0; background: #1a1a1a; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; position: relative; height: 100vh; width: 100%; color: #fff;">
-        
+
         <div style="display: flex; flex-direction: row; width: 90%; max-width: 1200px; gap: 80px; z-index: 10;">
             <!-- Lado Esquerdo: Depoimentos -->
             <div style="flex: 1.5;">
-                <h2 style="font-family: var(--wedding-serif); font-size: 3rem; italic; color: var(--wedding-gold); margin-bottom: 50px;">O que dizem<br>nossos casais...</h2>
-                
+                <h2 style="font-family: var(--wedding-montserrat); font-size: 3rem; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; line-height: 1.1; margin-bottom: 50px;">
+                    O QUE DIZEM<br><span style="color: var(--wedding-gold);">NOSSOS CASAIS</span>
+                </h2>
+
                 <div class="reveal-item" style="margin-bottom: 40px; border-left: 2px solid var(--wedding-gold); padding-left: 30px;">
-                    <p style="font-family: var(--wedding-montserrat); font-size: 1.1rem; line-height: 1.6; font-style: italic; margin-bottom: 15px; opacity: 0.9;">
+                    <p style="font-family: var(--wedding-montserrat); font-size: 1rem; font-weight: 300; line-height: 1.7; font-style: italic; margin-bottom: 15px; color: rgba(255,255,255,0.8);">
                         "<?= $depoimento01Texto ?>"
                     </p>
-                    <p style="font-family: var(--wedding-montserrat); font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--wedding-gold);">
+                    <p style="font-family: var(--wedding-montserrat); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: var(--wedding-gold);">
                         — <?= $depoimento01Autor ?>
                     </p>
                 </div>
 
                 <div class="reveal-item" style="border-left: 2px solid var(--wedding-gold); padding-left: 30px;">
-                    <p style="font-family: var(--wedding-montserrat); font-size: 1.1rem; line-height: 1.6; font-style: italic; margin-bottom: 15px; opacity: 0.9;">
+                    <p style="font-family: var(--wedding-montserrat); font-size: 1rem; font-weight: 300; line-height: 1.7; font-style: italic; margin-bottom: 15px; color: rgba(255,255,255,0.8);">
                         "<?= $depoimento02Texto ?>"
                     </p>
-                    <p style="font-family: var(--wedding-montserrat); font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--wedding-gold);">
+                    <p style="font-family: var(--wedding-montserrat); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: var(--wedding-gold);">
                         — <?= $depoimento02Autor ?>
                     </p>
                 </div>
             </div>
 
-            <!-- Lado Direito: Cronograma -->
-            <div style="flex: 1; background: rgba(255,255,255,0.05); padding: 50px; border-radius: 4px; display: flex; flex-direction: column; justify-content: center;">
-                <h3 style="font-family: var(--wedding-montserrat); font-size: 1.2rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px;">
+            <!-- Lado Direito: Compromisso -->
+            <div style="flex: 1; background: rgba(255,255,255,0.04); padding: 50px; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; border: 1px solid rgba(255,255,255,0.06);">
+                <h3 style="font-family: var(--wedding-montserrat); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--wedding-gold); margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 20px;">
                     NOSSO COMPROMISSO
                 </h3>
-                
+
                 <div class="reveal-item" style="margin-bottom: 30px;">
-                    <p style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: #888; margin-bottom: 5px;">Prévias do Casamento</p>
-                    <p style="font-family: var(--wedding-serif); font-size: 2rem; color: #fff;"><?= $prazoPrevias ?></p>
+                    <p style="font-family: var(--wedding-montserrat); font-size: 0.7rem; font-weight: 400; text-transform: uppercase; letter-spacing: 0.15em; color: #666; margin-bottom: 8px;">Prévias do Casamento</p>
+                    <p style="font-family: var(--wedding-montserrat); font-size: 2rem; font-weight: 300; letter-spacing: 0.05em; color: #fff;"><?= $prazoPrevias ?></p>
                 </div>
 
                 <div class="reveal-item">
-                    <p style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: #888; margin-bottom: 5px;">Material Final</p>
-                    <p style="font-family: var(--wedding-serif); font-size: 2rem; color: #fff;"><?= $prazoFinal ?></p>
+                    <p style="font-family: var(--wedding-montserrat); font-size: 0.7rem; font-weight: 400; text-transform: uppercase; letter-spacing: 0.15em; color: #666; margin-bottom: 8px;">Material Final</p>
+                    <p style="font-family: var(--wedding-montserrat); font-size: 2rem; font-weight: 300; letter-spacing: 0.05em; color: #fff;"><?= $prazoFinal ?></p>
                 </div>
             </div>
         </div>
 
         <!-- Fundo Decorativo -->
-        <div style="position: absolute; top: 0; right: 0; width: 30%; height: 100%; background: linear-gradient(to right, transparent, rgba(197, 168, 128, 0.05));"></div>
+        <div style="position: absolute; top: 0; right: 0; width: 30%; height: 100%; background: linear-gradient(to right, transparent, rgba(197, 168, 128, 0.04));"></div>
     </section>
 
     <!-- PÁGINA 19: VAMOS DAR O PRÓXIMO PASSO? -->
