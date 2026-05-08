@@ -57,6 +57,7 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
     
     <link rel="stylesheet" href="<?= raizUrl('/assets/css/propostas.css') ?>">
     <link rel="stylesheet" href="<?= raizUrl('/assets/css/propostas-mobile.css') ?>">
+    <link rel="icon" type="image/svg+xml" href="<?= raizUrl('/favicon.svg') ?>">
     <link rel="apple-touch-icon" sizes="180x180" href="<?= raizUrl('/favicon_io/apple-touch-icon.png') ?>">
     <link rel="icon" type="image/png" sizes="32x32" href="<?= raizUrl('/favicon_io/favicon-32x32.png') ?>">
     <link rel="icon" type="image/png" sizes="16x16" href="<?= raizUrl('/favicon_io/favicon-16x16.png') ?>">
