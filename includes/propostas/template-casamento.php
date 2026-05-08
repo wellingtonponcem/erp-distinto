@@ -450,6 +450,11 @@ if (!function_exists('fmt')) {
         </div>
     </section>
 
+    <!-- PÁGINA 06: FULL IMAGE -->
+    <section class="slide" style="padding: 0; background: #000;">
+        <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-06.jpg') ?>" class="img-bg" style="opacity: 1; z-index: 1;">
+    </section>
+
     <!-- PÁGINA 07: HERITAGE (PLANO COMPLETO) -->
     <section class="slide">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
