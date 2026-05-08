@@ -455,40 +455,65 @@ if (!function_exists('fmt')) {
         <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-06.jpg') ?>" class="img-bg" style="opacity: 1; z-index: 1;">
     </section>
 
-    <!-- PÁGINA 07: HERITAGE (PLANO COMPLETO) -->
-    <section class="slide">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
-            <div>
-                <span class="badge">A EXPERIÊNCIA MAIS COMPLETA</span>
-                <h2 class="text-serif">Heritage</h2>
-                <div class="line"></div>
-                <div class="space-y-4 text-sm">
-                    <?php
-                    $itensHeritage = explode(',', $dados['itens_heritage'] ?? '');
-                    foreach ($itensHeritage as $item):
-                        ?>
-                        <div class="flex items-center gap-3">
-                            <svg class="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7">
-                                </path>
-                            </svg>
-                            <span><?= trim($item) ?></span>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
+    <!-- PÁGINA 07: EXPERIÊNCIA HERITAGE -->
+    <section class="slide" style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
+        
+        <!-- Lado Esquerdo: Imagem -->
+        <div style="flex: 1; height: 100%;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-07.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
 
-                <div class="mt-12 p-8 bg-white border border-zinc-100 shadow-sm">
-                    <p class="uppercase text-[10px] font-bold text-zinc-400">Investimento Heritage</p>
-                    <div class="price-tag"><?= fmt($dados['valor_heritage']) ?></div>
+        <!-- Lado Direito: Detalhes -->
+        <div style="flex: 1.2; padding: 0 6vw; display: flex; flex-direction: column; justify-content: center; position: relative; height: 100%; background: #f9f9f9;">
+            <!-- Decorativo Superior Direito -->
+            <div style="position: absolute; top: 0; right: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
+            
+            <h2 style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; line-height: 1.1; margin-bottom: 30px;">
+                EXPERIÊNCIA<br>HERITAGE
+            </h2>
+            
+            <div style="font-family: var(--wedding-montserrat); font-size: 0.95rem; line-height: 1.6; color: #444;">
+                <p style="margin-bottom: 25px; font-weight: 400;">
+                    Este é o plano definitivo para casais que não aceitam lacunas. É a garantia de uma cobertura onipresente, focada na construção da herança visual da sua família, do papel à tela.
+                </p>
+                
+                <ul style="list-style: none; padding: 0; margin-bottom: 30px;">
+                    <li style="margin-bottom: 12px; position: relative; padding-left: 20px;">
+                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
+                        <strong>Cobertura Documental Completa:</strong> Presença ilimitada no evento. Do making of à última música, sem limite de horas.
+                    </li>
+                    <li style="margin-bottom: 12px; position: relative; padding-left: 20px;">
+                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
+                        <strong>O Álbum Heritage:</strong> Álbum luxo panorâmico no tamanho 25x30cm (aberto 25x60cm), com papel fotográfico de alta gramatura e laminação especial.
+                    </li>
+                    <li style="margin-bottom: 12px; position: relative; padding-left: 20px;">
+                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
+                        <strong>Réplicas para a Família (Presente):</strong> Inclusão de 02 Mini Álbuns réplicas, ideais para presentear os pais com a mesma qualidade do álbum principal.
+                    </li>
+                    <li style="margin-bottom: 12px; position: relative; padding-left: 20px;">
+                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
+                        <strong>Produção Cinematográfica 4K:</strong> Filme completo (8 a 12 min) com áudio dos votos e trilha sonora licenciada.
+                    </li>
+                    <li style="margin-bottom: 12px; position: relative; padding-left: 20px;">
+                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
+                        <strong>Imagens Aéreas (Drone):</strong> Perspectivas cinematográficas para contextualizar o local do seu "sim".
+                    </li>
+                    <li style="margin-bottom: 12px; position: relative; padding-left: 20px;">
+                        <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
+                        <strong>Ecossistema Digital e Físico:</strong> Galeria online vitalícia, e pen drive personalizado.
+                    </li>
+                </ul>
+                
+                <p style="font-style: italic; color: #666; font-size: 1.1rem;">
+                    Investimento: <?= fmt($dados['valor_heritage']) ?> 
                     <?php if (!empty($dados['condicao_especial'])): ?>
-                        <p class="text-xs mt-2 text-zinc-500 italic">* <?= $dados['condicao_especial'] ?></p>
+                        <span style="font-size: 0.9rem;">(<?= $dados['condicao_especial'] ?>)</span>
                     <?php endif; ?>
-                </div>
+                </p>
             </div>
-            <div class="h-full">
-                <img src="https://images.unsplash.com/photo-1519225495810-751bd511ccf7?q=80&w=2070"
-                    class="w-full h-full object-cover">
-            </div>
+
+            <!-- Decorativo Inferior Direito -->
+            <div style="position: absolute; bottom: 0; right: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
         </div>
     </section>
 
