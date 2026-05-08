@@ -899,14 +899,14 @@ if (!function_exists('fmt')) {
         
         <!-- Coluna Esquerda (Foto Vertical) -->
         <div class="reveal-item" style="flex: 1; height: 100%; overflow: hidden;">
-            <img src="<?= raizUrl('/imagens-proposta-casamento/Design Geral/foto-section-15-esquerda.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-15-esquerda.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
 
         <!-- Coluna Direita (Composto) -->
         <div style="flex: 2.2; display: flex; flex-direction: column; gap: 2px; height: 100%;">
             <!-- Topo Direita -->
             <div class="reveal-item" style="flex: 1.2; position: relative; overflow: hidden;">
-                <img src="<?= raizUrl('/imagens-proposta-casamento/Design Geral/foto-section-15-cima.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-15-cima.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
                 <div style="position: absolute; bottom: 40px; right: 40px; z-index: 10;">
                     <p style="font-family: var(--wedding-montserrat); font-size: 1rem; color: #fff; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 300; opacity: 0.8;">
                         CHRISTIAN E ALINE - WEDDING DAY
@@ -916,10 +916,10 @@ if (!function_exists('fmt')) {
             <!-- Base Direita (Duas fotos) -->
             <div style="flex: 1; display: flex; flex-direction: row; gap: 2px; height: 100%;">
                 <div class="reveal-item" style="flex: 1; overflow: hidden;">
-                    <img src="<?= raizUrl('/imagens-proposta-casamento/Design Geral/foto-section-15-baixo-esquerda.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-15-baixo-esquerda.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 <div class="reveal-item" style="flex: 1; overflow: hidden;">
-                    <img src="<?= raizUrl('/imagens-proposta-casamento/Design Geral/foto-section-15-baixo-direita.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-15-baixo-direita.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
             </div>
         </div>
