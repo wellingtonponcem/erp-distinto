@@ -598,15 +598,15 @@ if (!function_exists('fmt')) {
     </section>
 
     <!-- PÁGINA 09: REGISTRO ESSENCIAL -->
-    <section class="slide" style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
+    <section class="slide" style="padding: 0; background: #f4f4f4; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
         
         <!-- Lado Esquerdo: Imagem -->
-        <div style="flex: 1; height: 100%;">
-            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-09.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+        <div style="flex: 1; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-09.png') ?>" style="width: 100%; height: 80%; object-fit: contain;">
         </div>
 
         <!-- Lado Direito: Detalhes -->
-        <div style="flex: 1.2; padding: 0 6vw; display: flex; flex-direction: column; justify-content: center; position: relative; height: 100%; background: #f4f4f4;">
+        <div style="flex: 1.2; padding: 0 6vw; display: flex; flex-direction: column; justify-content: center; position: relative; height: 100%;">
             <!-- Decorativos -->
             <div style="position: absolute; top: 0; right: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
             <div style="position: absolute; bottom: 0; right: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
