@@ -173,6 +173,7 @@ if (!function_exists('fmt')) {
         transform: translateY(30px);
         transition: all 1s cubic-bezier(0.21, 1, 0.36, 1);
     }
+
     .reveal-item.active {
         opacity: 1;
         transform: translateY(0);
@@ -314,7 +315,63 @@ if (!function_exists('fmt')) {
         </div>
     </section>
 
-    <!-- PÁGINA 03: VISÃO E MISSÃO -->
+    <!-- PÁGINA 03: ONDE O TEMPO PARA (MANIFESTO) -->
+    <section class="slide"
+        style="padding: 0; background: #f4f4f4; display: flex; flex-direction: row; align-items: center; justify-content: center; overflow: hidden; position: relative; height: 100vh; width: 100%;">
+
+        <!-- Lado Esquerdo: Foto com Barra Decorativa -->
+        <div
+            style="flex: 1.2; height: 100%; position: relative; display: flex; align-items: center; justify-content: center;">
+            <!-- Barra Cinza -->
+            <div
+                style="position: absolute; top: 0; left: 0; width: 60%; height: 100%; background: #dcdcdc; z-index: 1;">
+            </div>
+            <!-- Foto -->
+            <div class="reveal-item"
+                style="width: 80%; height: 80%; z-index: 2; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
+                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-17.png') ?>"
+                    style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+        </div>
+
+        <!-- Lado Direito: Texto -->
+        <div class="reveal-item"
+            style="flex: 1; padding: 0 6vw; display: flex; flex-direction: column; justify-content: center; position: relative;">
+            <h2
+                style="font-family: var(--wedding-montserrat); font-size: 4.5rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; line-height: 1; margin-bottom: 40px;">
+                ONDE O<br>TEMPO PARA
+            </h2>
+
+            <div
+                style="font-family: var(--wedding-montserrat); font-size: 1.1rem; line-height: 1.8; color: #333; font-weight: 400; max-width: 500px;">
+                <p style="margin-bottom: 25px;">
+                    Para nós, a melhor foto não é a mais nítida ou a que segue todas as regras. É aquela que faz vocês
+                    sentirem tudo de novo.
+                </p>
+                <p style="margin-bottom: 25px;">
+                    Acreditamos que toda história tem sua beleza. A "melhor foto" do nosso portfólio não é um troféu na
+                    estante, mas sim aquele frame que captura o extraordinário no comum: o sussurro do noivo, o brilho
+                    no olhar da <strong><?= $primeiroNomeNoiva ?></strong> ou a emoção genuína dos seus convidados.
+                </p>
+                <p style="margin-bottom: 25px;">
+                    <strong>O Arrepio em um Clique.</strong> Nossa busca constante é pela imagem que faz o tempo parar.
+                    Queremos que a fotografia seja uma experiência totalmente nova, permitindo que vocês vejam o
+                    casamento de vocês sob uma perspectiva artística e sensível. É o registro que transforma variáveis,
+                    como a luz e a fé que os une, no mais lindo sentido.
+                </p>
+            </div>
+
+            <!-- Assinatura -->
+            <div style="margin-top: 40px; text-align: right; width: 100%; max-width: 500px;">
+                <p
+                    style="font-family: var(--wedding-montserrat); font-size: 0.9rem; color: #666; letter-spacing: 0.1em; text-transform: uppercase;">
+                    by Wellington Poncem
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- PÁGINA 04: VISÃO E MISSÃO -->
     <section class="slide"
         style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; overflow: hidden;">
         <!-- Topo: Textos -->
@@ -372,7 +429,7 @@ if (!function_exists('fmt')) {
         </div>
     </section>
 
-    <!-- PÁGINA 04: PERSPECTIVA -->
+    <!-- PÁGINA 05: PERSPECTIVA -->
     <section class="slide"
         style="padding: 0; background: #fff; display: flex; flex-direction: column; overflow: hidden; position: relative;">
         <!-- Topo: Imagem -->
@@ -417,7 +474,7 @@ if (!function_exists('fmt')) {
 
     </section>
 
-    <!-- PÁGINA 05: EXPERIÊNCIAS DISTINTAS -->
+    <!-- PÁGINA 06: EXPERIÊNCIAS DISTINTAS -->
     <section class="slide"
         style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
 
@@ -472,13 +529,13 @@ if (!function_exists('fmt')) {
         </div>
     </section>
 
-    <!-- PÁGINA 06: FULL IMAGE -->
+    <!-- PÁGINA 07: FULL IMAGE -->
     <section class="slide" style="padding: 0; background: #000;">
         <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-06.jpg') ?>" class="img-bg"
             style="opacity: 1; z-index: 1;">
     </section>
 
-    <!-- PÁGINA 07: EXPERIÊNCIA HERITAGE -->
+    <!-- PÁGINA 08: EXPERIÊNCIA HERITAGE -->
     <section class="slide"
         style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
 
@@ -556,7 +613,7 @@ if (!function_exists('fmt')) {
         </div>
     </section>
 
-    <!-- PÁGINA 08: EXPERIÊNCIA CINEMATIC -->
+    <!-- PÁGINA 09: EXPERIÊNCIA CINEMATIC -->
     <section class="slide"
         style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
 
@@ -646,7 +703,7 @@ if (!function_exists('fmt')) {
         </div>
     </section>
 
-    <!-- PÁGINA 09: REGISTRO ESSENCIAL -->
+    <!-- PÁGINA 10: REGISTRO ESSENCIAL -->
     <section class="slide"
         style="padding: 0; background: #f4f4f4; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
 
@@ -719,7 +776,7 @@ if (!function_exists('fmt')) {
         </div>
     </section>
 
-    <!-- PÁGINA 10: INVESTIMENTO E PLANEJAMENTO -->
+    <!-- PÁGINA 11: INVESTIMENTO E PLANEJAMENTO -->
     <section class="slide"
         style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; overflow: hidden; position: relative; height: 100vh; width: 100%;">
 
@@ -776,35 +833,47 @@ if (!function_exists('fmt')) {
         </div>
     </section>
 
-    <!-- PÁGINA 11: WEDDING PORTFOLIO CAPA -->
-    <section class="slide" style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; overflow: hidden; position: relative; height: 100vh; width: 100%;">
-        
+    <!-- PÁGINA 12: WEDDING PORTFOLIO CAPA -->
+    <section class="slide"
+        style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; overflow: hidden; position: relative; height: 100vh; width: 100%;">
+
         <!-- Topo: Textos -->
         <div style="height: 50%; display: flex; flex-direction: row; width: 100%;">
             <!-- Lado Esquerdo: Manifesto -->
             <div style="flex: 2; padding: 6vh 6vw; display: flex; flex-direction: column; justify-content: center;">
-                <div style="font-family: var(--wedding-montserrat); font-size: 1.15rem; line-height: 1.6; color: #333; font-weight: 400;">
+                <div
+                    style="font-family: var(--wedding-montserrat); font-size: 1.15rem; line-height: 1.6; color: #333; font-weight: 400;">
                     <p style="margin-bottom: 20px;">
-                        Acreditamos que, daqui a vinte anos, o que restará não serão apenas arquivos digitais, mas a sensação exata do que foi o dia <strong>do seu casamento</strong>.
+                        Acreditamos que, daqui a vinte anos, o que restará não serão apenas arquivos digitais, mas a
+                        sensação exata do que foi o dia <strong>do seu casamento</strong>.
                     </p>
                     <p style="margin-bottom: 20px;">
-                        Para nós, toda história tem sua beleza, e a beleza de vocês reside na intimidade de um <strong>'sim'</strong> compartilhado entre amigos e na fé que os une.
+                        Para nós, toda história tem sua beleza, e a beleza de vocês reside na intimidade de um
+                        <strong>'sim'</strong> compartilhado entre amigos e na fé que os une.
                     </p>
                     <p style="font-size: 1rem; color: #444;">
-                        Mais do que um registro, uma perspectiva. <strong>Sim</strong>, o casamento de vocês será incrível, mas queremos que o filme e as fotos sejam uma experiência à parte. Nosso olhar busca o que está nas entrelinhas. Desde o sussurro do noivo no altar até o riso solto dos convidados. Do caos vibrante do making of à paz profunda da oração antes da cerimônia. Dos detalhes das mãos que se entrelaçam às grandes paisagens que moldam o dia.
+                        Mais do que um registro, uma perspectiva. <strong>Sim</strong>, o casamento de vocês será
+                        incrível, mas queremos que o filme e as fotos sejam uma experiência à parte. Nosso olhar busca o
+                        que está nas entrelinhas. Desde o sussurro do noivo no altar até o riso solto dos convidados. Do
+                        caos vibrante do making of à paz profunda da oração antes da cerimônia. Dos detalhes das mãos
+                        que se entrelaçam às grandes paisagens que moldam o dia.
                     </p>
                 </div>
             </div>
 
             <!-- Lado Direito: Título -->
-            <div style="flex: 1.5; padding: 6vh 4vw; display: flex; flex-direction: column; justify-content: center; position: relative;">
+            <div
+                style="flex: 1.5; padding: 6vh 4vw; display: flex; flex-direction: column; justify-content: center; position: relative;">
                 <!-- Decorativo Superior Direito -->
-                <div style="position: absolute; top: 0; right: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
-                
-                <h2 style="font-family: var(--wedding-montserrat); font-size: 4.5rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; line-height: 1; margin-bottom: 5px;">
+                <div style="position: absolute; top: 0; right: 0; width: 60px; height: 80px; background: #dcdcdc;">
+                </div>
+
+                <h2
+                    style="font-family: var(--wedding-montserrat); font-size: 4.5rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; line-height: 1; margin-bottom: 5px;">
                     WEDDING<br>PORTFOLIO
                 </h2>
-                <p style="font-family: var(--wedding-montserrat); font-size: 1.4rem; font-weight: 400; color: #444; letter-spacing: 0.2em; text-transform: uppercase;">
+                <p
+                    style="font-family: var(--wedding-montserrat); font-size: 1.4rem; font-weight: 400; color: #444; letter-spacing: 0.2em; text-transform: uppercase;">
                     VERSÕES DA SUA HISTÓRIA
                 </p>
             </div>
@@ -812,50 +881,60 @@ if (!function_exists('fmt')) {
 
         <!-- Base: Grid de Fotos -->
         <div style="height: 50%; width: 100%;">
-            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-11.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-11.png') ?>"
+                style="width: 100%; height: 100%; object-fit: cover;">
         </div>
     </section>
 
-    <!-- PÁGINA 12: PORTFÓLIO PEDRO E VANESSA -->
-    <section class="slide portfolio-slide" style="padding: 0; background: #000; display: flex; flex-direction: row; gap: 2px; overflow: hidden; height: 100vh; width: 100%;">
-        
+    <!-- PÁGINA 13: PORTFÓLIO PEDRO E VANESSA -->
+    <section class="slide portfolio-slide"
+        style="padding: 0; background: #000; display: flex; flex-direction: row; gap: 2px; overflow: hidden; height: 100vh; width: 100%;">
+
         <!-- Coluna Esquerda (Duas fotos empilhadas) -->
         <div style="flex: 2; display: flex; flex-direction: column; gap: 2px; height: 100%;">
             <!-- Foto Cima -->
             <div class="reveal-item" style="flex: 1; position: relative; overflow: hidden;">
-                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-cima-12.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-cima-12.png') ?>"
+                    style="width: 100%; height: 100%; object-fit: cover;">
                 <div style="position: absolute; top: 40px; left: 40px; z-index: 10;">
-                    <p style="font-family: var(--wedding-montserrat); font-size: 1rem; color: #fff; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 300; opacity: 0.8;">
+                    <p
+                        style="font-family: var(--wedding-montserrat); font-size: 1rem; color: #fff; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 300; opacity: 0.8;">
                         PEDRO E VANESSA - BEFORE THE BLOOM
                     </p>
                 </div>
             </div>
             <!-- Foto Baixo -->
             <div class="reveal-item" style="flex: 1; overflow: hidden;">
-                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-baixo-12.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-baixo-12.png') ?>"
+                    style="width: 100%; height: 100%; object-fit: cover;">
             </div>
         </div>
 
         <!-- Coluna Direita (Foto inteira) -->
         <div class="reveal-item" style="flex: 1.1; overflow: hidden; height: 100%;">
-            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-direita-12.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-direita-12.png') ?>"
+                style="width: 100%; height: 100%; object-fit: cover;">
         </div>
     </section>
 
-    <!-- PÁGINA 13: PORTFÓLIO GABRIEL E JULIA -->
-    <section class="slide portfolio-slide" style="padding: 0; background: #000; display: flex; flex-direction: row; gap: 2px; overflow: hidden; height: 100vh; width: 100%;">
-        
+    <!-- PÁGINA 14: PORTFÓLIO GABRIEL E JULIA -->
+    <section class="slide portfolio-slide"
+        style="padding: 0; background: #000; display: flex; flex-direction: row; gap: 2px; overflow: hidden; height: 100vh; width: 100%;">
+
         <!-- Coluna Esquerda (Duas fotos empilhadas) -->
         <div style="flex: 1.8; display: flex; flex-direction: column; gap: 2px; height: 100%;">
             <!-- Foto Cima -->
             <div class="reveal-item" style="flex: 1; overflow: hidden;">
-                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-cima-13.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-cima-13.png') ?>"
+                    style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <!-- Foto Baixo -->
             <div class="reveal-item" style="flex: 1.1; position: relative; overflow: hidden;">
-                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-baixo-13.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-baixo-13.png') ?>"
+                    style="width: 100%; height: 100%; object-fit: cover;">
                 <div style="position: absolute; bottom: 40px; left: 40px; z-index: 10;">
-                    <p style="font-family: var(--wedding-montserrat); font-size: 1rem; color: #fff; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 300; opacity: 0.8;">
+                    <p
+                        style="font-family: var(--wedding-montserrat); font-size: 1rem; color: #fff; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 300; opacity: 0.8;">
                         GABRIEL E JULIA - PRÉ-WEDDING
                     </p>
                 </div>
@@ -864,24 +943,29 @@ if (!function_exists('fmt')) {
 
         <!-- Coluna Direita (Foto inteira) -->
         <div class="reveal-item" style="flex: 1; overflow: hidden; height: 100%;">
-            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-direita-13.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-direita-13.png') ?>"
+                style="width: 100%; height: 100%; object-fit: cover;">
         </div>
     </section>
 
-    <!-- PÁGINA 14: PORTFÓLIO BRUNA E ROBSON -->
-    <section class="slide portfolio-slide" style="padding: 0; background: #000; display: flex; flex-direction: row; gap: 2px; overflow: hidden; height: 100vh; width: 100%;">
-        
+    <!-- PÁGINA 15: PORTFÓLIO BRUNA E ROBSON -->
+    <section class="slide portfolio-slide"
+        style="padding: 0; background: #000; display: flex; flex-direction: row; gap: 2px; overflow: hidden; height: 100vh; width: 100%;">
+
         <!-- Coluna Esquerda (Duas fotos empilhadas) -->
         <div style="flex: 1.8; display: flex; flex-direction: column; gap: 2px; height: 100%;">
             <!-- Foto Cima -->
             <div class="reveal-item" style="flex: 1.1; overflow: hidden;">
-                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-14-cima.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-14-cima.png') ?>"
+                    style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <!-- Foto Baixo -->
             <div class="reveal-item" style="flex: 1; position: relative; overflow: hidden;">
-                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-14-baixo.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-14-baixo.png') ?>"
+                    style="width: 100%; height: 100%; object-fit: cover;">
                 <div style="position: absolute; bottom: 40px; left: 40px; z-index: 10;">
-                    <p style="font-family: var(--wedding-montserrat); font-size: 1rem; color: #fff; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 300; opacity: 0.8;">
+                    <p
+                        style="font-family: var(--wedding-montserrat); font-size: 1rem; color: #fff; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 300; opacity: 0.8;">
                         BRUNA E ROBSON - CASAMENTO CARTÓRIO
                     </p>
                 </div>
@@ -890,25 +974,30 @@ if (!function_exists('fmt')) {
 
         <!-- Coluna Direita (Foto inteira) -->
         <div class="reveal-item" style="flex: 1; overflow: hidden; height: 100%;">
-            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-14-direita.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-14-direita.png') ?>"
+                style="width: 100%; height: 100%; object-fit: cover;">
         </div>
     </section>
 
-    <!-- PÁGINA 15: PORTFÓLIO CHRISTIAN E ALINE -->
-    <section class="slide portfolio-slide" style="padding: 0; background: #000; display: flex; flex-direction: row; gap: 2px; overflow: hidden; height: 100vh; width: 100%;">
-        
+    <!-- PÁGINA 16: PORTFÓLIO CHRISTIAN E ALINE -->
+    <section class="slide portfolio-slide"
+        style="padding: 0; background: #000; display: flex; flex-direction: row; gap: 2px; overflow: hidden; height: 100vh; width: 100%;">
+
         <!-- Coluna Esquerda (Foto Vertical) -->
         <div class="reveal-item" style="flex: 1; height: 100%; overflow: hidden;">
-            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-15-esquerda.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-15-esquerda.png') ?>"
+                style="width: 100%; height: 100%; object-fit: cover;">
         </div>
 
         <!-- Coluna Direita (Composto) -->
         <div style="flex: 2.2; display: flex; flex-direction: column; gap: 2px; height: 100%;">
             <!-- Topo Direita -->
             <div class="reveal-item" style="flex: 1.2; position: relative; overflow: hidden;">
-                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-15-cima.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-15-cima.png') ?>"
+                    style="width: 100%; height: 100%; object-fit: cover;">
                 <div style="position: absolute; bottom: 40px; right: 40px; z-index: 10;">
-                    <p style="font-family: var(--wedding-montserrat); font-size: 1rem; color: #fff; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 300; opacity: 0.8;">
+                    <p
+                        style="font-family: var(--wedding-montserrat); font-size: 1rem; color: #fff; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 300; opacity: 0.8;">
                         CHRISTIAN E ALINE - WEDDING DAY
                     </p>
                 </div>
@@ -916,21 +1005,25 @@ if (!function_exists('fmt')) {
             <!-- Base Direita (Duas fotos) -->
             <div style="flex: 1; display: flex; flex-direction: row; gap: 2px; height: 100%;">
                 <div class="reveal-item" style="flex: 1; overflow: hidden;">
-                    <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-15-baixo-esquerda.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-15-baixo-esquerda.png') ?>"
+                        style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
                 <div class="reveal-item" style="flex: 1; overflow: hidden;">
-                    <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-15-baixo-direita.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-15-baixo-direita.png') ?>"
+                        style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- PÁGINA 16: OS OLHARES POR TRÁS DAS LENTES (EQUIPE) -->
-    <section class="slide" style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; position: relative; height: 100vh; width: 100%;">
-        
+    <!-- PÁGINA 17: OS OLHARES POR TRÁS DAS LENTES (EQUIPE) -->
+    <section class="slide"
+        style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; position: relative; height: 100vh; width: 100%;">
+
         <!-- Cabeçalho -->
         <div class="reveal-item" style="text-align: center; margin-bottom: 60px; z-index: 10;">
-            <h2 style="font-family: var(--wedding-montserrat); font-size: 4rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 10px;">
+            <h2
+                style="font-family: var(--wedding-montserrat); font-size: 4rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 10px;">
                 OS OLHARES POR TRÁS DAS LENTES
             </h2>
             <p style="font-family: var(--wedding-montserrat); font-size: 1.2rem; color: #888; font-weight: 400;">
@@ -939,62 +1032,66 @@ if (!function_exists('fmt')) {
         </div>
 
         <!-- Barra Decorativa Cinza -->
-        <div style="position: absolute; top: 50%; left: 0; width: 100%; height: 120px; background: #dcdcdc; transform: translateY(-50%); z-index: 1;"></div>
+        <div
+            style="position: absolute; top: 50%; left: 0; width: 100%; height: 120px; background: #dcdcdc; transform: translateY(-50%); z-index: 1;">
+        </div>
 
         <!-- Grid da Equipe -->
-        <div style="display: flex; flex-direction: row; gap: 40px; z-index: 10; width: 90%; max-width: 1400px; justify-content: center;">
-            
+        <div
+            style="display: flex; flex-direction: row; gap: 40px; z-index: 10; width: 90%; max-width: 1400px; justify-content: center;">
+
             <!-- Jeane -->
             <div class="reveal-item" style="flex: 1; text-align: center;">
                 <div style="width: 100%; aspect-ratio: 1/1; overflow: hidden; margin-bottom: 20px; border-radius: 2px;">
-                    <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-16-jeane.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-16-jeane.png') ?>"
+                        style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
-                <h4 style="font-family: var(--wedding-montserrat); font-size: 1.1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 5px;">Jeane Poncem</h4>
-                <p style="font-family: var(--wedding-montserrat); font-size: 0.85rem; color: #666; font-style: italic;">Curadora de Sonhos &<br>Guardiã da Narrativa</p>
+                <h4
+                    style="font-family: var(--wedding-montserrat); font-size: 1.1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 5px;">
+                    Jeane Poncem</h4>
+                <p style="font-family: var(--wedding-montserrat); font-size: 0.85rem; color: #666; font-style: italic;">
+                    Curadora de Sonhos &<br>Guardiã da Narrativa</p>
             </div>
 
             <!-- Wellington -->
             <div class="reveal-item" style="flex: 1; text-align: center;">
                 <div style="width: 100%; aspect-ratio: 1/1; overflow: hidden; margin-bottom: 20px; border-radius: 2px;">
-                    <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-16-wellington.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-16-wellington.png') ?>"
+                        style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
-                <h4 style="font-family: var(--wedding-montserrat); font-size: 1.1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 5px;">Wellington Poncem</h4>
-                <p style="font-family: var(--wedding-montserrat); font-size: 0.85rem; color: #666; font-style: italic;">O Arquiteto de Emoções</p>
+                <h4
+                    style="font-family: var(--wedding-montserrat); font-size: 1.1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 5px;">
+                    Wellington Poncem</h4>
+                <p style="font-family: var(--wedding-montserrat); font-size: 0.85rem; color: #666; font-style: italic;">
+                    O Arquiteto de Emoções</p>
             </div>
 
             <!-- Isabelly -->
             <div class="reveal-item" style="flex: 1; text-align: center;">
                 <div style="width: 100%; aspect-ratio: 1/1; overflow: hidden; margin-bottom: 20px; border-radius: 2px;">
-                    <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-16-isabelly.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-16-isabelly.png') ?>"
+                        style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
-                <h4 style="font-family: var(--wedding-montserrat); font-size: 1.1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 5px;">Isabelly Gomes</h4>
-                <p style="font-family: var(--wedding-montserrat); font-size: 0.85rem; color: #666; font-style: italic;">A Curadora da Verdade</p>
+                <h4
+                    style="font-family: var(--wedding-montserrat); font-size: 1.1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 5px;">
+                    Isabelly Gomes</h4>
+                <p style="font-family: var(--wedding-montserrat); font-size: 0.85rem; color: #666; font-style: italic;">
+                    A Curadora da Verdade</p>
             </div>
 
             <!-- Gabryel -->
             <div class="reveal-item" style="flex: 1; text-align: center;">
                 <div style="width: 100%; aspect-ratio: 1/1; overflow: hidden; margin-bottom: 20px; border-radius: 2px;">
-                    <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-16-gabriel.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-16-gabriel.png') ?>"
+                        style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
-                <h4 style="font-family: var(--wedding-montserrat); font-size: 1.1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 5px;">Gabryel Oliveira</h4>
-                <p style="font-family: var(--wedding-montserrat); font-size: 0.85rem; color: #666; font-style: italic;">O Contador de Instantes</p>
+                <h4
+                    style="font-family: var(--wedding-montserrat); font-size: 1.1rem; font-weight: 700; color: #1a1a1a; margin-bottom: 5px;">
+                    Gabryel Oliveira</h4>
+                <p style="font-family: var(--wedding-montserrat); font-size: 0.85rem; color: #666; font-style: italic;">
+                    O Contador de Instantes</p>
             </div>
 
-        </div>
-    </section>
-
-    <!-- PÁGINA 18: FECHAMENTO EMOCIONAL -->
-    <section class="slide center bg-[#f9f7f4]">
-        <div class="content-overlay" style="max-width: 800px;">
-            <h2 class="text-serif italic">Onde o tempo para...</h2>
-            <div class="line line-center"></div>
-            <p class="text-lg leading-relaxed">
-                Para nós, a melhor foto não é a mais nítida... A "melhor foto" do nosso portfólio não é um troféu na
-                estante, mas sim aquele frame que captura o extraordinário no comum.
-                Seja o aperto de mão firme de um pai, a lágrima contida de um amigo ou o <strong
-                    class="text-gold">brilho no olhar da <?= $primeiroNomeNoiva ?></strong> ao ver o seu grande amor no
-                altar.
-            </p>
         </div>
     </section>
 
@@ -1026,43 +1123,43 @@ if (!function_exists('fmt')) {
     if (window.lucide) lucide.createIcons();
 </script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
+    document.addEventListener('DOMContentLoaded', () => {
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const items = entry.target.querySelectorAll('.reveal-item');
-                items.forEach((item, index) => {
-                    setTimeout(() => {
-                        item.classList.add('active');
-                    }, index * 150);
-                });
-            }
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const items = entry.target.querySelectorAll('.reveal-item');
+                    items.forEach((item, index) => {
+                        setTimeout(() => {
+                            item.classList.add('active');
+                        }, index * 150);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.slide').forEach(slide => {
+            observer.observe(slide);
         });
-    }, observerOptions);
 
-    document.querySelectorAll('.slide').forEach(slide => {
-        observer.observe(slide);
+        // Bloquear clique direito em imagens
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+                return false;
+            }
+        }, false);
+
+        // Bloquear arraste de imagens
+        document.addEventListener('dragstart', (e) => {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+                return false;
+            }
+        }, false);
     });
-
-    // Bloquear clique direito em imagens
-    document.addEventListener('contextmenu', (e) => {
-        if (e.target.tagName === 'IMG') {
-            e.preventDefault();
-            return false;
-        }
-    }, false);
-
-    // Bloquear arraste de imagens
-    document.addEventListener('dragstart', (e) => {
-        if (e.target.tagName === 'IMG') {
-            e.preventDefault();
-            return false;
-        }
-    }, false);
-});
 </script>
