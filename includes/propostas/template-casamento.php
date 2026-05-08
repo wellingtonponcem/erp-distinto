@@ -831,6 +831,58 @@ if (!function_exists('fmt')) {
         </div>
     </section>
 
+    <!-- PÁGINA 13: PORTFÓLIO GABRIEL E JULIA -->
+    <section class="slide portfolio-slide" style="padding: 0; background: #000; display: flex; flex-direction: row; gap: 2px; overflow: hidden; height: 100vh; width: 100%;">
+        
+        <!-- Coluna Esquerda (Duas fotos empilhadas) -->
+        <div style="flex: 1.8; display: flex; flex-direction: column; gap: 2px; height: 100%;">
+            <!-- Foto Cima -->
+            <div class="reveal-item" style="flex: 1; overflow: hidden;">
+                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-cima-13.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <!-- Foto Baixo -->
+            <div class="reveal-item" style="flex: 1.1; position: relative; overflow: hidden;">
+                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-baixo-13.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                <div style="position: absolute; bottom: 40px; left: 40px; z-index: 10;">
+                    <p style="font-family: var(--wedding-montserrat); font-size: 1rem; color: #fff; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 300; opacity: 0.8;">
+                        GABRIEL E JULIA - PRÉ-WEDDING
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna Direita (Foto inteira) -->
+        <div class="reveal-item" style="flex: 1; overflow: hidden; height: 100%;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-direita-13.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+    </section>
+
+    <!-- PÁGINA 14: PORTFÓLIO BRUNA E ROBSON -->
+    <section class="slide portfolio-slide" style="padding: 0; background: #000; display: flex; flex-direction: row; gap: 2px; overflow: hidden; height: 100vh; width: 100%;">
+        
+        <!-- Coluna Esquerda (Duas fotos empilhadas) -->
+        <div style="flex: 1.8; display: flex; flex-direction: column; gap: 2px; height: 100%;">
+            <!-- Foto Cima -->
+            <div class="reveal-item" style="flex: 1.1; overflow: hidden;">
+                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-14-cima.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <!-- Foto Baixo -->
+            <div class="reveal-item" style="flex: 1; position: relative; overflow: hidden;">
+                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-14-baixo.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                <div style="position: absolute; bottom: 40px; left: 40px; z-index: 10;">
+                    <p style="font-family: var(--wedding-montserrat); font-size: 1rem; color: #fff; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 300; opacity: 0.8;">
+                        BRUNA E ROBSON - CASAMENTO CARTÓRIO
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna Direita (Foto inteira) -->
+        <div class="reveal-item" style="flex: 1; overflow: hidden; height: 100%;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-14-direita.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+    </section>
+
     <!-- PÁGINA 17: EQUIPE -->
     <section class="slide center">
         <div class="content-overlay">
