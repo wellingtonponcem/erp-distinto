@@ -560,6 +560,31 @@ if (!function_exists('fmt')) {
         .team-item p {
             font-size: 0.75rem !important;
         }
+
+        /* Ajustes Depoimentos Mobile */
+        .depo-slide {
+            height: auto !important;
+            padding: 60px 20px !important;
+        }
+        .depo-container {
+            flex-direction: column !important;
+            gap: 50px !important;
+            width: 100% !important;
+        }
+        .depo-col-left, .depo-col-right {
+            flex: none !important;
+            width: 100% !important;
+        }
+        .depo-title {
+            font-size: 2.2rem !important;
+            margin-bottom: 30px !important;
+        }
+        .depo-col-right {
+            padding: 40px 30px !important;
+        }
+        .depo-col-right h2, .depo-col-right p {
+            font-size: 1.5rem !important;
+        }
     }
 
     @keyframes modalFadeIn {
@@ -1538,12 +1563,12 @@ if (!function_exists('fmt')) {
     </section>
 
     <!-- PÁGINA 18: PROVA SOCIAL & COMPROMISSO -->
-    <section class="slide" style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; position: relative; height: 100vh; width: 100%;">
+    <section class="slide depo-slide" style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; position: relative; height: 100vh; width: 100%;">
 
-        <div style="display: flex; flex-direction: row; width: 90%; max-width: 1200px; gap: 80px; z-index: 10;">
+        <div class="depo-container" style="display: flex; flex-direction: row; width: 90%; max-width: 1200px; gap: 80px; z-index: 10;">
             <!-- Lado Esquerdo: Depoimentos -->
-            <div style="flex: 1.5;">
-                <h2 style="font-family: var(--wedding-montserrat); font-size: 3rem; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; color: #1a1a1a; line-height: 1.1; margin-bottom: 50px;">
+            <div class="depo-col-left" style="flex: 1.5;">
+                <h2 class="depo-title" style="font-family: var(--wedding-montserrat); font-size: 3rem; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; color: #1a1a1a; line-height: 1.1; margin-bottom: 50px;">
                     O QUE DIZEM<br><span style="color: var(--wedding-gold);">NOSSOS CASAIS</span>
                 </h2>
 
@@ -1567,7 +1592,7 @@ if (!function_exists('fmt')) {
             </div>
 
             <!-- Lado Direito: Compromisso -->
-            <div style="flex: 1; background: #fff; padding: 50px; border-radius: 4px; display: flex; flex-direction: column; justify-content: center;">
+            <div class="depo-col-right" style="flex: 1; background: #fff; padding: 50px; border-radius: 4px; display: flex; flex-direction: column; justify-content: center;">
                 <h3 style="font-family: var(--wedding-montserrat); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--wedding-gold); margin-bottom: 40px; border-bottom: 1px solid #e5e5e5; padding-bottom: 20px;">
                     NOSSO COMPROMISSO
                 </h3>
