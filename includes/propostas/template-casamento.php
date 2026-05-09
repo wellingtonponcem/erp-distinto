@@ -260,6 +260,8 @@ if (!function_exists('fmt')) {
         /* Ajustes Capa Mobile */
         .capa-content {
             padding: 8vh 6vw !important;
+            justify-content: center !important;
+            gap: 30px !important;
         }
         .capa-titulo {
             font-size: 4rem !important;
@@ -269,6 +271,10 @@ if (!function_exists('fmt')) {
             letter-spacing: 0.3em !important;
             margin-top: 5px !important;
         }
+        .capa-bottom-box {
+            text-align: center !important;
+            max-width: 100% !important;
+        }
         .capa-casal {
             font-size: 2rem !important;
             margin-bottom: 10px !important;
@@ -277,6 +283,9 @@ if (!function_exists('fmt')) {
             font-size: 1rem !important;
             margin-bottom: 15px !important;
             max-width: 100% !important;
+        }
+        .capa-line {
+            margin: 0 auto 20px auto !important;
         }
     }
 
@@ -306,7 +315,7 @@ if (!function_exists('fmt')) {
             </div>
 
             <!-- Baixo Esquerda -->
-            <div style="text-align: left; max-width: 500px; color: #1a1a1a;">
+            <div class="capa-bottom-box" style="text-align: left; max-width: 500px; color: #1a1a1a;">
                 <h2 class="capa-casal"
                     style="font-family: var(--wedding-montserrat); font-size: 2.2rem; font-weight: 800; letter-spacing: 0.05em; line-height: 1.2; margin-bottom: 20px;">
                     <?php
@@ -319,7 +328,7 @@ if (!function_exists('fmt')) {
                     style="font-family: var(--wedding-montserrat); font-size: 1.4rem; line-height: 1.6; font-weight: 400; margin-bottom: 20px; opacity: 0.8;">
                     Toda história tem sua beleza. Nós entregamos a nossa versão da sua sob a nossa perspectiva.
                 </p>
-                <div style="width: 40px; height: 1px; background: #1a1a1a; margin-bottom: 20px; opacity: 0.5;"></div>
+                <div class="capa-line" style="width: 40px; height: 1px; background: #1a1a1a; margin-bottom: 20px; opacity: 0.5;"></div>
                 <p
                     style="font-family: var(--wedding-montserrat); font-size: 1rem; font-weight: 400; letter-spacing: 0.05em; opacity: 0.8;">
                     by Distinto wedding</p>
