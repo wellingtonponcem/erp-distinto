@@ -253,17 +253,17 @@ include __DIR__ . '/../includes/layout/head.php';
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;" x-show="form.categoria === 'marketing'">
                     <div>
                         <label class="label">Horas/Dia (Dedicadas) *</label>
-                        <input class="input" type="number" step="0.1" min="0" x-model="form.horas_dia" @input="calcularHorasMensaisServico()" required placeholder="Ex: 0.5">
+                        <input class="input" type="number" step="0.1" min="0" x-model="form.horas_dia" @input="calcularHorasMensaisServico()" :required="form.categoria === 'marketing'" placeholder="Ex: 0.5">
                     </div>
                     <div>
                         <label class="label">Horas Estimadas (Mês) *</label>
-                        <input class="input" type="number" step="0.5" min="0.5" x-model="form.horas_estimadas" required placeholder="Ex: 20">
+                        <input class="input" type="number" step="0.5" min="0.5" x-model="form.horas_estimadas" :required="form.categoria === 'marketing'" placeholder="Ex: 20">
                     </div>
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;" x-show="form.categoria === 'marketing'">
                     <div>
                         <label class="label">Custo de Produção (R$) *</label>
-                        <input class="input" type="number" step="0.01" min="0" x-model="form.custo_producao" required placeholder="0,00">
+                        <input class="input" type="number" step="0.01" min="0" x-model="form.custo_producao" :required="form.categoria === 'marketing'" placeholder="0,00">
                     </div>
                     <div>
                         <label class="label">Custos Variáveis (R$)</label>
