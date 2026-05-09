@@ -23,17 +23,19 @@ include __DIR__ . '/../includes/layout/head.php';
             </button>
         </div>
         
-        <!-- Abas de Categoria -->
-        <div style="display:flex; gap:8px; margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:12px;">
+        <!-- Filtro de Categoria (Abas) -->
+        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:6px; display:flex; gap:6px; margin-bottom:24px; max-width:400px;">
             <button @click="categoriaAtiva = 'marketing'" 
-                    :class="categoriaAtiva === 'marketing' ? 'btn-primary' : 'btn-secondary'"
-                    style="padding:8px 20px; font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px;">
-                <i data-lucide="trending-up" style="width:14px;height:14px;"></i> Marketing
+                    :class="categoriaAtiva === 'marketing' ? 'bg-white text-black shadow-lg' : 'text-zinc-400 hover:text-white hover:bg-white/5'"
+                    style="flex:1; border:none; padding:10px; border-radius:10px; font-weight:700; cursor:pointer; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display:flex; align-items:center; justify-content:center; gap:8px; font-size:13px;">
+                <i data-lucide="trending-up" style="width:14px;height:14px;"></i>
+                Marketing
             </button>
             <button @click="categoriaAtiva = 'wedding'" 
-                    :class="categoriaAtiva === 'wedding' ? 'btn-primary' : 'btn-secondary'"
-                    style="padding:8px 20px; font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px;">
-                <i data-lucide="camera" style="width:14px;height:14px;"></i> Wedding / 15 Anos
+                    :class="categoriaAtiva === 'wedding' ? 'bg-white text-black shadow-lg' : 'text-zinc-400 hover:text-white hover:bg-white/5'"
+                    style="flex:1; border:none; padding:10px; border-radius:10px; font-weight:700; cursor:pointer; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display:flex; align-items:center; justify-content:center; gap:8px; font-size:13px;">
+                <i data-lucide="camera" style="width:14px;height:14px;"></i>
+                Wedding / 15 Anos
             </button>
         </div>
 
