@@ -607,6 +607,18 @@ if (!function_exists('fmt')) {
             font-size: 2.2rem !important;
             margin-bottom: 30px !important;
         }
+
+        /* Ajustes Thank You Mobile */
+        .thanks-title {
+            font-size: 3.5rem !important;
+            margin-bottom: 15px !important;
+            letter-spacing: 0.05em !important;
+        }
+        .thanks-subtitle {
+            font-size: 0.9rem !important;
+            line-height: 1.4 !important;
+            padding: 0 10px !important;
+        }
     }
 
     @keyframes modalFadeIn {
@@ -1693,14 +1705,14 @@ if (!function_exists('fmt')) {
     </section>
 
     <!-- PÁGINA 19: THANK YOU -->
-    <section class="slide" style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; overflow: hidden; height: 100vh; width: 100%;">
+    <section class="slide thanks-slide" style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; overflow: hidden; height: 100vh; width: 100%;">
         
         <!-- Topo: Mensagem de Agradecimento -->
-        <div style="height: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 4vw;">
-            <h2 class="reveal-item" style="font-family: var(--wedding-montserrat); font-size: 6rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 20px;">
+        <div class="thanks-header" style="height: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 4vw;">
+            <h2 class="reveal-item thanks-title" style="font-family: var(--wedding-montserrat); font-size: 6rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 20px;">
                 THANK YOU
             </h2>
-            <p class="reveal-item" style="font-family: var(--wedding-montserrat); font-size: 1.4rem; color: #333; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">
+            <p class="reveal-item thanks-subtitle" style="font-family: var(--wedding-montserrat); font-size: 1.4rem; color: #333; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">
                 REGISTRANDO HISTÓRIAS DE AMOR COM AUTENTICIDADE E EMOÇÃO
             </p>
             <p class="reveal-item" style="font-family: var(--wedding-montserrat); font-size: 0.9rem; color: #888; letter-spacing: 0.1em;">
