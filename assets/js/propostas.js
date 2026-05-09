@@ -56,31 +56,33 @@ document.addEventListener('DOMContentLoaded', function () {
     // 2. Lógica do Botão Flutuante (Exclusiva por Scroll)
     const weddingContainer = document.querySelector('.wedding-proposal');
 
+    let scrollTimeout;
     function showButton() {
         if (!btn) return;
         
-        // Detectar o scroll de múltiplas fontes para garantir funcionamento em todos os templates
         const scrollTop = window.pageYOffset || 
                           (weddingContainer ? weddingContainer.scrollTop : 0) || 
                           wrapper.scrollTop || 
                           document.documentElement.scrollTop;
 
-        // Limiar de scroll para mostrar o botão
         if (scrollTop > 150) {
             btn.classList.add('show');
+            
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                btn.classList.remove('show');
+            }, 2000); // Some após 2 segundos de inatividade
         } else {
             btn.classList.remove('show');
         }
     }
 
     if (btn) {
-        // Ouvir scroll em todas as fontes possíveis
         window.addEventListener('scroll', showButton, { passive: true });
         wrapper.addEventListener('scroll', showButton, { passive: true });
         if (weddingContainer) {
             weddingContainer.addEventListener('scroll', showButton, { passive: true });
         }
-        // Chamada inicial para caso a página já comece scrollada
         showButton();
     }
 });

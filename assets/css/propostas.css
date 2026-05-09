@@ -325,25 +325,26 @@ body.type-15anos .proposal-frame {
     bottom: 40px;
     left: 50%;
     transform: translateX(-50%) translateY(100px);
-    background: #000;
+    background: rgba(26, 26, 26, 0.4);
     color: white;
-    padding: 18px 35px;
+    padding: 16px 32px;
     border-radius: 50px;
     text-decoration: none;
     font-weight: 700;
     font-family: var(--font-heading);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     z-index: 1000;
     display: flex;
     align-items: center;
-    gap: 12px;
-    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.6s ease;
+    justify-content: center;
+    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.6s ease, background 0.3s ease;
     opacity: 0;
     text-transform: uppercase;
     letter-spacing: 2px;
-    font-size: 13px;
-    border: 1px solid rgba(255,255,255,0.1);
-    backdrop-filter: blur(10px);
+    font-size: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
 .theme-filmmaker .btn-floating {
