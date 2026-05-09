@@ -36,7 +36,10 @@ echo "  USER: " . DB_USER . "\n\n";
 
 if ($temPgsql) {
     try {
-        $dsn = 'pgsql:host=' . DB_HOST . ';port=' . DB_PORT . ';dbname=' . DB_NAME . ';sslmode=require';
+        // Suporte para SNI no Neon (necessário para libpq antiga)
+        $endpoint = explode('.', DB_HOST)[0];
+        $dsn = 'pgsql:host=' . DB_HOST . ';port=' . DB_PORT . ';dbname=' . DB_NAME . ';sslmode=require;options=\'endpoint=' . $endpoint . '\'';
+        
         $pdo = new PDO($dsn, DB_USER, DB_PASS, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
         echo "✓ CONEXÃO BEM-SUCEDIDA!\n\n";
 

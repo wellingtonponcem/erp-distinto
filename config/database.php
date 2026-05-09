@@ -7,7 +7,10 @@ class Database {
     public static function get(): PDO {
         if (self::$instance === null) {
             try {
-                $dsn = 'pgsql:host=' . DB_HOST . ';port=' . DB_PORT . ';dbname=' . DB_NAME . ';sslmode=require';
+                // Suporte para SNI no Neon (necessário para libpq antiga)
+                $endpoint = explode('.', DB_HOST)[0];
+                $dsn = 'pgsql:host=' . DB_HOST . ';port=' . DB_PORT . ';dbname=' . DB_NAME . ';sslmode=require;options=\'endpoint=' . $endpoint . '\'';
+                
                 self::$instance = new PDO($dsn, DB_USER, DB_PASS, [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
