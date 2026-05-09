@@ -139,8 +139,8 @@ include __DIR__ . '/../includes/layout/head.php';
                     </div>
                 </div>
                 
-                <!-- Configuração de Itens (Apenas para Planos) -->
-                <div x-show="form.tipo === 'plano'" style="background:rgba(167,139,250,0.05); padding:16px; border-radius:8px; border:1px solid rgba(167,139,250,0.2); margin-bottom:16px;">
+                <!-- Configuração de Itens (Apenas para Planos que não sejam Wedding) -->
+                <div x-show="form.tipo === 'plano' && form.categoria !== 'wedding'" style="background:rgba(167,139,250,0.05); padding:16px; border-radius:8px; border:1px solid rgba(167,139,250,0.2); margin-bottom:16px;">
                     <label class="label" style="display:flex; align-items:center; gap:8px;">
                         <i data-lucide="list-checks" style="width:14px;height:14px;"></i>
                         Configuração de Itens (JSON)
