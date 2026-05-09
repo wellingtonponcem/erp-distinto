@@ -2164,16 +2164,6 @@ if (!function_exists('fmt')) {
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Scroll automático para o portfólio no container correto
-        const wrapper = document.querySelector('.proposal-wrapper');
-        const portfolioSection = document.getElementById('wedding-portfolio');
-        
-        if (wrapper && portfolioSection) {
-            // Pequeno delay para garantir que o layout renderizou
-            setTimeout(() => {
-                portfolioSection.scrollIntoView({ behavior: 'auto', block: 'start' });
-            }, 100);
-        }
 
         const observerOptions = {
             threshold: 0.1,
