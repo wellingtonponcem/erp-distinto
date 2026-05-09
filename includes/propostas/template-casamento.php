@@ -123,28 +123,36 @@ if (!function_exists('fmt')) {
         background: #111;
     }
 
+    /* Resetar estilos globais para este template */
     html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
+        height: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
     }
 
-    .wedding-proposal {
-        background: var(--wedding-bg);
-        color: var(--wedding-dark);
-        font-family: var(--wedding-sans);
-        scroll-snap-type: y proximity;
-        height: 100%;
-        overflow-y: scroll;
-        scroll-behavior: smooth;
+    /* Forçar o wrapper global a ser o único container de scroll */
+    .type-casamento .proposal-wrapper {
+        height: 100vh !important;
+        overflow-y: scroll !important;
+        scroll-snap-type: y proximity !important;
+        scroll-behavior: smooth !important;
         -webkit-overflow-scrolling: touch;
     }
 
+    /* A div interna não deve ter scroll próprio */
+    .wedding-proposal {
+        height: auto !important;
+        overflow: visible !important;
+        background: var(--wedding-bg);
+        color: var(--wedding-dark);
+        font-family: var(--wedding-sans);
+    }
+
     .slide {
-        height: 100vh;
+        height: 100vh !important;
         width: 100%;
-        scroll-snap-align: start;
+        scroll-snap-align: start !important;
         position: relative;
         overflow: hidden;
         display: flex;
@@ -2156,10 +2164,15 @@ if (!function_exists('fmt')) {
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Scroll automático para o portfólio (imediato para não travar o usuário)
+        // Scroll automático para o portfólio no container correto
+        const wrapper = document.querySelector('.proposal-wrapper');
         const portfolioSection = document.getElementById('wedding-portfolio');
-        if (portfolioSection) {
-            portfolioSection.scrollIntoView();
+        
+        if (wrapper && portfolioSection) {
+            // Pequeno delay para garantir que o layout renderizou
+            setTimeout(() => {
+                portfolioSection.scrollIntoView({ behavior: 'auto', block: 'start' });
+            }, 100);
         }
 
         const observerOptions = {
