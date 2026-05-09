@@ -207,6 +207,34 @@ include __DIR__ . '/../includes/layout/head.php';
                         </div>
                     </div>
                 </div>
+                
+                <!-- Vínculo de Upgrades / Adicionais (Apenas para Planos de Eventos) -->
+                <div x-show="form.tipo === 'plano' && (form.categoria === 'wedding' || form.categoria === '15anos')" style="background:rgba(167,139,250,0.05); padding:16px; border-radius:8px; border:1px solid rgba(167,139,250,0.2); margin-bottom:16px;">
+                    <label class="label" style="display:flex; align-items:center; gap:8px; margin-bottom:12px; color:#a78bfa;">
+                        <i data-lucide="layers" style="width:16px;height:16px;"></i>
+                        Upgrades e Adicionais Sugeridos
+                    </label>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <template x-for="u in upgradesDisponiveis" :key="u.id">
+                            <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:6px; border:1px solid rgba(255,255,255,0.05);">
+                                <div style="font-size:13px; color:#f1f5f9; font-weight:500;" x-text="u.nome"></div>
+                                <div style="display:flex; gap:12px;">
+                                    <label style="display:flex; align-items:center; gap:6px; font-size:11px; cursor:pointer; color:#94a3b8;">
+                                        <input type="checkbox" :checked="isUpgradeVinculado(u.id, 'opcional')" @change="toggleUpgrade(u.id, 'opcional')">
+                                        Disponível
+                                    </label>
+                                    <label style="display:flex; align-items:center; gap:6px; font-size:11px; cursor:pointer; color:#94a3b8;">
+                                        <input type="checkbox" :checked="isUpgradeVinculado(u.id, 'incluso')" @change="toggleUpgrade(u.id, 'incluso')">
+                                        Incluso
+                                    </label>
+                                </div>
+                            </div>
+                        </template>
+                        <div x-show="upgradesDisponiveis.length === 0" style="font-size:12px; color:#6b7280; text-align:center; padding:10px;">
+                            Nenhum upgrade cadastrado nesta categoria.
+                        </div>
+                    </div>
+                </div>
 
                 <div style="margin-bottom:16px;" x-show="form.categoria === 'marketing'">
                     <label class="label">Entregáveis (Escopo)</label>
@@ -454,6 +482,14 @@ function servicos() {
             return this.lista.filter(s => (s.categoria || 'marketing') === this.categoriaAtiva);
         },
 
+        get upgradesDisponiveis() {
+            return this.lista.filter(s => 
+                (s.categoria || 'marketing') === this.form.categoria && 
+                s.tipo === 'servico' && 
+                s.id !== this.form.id
+            );
+        },
+
         async init() {
             await Promise.all([this.carregar(), this.carregarCustosFixos()]);
             this.$watch('categoriaAtiva', () => this.$nextTick(() => lucide.createIcons()));
@@ -535,6 +571,28 @@ function servicos() {
 
         removerBeneficio(index) {
             this.form.beneficios_lista.splice(index, 1);
+        },
+
+        isUpgradeVinculado(id, status) {
+            if (!this.form.itens_json) return false;
+            try {
+                const itens = JSON.parse(this.form.itens_json);
+                return itens[id] === status;
+            } catch(e) { return false; }
+        },
+
+        toggleUpgrade(id, status) {
+            let itens = {};
+            try {
+                if (this.form.itens_json) itens = JSON.parse(this.form.itens_json);
+            } catch(e) { itens = {}; }
+
+            if (itens[id] === status) {
+                delete itens[id];
+            } else {
+                itens[id] = status;
+            }
+            this.form.itens_json = JSON.stringify(itens);
         },
 
         recalcularPrecoPeloMarkup() {
