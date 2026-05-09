@@ -289,6 +289,34 @@ if (!function_exists('fmt')) {
         .capa-line {
             margin: 0 auto 15px auto !important;
         }
+
+        /* Ajustes Boas-vindas Mobile */
+        .boas-vindas-slide {
+            flex-direction: column !important;
+            height: auto !important;
+            min-height: 100vh;
+        }
+        .boas-vindas-img-col {
+            flex: none !important;
+            height: 45vh !important;
+            width: 100% !important;
+            padding-right: 0 !important;
+            justify-content: center !important;
+        }
+        .boas-vindas-img-decor {
+            width: 30px !important;
+        }
+        .boas-vindas-text-col {
+            flex: none !important;
+            padding: 40px 30px !important;
+            height: auto !important;
+            text-align: left !important;
+        }
+        .boas-vindas-titulo {
+            font-size: 2.2rem !important;
+            line-height: 1.1 !important;
+            margin-bottom: 25px !important;
+        }
     }
 
     @keyframes modalFadeIn {
@@ -339,13 +367,13 @@ if (!function_exists('fmt')) {
     </section>
 
     <!-- PÁGINA 02: BOAS-VINDAS -->
-    <section class="slide"
+    <section class="slide boas-vindas-slide"
         style="padding: 0; background: #fff; overflow: hidden; display: flex; flex-direction: row; height: 100vh; width: 100%;">
         <!-- Coluna Esquerda: Imagem -->
-        <div
+        <div class="boas-vindas-img-col"
             style="flex: 1; background: #f0f0f0; display: flex; align-items: center; justify-content: flex-end; padding-right: 5vw; position: relative; height: 100%;">
             <!-- Retângulo decorativo cinza (esquerda) -->
-            <div
+            <div class="boas-vindas-img-decor"
                 style="position: absolute; left: 0; top: 0; width: 50px; height: 100%; background: #dcdcdc; z-index: 1;">
             </div>
 
@@ -357,12 +385,12 @@ if (!function_exists('fmt')) {
         </div>
 
         <!-- Coluna Direita: Conteúdo -->
-        <div
+        <div class="boas-vindas-text-col"
             style="flex: 1.2; padding: 0 8vw; display: flex; flex-direction: column; justify-content: center; position: relative; background: #fff; height: 100%;">
-            <h2
-                style="font-family: var(--wedding-montserrat); font-size: 4rem; font-weight: 700; line-height: 1.1; margin-bottom: 40px; color: #1a1a1a; text-transform: uppercase; letter-spacing: -1px;">
+            <h1 class="boas-vindas-titulo"
+                style="font-family: var(--wedding-montserrat); font-size: 3.8rem; font-weight: 700; line-height: 1.1; margin-bottom: 40px; color: #1a1a1a; text-transform: uppercase; letter-spacing: -1px;">
                 BEM-VINDOS<br>AO INÍCIO DA<br>MEMÓRIA DE<br>VOCÊS
-            </h2>
+            </h1>
 
             <div style="max-width: 480px;">
                 <p
