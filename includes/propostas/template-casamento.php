@@ -439,6 +439,7 @@ if (!function_exists('fmt')) {
             flex-direction: column !important;
             height: auto !important;
             min-height: 100vh;
+            padding: 0 !important;
         }
         .package-img-col {
             flex: none !important;
