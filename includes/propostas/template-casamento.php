@@ -388,6 +388,20 @@ if (!function_exists('fmt')) {
         .perspectiva-box {
             padding: 30px 25px !important;
         }
+        .perspectiva-slide {
+            height: auto !important;
+            min-height: 100vh;
+            display: block !important;
+        }
+        .perspectiva-img-box {
+            height: 30vh !important;
+            aspect-ratio: auto !important;
+        }
+        .perspectiva-content-box {
+            padding: 40px 30px !important;
+            justify-content: flex-start !important;
+            height: auto !important;
+        }
     }
 
     @keyframes modalFadeIn {
@@ -600,16 +614,16 @@ if (!function_exists('fmt')) {
     </section>
 
     <!-- PÁGINA 05: PERSPECTIVA -->
-    <section class="slide"
+    <section class="slide perspectiva-slide"
         style="padding: 0; background: #fff; display: flex; flex-direction: column; overflow: hidden; position: relative;">
         <!-- Topo: Imagem -->
-        <div style="width: 100%; aspect-ratio: 343/68; position: relative; overflow: hidden; background: #eee;">
+        <div class="perspectiva-img-box" style="width: 100%; aspect-ratio: 343/68; position: relative; overflow: hidden; background: #eee;">
             <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-04.jpg') ?>"
                 style="width: 100%; height: 100%; object-fit: cover;">
         </div>
 
         <!-- Base: Textos -->
-        <div
+        <div class="perspectiva-content-box"
             style="flex: 1; padding: 8vh 10vw; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center;">
             <h2 class="perspectiva-titulo"
                 style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 6vh; text-align: center; line-height: 1.1;">
