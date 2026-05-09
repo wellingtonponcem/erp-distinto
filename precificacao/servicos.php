@@ -452,6 +452,7 @@ function servicos() {
 
         async init() {
             await Promise.all([this.carregar(), this.carregarCustosFixos()]);
+            this.$watch('categoriaAtiva', () => this.$nextTick(() => lucide.createIcons()));
         },
 
         async carregar() {
