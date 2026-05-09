@@ -1175,8 +1175,9 @@ if (!function_exists('fmt')) {
     $eItem1 = trim(explode("\n", trim($itensEssencial))[0] ?? 'Cobertura Fotográfica 6h');
     ?>
     <div id="slide-pacote"
-        style="display: none; position: fixed; inset: 0; z-index: 10000; background: #1a1a1a; overflow: hidden; flex-direction: row; font-family: var(--wedding-montserrat); animation: modalFadeIn 0.3s ease;">
-
+        style="display: none; position: fixed; inset: 0; z-index: 10000; background: #1a1a1a; overflow: hidden; font-family: var(--wedding-montserrat); animation: modalFadeIn 0.3s ease;">
+        
+        <div class="modal-flex" style="display: flex; width: 100%; height: 100%;">
         <!-- Botão Fechar -->
         <button onclick="window.closeInteractiveModal()" style="position: absolute; top: 30px; right: 30px; z-index: 10001; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; transition: all 0.3s;">
             <i data-lucide="x"></i>
