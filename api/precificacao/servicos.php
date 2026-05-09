@@ -54,7 +54,7 @@ switch ($metodo) {
         if (empty($d['nome'])) responderJson(['erro' => 'Nome obrigatório'], 422);
         $id = gerarId();
         try {
-            $stmt = $db->prepare('INSERT INTO servicos (id, nome, categoria, tipo, itens_json, descricao, entregaveis, ferramentas, terceirizacao, periodicidade, prazo_minimo, preco_venda, preco_venda_pontual, horas_estimadas, custo_producao, custos_variaveis, markup, subtitulo, beneficios_json, condicoes_comerciais) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
+            $stmt = $db->prepare('INSERT INTO servicos (id, nome, categoria, tipo, itens_json, descricao, entregaveis, ferramentas, terceirizacao, periodicidade, prazo_minimo, preco_venda, preco_venda_pontual, horas_estimadas, custo_producao, custos_variaveis, markup, subtitulo, beneficios_json) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
             $stmt->execute([
                 $id, 
                 $d['nome'], 
@@ -74,8 +74,7 @@ switch ($metodo) {
                 $d['custos_variaveis'] ?? 0, 
                 $d['markup'] ?? 30,
                 $d['subtitulo'] ?? null,
-                $d['beneficios_json'] ?? null,
-                $d['condicoes_comerciais'] ?? null
+                $d['beneficios_json'] ?? null
             ]);
             responderJson(['ok' => true, 'id' => $id], 201);
         } catch (Exception $e) {
@@ -87,7 +86,7 @@ switch ($metodo) {
         $d = lerCorpo();
         if (empty($d['id'])) responderJson(['erro' => 'ID obrigatório'], 422);
         try {
-            $stmt = $db->prepare('UPDATE servicos SET nome=?, categoria=?, tipo=?, itens_json=?, descricao=?, entregaveis=?, ferramentas=?, terceirizacao=?, periodicidade=?, prazo_minimo=?, preco_venda=?, preco_venda_pontual=?, horas_estimadas=?, custo_producao=?, custos_variaveis=?, markup=?, subtitulo=?, beneficios_json=?, condicoes_comerciais=? WHERE id=?');
+            $stmt = $db->prepare('UPDATE servicos SET nome=?, categoria=?, tipo=?, itens_json=?, descricao=?, entregaveis=?, ferramentas=?, terceirizacao=?, periodicidade=?, prazo_minimo=?, preco_venda=?, preco_venda_pontual=?, horas_estimadas=?, custo_producao=?, custos_variaveis=?, markup=?, subtitulo=?, beneficios_json=? WHERE id=?');
             $stmt->execute([
                 $d['nome'], 
                 $d['categoria'] ?? 'marketing',
@@ -104,10 +103,9 @@ switch ($metodo) {
                 $d['horas_estimadas'] ?? 0, 
                 $d['custo_producao'] ?? 0, 
                 $d['custos_variaveis'] ?? 0, 
-                $d['markup'] ?? 30, 
+                $d['markup'] ?? 30,
                 $d['subtitulo'] ?? null,
                 $d['beneficios_json'] ?? null,
-                $d['condicoes_comerciais'] ?? null,
                 $d['id']
             ]);
             responderJson(['ok' => true]);

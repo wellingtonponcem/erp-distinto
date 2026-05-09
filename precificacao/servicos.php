@@ -197,11 +197,6 @@ include __DIR__ . '/../includes/layout/head.php';
                             </template>
                         </div>
                     </div>
-
-                    <div>
-                        <label class="label" style="color:#c5a880;">Condições Comerciais (Notas de Preço)</label>
-                        <input class="input" x-model="form.condicoes_comerciais" placeholder="Ex: 10% de desconto na entrada...">
-                    </div>
                 </div>
 
                 <div style="margin-bottom:16px;" x-show="form.categoria !== 'wedding'">
@@ -502,7 +497,6 @@ function servicos() {
                 preco_venda_pontual: 0,
                 markup:'30',
                 subtitulo: '',
-                condicoes_comerciais: '',
                 beneficios_lista: []
             };
             if (item && item.beneficios_json) {
