@@ -1301,13 +1301,70 @@ if (!function_exists('fmt')) {
                 left: 19px;
             }
 
-            #slide-pacote .linha-upgrade {
-                transition: opacity 0.2s;
+            #slide-pacote .linha-upgrade { transition: opacity 0.2s; }
+
+            /* Mobile UI Overhaul */
+            @media (max-width: 768px) {
+                #slide-pacote {
+                    flex-direction: column !important;
+                    background: rgba(26, 26, 26, 0.98) !important;
+                    backdrop-filter: blur(15px) !important;
+                    overflow-y: auto !important;
+                    display: block !important;
+                }
+                .modal-selection-col, .modal-summary-col {
+                    flex: none !important;
+                    width: 100% !important;
+                    height: auto !important;
+                    padding: 30px 20px !important;
+                    background: transparent !important;
+                }
+                .modal-selection-col {
+                    padding-top: 80px !important;
+                    border-right: none !important;
+                    border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+                }
+                .modal-summary-col {
+                    padding-bottom: 120px !important; /* Espaço para o rodapé fixo */
+                }
+                #slide-pacote .plan-card {
+                    padding: 18px 20px !important;
+                    margin-bottom: 5px !important;
+                }
+                #slide-pacote .plan-card p {
+                    font-size: 0.75rem !important;
+                }
+                #total-display {
+                    font-size: 1.6rem !important;
+                }
+                /* Rodapé fixo para mobile */
+                .modal-mobile-footer {
+                    display: flex !important;
+                    position: fixed;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    background: #1a1a1a;
+                    padding: 15px 20px;
+                    border-top: 1px solid rgba(255,255,255,0.1);
+                    z-index: 10005;
+                    box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+                    flex-direction: column;
+                    gap: 10px;
+                }
+                .modal-mobile-total-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: baseline;
+                }
+            }
+            @media (min-width: 769px) {
+                .modal-mobile-footer { display: none !important; }
             }
         </style>
 
         <!-- Coluna Esquerda: Seleção de Plano + Upgrades -->
-        <div
+        <div class="modal-selection-col"
             style="flex: 1.4; padding: 5vh 5vw; display: flex; flex-direction: column; justify-content: center; gap: 0; border-right: 1px solid rgba(255,255,255,0.06); overflow-y: auto;">
 
             <p
@@ -1391,7 +1448,7 @@ if (!function_exists('fmt')) {
         </div>
 
         <!-- Coluna Direita: Resumo + Condições + Cláusula -->
-        <div
+        <div class="modal-summary-col"
             style="flex: 1; padding: 5vh 4vw; display: flex; flex-direction: column; justify-content: center; gap: 0; overflow-y: auto;">
 
             <!-- Resumo -->
@@ -1464,6 +1521,18 @@ if (!function_exists('fmt')) {
                     <?= htmlspecialchars($clausula) ?>
                 </p>
             </div>
+            </div>
+        </div>
+
+        <!-- Rodapé Mobile para Conversão -->
+        <div class="modal-mobile-footer">
+            <div class="modal-mobile-total-row">
+                <span style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: rgba(255,255,255,0.5);">Total do pacote</span>
+                <span id="total-display-mobile" style="font-size: 1.4rem; font-weight: 300; color: #fff;">—</span>
+            </div>
+            <button onclick="sendWhatsApp()" style="width: 100%; padding: 15px; background: #25d366; color: #fff; border: none; border-radius: 6px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                Confirmar via WhatsApp
+            </button>
         </div>
 
         <script>
@@ -1531,18 +1600,19 @@ if (!function_exists('fmt')) {
                     let total = selectedPlan ? planData[selectedPlan].valor : 0;
                     if (upgrades.boudoir) total += upgradeData.boudoir;
                     if (upgrades.prewedding) total += upgradeData.prewedding;
-                    document.getElementById('total-display').textContent = selectedPlan ? fmt(total) : '—';
+                    
+                    const totalText = selectedPlan ? fmt(total) : '—';
+                    document.getElementById('total-display').textContent = totalText;
+                    document.getElementById('total-display-mobile').textContent = totalText;
 
                     // Ativar Botão WhatsApp
                     const btnWA = document.getElementById('whatsapp-btn');
                     if (selectedPlan) {
                         btnWA.style.opacity = '1';
                         btnWA.style.pointerEvents = 'auto';
-                        btnWA.style.transform = 'scale(1.02)';
                     } else {
                         btnWA.style.opacity = '0.3';
                         btnWA.style.pointerEvents = 'none';
-                        btnWA.style.transform = 'scale(1)';
                     }
                 }
 
