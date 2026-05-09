@@ -28,10 +28,14 @@ $dadosJson = json_decode($proposta['dados_json'], true);
 $stmtClientes = $db->query("SELECT id, nome FROM clientes ORDER BY nome ASC");
 $clientes = $stmtClientes->fetchAll();
 
-// Buscar serviços (apenas ativos, incluindo periodicidade e preço pontual)
-$stmtServicos = $db->query("SELECT id, nome, descricao, preco_venda, preco_venda_pontual, periodicidade FROM servicos WHERE ativo = 1 ORDER BY nome ASC");
+// Buscar serviços (apenas ativos)
+$stmtServicos = $db->query("SELECT id, nome, descricao, preco_venda, preco_venda_pontual, periodicidade, categoria, tipo, subtitulo, beneficios_json, condicoes_comerciais FROM servicos WHERE ativo = 1 ORDER BY nome ASC");
 $servicos = $stmtServicos->fetchAll();
 $servicosJson = json_encode($servicos);
+
+// Separar serviços de casamento
+$weddingPackages = array_filter($servicos, fn($s) => $s['categoria'] === 'wedding' && $s['tipo'] === 'plano');
+$weddingUpgrades = array_filter($servicos, fn($s) => $s['categoria'] === 'wedding' && $s['tipo'] === 'servico');
 
 $tituloPagina = 'Editar Proposta - ' . $proposta['cliente_nome'];
 include __DIR__ . '/../includes/layout/head.php';
@@ -80,7 +84,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     <h3 class="text-sm font-bold text-zinc-900 mb-4">Informações Básicas</h3>
                     
                     <div class="grid grid-cols-1 gap-6">
-                        <div class="form-group">
+                        <div class="form-group" x-show="tipoProposta !== 'casamento'">
                             <label class="label">Cliente</label>
                             <input type="text" class="input bg-zinc-50 text-zinc-500" value="<?= sanitizar($proposta['cliente_nome']) ?>" readonly>
                         </div>
@@ -143,7 +147,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                             </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-group">
+                            <div class="form-group" x-show="tipoProposta !== 'casamento'">
                                 <label class="label">Forma de Pagamento</label>
                                 <select name="forma_pagamento" class="input" x-model="formaPagamento">
                                     <option value="boleto_pix">Boleto / PIX</option>
@@ -184,15 +188,10 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     </h2>
 
                     <!-- Campos movidos de Informações Básicas -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 pb-8 border-b border-zinc-100/50">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 pb-8 border-b border-zinc-100/50">
                         <div class="form-group">
                             <label class="label-premium">WhatsApp do Cliente</label>
                             <input type="text" name="whatsapp" class="input" x-model="whatsapp" placeholder="Ex: 27999998888" :disabled="tipoProposta !== 'casamento'">
-                        </div>
-                        <div class="form-group">
-                            <label class="label-premium">Tipo de Serviço</label>
-                            <input type="text" class="input bg-zinc-50/50 text-zinc-500" value="Casamento" readonly>
-                            <input type="hidden" name="tipo" value="casamento" :disabled="tipoProposta !== 'casamento'">
                         </div>
                         <div class="form-group">
                             <label class="label-premium">Status da Proposta</label>
@@ -202,6 +201,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                                 <option value="aceita">Aceita</option>
                                 <option value="recusada">Recusada</option>
                             </select>
+                            <input type="hidden" name="tipo" value="casamento" :disabled="tipoProposta !== 'casamento'">
                         </div>
                     </div>
 
@@ -232,77 +232,58 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     </div>
                     
                     <div class="space-y-6">
-                        <!-- PLANO HERITAGE -->
-                        <div class="card-plan p-5 rounded-2xl bg-zinc-50/30 border-zinc-100" :class="showHeritage ? 'card-plan-active' : 'opacity-60'">
+                    <div class="space-y-6">
+                        <?php foreach ($weddingPackages as $pkg): 
+                            $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $pkg['nome'])));
+                            // Mapear para as flags existentes para manter compatibilidade
+                            $flag = 'show' . (strpos($slug, 'heritage') !== false ? 'Heritage' : (strpos($slug, 'cinematic') !== false ? 'Cinematic' : 'Essencial'));
+                            $valVar = 'valor' . (strpos($slug, 'heritage') !== false ? 'Heritage' : (strpos($slug, 'cinematic') !== false ? 'Cinematic' : 'Essencial'));
+                            $itensVar = 'itens' . (strpos($slug, 'heritage') !== false ? 'Heritage' : (strpos($slug, 'cinematic') !== false ? 'Cinematic' : 'Essencial'));
+                            $color = strpos($slug, 'heritage') !== false ? 'amber-500' : (strpos($slug, 'cinematic') !== false ? 'blue-500' : 'zinc-400');
+                        ?>
+                        <div class="card-plan p-5 rounded-2xl bg-zinc-50/30 border-zinc-100" :class="<?= $flag ?> ? 'card-plan-active' : 'opacity-60'">
                             <div class="flex items-center justify-between mb-4">
                                 <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]"></span> 
-                                    Experiência Heritage
+                                    <span class="w-2.5 h-2.5 rounded-full bg-<?= $color ?> shadow-[0_0_8px_rgba(var(--<?= $color ?>-rgb),0.5)]"></span> 
+                                    <?= $pkg['nome'] ?>
                                 </h4>
                                 <label class="flex items-center gap-2 cursor-pointer bg-white/50 px-3 py-1 rounded-full border border-zinc-200">
-                                    <input type="checkbox" name="show_heritage" x-model="showHeritage" class="w-4 h-4 rounded border-zinc-300 text-amber-500 focus:ring-amber-500">
+                                    <input type="checkbox" name="show_<?= strtolower($flag) ?>" x-model="<?= $flag ?>" class="w-4 h-4 rounded border-zinc-300 text-<?= $color ?> focus:ring-<?= $color ?>">
                                     <span class="text-[10px] font-black uppercase text-zinc-600">Exibir na Proposta</span>
                                 </label>
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4" x-show="showHeritage" x-collapse>
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4" x-show="<?= $flag ?>" x-collapse>
                                 <div class="md:col-span-1">
                                     <label class="label-premium">Valor (R$)</label>
-                                    <input type="text" name="valor_heritage" class="input font-bold text-zinc-900" x-model="valorHeritage" placeholder="7.900,00">
+                                    <input type="text" name="valor_<?= strtolower($flag) ?>" class="input font-bold text-zinc-900" x-model="<?= $valVar ?>" placeholder="<?= number_format($pkg['preco_venda'], 2, ',', '.') ?>">
                                 </div>
                                 <div class="md:col-span-3">
                                     <label class="label-premium">Itens inclusos</label>
-                                    <textarea name="itens_heritage" class="input text-xs leading-relaxed" x-model="itensHeritage" rows="2"></textarea>
+                                    <textarea name="itens_<?= strtolower($flag) ?>" class="input text-xs leading-relaxed" x-model="<?= $itensVar ?>" rows="2"></textarea>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- PLANO CINEMATIC -->
-                        <div class="card-plan p-5 rounded-2xl bg-zinc-50/30 border-zinc-100" :class="showCinematic ? 'card-plan-active' : 'opacity-60'">
-                            <div class="flex items-center justify-between mb-4">
-                                <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span> 
-                                    Experiência Cinematic
-                                </h4>
-                                <label class="flex items-center gap-2 cursor-pointer bg-white/50 px-3 py-1 rounded-full border border-zinc-200">
-                                    <input type="checkbox" name="show_cinematic" x-model="showCinematic" class="w-4 h-4 rounded border-zinc-300 text-blue-500 focus:ring-blue-500">
-                                    <span class="text-[10px] font-black uppercase text-zinc-600">Exibir na Proposta</span>
-                                </label>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4" x-show="showCinematic" x-collapse>
-                                <div class="md:col-span-1">
-                                    <label class="label-premium">Valor (R$)</label>
-                                    <input type="text" name="valor_cinematic" class="input font-bold text-zinc-900" x-model="valorCinematic" placeholder="5.900,00">
-                                </div>
-                                <div class="md:col-span-3">
-                                    <label class="label-premium">Itens inclusos</label>
-                                    <textarea name="itens_cinematic" class="input text-xs leading-relaxed" x-model="itensCinematic" rows="2"></textarea>
+                            <!-- Upgrades dentro do pacote -->
+                            <div class="mt-6 pt-4 border-t border-zinc-100/50" x-show="<?= $flag ?>" x-collapse>
+                                <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4">Adicionais Disponíveis</p>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <?php foreach ($weddingUpgrades as $upg): 
+                                        $upgSlug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $upg['nome'])));
+                                        $upgFlag = strpos($upgSlug, 'boudoir') !== false ? 'includeBoudoir' : (strpos($upgSlug, 'pre-wedding') !== false ? 'includePrewedding' : '');
+                                        if (!$upgFlag) continue;
+                                    ?>
+                                    <label class="flex items-center justify-between p-3 rounded-xl bg-white/50 border border-zinc-100 cursor-pointer hover:border-zinc-200 transition-all">
+                                        <div class="flex flex-col">
+                                            <span class="text-[11px] font-bold text-zinc-900"><?= $upg['nome'] ?></span>
+                                            <span class="text-[9px] text-zinc-400">Incluir neste pacote</span>
+                                        </div>
+                                        <input type="checkbox" x-model="<?= $upgFlag ?>" class="w-4 h-4 rounded border-zinc-300 text-amber-500 focus:ring-amber-500">
+                                    </label>
+                                    <?php endforeach; ?>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- PLANO ESSENCIAL -->
-                        <div class="card-plan p-5 rounded-2xl bg-zinc-50/30 border-zinc-100" :class="showEssencial ? 'card-plan-active' : 'opacity-60'">
-                            <div class="flex items-center justify-between mb-4">
-                                <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-zinc-400 shadow-[0_0_8px_rgba(156,163,175,0.5)]"></span> 
-                                    Registro Essencial
-                                </h4>
-                                <label class="flex items-center gap-2 cursor-pointer bg-white/50 px-3 py-1 rounded-full border border-zinc-200">
-                                    <input type="checkbox" name="show_essencial" x-model="showEssencial" class="w-4 h-4 rounded border-zinc-300 text-zinc-500 focus:ring-zinc-500">
-                                    <span class="text-[10px] font-black uppercase text-zinc-600">Exibir na Proposta</span>
-                                </label>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4" x-show="showEssencial" x-collapse>
-                                <div class="md:col-span-1">
-                                    <label class="label-premium">Valor (R$)</label>
-                                    <input type="text" name="valor_essencial" class="input font-bold text-zinc-900" x-model="valorEssencial" placeholder="3.900,00">
-                                </div>
-                                <div class="md:col-span-3">
-                                    <label class="label-premium">Itens inclusos</label>
-                                    <textarea name="itens_essencial" class="input text-xs leading-relaxed" x-model="itensEssencial" rows="2"></textarea>
-                                </div>
-                            </div>
-                        </div>
+                        <?php endforeach; ?>
 
                         <div class="border-t border-zinc-100/50 pt-8 mt-8">
                             <h4 class="text-[11px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-6">Condições de Pagamento e Reserva</h4>
@@ -327,30 +308,6 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-                            <div class="card-plan p-5 rounded-2xl bg-zinc-50/30 border-zinc-100" :class="includeBoudoir ? 'card-plan-active' : 'opacity-60'">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h4 class="text-[10px] font-black text-zinc-900 uppercase tracking-widest">Upgrade Boudoir</h4>
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" name="include_boudoir" x-model="includeBoudoir" class="sr-only peer">
-                                        <div class="w-9 h-5 bg-zinc-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
-                                    </label>
-                                </div>
-                                <label class="label-premium">Valor Adicional</label>
-                                <input type="text" name="valor_boudoir" class="input font-bold" x-model="valorBoudoir" placeholder="800,00" :disabled="!includeBoudoir">
-                            </div>
-                            <div class="card-plan p-5 rounded-2xl bg-zinc-50/30 border-zinc-100" :class="includePrewedding ? 'card-plan-active' : 'opacity-60'">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h4 class="text-[10px] font-black text-zinc-900 uppercase tracking-widest">Upgrade Pré-Wedding</h4>
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" name="include_prewedding" x-model="includePrewedding" class="sr-only peer">
-                                        <div class="w-9 h-5 bg-zinc-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
-                                    </label>
-                                </div>
-                                <label class="label-premium">Valor Adicional</label>
-                                <input type="text" name="valor_prewedding" class="input font-bold" x-model="valorPrewedding" placeholder="1.200,00" :disabled="!includePrewedding">
-                            </div>
-                        </div>
                     </div>
                 </section>
 
