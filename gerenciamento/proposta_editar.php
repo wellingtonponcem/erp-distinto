@@ -216,14 +216,14 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         </div>
                         <div class="form-group">
                             <label class="label-premium">Data do Casamento</label>
-                            <input type="date" name="data_casamento" class="input" x-model="dataCasamento">
+                            <input type="text" name="data_casamento" class="input js-datepicker" x-model="dataCasamento" placeholder="Selecione a data" x-init="flatpickr($el, { locale: 'pt', dateFormat: 'Y-m-d', altInput: true, altFormat: 'd/m/Y' })">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 pb-8 border-b border-zinc-100/50">
                         <div class="form-group">
                             <label class="label-premium">Data Limite para Desconto</label>
-                            <input type="text" name="data_limite_desconto" class="input" x-model="dataLimiteDesconto" placeholder="Ex: 05/04/2026">
+                            <input type="text" name="data_limite_desconto" class="input js-datepicker" x-model="dataLimiteDesconto" placeholder="Selecione a data" x-init="flatpickr($el, { locale: 'pt', dateFormat: 'd/m/Y' })">
                         </div>
                         <div class="form-group">
                             <label class="label-premium">Condição Especial</label>
@@ -504,12 +504,12 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     <h3 class="text-sm font-bold text-zinc-900 mb-4">Estratégia & Cronograma</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div class="form-group">
-                            <label class="label">Data Prevista de Início</label>
-                            <input type="date" name="data_inicio" class="input" x-model="dataInicio">
+                            <label class="label">Data de Início</label>
+                            <input type="text" name="data_inicio" class="input js-datepicker" x-model="dataInicio" x-init="flatpickr($el, { locale: 'pt', dateFormat: 'Y-m-d', altInput: true, altFormat: 'd/m/Y' })">
                         </div>
                         <div class="form-group">
-                            <label class="label">Validade da Proposta</label>
-                            <input type="date" name="validade" class="input" value="<?= $proposta['validade'] ?>">
+                            <label class="label">Data de Validade</label>
+                            <input type="text" name="validade" class="input js-datepicker" value="<?= $proposta['validade'] ?>" x-init="flatpickr($el, { locale: 'pt', dateFormat: 'Y-m-d', altInput: true, altFormat: 'd/m/Y' })">
                         </div>
                     </div>
 

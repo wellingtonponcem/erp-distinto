@@ -98,9 +98,9 @@ include __DIR__ . '/../includes/layout/head.php';
 
                 <template x-if="periodoAtivo === 'semana'">
                     <div style="display:flex; align-items:center; gap:6px;">
-                        <input class="input" type="date" x-model="filtros.data_inicio" style="width:auto; padding:6px 10px; font-size:13px;">
+                        <input class="input js-datepicker" type="text" x-model="filtros.data_inicio" style="width:auto; padding:6px 10px; font-size:13px;" placeholder="Início" x-init="flatpickr($el, { locale: 'pt', dateFormat: 'Y-m-d', altInput: true, altFormat: 'd/m/Y' })">
                         <span style="color:#6b7280; font-size:13px;">até</span>
-                        <input class="input" type="date" x-model="filtros.data_fim" style="width:auto; padding:6px 10px; font-size:13px;">
+                        <input class="input js-datepicker" type="text" x-model="filtros.data_fim" style="width:auto; padding:6px 10px; font-size:13px;" placeholder="Fim" x-init="flatpickr($el, { locale: 'pt', dateFormat: 'Y-m-d', altInput: true, altFormat: 'd/m/Y' })">
                     </div>
                 </template>
             </div>
@@ -220,7 +220,7 @@ include __DIR__ . '/../includes/layout/head.php';
                     </div>
                     <div>
                         <label class="label">Vencimento *</label>
-                        <input class="input" type="date" x-model="form.vencimento" required>
+                        <input class="input js-datepicker" type="text" x-model="form.vencimento" required placeholder="Selecione" x-init="flatpickr($el, { locale: 'pt', dateFormat: 'Y-m-d', altInput: true, altFormat: 'd/m/Y' })">
                     </div>
                 </div>
 
@@ -286,7 +286,7 @@ include __DIR__ . '/../includes/layout/head.php';
                     </div>
                     <div>
                         <label class="label">Até (opcional)</label>
-                        <input class="input" type="date" x-model="form.data_termino">
+                        <input class="input js-datepicker" type="text" x-model="form.data_termino" placeholder="Opcional" x-init="flatpickr($el, { locale: 'pt', dateFormat: 'Y-m-d', altInput: true, altFormat: 'd/m/Y' })">
                     </div>
                 </div>
 

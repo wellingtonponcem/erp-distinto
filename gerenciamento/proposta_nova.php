@@ -283,14 +283,14 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         </div>
                         <div class="form-group">
                             <label class="label-premium">Data do Casamento</label>
-                            <input type="date" name="data_casamento" class="input" x-model="dataCasamento">
+                            <input type="text" name="data_casamento" class="input js-datepicker" x-model="dataCasamento" placeholder="Selecione a data" x-init="flatpickr($el, { locale: 'pt', dateFormat: 'Y-m-d', altInput: true, altFormat: 'd/m/Y' })">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 pb-8 border-b border-zinc-100/50">
                         <div class="form-group">
                             <label class="label-premium">Data Limite para Desconto</label>
-                            <input type="text" name="data_limite_desconto" class="input" x-model="dataLimiteDesconto" placeholder="Ex: 05/04/2026">
+                            <input type="text" name="data_limite_desconto" class="input js-datepicker" x-model="dataLimiteDesconto" placeholder="Selecione a data" x-init="flatpickr($el, { locale: 'pt', dateFormat: 'd/m/Y' })">
                         </div>
                         <div class="form-group">
                             <label class="label-premium">Condição Especial</label>
@@ -533,12 +533,12 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div class="form-group">
                             <label class="label">Data Prevista de Início</label>
-                            <input type="date" name="data_inicio" class="input" value="<?= date('Y-m-d') ?>">
+                            <input type="text" name="data_inicio" class="input js-datepicker" value="<?= date('Y-m-d') ?>" x-init="flatpickr($el, { locale: 'pt', dateFormat: 'Y-m-d', altInput: true, altFormat: 'd/m/Y' })">
                             <p class="text-[10px] text-zinc-500 mt-1">Data que aparecerá no cronograma da proposta.</p>
                         </div>
                         <div class="form-group">
                             <label class="label">Validade da Proposta</label>
-                            <input type="date" name="validade" class="input" value="<?= date('Y-m-d', strtotime('+15 days')) ?>">
+                            <input type="text" name="validade" class="input js-datepicker" value="<?= date('Y-m-d', strtotime('+15 days')) ?>" x-init="flatpickr($el, { locale: 'pt', dateFormat: 'Y-m-d', altInput: true, altFormat: 'd/m/Y' })">
                             <p class="text-[10px] text-zinc-500 mt-1">Até quando os valores e condições são garantidos.</p>
                         </div>
                     </div>
