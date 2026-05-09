@@ -308,7 +308,7 @@ if (!function_exists('fmt')) {
         }
         .boas-vindas-text-col {
             flex: none !important;
-            padding: 40px 30px !important;
+            padding: 50px 30px !important;
             height: auto !important;
             text-align: left !important;
         }
@@ -316,6 +316,9 @@ if (!function_exists('fmt')) {
             font-size: 2.2rem !important;
             line-height: 1.1 !important;
             margin-bottom: 25px !important;
+        }
+        .boas-vindas-logo {
+            display: none !important;
         }
     }
 
@@ -404,7 +407,7 @@ if (!function_exists('fmt')) {
             </div>
 
             <!-- Logo Distinto no canto inferior direito -->
-            <div style="position: absolute; bottom: 8vh; right: 6vw; width: 120px;">
+            <div class="boas-vindas-logo" style="position: absolute; bottom: 8vh; right: 6vw; width: 120px;">
                 <img src="<?= raizUrl('/assets/distinto_logo.svg') ?>"
                     style="width: 100%; filter: brightness(0); opacity: 0.8;">
             </div>
