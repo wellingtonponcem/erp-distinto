@@ -24,7 +24,10 @@ function garantirEstruturaServicos(PDO $db): void {
         'preco_venda_pontual' => "DECIMAL(10,2) NOT NULL DEFAULT 0.00",
         'categoria'      => "VARCHAR(50) DEFAULT 'marketing'",
         'tipo'           => "VARCHAR(20) DEFAULT 'servico'",
-        'itens_json'     => "TEXT NULL"
+        'itens_json'     => "TEXT NULL",
+        'subtitulo'      => "TEXT NULL",
+        'beneficios_json' => "TEXT NULL",
+        'condicoes_comerciais' => "TEXT NULL"
     ];
 
     foreach ($novas as $col => $def) {
@@ -51,7 +54,7 @@ switch ($metodo) {
         if (empty($d['nome'])) responderJson(['erro' => 'Nome obrigatório'], 422);
         $id = gerarId();
         try {
-            $stmt = $db->prepare('INSERT INTO servicos (id, nome, categoria, tipo, itens_json, descricao, entregaveis, ferramentas, terceirizacao, periodicidade, prazo_minimo, preco_venda, preco_venda_pontual, horas_estimadas, custo_producao, custos_variaveis, markup) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
+            $stmt = $db->prepare('INSERT INTO servicos (id, nome, categoria, tipo, itens_json, descricao, entregaveis, ferramentas, terceirizacao, periodicidade, prazo_minimo, preco_venda, preco_venda_pontual, horas_estimadas, custo_producao, custos_variaveis, markup, subtitulo, beneficios_json, condicoes_comerciais) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
             $stmt->execute([
                 $id, 
                 $d['nome'], 
@@ -69,7 +72,10 @@ switch ($metodo) {
                 $d['horas_estimadas'] ?? 0, 
                 $d['custo_producao'] ?? 0, 
                 $d['custos_variaveis'] ?? 0, 
-                $d['markup'] ?? 30
+                $d['markup'] ?? 30,
+                $d['subtitulo'] ?? null,
+                $d['beneficios_json'] ?? null,
+                $d['condicoes_comerciais'] ?? null
             ]);
             responderJson(['ok' => true, 'id' => $id], 201);
         } catch (Exception $e) {
@@ -81,7 +87,7 @@ switch ($metodo) {
         $d = lerCorpo();
         if (empty($d['id'])) responderJson(['erro' => 'ID obrigatório'], 422);
         try {
-            $stmt = $db->prepare('UPDATE servicos SET nome=?, categoria=?, tipo=?, itens_json=?, descricao=?, entregaveis=?, ferramentas=?, terceirizacao=?, periodicidade=?, prazo_minimo=?, preco_venda=?, preco_venda_pontual=?, horas_estimadas=?, custo_producao=?, custos_variaveis=?, markup=? WHERE id=?');
+            $stmt = $db->prepare('UPDATE servicos SET nome=?, categoria=?, tipo=?, itens_json=?, descricao=?, entregaveis=?, ferramentas=?, terceirizacao=?, periodicidade=?, prazo_minimo=?, preco_venda=?, preco_venda_pontual=?, horas_estimadas=?, custo_producao=?, custos_variaveis=?, markup=?, subtitulo=?, beneficios_json=?, condicoes_comerciais=? WHERE id=?');
             $stmt->execute([
                 $d['nome'], 
                 $d['categoria'] ?? 'marketing',
@@ -99,6 +105,9 @@ switch ($metodo) {
                 $d['custo_producao'] ?? 0, 
                 $d['custos_variaveis'] ?? 0, 
                 $d['markup'] ?? 30, 
+                $d['subtitulo'] ?? null,
+                $d['beneficios_json'] ?? null,
+                $d['condicoes_comerciais'] ?? null,
                 $d['id']
             ]);
             responderJson(['ok' => true]);

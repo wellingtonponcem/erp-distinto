@@ -171,6 +171,39 @@ include __DIR__ . '/../includes/layout/head.php';
                     <label class="label">Descrição Básica</label>
                     <textarea class="input" x-model="form.descricao" rows="2" placeholder="O que é o serviço de forma resumida..." style="resize:vertical;"></textarea>
                 </div>
+
+                <!-- Campos Específicos para Wedding -->
+                <div x-show="form.categoria === 'wedding'" style="background:rgba(197,168,128,0.05); padding:16px; border-radius:8px; border:1px solid rgba(197,168,128,0.2); margin-bottom:16px;">
+                    <div style="margin-bottom:12px;">
+                        <label class="label" style="color:#c5a880;">Subtítulo (Tagline)</label>
+                        <input class="input" x-model="form.subtitulo" placeholder="Ex: O plano definitivo para casais...">
+                    </div>
+                    
+                    <div style="margin-bottom:12px;">
+                        <label class="label" style="color:#c5a880; display:flex; justify-content:space-between; align-items:center;">
+                            Benefícios / Diferenciais (Itens)
+                            <button type="button" @click="adicionarBeneficio()" style="background:#c5a880; color:#fff; border:none; border-radius:4px; padding:2px 8px; font-size:10px; cursor:pointer;">
+                                + Adicionar Item
+                            </button>
+                        </label>
+                        <div style="display:flex; flex-direction:column; gap:8px;">
+                            <template x-for="(b, index) in form.beneficios_lista" :key="index">
+                                <div style="display:flex; gap:8px;">
+                                    <input class="input" x-model="form.beneficios_lista[index]" style="font-size:12px;" placeholder="Descreva o benefício...">
+                                    <button type="button" @click="removerBeneficio(index)" style="color:#ef4444; background:none; border:none; cursor:pointer;">
+                                        <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="label" style="color:#c5a880;">Condições Comerciais (Notas de Preço)</label>
+                        <input class="input" x-model="form.condicoes_comerciais" placeholder="Ex: 10% de desconto na entrada...">
+                    </div>
+                </div>
+
                 <div style="margin-bottom:16px;">
                     <label class="label">Entregáveis (Escopo)</label>
                     <textarea class="input" x-model="form.entregaveis" rows="3" placeholder="Ex: 4 posts semanais, 1 relatório mensal, etc..." style="resize:vertical;"></textarea>
@@ -448,7 +481,6 @@ function servicos() {
             const markup = parseFloat(s.markup || 0) / 100;
             return (rateio + custo) * (1 + markup);
         },
-
         abrirModal(item = null) {
             this.form = item ? { ...item } : { 
                 nome:'', 
@@ -467,8 +499,18 @@ function servicos() {
                 custos_variaveis:'0', 
                 preco_venda: 0,
                 preco_venda_pontual: 0,
-                markup:'30' 
+                markup:'30',
+                subtitulo: '',
+                condicoes_comerciais: '',
+                beneficios_lista: []
             };
+            if (item && item.beneficios_json) {
+                try {
+                    this.form.beneficios_lista = JSON.parse(item.beneficios_json);
+                } catch(e) { this.form.beneficios_lista = []; }
+            } else if (!item) {
+                this.form.beneficios_lista = [];
+            }
             if (this.form.id && this.form.horas_estimadas) {
                 this.form.horas_dia = (parseFloat(this.form.horas_estimadas) / 22).toFixed(1);
             }
@@ -480,6 +522,15 @@ function servicos() {
             this.chatMensagem = '';
             this.modalAberto = true;
             this.$nextTick(() => lucide.createIcons());
+        },
+
+        adicionarBeneficio() {
+            if (!this.form.beneficios_lista) this.form.beneficios_lista = [];
+            this.form.beneficios_lista.push('');
+        },
+
+        removerBeneficio(index) {
+            this.form.beneficios_lista.splice(index, 1);
         },
 
         recalcularPrecoPeloMarkup() {
@@ -624,10 +675,15 @@ function servicos() {
             this.salvando = true;
             try {
                 const metodo = this.form.id ? 'PUT' : 'POST';
+                const payload = { ...this.form };
+                if (payload.beneficios_lista) {
+                    payload.beneficios_json = JSON.stringify(payload.beneficios_lista.filter(b => b.trim() !== ''));
+                    delete payload.beneficios_lista;
+                }
                 const r = await fetch('<?= raizUrl('/api/precificacao/servicos.php') ?>', {
                     method: metodo,
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(this.form)
+                    body: JSON.stringify(payload)
                 });
                 if (r.ok) {
                     toast('Serviço salvo!', 'sucesso');
