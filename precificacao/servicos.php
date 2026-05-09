@@ -24,18 +24,24 @@ include __DIR__ . '/../includes/layout/head.php';
         </div>
         
         <!-- Filtro de Categoria (Abas) -->
-        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:6px; display:flex; gap:6px; margin-bottom:24px; max-width:400px;">
+        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:6px; display:flex; gap:6px; margin-bottom:24px; max-width:550px;">
             <button @click="categoriaAtiva = 'marketing'" 
                     :class="categoriaAtiva === 'marketing' ? 'bg-white text-black shadow-lg' : 'text-zinc-400 hover:text-white hover:bg-white/5'"
-                    style="flex:1; border:none; padding:10px; border-radius:10px; font-weight:700; cursor:pointer; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display:flex; align-items:center; justify-content:center; gap:8px; font-size:13px;">
+                    style="flex:1; border:none; padding:10px; border-radius:10px; font-weight:700; cursor:pointer; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display:flex; align-items:center; justify-content:center; gap:8px; font-size:12px;">
                 <i data-lucide="trending-up" style="width:14px;height:14px;"></i>
                 Marketing
             </button>
             <button @click="categoriaAtiva = 'wedding'" 
                     :class="categoriaAtiva === 'wedding' ? 'bg-white text-black shadow-lg' : 'text-zinc-400 hover:text-white hover:bg-white/5'"
-                    style="flex:1; border:none; padding:10px; border-radius:10px; font-weight:700; cursor:pointer; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display:flex; align-items:center; justify-content:center; gap:8px; font-size:13px;">
+                    style="flex:1; border:none; padding:10px; border-radius:10px; font-weight:700; cursor:pointer; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display:flex; align-items:center; justify-content:center; gap:8px; font-size:12px;">
                 <i data-lucide="camera" style="width:14px;height:14px;"></i>
-                Wedding / 15 Anos
+                Wedding
+            </button>
+            <button @click="categoriaAtiva = '15anos'" 
+                    :class="categoriaAtiva === '15anos' ? 'bg-white text-black shadow-lg' : 'text-zinc-400 hover:text-white hover:bg-white/5'"
+                    style="flex:1; border:none; padding:10px; border-radius:10px; font-weight:700; cursor:pointer; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display:flex; align-items:center; justify-content:center; gap:8px; font-size:12px;">
+                <i data-lucide="party-popper" style="width:14px;height:14px;"></i>
+                15 Anos
             </button>
         </div>
 
@@ -129,7 +135,8 @@ include __DIR__ . '/../includes/layout/head.php';
                         <label class="label">Categoria</label>
                         <select class="select" x-model="form.categoria">
                             <option value="marketing">Marketing</option>
-                            <option value="wedding">Wedding / 15 Anos</option>
+                            <option value="wedding">Wedding</option>
+                            <option value="15anos">15 Anos</option>
                         </select>
                     </div>
                     <div>
@@ -141,8 +148,8 @@ include __DIR__ . '/../includes/layout/head.php';
                     </div>
                 </div>
                 
-                <!-- Configuração de Itens (Apenas para Planos que não sejam Wedding) -->
-                <div x-show="form.tipo === 'plano' && form.categoria !== 'wedding'" style="background:rgba(167,139,250,0.05); padding:16px; border-radius:8px; border:1px solid rgba(167,139,250,0.2); margin-bottom:16px;">
+                <!-- Configuração de Itens (Apenas para Planos que não sejam de Eventos) -->
+                <div x-show="form.tipo === 'plano' && form.categoria === 'marketing'" style="background:rgba(167,139,250,0.05); padding:16px; border-radius:8px; border:1px solid rgba(167,139,250,0.2); margin-bottom:16px;">
                     <label class="label" style="display:flex; align-items:center; gap:8px;">
                         <i data-lucide="list-checks" style="width:14px;height:14px;"></i>
                         Configuração de Itens (JSON)
@@ -156,7 +163,7 @@ include __DIR__ . '/../includes/layout/head.php';
                     <label class="label">Nome do Serviço *</label>
                     <input class="input" x-model="form.nome" required placeholder="Ex: Registro Essencial">
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;" x-show="form.categoria !== 'wedding'">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;" x-show="form.categoria === 'marketing'">
                     <div>
                         <label class="label">Periodicidade</label>
                         <select class="select" x-model="form.periodicidade">
@@ -169,13 +176,13 @@ include __DIR__ . '/../includes/layout/head.php';
                         <input class="input" type="number" min="0" x-model="form.prazo_minimo" placeholder="Ex: 6 (0 para s/ mínimo)">
                     </div>
                 </div>
-                <div style="margin-bottom:16px;" x-show="form.categoria !== 'wedding'">
+                <div style="margin-bottom:16px;" x-show="form.categoria === 'marketing'">
                     <label class="label">Descrição Básica</label>
                     <textarea class="input" x-model="form.descricao" rows="2" placeholder="O que é o serviço de forma resumida..." style="resize:vertical;"></textarea>
                 </div>
 
-                <!-- Campos Específicos para Wedding -->
-                <div x-show="form.categoria === 'wedding'" style="background:rgba(197,168,128,0.05); padding:16px; border-radius:8px; border:1px solid rgba(197,168,128,0.2); margin-bottom:16px;">
+                <!-- Campos Específicos para Eventos (Wedding / 15 Anos) -->
+                <div x-show="form.categoria === 'wedding' || form.categoria === '15anos'" style="background:rgba(197,168,128,0.05); padding:16px; border-radius:8px; border:1px solid rgba(197,168,128,0.2); margin-bottom:16px;">
                     <div style="margin-bottom:12px;">
                         <label class="label" style="color:#c5a880;">Subtítulo (Tagline)</label>
                         <input class="input" x-model="form.subtitulo" placeholder="Ex: O plano definitivo para casais...">
@@ -201,11 +208,11 @@ include __DIR__ . '/../includes/layout/head.php';
                     </div>
                 </div>
 
-                <div style="margin-bottom:16px;" x-show="form.categoria !== 'wedding'">
+                <div style="margin-bottom:16px;" x-show="form.categoria === 'marketing'">
                     <label class="label">Entregáveis (Escopo)</label>
                     <textarea class="input" x-model="form.entregaveis" rows="3" placeholder="Ex: 4 posts semanais, 1 relatório mensal, etc..." style="resize:vertical;"></textarea>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;" x-show="form.categoria !== 'wedding'">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;" x-show="form.categoria === 'marketing'">
                     <div>
                         <label class="label">Ferramentas Adicionais</label>
                         <input class="input" x-model="form.ferramentas" placeholder="Ex: Canva Pro, RD Station...">
@@ -215,7 +222,7 @@ include __DIR__ . '/../includes/layout/head.php';
                         <input class="input" x-model="form.terceirizacao" placeholder="Ex: R$ 200,00 - Designer Freelancer">
                     </div>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;" x-show="form.categoria !== 'wedding'">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;" x-show="form.categoria === 'marketing'">
                     <div>
                         <label class="label">Horas/Dia (Dedicadas) *</label>
                         <input class="input" type="number" step="0.1" min="0" x-model="form.horas_dia" @input="calcularHorasMensaisServico()" required placeholder="Ex: 0.5">
@@ -225,7 +232,7 @@ include __DIR__ . '/../includes/layout/head.php';
                         <input class="input" type="number" step="0.5" min="0.5" x-model="form.horas_estimadas" required placeholder="Ex: 20">
                     </div>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;" x-show="form.categoria !== 'wedding'">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;" x-show="form.categoria === 'marketing'">
                     <div>
                         <label class="label">Custo de Produção (R$) *</label>
                         <input class="input" type="number" step="0.01" min="0" x-model="form.custo_producao" required placeholder="0,00">
@@ -238,15 +245,15 @@ include __DIR__ . '/../includes/layout/head.php';
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;">
                     <div style="background:rgba(167,139,250,0.05); padding:16px; border-radius:8px; border:1px solid rgba(167,139,250,0.2);">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
-                            <label class="label" style="margin-bottom:0;" x-text="form.categoria === 'wedding' ? 'Investimento (R$)' : 'Preço Recorrente (R$)'"></label>
-                            <button type="button" class="btn-secondary" @click="sugerirPrecoIA('recorrente')" :disabled="sugerindoPreco" style="padding:2px 6px; font-size:10px; border-color:#a78bfa; color:#a78bfa;" x-show="form.categoria !== 'wedding'">
+                            <label class="label" style="margin-bottom:0;" x-text="form.categoria === 'marketing' ? 'Preço Recorrente (R$)' : 'Investimento (R$)'"></label>
+                            <button type="button" class="btn-secondary" @click="sugerirPrecoIA('recorrente')" :disabled="sugerindoPreco" style="padding:2px 6px; font-size:10px; border-color:#a78bfa; color:#a78bfa;" x-show="form.categoria === 'marketing'">
                                 <i data-lucide="sparkles" style="width:10px;height:10px;"></i> Sugerir
                             </button>
                         </div>
                         <input class="input" type="number" step="0.01" x-model="form.preco_venda" style="font-size:16px; font-weight:800; color:#10b981; background:transparent; border:none; padding:0;" placeholder="0,00">
                     </div>
 
-                    <div style="background:rgba(167,139,250,0.05); padding:16px; border-radius:8px; border:1px solid rgba(167,139,250,0.2);" x-show="form.categoria !== 'wedding'">
+                    <div style="background:rgba(167,139,250,0.05); padding:16px; border-radius:8px; border:1px solid rgba(167,139,250,0.2);" x-show="form.categoria === 'marketing'">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
                             <label class="label" style="margin-bottom:0;">Preço Pontual (R$)</label>
                             <button type="button" class="btn-secondary" @click="sugerirPrecoIA('pontual')" :disabled="sugerindoPreco" style="padding:2px 6px; font-size:10px; border-color:#a78bfa; color:#a78bfa;">
@@ -257,11 +264,11 @@ include __DIR__ . '/../includes/layout/head.php';
                     </div>
                 </div>
 
-                <div style="font-size:11px; color:#6b7280; margin-bottom:16px; padding-left:4px;" x-show="form.categoria !== 'wedding'">
+                <div style="font-size:11px; color:#6b7280; margin-bottom:16px; padding-left:4px;" x-show="form.categoria === 'marketing'">
                     💡 Piso mínimo (custo + rateio): <span x-text="formatarMoeda(calcularPrecoMinimo(form))"></span>
                 </div>
                 
-                <div style="margin-bottom:16px;" x-show="form.categoria !== 'wedding'">
+                <div style="margin-bottom:16px;" x-show="form.categoria === 'marketing'">
                     <label class="label">Markup Manual (%)</label>
                     <input class="input" type="number" step="0.5" min="0" x-model="form.markup" @input="recalcularPrecoPeloMarkup()" placeholder="Ex: 30">
                 </div>
