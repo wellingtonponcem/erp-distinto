@@ -22,6 +22,20 @@ include __DIR__ . '/../includes/layout/head.php';
                 <i data-lucide="plus" style="width:15px;height:15px;"></i> Novo Serviço
             </button>
         </div>
+        
+        <!-- Abas de Categoria -->
+        <div style="display:flex; gap:8px; margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:12px;">
+            <button @click="categoriaAtiva = 'marketing'" 
+                    :class="categoriaAtiva === 'marketing' ? 'btn-primary' : 'btn-secondary'"
+                    style="padding:8px 20px; font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px;">
+                <i data-lucide="trending-up" style="width:14px;height:14px;"></i> Marketing
+            </button>
+            <button @click="categoriaAtiva = 'wedding'" 
+                    :class="categoriaAtiva === 'wedding' ? 'btn-primary' : 'btn-secondary'"
+                    style="padding:8px 20px; font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px;">
+                <i data-lucide="camera" style="width:14px;height:14px;"></i> Wedding / 15 Anos
+            </button>
+        </div>
 
         <!-- Configuração de horas mensais -->
         <div class="card" style="padding:16px 20px; margin-bottom:20px; display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
@@ -58,7 +72,7 @@ include __DIR__ . '/../includes/layout/head.php';
                 </div>
             </template>
 
-            <template x-for="s in lista" :key="s.id">
+            <template x-for="s in listaFiltrada" :key="s.id">
                     <div class="table-row" style="display:grid; grid-template-columns:2fr 80px 1fr 1fr 1fr 80px 100px; align-items:center;">
                         <div class="table-cell">
                             <!-- Nome do Serviço (Título Principal) -->
@@ -108,9 +122,25 @@ include __DIR__ . '/../includes/layout/head.php';
                 </button>
             </div>
             <form @submit.prevent="salvar()">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-bottom:16px;">
+                    <div>
+                        <label class="label">Categoria</label>
+                        <select class="select" x-model="form.categoria">
+                            <option value="marketing">Marketing</option>
+                            <option value="wedding">Wedding / 15 Anos</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="label">Tipo de Item</label>
+                        <select class="select" x-model="form.tipo">
+                            <option value="servico">Serviço / Upgrade</option>
+                            <option value="plano">Plano Base (Pacote)</option>
+                        </select>
+                    </div>
+                </div>
                 <div style="margin-bottom:16px;">
                     <label class="label">Nome do Serviço *</label>
-                    <input class="input" x-model="form.nome" required placeholder="Ex: Gestão de Tráfego Pago">
+                    <input class="input" x-model="form.nome" required placeholder="Ex: Registro Essencial">
                 </div>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;">
                     <div>
@@ -357,6 +387,7 @@ function servicos() {
         form: {},
         totalCustosFixos: 0,
         horasMensais: parseInt(localStorage.getItem('cap_horas_mensais') || 160),
+        categoriaAtiva: 'marketing', // Nova variável para abas
         
         // Sugestão de Preço IA
         sugerindoPreco: false,
@@ -368,6 +399,10 @@ function servicos() {
             equipe: '',
             jornada: '',
             obs: ''
+        },
+
+        get listaFiltrada() {
+            return this.lista.filter(s => (s.categoria || 'marketing') === this.categoriaAtiva);
         },
 
         async init() {
@@ -405,6 +440,8 @@ function servicos() {
         abrirModal(item = null) {
             this.form = item ? { ...item } : { 
                 nome:'', 
+                categoria: this.categoriaAtiva,
+                tipo: 'servico',
                 descricao:'', 
                 entregaveis: '',
                 ferramentas: '',
