@@ -495,6 +495,31 @@ if (!function_exists('fmt')) {
             height: 45vh !important;
             order: 3;
         }
+
+        /* Ajustes Portfolio Feed Mobile */
+        .portfolio-slide {
+            flex-direction: column !important;
+            height: auto !important;
+            gap: 2px !important;
+        }
+        .portfolio-left-col, .portfolio-right-col {
+            flex: none !important;
+            width: 100% !important;
+            height: auto !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        .portfolio-img-item {
+            height: 50vh !important;
+            flex: none !important;
+        }
+        .portfolio-label {
+            top: 20px !important;
+            left: 20px !important;
+        }
+        .portfolio-label p {
+            font-size: 0.8rem !important;
+        }
     }
 
     @keyframes modalFadeIn {
@@ -1268,12 +1293,12 @@ if (!function_exists('fmt')) {
         style="padding: 0; background: #000; display: flex; flex-direction: row; gap: 2px; overflow: hidden; height: 100vh; width: 100%;">
 
         <!-- Coluna Esquerda (Duas fotos empilhadas) -->
-        <div style="flex: 2; display: flex; flex-direction: column; gap: 2px; height: 100%;">
+        <div class="portfolio-left-col" style="flex: 2; display: flex; flex-direction: column; gap: 2px; height: 100%;">
             <!-- Foto Cima -->
-            <div class="reveal-item" style="flex: 1; position: relative; overflow: hidden;">
+            <div class="reveal-item portfolio-img-item" style="flex: 1; position: relative; overflow: hidden;">
                 <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-cima-12.png') ?>"
                     style="width: 100%; height: 100%; object-fit: cover;">
-                <div style="position: absolute; top: 40px; left: 40px; z-index: 10;">
+                <div class="portfolio-label" style="position: absolute; top: 40px; left: 40px; z-index: 10;">
                     <p
                         style="font-family: var(--wedding-montserrat); font-size: 1rem; color: #fff; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 300; opacity: 0.8;">
                         PEDRO E VANESSA - BEFORE THE BLOOM
@@ -1281,14 +1306,14 @@ if (!function_exists('fmt')) {
                 </div>
             </div>
             <!-- Foto Baixo -->
-            <div class="reveal-item" style="flex: 1; overflow: hidden;">
+            <div class="reveal-item portfolio-img-item" style="flex: 1; overflow: hidden;">
                 <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-baixo-12.png') ?>"
                     style="width: 100%; height: 100%; object-fit: cover;">
             </div>
         </div>
 
         <!-- Coluna Direita (Foto inteira) -->
-        <div class="reveal-item" style="flex: 1.1; overflow: hidden; height: 100%;">
+        <div class="reveal-item portfolio-right-col portfolio-img-item" style="flex: 1.1; overflow: hidden; height: 100%;">
             <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-direita-12.png') ?>"
                 style="width: 100%; height: 100%; object-fit: cover;">
         </div>
@@ -1299,17 +1324,17 @@ if (!function_exists('fmt')) {
         style="padding: 0; background: #000; display: flex; flex-direction: row; gap: 2px; overflow: hidden; height: 100vh; width: 100%;">
 
         <!-- Coluna Esquerda (Duas fotos empilhadas) -->
-        <div style="flex: 1.8; display: flex; flex-direction: column; gap: 2px; height: 100%;">
+        <div class="portfolio-left-col" style="flex: 1.8; display: flex; flex-direction: column; gap: 2px; height: 100%;">
             <!-- Foto Cima -->
-            <div class="reveal-item" style="flex: 1; overflow: hidden;">
+            <div class="reveal-item portfolio-img-item" style="flex: 1; overflow: hidden;">
                 <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-cima-13.png') ?>"
                     style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <!-- Foto Baixo -->
-            <div class="reveal-item" style="flex: 1.1; position: relative; overflow: hidden;">
+            <div class="reveal-item portfolio-img-item" style="flex: 1.1; position: relative; overflow: hidden;">
                 <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-baixo-13.png') ?>"
                     style="width: 100%; height: 100%; object-fit: cover;">
-                <div style="position: absolute; bottom: 40px; left: 40px; z-index: 10;">
+                <div class="portfolio-label" style="position: absolute; bottom: 40px; left: 40px; z-index: 10;">
                     <p
                         style="font-family: var(--wedding-montserrat); font-size: 1rem; color: #fff; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 300; opacity: 0.8;">
                         GABRIEL E JULIA - PRÉ-WEDDING
@@ -1319,7 +1344,7 @@ if (!function_exists('fmt')) {
         </div>
 
         <!-- Coluna Direita (Foto inteira) -->
-        <div class="reveal-item" style="flex: 1; overflow: hidden; height: 100%;">
+        <div class="reveal-item portfolio-right-col portfolio-img-item" style="flex: 1; overflow: hidden; height: 100%;">
             <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-direita-13.png') ?>"
                 style="width: 100%; height: 100%; object-fit: cover;">
         </div>
