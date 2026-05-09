@@ -782,8 +782,11 @@ if (!function_exists('fmt')) {
 
         <!-- Lado Esquerdo: Imagem -->
         <div class="package-img-col" style="flex: 1; height: 100%;">
-            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-07.png') ?>"
-                style="width: 100%; height: 100%; object-fit: cover;">
+            <picture>
+                <source media="(max-width: 768px)" srcset="<?= raizUrl('/imagens-proposta-casamento/foto-section-07-mobile.png') ?>">
+                <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-07.png') ?>"
+                    style="width: 100%; height: 100%; object-fit: cover;">
+            </picture>
         </div>
 
         <!-- Lado Direito: Detalhes -->
