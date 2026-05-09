@@ -1382,14 +1382,8 @@ if (!function_exists('fmt')) {
                     'heritage' => ['label' => 'EXPERIÊNCIA HERITAGE', 'sub' => $hItem1, 'valor' => $pHeritage],
                     'cinematic' => ['label' => 'EXPERIÊNCIA CINEMATIC', 'sub' => $cItem1, 'valor' => $pCinematic],
             <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px;">
-                <?php
-                $cards = [
-                    ['id' => 'heritage', 'nome' => 'Heritage', 'desc' => $hItem1, 'valor' => $pHeritage],
-                    ['id' => 'cinematic', 'nome' => 'Cinematic', 'desc' => $cItem1, 'valor' => $pCinematic],
-                    ['id' => 'essencial', 'nome' => 'Essencial', 'desc' => $eItem1, 'valor' => $pEssencial],
-                ];
-                foreach ($cards as $c): ?>
-                    <div id="plan-<?= $c['id'] ?>" class="plan-card" onclick="selectPlan('<?= $c['id'] ?>')"
+                <?php foreach ($planosWedding as $p): ?>
+                    <div id="plan-<?= $p['id'] ?>" class="plan-card" onclick="selectPlan('<?= $p['id'] ?>')"
                         style="display: flex; align-items: center; gap: 15px; padding: 20px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.02); cursor: pointer; position: relative;">
                         <div class="plan-radio"
                             style="width: 18px; height: 18px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
@@ -1400,15 +1394,15 @@ if (!function_exists('fmt')) {
                         <div style="flex: 1;">
                             <p
                                 style="font-size: 0.75rem; font-weight: 500; color: rgba(255,255,255,0.85); margin: 0 0 2px; text-transform: uppercase; letter-spacing: 0.05em;">
-                                <?= $c['nome'] ?>
+                                <?= htmlspecialchars($p['nome']) ?>
                             </p>
-                            <p style="font-size: 0.75rem; font-weight: 300; color: rgba(255,255,255,0.4); margin: 0;">
-                                <?= $c['desc'] ?>
+                            <p style="font-size: 0.7rem; font-weight: 300; color: rgba(255,255,255,0.4); margin: 0;">
+                                <?= htmlspecialchars($p['descricao'] ?: 'Veja os itens inclusos abaixo') ?>
                             </p>
                         </div>
                         <div style="text-align: right;">
                             <p style="font-size: 0.85rem; font-weight: 400; color: #fff; margin: 0;">
-                                <?= fmt($c['valor']) ?>
+                                <?= fmt($p['preco_venda']) ?>
                             </p>
                         </div>
                         <span class="badge-selecionado"
@@ -1518,72 +1512,50 @@ if (!function_exists('fmt')) {
             </button>
         </div>
 
+        <?php
+        // Buscar serviços e planos do banco
+        $servicosWedding = [];
+        $planosWedding = [];
+        try {
+            $dbWed = Database::get();
+            $allWed = $dbWed->query("SELECT * FROM servicos WHERE ativo = 1 AND categoria = 'wedding' ORDER BY nome")->fetchAll();
+            foreach ($allWed as $w) {
+                if ($w['tipo'] === 'plano') {
+                    $planosWedding[] = $w;
+                } else {
+                    $servicosWedding[$w['id']] = [
+                        'nome' => $w['nome'],
+                        'valor' => (float)$w['preco_venda']
+                    ];
+                }
+            }
+        } catch (Exception $e) {}
+        ?>
         <script>
             (function () {
-                // Catálogo de Serviços Individuais
-                const allServices = {
-                    cobertura_6h: { nome: 'Cobertura Fotográfica 6h', valor: 0 },
-                    cobertura_8h: { nome: 'Cobertura Cinematográfica 8h', valor: 0 },
-                    cobertura_full: { nome: 'Cobertura Documental Completa', valor: 0 },
-                    album_20x20: { nome: 'Álbum 20x20 - 40 fotos', valor: 800 },
-                    album_30x30: { nome: 'Álbum 30x30 - 60 fotos', valor: 1500 },
-                    prewedding: { nome: 'Ensaio Pré-Wedding', valor: 1200 },
-                    boudoir: { nome: 'Boudoir da Noiva', valor: 800 },
-                    same_day: { nome: 'Same Day Edit (Vídeo)', valor: 1000 },
-                    pencard: { nome: 'Pencard Exclusivo', valor: 250 }
-                };
+                // Catálogo de Serviços vindo do Banco
+                const allServices = <?= json_encode($servicosWedding) ?>;
 
-                // Definição dos Planos (Presets)
-                const planPresets = {
-                    essencial: {
-                        nome: 'Registro Essencial',
-                        valorBase: <?= $pEssencial ?>,
-                        condicoes: <?= json_encode($condE) ?>,
-                        servicos: {
-                            cobertura_6h: 'incluso',
-                            pencard: 'incluso',
-                            album_20x20: 'opcional',
-                            prewedding: 'opcional'
-                        }
-                    },
-                    cinematic: {
-                        nome: 'Experiência Cinematic',
-                        valorBase: <?= $pCinematic ?>,
-                        condicoes: <?= json_encode($condHC) ?>,
-                        servicos: {
-                            cobertura_8h: 'incluso',
-                            album_20x20: 'incluso',
-                            pencard: 'incluso',
-                            prewedding: 'opcional',
-                            boudoir: 'opcional',
-                            same_day: 'opcional'
-                        }
-                    },
-                    heritage: {
-                        nome: 'Experiência Heritage',
-                        valorBase: <?= $pHeritage ?>,
-                        condicoes: <?= json_encode($condHC) ?>,
-                        servicos: {
-                            cobertura_full: 'incluso',
-                            album_30x30: 'incluso',
-                            prewedding: 'incluso',
-                            boudoir: 'incluso',
-                            pencard: 'incluso',
-                            same_day: 'opcional'
-                        }
-                    }
+                // Definição dos Planos vindo do Banco
+                const planPresets = {};
+                <?php foreach ($planosWedding as $p): ?>
+                planPresets['<?= $p['id'] ?>'] = {
+                    nome: '<?= addslashes($p['nome']) ?>',
+                    valorBase: <?= (float)$p['preco_venda'] ?>,
+                    condicoes: '<?= addslashes($p['prazo_minimo'] > 0 ? "Saldo parcelado em até {$p['prazo_minimo']}x" : "Condições sob consulta") ?>',
+                    servicos: <?= $p['itens_json'] ?: '{}' ?>
                 };
+                <?php endforeach; ?>
 
                 let selectedPlan = null;
-                let activeUpgrades = {}; // Armazena true/false para serviços opcionais
+                let activeUpgrades = {};
 
                 const fmt = (v) => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
                 window.selectPlan = function (id) {
                     selectedPlan = id;
-                    activeUpgrades = {}; // Reseta opcionais ao trocar de plano
+                    activeUpgrades = {}; 
                     
-                    // Marcar cards visualmente
                     document.querySelectorAll('.plan-card').forEach(c => {
                         c.style.borderColor = 'rgba(255,255,255,0.1)';
                         c.style.background = 'rgba(255,255,255,0.03)';
@@ -1592,11 +1564,13 @@ if (!function_exists('fmt')) {
                         c.querySelector('.plan-radio-dot').style.opacity = '0';
                     });
                     const card = document.getElementById('plan-' + id);
-                    card.style.borderColor = 'var(--wedding-gold)';
-                    card.style.background = 'rgba(197,168,128,0.07)';
-                    card.querySelector('.badge-selecionado').style.display = 'block';
-                    card.querySelector('.plan-radio').style.borderColor = 'var(--wedding-gold)';
-                    card.querySelector('.plan-radio-dot').style.opacity = '1';
+                    if (card) {
+                        card.style.borderColor = 'var(--wedding-gold)';
+                        card.style.background = 'rgba(197,168,128,0.07)';
+                        card.querySelector('.badge-selecionado').style.display = 'block';
+                        card.querySelector('.plan-radio').style.borderColor = 'var(--wedding-gold)';
+                        card.querySelector('.plan-radio-dot').style.opacity = '1';
+                    }
 
                     renderServicesList();
                     atualizarResumo();
@@ -1605,10 +1579,12 @@ if (!function_exists('fmt')) {
                 function renderServicesList() {
                     const container = document.getElementById('servicos-dinamicos-container');
                     const plan = planPresets[selectedPlan];
+                    if (!plan) return;
                     container.innerHTML = '';
 
                     Object.entries(plan.servicos).forEach(([sId, status]) => {
                         const s = allServices[sId];
+                        if (!s) return;
                         const isOptional = status === 'opcional';
                         const div = document.createElement('div');
                         div.className = 'service-item-row';
@@ -1634,7 +1610,7 @@ if (!function_exists('fmt')) {
 
                 window.toggleDynamicService = function(sId) {
                     activeUpgrades[sId] = !activeUpgrades[sId];
-                    renderServicesList(); // Re-render para atualizar os toggles
+                    renderServicesList(); 
                     atualizarResumo();
                 };
 
@@ -1646,14 +1622,12 @@ if (!function_exists('fmt')) {
 
                     let total = plan.valorBase;
 
-                    // Linha do Plano Base
                     const divBase = document.createElement('div');
                     divBase.className = 'linha-upgrade';
                     divBase.style = "display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06);";
                     divBase.innerHTML = `<span style="font-size: 0.78rem; color: rgba(255,255,255,0.7);">${plan.nome}</span><span style="font-size: 0.78rem; color: rgba(255,255,255,0.7);">${fmt(plan.valorBase)}</span>`;
                     resumoCont.appendChild(divBase);
 
-                    // Linhas dos Opcionais Ativados
                     Object.entries(activeUpgrades).forEach(([sId, active]) => {
                         if (active) {
                             const s = allServices[sId];
@@ -1666,16 +1640,13 @@ if (!function_exists('fmt')) {
                         }
                     });
 
-                    // Total
                     const totalText = fmt(total);
                     document.getElementById('total-display').textContent = totalText;
                     document.getElementById('total-display-mobile').textContent = totalText;
 
-                    // Condições
                     document.getElementById('condicoes-display').textContent = plan.condicoes;
                     document.getElementById('condicoes-display').style.color = 'rgba(255,255,255,0.7)';
 
-                    // Botão WhatsApp
                     const btnWA = document.getElementById('whatsapp-btn');
                     btnWA.style.opacity = '1';
                     btnWA.style.pointerEvents = 'auto';

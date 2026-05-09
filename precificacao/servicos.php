@@ -138,6 +138,18 @@ include __DIR__ . '/../includes/layout/head.php';
                         </select>
                     </div>
                 </div>
+                
+                <!-- Configuração de Itens (Apenas para Planos) -->
+                <div x-show="form.tipo === 'plano'" style="background:rgba(167,139,250,0.05); padding:16px; border-radius:8px; border:1px solid rgba(167,139,250,0.2); margin-bottom:16px;">
+                    <label class="label" style="display:flex; align-items:center; gap:8px;">
+                        <i data-lucide="list-checks" style="width:14px;height:14px;"></i>
+                        Configuração de Itens (JSON)
+                    </label>
+                    <textarea class="input" x-model="form.itens_json" rows="4" style="font-family:monospace; font-size:11px;" placeholder='Ex: {"servico_id": "incluso", "outro_id": "opcional"}'></textarea>
+                    <p style="font-size:10px; color:#64748b; margin-top:6px;">
+                        💡 Liste os IDs dos serviços e defina se são "incluso" ou "opcional".
+                    </p>
+                </div>
                 <div style="margin-bottom:16px;">
                     <label class="label">Nome do Serviço *</label>
                     <input class="input" x-model="form.nome" required placeholder="Ex: Registro Essencial">
@@ -442,6 +454,7 @@ function servicos() {
                 nome:'', 
                 categoria: this.categoriaAtiva,
                 tipo: 'servico',
+                itens_json: '',
                 descricao:'', 
                 entregaveis: '',
                 ferramentas: '',

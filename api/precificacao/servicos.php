@@ -23,7 +23,8 @@ function garantirEstruturaServicos(PDO $db): void {
         'preco_venda'    => "DECIMAL(10,2) NOT NULL DEFAULT 0.00",
         'preco_venda_pontual' => "DECIMAL(10,2) NOT NULL DEFAULT 0.00",
         'categoria'      => "VARCHAR(50) DEFAULT 'marketing'",
-        'tipo'           => "VARCHAR(20) DEFAULT 'servico'"
+        'tipo'           => "VARCHAR(20) DEFAULT 'servico'",
+        'itens_json'     => "TEXT NULL"
     ];
 
     foreach ($novas as $col => $def) {
@@ -50,12 +51,13 @@ switch ($metodo) {
         if (empty($d['nome'])) responderJson(['erro' => 'Nome obrigatório'], 422);
         $id = gerarId();
         try {
-            $stmt = $db->prepare('INSERT INTO servicos (id, nome, categoria, tipo, descricao, entregaveis, ferramentas, terceirizacao, periodicidade, prazo_minimo, preco_venda, preco_venda_pontual, horas_estimadas, custo_producao, custos_variaveis, markup) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
+            $stmt = $db->prepare('INSERT INTO servicos (id, nome, categoria, tipo, itens_json, descricao, entregaveis, ferramentas, terceirizacao, periodicidade, prazo_minimo, preco_venda, preco_venda_pontual, horas_estimadas, custo_producao, custos_variaveis, markup) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
             $stmt->execute([
                 $id, 
                 $d['nome'], 
                 $d['categoria'] ?? 'marketing',
                 $d['tipo'] ?? 'servico',
+                $d['itens_json'] ?? null,
                 $d['descricao'] ?? null, 
                 $d['entregaveis'] ?? null,
                 $d['ferramentas'] ?? null,
@@ -79,11 +81,12 @@ switch ($metodo) {
         $d = lerCorpo();
         if (empty($d['id'])) responderJson(['erro' => 'ID obrigatório'], 422);
         try {
-            $stmt = $db->prepare('UPDATE servicos SET nome=?, categoria=?, tipo=?, descricao=?, entregaveis=?, ferramentas=?, terceirizacao=?, periodicidade=?, prazo_minimo=?, preco_venda=?, preco_venda_pontual=?, horas_estimadas=?, custo_producao=?, custos_variaveis=?, markup=? WHERE id=?');
+            $stmt = $db->prepare('UPDATE servicos SET nome=?, categoria=?, tipo=?, itens_json=?, descricao=?, entregaveis=?, ferramentas=?, terceirizacao=?, periodicidade=?, prazo_minimo=?, preco_venda=?, preco_venda_pontual=?, horas_estimadas=?, custo_producao=?, custos_variaveis=?, markup=? WHERE id=?');
             $stmt->execute([
                 $d['nome'], 
                 $d['categoria'] ?? 'marketing',
                 $d['tipo'] ?? 'servico',
+                $d['itens_json'] ?? null,
                 $d['descricao'] ?? null, 
                 $d['entregaveis'] ?? null,
                 $d['ferramentas'] ?? null,
