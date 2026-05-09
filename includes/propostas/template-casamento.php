@@ -619,6 +619,33 @@ if (!function_exists('fmt')) {
             line-height: 1.4 !important;
             padding: 0 10px !important;
         }
+
+        /* Ajustes Modal Interativo Mobile */
+        .modal-flex {
+            flex-direction: column !important;
+            overflow-y: auto !important;
+        }
+        .modal-col-left {
+            flex: none !important;
+            width: 100% !important;
+            padding: 60px 25px 30px 25px !important;
+            border-right: none !important;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .modal-col-right {
+            flex: none !important;
+            width: 100% !important;
+            padding: 40px 25px !important;
+        }
+        .plan-card {
+            padding: 12px 15px !important;
+        }
+        .plan-card p {
+            font-size: 0.7rem !important;
+        }
+        #total-display {
+            font-size: 1.5rem !important;
+        }
     }
 
     @keyframes modalFadeIn {
@@ -1157,29 +1184,18 @@ if (!function_exists('fmt')) {
 
         <style>
             #slide-pacote .plan-card { transition: border-color 0.2s, background 0.2s; }
-            #slide-pacote .plan-card:hover { background: rgba(255,255,255,0.05) !important; }
-            #slide-pacote .toggle-track { width: 36px; height: 20px; border-radius: 20px; background: rgba(255,255,255,0.12); cursor: pointer; flex-shrink: 0; position: relative; transition: background 0.2s; }
-            #slide-pacote .toggle-track.on { background: var(--wedding-gold); }
-            #slide-pacote .toggle-thumb { width: 14px; height: 14px; border-radius: 50%; background: #fff; position: absolute; top: 3px; left: 3px; transition: left 0.2s; }
-            #slide-pacote .toggle-track.on .toggle-thumb { left: 19px; }
-            #slide-pacote .linha-upgrade { transition: opacity 0.2s; }
-        </style>
-
-        <!-- Coluna Esquerda: Seleção de Plano + Upgrades -->
-        <div style="flex: 1.4; padding: 5vh 5vw; display: flex; flex-direction: column; justify-content: center; gap: 0; border-right: 1px solid rgba(255,255,255,0.06); overflow-y: auto;">
-
-            <p style="font-size: 0.6rem; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: var(--wedding-gold); margin: 0 0 16px;">ESCOLHA SEU PACOTE</p>
-
-            <!-- Cards de Plano -->
-            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px;">
-
-                <?php
-                $planos = [
-                    'heritage'  => ['label' => 'EXPERIÊNCIA HERITAGE',  'sub' => $hItem1, 'valor' => $pHeritage],
-                    'cinematic' => ['label' => 'EXPERIÊNCIA CINEMATIC', 'sub' => $cItem1, 'valor' => $pCinematic],
-                    'essencial' => ['label' => 'REGISTRO ESSENCIAL',    'sub' => $eItem1, 'valor' => $pEssencial],
+        <!-- Coluna Esquerda: Planos -->
+        <div class="modal-col-left" style="flex: 1.3; padding: 6vh 5vw; border-right: 1px solid rgba(255,255,255,0.07); overflow-y: auto;">
+            <p style="font-size: 0.65rem; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: var(--wedding-gold); margin: 0 0 10px;">ESCOLHA SEU PACOTE</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px;">
+                <?php 
+                $plans = [
+                    'heritage'  => ['label' => 'Experiência Heritage', 'valor' => $pHeritage, 'sub' => 'Cobertura Onipresente'],
+                    'cinematic' => ['label' => 'Experiência Cinematic','valor' => $pCinematic,'sub' => 'Narrativa Moderna'],
+                    'essencial' => ['label' => 'Registro Essencial',   'valor' => $pEssencial, 'sub' => 'Foco Protocolar'],
                 ];
-                foreach ($planos as $key => $pl): ?>
+                foreach ($plans as $key => $pl): ?>
                 <div class="plan-card" data-plan="<?= $key ?>" onclick="selectPlan('<?= $key ?>')"
                     style="padding: 14px 18px; border-radius: 6px; border: 1.5px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); cursor: pointer; display: flex; align-items: center; gap: 14px;">
                     <div class="plan-radio" style="width: 17px; height: 17px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.25); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s;">
@@ -1224,7 +1240,7 @@ if (!function_exists('fmt')) {
         </div>
 
         <!-- Coluna Direita: Resumo + Condições + Cláusula -->
-        <div style="flex: 1; padding: 5vh 4vw; display: flex; flex-direction: column; justify-content: center; gap: 0; overflow-y: auto;">
+        <div class="modal-col-right" style="flex: 1; padding: 5vh 4vw; display: flex; flex-direction: column; justify-content: center; gap: 0; overflow-y: auto;">
 
             <!-- Resumo -->
             <p style="font-size: 0.6rem; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin: 0 0 14px;">RESUMO</p>
@@ -1335,7 +1351,8 @@ if (!function_exists('fmt')) {
             }
         })();
         </script>
-    </div>
+        </div>
+        </div>
 
     <!-- PÁGINA 12: WEDDING PORTFOLIO CAPA -->
     <section class="slide portfolio-capa-slide"
