@@ -837,16 +837,16 @@ if (!function_exists('fmt')) {
     </section>
 
     <!-- PÁGINA 09: EXPERIÊNCIA CINEMATIC -->
-    <section class="slide"
+    <section class="slide package-slide"
         style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
 
         <!-- Lado Esquerdo: Detalhes -->
-        <div
+        <div class="package-text-col"
             style="flex: 1; padding: 0 8vw; display: flex; flex-direction: column; justify-content: center; position: relative; height: 100%;">
             <!-- Decorativo Superior Esquerdo -->
-            <div style="position: absolute; top: 0; left: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
+            <div class="package-decor" style="position: absolute; top: 0; left: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
 
-            <h2
+            <h2 class="package-titulo"
                 style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; line-height: 1.1; margin-bottom: 25px;">
                 EXPERIÊNCIA<br>CINEMATIC
             </h2>
@@ -887,17 +887,16 @@ if (!function_exists('fmt')) {
             </div>
 
             <!-- Decorativo Inferior Esquerdo -->
-            <div style="position: absolute; bottom: 0; left: 8vw; width: 180px; height: 60px; background: #dcdcdc;">
+            <div class="package-decor" style="position: absolute; bottom: 0; left: 8vw; width: 180px; height: 60px; background: #dcdcdc;">
             </div>
         </div>
 
         <!-- Lado Direito: Imagem -->
-        <div
-            style="flex: 1; position: relative; display: flex; align-items: center; justify-content: center; height: 100%;">
-            <!-- Fundo Cinza Decorativo na Direita -->
-            <div
-                style="position: absolute; top: 0; right: 0; width: 35%; height: 80%; background: #dcdcdc; z-index: 1;">
-            </div>
+        <div class="package-img-col"
+            style="flex: 1.2; position: relative; display: flex; align-items: center; justify-content: center; background: #f0f0f0;">
+            <!-- Decorativo Superior Direito -->
+            <div class="package-decor" style="position: absolute; top: 0; right: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
+            <div class="package-decor" style="position: absolute; bottom: 0; left: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
 
             <div class="experiencias-img-box" style="width: 80%; height: 80%; position: relative; z-index: 2;">
                 <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-08.png') ?>"
