@@ -68,12 +68,36 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
         @media (max-width: 768px) {
             #btn-approve {
                 display: flex !important;
+                position: fixed !important;
                 bottom: 30px !important;
-                right: 20px !important;
-                left: 20px !important;
-                width: calc(100% - 40px) !important;
+                left: 50% !important;
+                transform: translateX(-50%) translateY(20px) !important;
+                width: auto !important;
+                min-width: 250px !important;
                 justify-content: center !important;
                 z-index: 10001 !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+                transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                
+                /* Estilo Pílula */
+                background: #a8a8a8 !important;
+                color: #fff !important;
+                border: none !important;
+                padding: 14px 30px !important;
+                border-radius: 50px !important;
+                font-family: 'Montserrat', sans-serif !important;
+                font-size: 0.8rem !important;
+                font-weight: 700 !important;
+                letter-spacing: 0.1em !important;
+                text-transform: uppercase !important;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+                white-space: nowrap !important;
+            }
+            #btn-approve.visible {
+                opacity: 1 !important;
+                pointer-events: auto !important;
+                transform: translateX(-50%) translateY(0) !important;
             }
             .mobile-action-bar {
                 display: none !important;
@@ -213,6 +237,35 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
     <script>
         // Inicializar ícones
         lucide.createIcons();
+
+        <?php if ($tipo === 'casamento'): ?>
+        // Lógica do Botão Flutuante Dinâmico
+        document.addEventListener('DOMContentLoaded', function() {
+            const btn = document.getElementById('btn-approve');
+            const scrollContainer = document.querySelector('.wedding-proposal');
+            let scrollTimeout;
+
+            function showFloatingButton() {
+                if (!btn) return;
+                
+                btn.classList.add('visible');
+                
+                // Limpa o timeout anterior se o usuário continuar scrollando
+                clearTimeout(scrollTimeout);
+                
+                // Define o timeout de 2 segundos para desaparecer
+                scrollTimeout = setTimeout(() => {
+                    btn.classList.remove('visible');
+                }, 2000);
+            }
+
+            // Ouvir scroll tanto na janela quanto no container de snap (se existir)
+            window.addEventListener('scroll', showFloatingButton, true);
+            if (scrollContainer) {
+                scrollContainer.addEventListener('scroll', showFloatingButton, true);
+            }
+        });
+        <?php endif; ?>
 
         // Persistência de Scroll
         const proposalSlug = '<?= $proposta['slug'] ?>';

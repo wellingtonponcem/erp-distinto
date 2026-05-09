@@ -619,28 +619,6 @@ if (!function_exists('fmt')) {
             line-height: 1.4 !important;
             padding: 0 10px !important;
         }
-
-        /* Botão Pílula Mobile */
-        .btn-pill-escolher {
-            display: flex !important;
-            background: #a8a8a8;
-            color: #fff;
-            border: none;
-            padding: 14px 35px;
-            border-radius: 50px;
-            font-family: var(--wedding-montserrat);
-            font-size: 0.85rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            cursor: pointer;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            margin: 30px auto 0 auto !important;
-            width: fit-content;
-            text-decoration: none;
-        }
     }
 
     @keyframes modalFadeIn {
@@ -1011,10 +989,6 @@ if (!function_exists('fmt')) {
                         <?php else: ?>
                             <span style="font-size: 0.9rem;">(Condição especial p/ amigos lagoinha)</span>
                         <?php endif; ?>
-                    </p>
-                    <button onclick="window.openInteractiveModal()" class="btn-pill-escolher">
-                        <span>✨ ESCOLHER NOSSO PLANO</span>
-                    </button>
                 </div>
             </div>
 
@@ -1068,10 +1042,6 @@ if (!function_exists('fmt')) {
                     <p style="font-weight: 700; color: #1a1a1a; font-size: 0.9rem; margin: 0;">
                         • Upgrade Família: Adicione o Álbum Master por apenas R$ 950,00.
                     </p>
-                    
-                    <button onclick="window.openInteractiveModal()" class="btn-pill-escolher">
-                        <span>✨ ESCOLHER NOSSO PLANO</span>
-                    </button>
                 </div>
             </div>
 
@@ -1158,9 +1128,6 @@ if (!function_exists('fmt')) {
                             fotos reveladas)
                         </li>
                     </ul>
-                    <button onclick="window.openInteractiveModal()" class="btn-pill-escolher">
-                        <span>✨ ESCOLHER NOSSO PLANO</span>
-                    </button>
                 </div>
             </div>
         </div>
