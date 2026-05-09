@@ -1356,12 +1356,12 @@ if (!function_exists('fmt')) {
 
             /* Mobile UI Overhaul */
             @media (max-width: 768px) {
-                #slide-pacote {
+                .wedding-proposal-modal {
                     flex-direction: column !important;
                     background: rgba(26, 26, 26, 0.98) !important;
                     backdrop-filter: blur(15px) !important;
                     overflow-y: auto !important;
-                    display: block !important;
+                    display: none !important; /* Começar escondido */
                 }
                 .modal-selection-col, .modal-summary-col {
                     flex: none !important;
