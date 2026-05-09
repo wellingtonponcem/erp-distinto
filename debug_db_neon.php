@@ -72,7 +72,6 @@ if ($temPgsql) {
         $result = curl_exec($ch);
         $errno  = curl_errno($ch);
         $error  = curl_error($ch);
-        curl_close($ch);
         echo "cURL disponível: SIM\n";
         echo "Teste TCP ao host Neon: " . ($errno === 0 || $errno === 56 ? "✓ Host alcançável" : "✗ Erro: $error (errno $errno)") . "\n";
     } else {

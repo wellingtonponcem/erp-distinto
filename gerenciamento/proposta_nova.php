@@ -407,9 +407,9 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     </div>
                 </section>
 
-                <section class="card p-6" x-show="tipoProposta === 'marketing'">
+                <section class="card p-6" x-show="tipoProposta === 'casamento'">
                     <h3 class="text-sm font-bold text-zinc-900 mb-6 flex items-center gap-2">
-                        <i data-lucide="heart" class="w-4 h-4 text-zinc-400"></i> Personalização Premium (Casamento)
+                        <i data-lucide="heart" class="w-4 h-4 text-zinc-400"></i> Personalização Premium
                     </h3>
                     
                     <div class="space-y-6">
