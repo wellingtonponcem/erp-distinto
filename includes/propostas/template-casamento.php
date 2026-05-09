@@ -341,6 +341,12 @@ if (!function_exists('fmt')) {
             font-size: 1.4rem !important;
             line-height: 1.4 !important;
         }
+        .manifesto-titulo {
+            font-size: 2.5rem !important;
+            line-height: 1.1 !important;
+            margin-bottom: 20px !important;
+            letter-spacing: 0.05em !important;
+        }
     }
 
     @keyframes modalFadeIn {
@@ -458,9 +464,9 @@ if (!function_exists('fmt')) {
         </div>
 
         <!-- Lado Direito: Texto -->
-        <div class="reveal-item"
+        <div class="reveal-item manifesto-text-col"
             style="flex: 1; padding: 0 6vw; display: flex; flex-direction: column; justify-content: center; position: relative;">
-            <h2
+            <h2 class="manifesto-titulo"
                 style="font-family: var(--wedding-montserrat); font-size: 4.5rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; line-height: 1; margin-bottom: 40px;">
                 ONDE O<br>TEMPO PARA
             </h2>
