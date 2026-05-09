@@ -347,6 +347,31 @@ if (!function_exists('fmt')) {
             margin-bottom: 20px !important;
             letter-spacing: 0.05em !important;
         }
+
+        /* Ajustes Visão e Missão Mobile */
+        .missao-visao-slide {
+            height: auto !important;
+        }
+        .missao-visao-content {
+            padding: 60px 30px !important;
+        }
+        .missao-visao-titulo {
+            font-size: 2rem !important;
+            margin-bottom: 10px !important;
+            text-align: center;
+        }
+        .missao-visao-subtitulo {
+            font-size: 1rem !important;
+            text-align: center;
+            margin-bottom: 40px !important;
+        }
+        .missao-visao-grid {
+            flex-direction: column !important;
+            gap: 40px !important;
+        }
+        .missao-visao-decor {
+            display: none !important;
+        }
     }
 
     @keyframes modalFadeIn {
@@ -501,21 +526,21 @@ if (!function_exists('fmt')) {
     </section>
 
     <!-- PÁGINA 04: VISÃO E MISSÃO -->
-    <section class="slide"
+    <section class="slide missao-visao-slide"
         style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; overflow: hidden;">
         <!-- Topo: Textos -->
-        <div
+        <div class="missao-visao-content"
             style="flex: 1.2; padding: 10vh 10vw; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
             <div style="position: absolute; top: 0; left: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
 
-            <h2
+            <h2 class="missao-visao-titulo"
                 style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase;">
                 VISÃO E MISSÃO</h2>
-            <p
+            <p class="missao-visao-subtitulo"
                 style="font-family: var(--wedding-montserrat); font-size: 1.4rem; font-weight: 300; color: #444; margin-bottom: 6vh;">
                 A meta é arrepiar e eternizar o extraordinário.</p>
 
-            <div style="display: flex; gap: 8vw; width: 100%; max-width: 1100px;">
+            <div class="missao-visao-grid" style="display: flex; gap: 8vw; width: 100%; max-width: 1100px;">
                 <!-- Missão -->
                 <div style="flex: 1;">
                     <h3
@@ -553,7 +578,7 @@ if (!function_exists('fmt')) {
         </div>
 
         <!-- Elemento decorativo cinza (lateral ocupando 100% da altura) -->
-        <div
+        <div class="missao-visao-decor"
             style="position: absolute; right: 0; top: 0; width: 50px; height: 100%; background: #959595ff; z-index: 5; opacity: 0.8;">
         </div>
     </section>
