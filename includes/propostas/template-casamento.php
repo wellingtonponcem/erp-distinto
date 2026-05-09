@@ -1516,20 +1516,77 @@ if (!function_exists('fmt')) {
         // Buscar serviços e planos do banco
         $servicosWedding = [];
         $planosWedding = [];
+        $carregouBanco = false;
+
         try {
             $dbWed = Database::get();
-            $allWed = $dbWed->query("SELECT * FROM servicos WHERE ativo = 1 AND categoria = 'wedding' ORDER BY nome")->fetchAll();
-            foreach ($allWed as $w) {
-                if ($w['tipo'] === 'plano') {
-                    $planosWedding[] = $w;
-                } else {
-                    $servicosWedding[$w['id']] = [
-                        'nome' => $w['nome'],
-                        'valor' => (float)$w['preco_venda']
-                    ];
+            // Verifica se a tabela/colunas existem
+            $colunas = $dbWed->query("DESCRIBE servicos")->fetchAll(PDO::FETCH_COLUMN);
+            
+            if (in_array('categoria', $colunas) && in_array('tipo', $colunas)) {
+                $allWed = $dbWed->query("SELECT * FROM servicos WHERE ativo = 1 AND categoria = 'wedding' ORDER BY nome")->fetchAll();
+                if (!empty($allWed)) {
+                    foreach ($allWed as $w) {
+                        if ($w['tipo'] === 'plano') {
+                            $planosWedding[] = [
+                                'id' => $w['id'],
+                                'nome' => $w['nome'],
+                                'preco_venda' => (float)$w['preco_venda'],
+                                'descricao' => $w['descricao'],
+                                'prazo_minimo' => $w['prazo_minimo'],
+                                'itens_json' => $w['itens_json']
+                            ];
+                        } else {
+                            $servicosWedding[$w['id']] = [
+                                'nome' => $w['nome'],
+                                'valor' => (float)$w['preco_venda']
+                            ];
+                        }
+                    }
+                    if (!empty($planosWedding)) $carregouBanco = true;
                 }
             }
         } catch (Exception $e) {}
+
+        // FALLBACK: Se o banco estiver vazio, carrega os planos padrão para não quebrar a tela
+        if (!$carregouBanco) {
+            $servicosWedding = [
+                'cobertura_6h' => ['nome' => 'Cobertura Fotográfica 6h', 'valor' => 0],
+                'cobertura_8h' => ['nome' => 'Cobertura Cinematográfica 8h', 'valor' => 0],
+                'cobertura_full' => ['nome' => 'Cobertura Documental Completa', 'valor' => 0],
+                'album_20x20' => ['nome' => 'Álbum 20x20 - 40 fotos', 'valor' => 800],
+                'album_30x30' => ['nome' => 'Álbum 30x30 - 60 fotos', 'valor' => 1500],
+                'prewedding' => ['nome' => 'Ensaio Pré-Wedding', 'valor' => 1200],
+                'boudoir' => ['nome' => 'Boudoir da Noiva', 'valor' => 800],
+                'pencard' => ['nome' => 'Pencard Exclusivo', 'valor' => 250]
+            ];
+            $planosWedding = [
+                [
+                    'id' => 'essencial',
+                    'nome' => 'Registro Essencial',
+                    'preco_venda' => (float)($dados['valor_essencial'] ?? 2800),
+                    'descricao' => 'Cobertura Fotográfica 6h',
+                    'prazo_minimo' => 5,
+                    'itens_json' => json_encode(['cobertura_6h' => 'incluso', 'pencard' => 'incluso', 'album_20x20' => 'opcional'])
+                ],
+                [
+                    'id' => 'cinematic',
+                    'nome' => 'Experiência Cinematic',
+                    'preco_venda' => (float)($dados['valor_cinematic'] ?? 4500),
+                    'descricao' => 'Cobertura Cinematográfica 8h',
+                    'prazo_minimo' => 6,
+                    'itens_json' => json_encode(['cobertura_8h' => 'incluso', 'album_20x20' => 'incluso', 'prewedding' => 'opcional', 'boudoir' => 'opcional'])
+                ],
+                [
+                    'id' => 'heritage',
+                    'nome' => 'Experiência Heritage',
+                    'preco_venda' => (float)($dados['valor_heritage'] ?? 7900),
+                    'descricao' => 'Cobertura Documental Completa',
+                    'prazo_minimo' => 6,
+                    'itens_json' => json_encode(['cobertura_full' => 'incluso', 'album_30x30' => 'incluso', 'prewedding' => 'incluso', 'boudoir' => 'incluso'])
+                ]
+            ];
+        }
         ?>
         <script>
             (function () {
