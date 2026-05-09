@@ -1337,6 +1337,9 @@ if (!function_exists('fmt')) {
                 #total-display {
                     font-size: 1.6rem !important;
                 }
+                #whatsapp-btn {
+                    display: none !important;
+                }
                 /* Rodapé fixo para mobile */
                 .modal-mobile-footer {
                     display: flex !important;
