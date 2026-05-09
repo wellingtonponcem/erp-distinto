@@ -22,6 +22,11 @@ $servicosJson = json_encode($servicos);
 $weddingPackages = array_filter($servicos, fn($s) => $s['categoria'] === 'wedding' && $s['tipo'] === 'plano');
 $weddingUpgrades = array_filter($servicos, fn($s) => $s['categoria'] === 'wedding' && $s['tipo'] === 'servico');
 
+// Mapeamento específico para inicialização do Alpine
+$heritagePkg = array_values(array_filter($weddingPackages, fn($s) => strpos(strtolower($s['nome']), 'heritage') !== false))[0] ?? null;
+$cinematicPkg = array_values(array_filter($weddingPackages, fn($s) => strpos(strtolower($s['nome']), 'cinematic') !== false))[0] ?? null;
+$essencialPkg = array_values(array_filter($weddingPackages, fn($s) => strpos(strtolower($s['nome']), 'essencial') !== false))[0] ?? null;
+
 include __DIR__ . '/../includes/layout/head.php';
 ?>
 
@@ -314,9 +319,12 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                                     <span class="w-2.5 h-2.5 rounded-full bg-<?= $color ?> shadow-[0_0_8px_rgba(var(--<?= $color ?>-rgb),0.5)]"></span> 
                                     <?= $pkg['nome'] ?>
                                 </h4>
-                                <label class="flex items-center gap-2 cursor-pointer bg-white/50 px-3 py-1 rounded-full border border-zinc-200">
-                                    <input type="checkbox" name="show_<?= strtolower($flag) ?>" x-model="<?= $flag ?>" class="w-4 h-4 rounded border-zinc-300 text-<?= $color ?> focus:ring-<?= $color ?>">
-                                    <span class="text-[10px] font-black uppercase text-zinc-600">Exibir na Proposta</span>
+                                <label class="flex items-center gap-3 cursor-pointer bg-white/5 px-4 py-2 rounded-full border border-white/10 hover:border-white/20 transition-all">
+                                    <span class="text-[10px] font-black uppercase text-zinc-400 tracking-wider">Exibir na Proposta</span>
+                                    <div class="switch">
+                                        <input type="checkbox" name="show_<?= strtolower($flag) ?>" x-model="<?= $flag ?>">
+                                        <span class="slider"></span>
+                                    </div>
                                 </label>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4" x-show="<?= $flag ?>" x-collapse>
@@ -339,12 +347,15 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                                         $upgFlag = strpos($upgSlug, 'boudoir') !== false ? 'includeBoudoir' : (strpos($upgSlug, 'pre-wedding') !== false ? 'includePrewedding' : '');
                                         if (!$upgFlag) continue;
                                     ?>
-                                    <label class="flex items-center justify-between p-3 rounded-xl bg-white/50 border border-zinc-100 cursor-pointer hover:border-zinc-200 transition-all">
+                                    <label class="flex items-center justify-between p-4 rounded-2xl upgrade-card cursor-pointer">
                                         <div class="flex flex-col">
-                                            <span class="text-[11px] font-bold text-zinc-900"><?= $upg['nome'] ?></span>
-                                            <span class="text-[9px] text-zinc-400">Incluir neste pacote</span>
+                                            <span class="text-[11px] font-bold text-zinc-100"><?= $upg['nome'] ?></span>
+                                            <span class="text-[9px] text-zinc-500">Incluir neste pacote</span>
                                         </div>
-                                        <input type="checkbox" x-model="<?= $upgFlag ?>" class="w-4 h-4 rounded border-zinc-300 text-amber-500 focus:ring-amber-500">
+                                        <div class="switch">
+                                            <input type="checkbox" x-model="<?= $upgFlag ?>">
+                                            <span class="slider"></span>
+                                        </div>
                                     </label>
                                     <?php endforeach; ?>
                                 </div>
@@ -644,15 +655,15 @@ document.addEventListener('alpine:init', () => {
         showEssencial: true,
         
         // Upgrades Selecionados
-        includeBoudoir: false,
-        includePrewedding: false,
+        includeBoudoir: true,
+        includePrewedding: true,
 
-        valorHeritage: '',
-        itensHeritage: 'Cobertura Documental, Álbum Heritage, Réplicas, Filme 4K, Drone, Ecossistema Digital',
-        valorCinematic: '',
-        itensCinematic: 'Fotografia 8h, Sessão Engagement, Short Film, Social Content, Making Of, Bônus',
-        valorEssencial: '',
-        itensEssencial: 'Cobertura Fotográfica Essencial',
+        valorHeritage: '<?= number_format($heritagePkg['preco_venda'] ?? 7900, 2, ',', '.') ?>',
+        itensHeritage: `<?= $heritagePkg['beneficios_json'] ?? '' ?>`,
+        valorCinematic: '<?= number_format($cinematicPkg['preco_venda'] ?? 4500, 2, ',', '.') ?>',
+        itensCinematic: `<?= $cinematicPkg['beneficios_json'] ?? '' ?>`,
+        valorEssencial: '<?= number_format($essencialPkg['preco_venda'] ?? 2800, 2, ',', '.') ?>',
+        itensEssencial: `<?= $essencialPkg['beneficios_json'] ?? '' ?>`,
         valorBoudoir: '',
         valorPrewedding: '',
         condicoesReserva: 'A reserva da data é oficializada mediante a assinatura do contrato e o pagamento do sinal (entrada), que pode ser de 20% ou 25% do valor do pacote escolhido.\nOpções de Parcelamento: Oferecemos flexibilidade para que o saldo seja quitado de forma equilibrada até a data do evento:',
