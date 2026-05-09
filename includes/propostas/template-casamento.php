@@ -411,7 +411,7 @@ if (!function_exists('fmt')) {
         }
         .experiencias-text-col {
             flex: none !important;
-            padding: 50px 30px !important;
+            padding: 30px 30px !important;
             height: auto !important;
             order: 2;
         }
@@ -420,6 +420,10 @@ if (!function_exists('fmt')) {
             height: 45vh !important;
             width: 100% !important;
             order: 1;
+        }
+        .experiencias-img-box {
+            width: 90% !important;
+            height: 90% !important;
         }
         .experiencias-titulo {
             font-size: 2.2rem !important;
@@ -733,7 +737,7 @@ if (!function_exists('fmt')) {
                 style="position: absolute; top: 0; right: 0; width: 35%; height: 80%; background: #dcdcdc; z-index: 1;">
             </div>
 
-            <div style="width: 80%; height: 80%; position: relative; z-index: 2;">
+            <div class="experiencias-img-box" style="width: 80%; height: 80%; position: relative; z-index: 2;">
                 <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-05.png') ?>"
                     style="width: 100%; height: 100%; object-fit: contain;">
             </div>
@@ -866,7 +870,7 @@ if (!function_exists('fmt')) {
                 style="position: absolute; top: 0; right: 0; width: 35%; height: 80%; background: #dcdcdc; z-index: 1;">
             </div>
 
-            <div style="width: 80%; height: 80%; position: relative; z-index: 2;">
+            <div class="experiencias-img-box" style="width: 80%; height: 80%; position: relative; z-index: 2;">
                 <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-08.png') ?>"
                     style="width: 100%; height: 100%; object-fit: contain;">
             </div>
