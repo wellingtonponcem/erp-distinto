@@ -372,6 +372,22 @@ if (!function_exists('fmt')) {
         .missao-visao-decor {
             display: none !important;
         }
+        .missao-visao-square {
+            display: none !important;
+        }
+
+        /* Ajustes Perspectiva Mobile */
+        .perspectiva-titulo {
+            font-size: 2rem !important;
+            margin-bottom: 30px !important;
+        }
+        .perspectiva-grid {
+            flex-direction: column !important;
+            gap: 20px !important;
+        }
+        .perspectiva-box {
+            padding: 30px 25px !important;
+        }
     }
 
     @keyframes modalFadeIn {
@@ -531,7 +547,7 @@ if (!function_exists('fmt')) {
         <!-- Topo: Textos -->
         <div class="missao-visao-content"
             style="flex: 1.2; padding: 10vh 10vw; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
-            <div style="position: absolute; top: 0; left: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
+            <div class="missao-visao-square" style="position: absolute; top: 0; left: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
 
             <h2 class="missao-visao-titulo"
                 style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase;">
@@ -595,13 +611,13 @@ if (!function_exists('fmt')) {
         <!-- Base: Textos -->
         <div
             style="flex: 1; padding: 8vh 10vw; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-            <h2
+            <h2 class="perspectiva-titulo"
                 style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 6vh; text-align: center; line-height: 1.1;">
                 MAIS QUE UM ESTÚDIO,<br>UMA PERSPECTIVA
             </h2>
 
-            <div style="display: flex; gap: 20px; width: 100%; max-width: 1100px;">
-                <div style="flex: 1; background: #d9d9d9; padding: 40px; box-sizing: border-box;">
+            <div class="perspectiva-grid" style="display: flex; gap: 20px; width: 100%; max-width: 1100px;">
+                <div class="perspectiva-box" style="flex: 1; background: #d9d9d9; padding: 40px; box-sizing: border-box;">
                     <p
                         style="font-family: var(--wedding-montserrat); font-size: 1rem; line-height: 1.8; color: #333; text-align: left;">
                         Não somos apenas um estúdio que aperta botões; somos uma equipe de especialistas focada em
@@ -612,7 +628,7 @@ if (!function_exists('fmt')) {
                         experiência totalmente nova.
                     </p>
                 </div>
-                <div style="flex: 1; background: #d9d9d9; padding: 40px; box-sizing: border-box;">
+                <div class="perspectiva-box" style="flex: 1; background: #d9d9d9; padding: 40px; box-sizing: border-box;">
                     <p
                         style="font-family: var(--wedding-montserrat); font-size: 1rem; line-height: 1.8; color: #333; text-align: left;">
                         Conteúdo com estratégia, não só estética. Acreditamos que a beleza ganha força quando tem
