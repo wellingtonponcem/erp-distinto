@@ -1040,9 +1040,17 @@ if (!function_exists('fmt')) {
                         <?php endif; ?>
                     </p>
 
-                    <p style="font-weight: 700; color: #1a1a1a; font-size: 0.9rem; margin: 0;">
+                    <p style="font-weight: 700; color: #1a1a1a; font-size: 0.9rem; margin: 0 0 25px 0;">
                         • Upgrade Família: Adicione o Álbum Master por apenas R$ 950,00.
                     </p>
+
+                    <!-- Botão de Escolha Estilizado -->
+                    <div style="margin-top: 10px;">
+                        <button onclick="window.openInteractiveModal()" 
+                                style="background: #a8a8a8; color: #fff; border: none; padding: 12px 35px; border-radius: 50px; font-family: var(--wedding-montserrat); font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease;">
+                            <span>✨ ESCOLHER NOSSO PLANO</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
