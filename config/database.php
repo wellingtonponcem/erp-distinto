@@ -15,7 +15,7 @@ class Database {
                 ]);
             } catch (PDOException $e) {
                 http_response_code(500);
-                die(json_encode(['erro' => 'Falha na conexão com o banco de dados.']));
+                die(json_encode(['erro' => 'Falha na conexão: ' . $e->getMessage()]));
             }
         }
         return self::$instance;
