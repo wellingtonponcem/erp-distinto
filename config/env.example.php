@@ -3,7 +3,7 @@
 define('DB_HOST', 'srv952.hstgr.io');
 define('DB_NAME', 'u306254544_distinto');
 define('DB_USER', 'u306254544_poncem');
-define('DB_PASS', 'SUA_SENHA_AQUI');
+define('DB_PASS', '!@Jeane&w#1');
 define('DB_PORT', 3306);
 
 define('GROQ_API_KEY', 'SUA_GROQ_KEY_AQUI');
