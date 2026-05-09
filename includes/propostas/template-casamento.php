@@ -540,17 +540,25 @@ if (!function_exists('fmt')) {
             display: none !important;
         }
         .team-grid {
-            flex-direction: column !important;
-            gap: 40px !important;
+            flex-direction: row !important;
+            flex-wrap: wrap !important;
+            gap: 20px !important;
             width: 100% !important;
+            justify-content: center !important;
         }
         .team-item {
             flex: none !important;
-            width: 100% !important;
+            width: 45% !important;
         }
         .team-item div {
-            width: 60% !important;
-            margin: 0 auto 15px !important;
+            width: 100% !important;
+            margin: 0 auto 10px !important;
+        }
+        .team-item h4 {
+            font-size: 0.9rem !important;
+        }
+        .team-item p {
+            font-size: 0.75rem !important;
         }
     }
 
