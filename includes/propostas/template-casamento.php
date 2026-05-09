@@ -45,6 +45,17 @@ try {
     }
 } catch (Exception $e) {}
 
+// BUSCAR TODOS OS SERVIÇOS DE WEDDING (Para o Modal)
+$servicosWedding = [];
+try {
+    $dbSrv = Database::get();
+    $stmtSrv = $dbSrv->query("SELECT id, nome, preco_venda as valor, tipo FROM servicos WHERE categoria = 'wedding' AND ativo = 1");
+    $allSrv = $stmtSrv->fetchAll();
+    foreach ($allSrv as $s) {
+        $servicosWedding[$s['id']] = $s;
+    }
+} catch (Exception $e) {}
+
 // PLANOS E SERVIÇOS (DINÂMICOS DO BANCO)
 $planosWedding = [];
 try {
@@ -62,7 +73,9 @@ try {
             'preco_venda' => (float)($dados["valor_{$id}"] ?? $pkg['preco_venda']),
             'descricao' => $pkg['subtitulo'] ?? $pkg['descricao'],
             'prazo_minimo' => $pkg['prazo_minimo'] ?? 6,
-            'itens_json' => $pkg['beneficios_json'] // Usamos o JSON do banco
+            'itens_json' => $pkg['beneficios_json'],
+            'show_boudoir' => ($dados["include_boudoir_{$id}"] ?? $dados['include_boudoir'] ?? false) !== false,
+            'show_prewedding' => ($dados["include_prewedding_{$id}"] ?? $dados['include_prewedding'] ?? false) !== false
         ];
     }
 } catch (Exception $e) {
@@ -1098,6 +1111,15 @@ if (!function_exists('fmt')) {
                         </li>
                     <?php endforeach; ?>
                 </ul>
+                <p style="font-style: italic; color: #333; font-size: 1.1rem; margin-bottom: 25px;">
+                    Investimento: <?= $dados['valor_heritage'] ? fmt($dados['valor_heritage']) : 'R$ 7.900,00' ?>
+                </p>
+
+                <?php 
+                $hasUpgradesH = ($dados['include_boudoir_heritage'] ?? $dados['include_boudoir'] ?? false) !== false || 
+                                ($dados['include_prewedding_heritage'] ?? $dados['include_prewedding'] ?? false) !== false;
+                if ($hasUpgradesH): 
+                ?>
                 <div style="margin-top: 20px; border-top: 1px solid #dcdcdc; padding-top: 20px;">
                     <p style="font-weight: 700; color: #1a1a1a; margin-bottom: 15px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.05em;">
                         Upgrades que fazem toda diferença:
@@ -1117,6 +1139,7 @@ if (!function_exists('fmt')) {
                         <?php endif; ?>
                     </ul>
                 </div>
+                <?php endif; ?>
             </div>
         </div>
     </section>
@@ -1158,17 +1181,15 @@ if (!function_exists('fmt')) {
                     <?php endforeach; ?>
                 </ul>
 
-                <div style="margin-top: auto; padding-top: 20px; position: relative; z-index: 10;">
-                    <p style="font-style: italic; color: #666; font-size: 1.1rem; margin-bottom: 5px;">
-                        Investimento: <?= $dados['valor_cinematic'] ? fmt($dados['valor_cinematic']) : 'R$ 4.500,00' ?>
-                        <?php if (!empty($dados['condicao_especial_cinematic'])): ?>
-                            <span style="font-size: 0.9rem;">(<?= $dados['condicao_especial_cinematic'] ?>)</span>
-                        <?php else: ?>
-                            <span style="font-size: 0.9rem;">(10% de desconto na entrada para contratos até 05/04/2026)</span>
-                        <?php endif; ?>
-                    </p>
-                </div>
+                <p style="font-style: italic; color: #333; font-size: 1.1rem; margin-bottom: 25px;">
+                    Investimento: <?= $dados['valor_cinematic'] ? fmt($dados['valor_cinematic']) : 'R$ 4.500,00' ?>
+                </p>
 
+                <?php 
+                $hasUpgradesC = ($dados['include_boudoir_cinematic'] ?? $dados['include_boudoir'] ?? false) !== false || 
+                                ($dados['include_prewedding_cinematic'] ?? $dados['include_prewedding'] ?? false) !== false;
+                if ($hasUpgradesC): 
+                ?>
                 <div style="margin-top: 20px; border-top: 1px solid #dcdcdc; padding-top: 20px;">
                     <p style="font-weight: 700; color: #1a1a1a; margin-bottom: 15px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.05em;">
                         Upgrades que fazem toda diferença:
@@ -1192,6 +1213,7 @@ if (!function_exists('fmt')) {
                         </li>
                     </ul>
                 </div>
+                <?php endif; ?>
             </div>
 
             <!-- Decorativo Inferior Esquerdo -->
@@ -1264,9 +1286,14 @@ if (!function_exists('fmt')) {
                 <p style="font-style: italic; color: #333; font-size: 1.1rem; margin-bottom: 25px;">
                     Investimento: <?= $dados['valor_essencial'] ? fmt($dados['valor_essencial']) : 'R$ 2.800,00' ?>
                 </p>
+
+                <?php 
+                $hasUpgradesE = ($dados['include_boudoir_essencial'] ?? $dados['include_boudoir'] ?? false) !== false || 
+                                ($dados['include_prewedding_essencial'] ?? $dados['include_prewedding'] ?? false) !== false;
+                if ($hasUpgradesE): 
+                ?>
                 <div style="margin-top: 10px; border-top: 1px solid #dcdcdc; padding-top: 20px;">
-                    <p
-                        style="font-weight: 700; color: #1a1a1a; margin-bottom: 15px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.05em;">
+                    <p style="font-weight: 700; color: #1a1a1a; margin-bottom: 15px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.05em;">
                         Upgrades que fazem toda diferença:
                     </p>
                     <ul style="list-style: none; padding: 0;">
@@ -1284,6 +1311,7 @@ if (!function_exists('fmt')) {
                         <?php endif; ?>
                     </ul>
                 </div>
+                <?php endif; ?>
             </div>
         </div>
     </section>
@@ -1577,7 +1605,11 @@ if (!function_exists('fmt')) {
                     nome: '<?= addslashes($p['nome']) ?>',
                     valorBase: <?= (float)$p['preco_venda'] ?>,
                     condicoes: '<?= addslashes($p['prazo_minimo'] > 0 ? "Saldo parcelado em até {$p['prazo_minimo']}x" : "Condições sob consulta") ?>',
-                    servicos: <?= $p['itens_json'] ?: '{}' ?>
+                    servicos: <?= $p['itens_json'] ?: '{}' ?>,
+                    showBoudoir: <?= $p['show_boudoir'] ? 'true' : 'false' ?>,
+                    showPrewedding: <?= $p['show_prewedding'] ? 'true' : 'false' ?>,
+                    valorBoudoir: <?= (float)($dados['valor_boudoir'] ?: 500) ?>,
+                    valorPrewedding: <?= (float)($dados['valor_prewedding'] ?: 1100) ?>
                 };
                 <?php endforeach; ?>
 
@@ -1616,30 +1648,42 @@ if (!function_exists('fmt')) {
                     if (!plan) return;
                     container.innerHTML = '';
 
+                    // 1. Upgrades Estáticos (Boudoir e Prewedding)
+                    if (plan.showBoudoir) {
+                        renderRow(container, 'boudoir_static', 'Boudoir da Noiva', plan.valorBoudoir, true);
+                    }
+                    if (plan.showPrewedding) {
+                        renderRow(container, 'prewedding_static', 'Ensaio Pré-Wedding', plan.valorPrewedding, true);
+                    }
+
+                    // 2. Outros Serviços Dinâmicos do Plano
                     Object.entries(plan.servicos).forEach(([sId, status]) => {
                         const s = allServices[sId];
                         if (!s) return;
-                        const isOptional = status === 'opcional';
-                        const div = document.createElement('div');
-                        div.className = 'service-item-row';
-                        div.style = `display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.02); margin-bottom: 10px; transition: all 0.3s; ${!isOptional ? 'opacity: 0.8;' : ''}`;
-                        
-                        div.innerHTML = `
-                            <div style="flex: 1;">
-                                <p style="font-size: 0.75rem; font-weight: 500; color: rgba(255,255,255,0.82); margin: 0 0 1px; text-transform: uppercase; letter-spacing: 0.04em;">${s.nome}</p>
-                                <p style="font-size: 0.72rem; font-weight: 300; color: rgba(255,255,255,0.45); margin: 0;">${isOptional ? fmt(s.valor) : 'Já incluso no pacote'}</p>
-                            </div>
-                            ${isOptional ? `
-                                <span style="font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--wedding-gold); border: 1px solid var(--wedding-gold); padding: 2px 8px; border-radius: 20px; opacity: 0.8;">Opcional</span>
-                                <div class="toggle-track ${activeUpgrades[sId] ? 'on' : ''}" onclick="toggleDynamicService('${sId}')">
-                                    <div class="toggle-thumb"></div>
-                                </div>
-                            ` : `
-                                <span style="font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #10b981; border: 1px solid #10b981; padding: 2px 8px; border-radius: 20px;">✓ Incluso</span>
-                            `}
-                        `;
-                        container.appendChild(div);
+                        renderRow(container, sId, s.nome, s.valor, status === 'opcional');
                     });
+                }
+
+                function renderRow(container, id, nome, valor, isOptional) {
+                    const div = document.createElement('div');
+                    div.className = 'service-item-row';
+                    div.style = `display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.02); margin-bottom: 10px; transition: all 0.3s; ${!isOptional ? 'opacity: 0.8;' : ''}`;
+                    
+                    div.innerHTML = `
+                        <div style="flex: 1;">
+                            <p style="font-size: 0.75rem; font-weight: 500; color: rgba(255,255,255,0.82); margin: 0 0 1px; text-transform: uppercase; letter-spacing: 0.04em;">${nome}</p>
+                            <p style="font-size: 0.72rem; font-weight: 300; color: rgba(255,255,255,0.45); margin: 0;">${isOptional ? fmt(valor) : 'Já incluso no pacote'}</p>
+                        </div>
+                        ${isOptional ? `
+                            <span style="font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--wedding-gold); border: 1px solid var(--wedding-gold); padding: 2px 8px; border-radius: 20px; opacity: 0.8;">Opcional</span>
+                            <div class="toggle-track ${activeUpgrades[id] ? 'on' : ''}" onclick="toggleDynamicService('${id}')">
+                                <div class="toggle-thumb"></div>
+                            </div>
+                        ` : `
+                            <span style="font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #10b981; border: 1px solid #10b981; padding: 2px 8px; border-radius: 20px;">✓ Incluso</span>
+                        `}
+                    `;
+                    container.appendChild(div);
                 }
 
                 window.toggleDynamicService = function(sId) {
@@ -1656,21 +1700,27 @@ if (!function_exists('fmt')) {
 
                     let total = plan.valorBase;
 
-                    const divBase = document.createElement('div');
-                    divBase.className = 'linha-upgrade';
-                    divBase.style = "display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06);";
-                    divBase.innerHTML = `<span style="font-size: 0.78rem; color: rgba(255,255,255,0.7);">${plan.nome}</span><span style="font-size: 0.78rem; color: rgba(255,255,255,0.7);">${fmt(plan.valorBase)}</span>`;
-                    resumoCont.appendChild(divBase);
+                    // 1. Plano Base
+                    renderResumoLinha(resumoCont, plan.nome, plan.valorBase);
 
+                    // 2. Upgrades Estáticos
+                    if (activeUpgrades['boudoir_static']) {
+                        renderResumoLinha(resumoCont, '+ Boudoir da Noiva', plan.valorBoudoir);
+                        total += plan.valorBoudoir;
+                    }
+                    if (activeUpgrades['prewedding_static']) {
+                        renderResumoLinha(resumoCont, '+ Ensaio Pré-Wedding', plan.valorPrewedding);
+                        total += plan.valorPrewedding;
+                    }
+
+                    // 3. Upgrades Dinâmicos
                     Object.entries(activeUpgrades).forEach(([sId, active]) => {
-                        if (active) {
+                        if (active && !sId.endsWith('_static')) {
                             const s = allServices[sId];
-                            total += s.valor;
-                            const div = document.createElement('div');
-                            div.className = 'linha-upgrade';
-                            div.style = "display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06);";
-                            div.innerHTML = `<span style="font-size: 0.78rem; color: rgba(255,255,255,0.7);">+ ${s.nome}</span><span style="font-size: 0.78rem; color: rgba(255,255,255,0.7);">${fmt(s.valor)}</span>`;
-                            resumoCont.appendChild(div);
+                            if (s) {
+                                total += s.valor;
+                                renderResumoLinha(resumoCont, '+ ' + s.nome, s.valor);
+                            }
                         }
                     });
 
@@ -1686,6 +1736,14 @@ if (!function_exists('fmt')) {
                     btnWA.style.pointerEvents = 'auto';
                 }
 
+                function renderResumoLinha(container, nome, valor) {
+                    const div = document.createElement('div');
+                    div.className = 'linha-upgrade';
+                    div.style = "display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06);";
+                    div.innerHTML = `<span style="font-size: 0.78rem; color: rgba(255,255,255,0.7);">${nome}</span><span style="font-size: 0.78rem; color: rgba(255,255,255,0.7);">${fmt(valor)}</span>`;
+                    container.appendChild(div);
+                }
+
                 window.sendWhatsApp = function () {
                     if (!selectedPlan) return;
 
@@ -1694,11 +1752,24 @@ if (!function_exists('fmt')) {
                     let msg = `Olá! Gostaria de confirmar meu interesse na proposta de casamento:\n\n`;
                     msg += `*PLANO BASE:* ${plan.nome} (${fmt(plan.valorBase)})\n`;
 
+                    // 1. Upgrades Estáticos
+                    if (activeUpgrades['boudoir_static']) {
+                        msg += `*+ Boudoir da Noiva* (${fmt(plan.valorBoudoir)})\n`;
+                        total += plan.valorBoudoir;
+                    }
+                    if (activeUpgrades['prewedding_static']) {
+                        msg += `*+ Ensaio Pré-Wedding* (${fmt(plan.valorPrewedding)})\n`;
+                        total += plan.valorPrewedding;
+                    }
+
+                    // 2. Upgrades Dinâmicos
                     Object.entries(activeUpgrades).forEach(([sId, active]) => {
-                        if (active) {
+                        if (active && !sId.endsWith('_static')) {
                             const s = allServices[sId];
-                            msg += `*+ ${s.nome}* (${fmt(s.valor)})\n`;
-                            total += s.valor;
+                            if (s) {
+                                msg += `*+ ${s.nome}* (${fmt(s.valor)})\n`;
+                                total += s.valor;
+                            }
                         }
                     });
 
