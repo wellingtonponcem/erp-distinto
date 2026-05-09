@@ -1252,9 +1252,15 @@ if (!function_exists('fmt')) {
             <!-- Divisor -->
             <div style="border-top: 1px solid rgba(255,255,255,0.07); margin-bottom: 18px;"></div>
 
-            <!-- Condições de Pagamento -->
             <p style="font-size: 0.6rem; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: var(--wedding-gold); margin: 0 0 8px;">CONDIÇÕES DE PAGAMENTO</p>
-            <p id="condicoes-display" style="font-size: 0.82rem; font-weight: 300; line-height: 1.65; color: rgba(255,255,255,0.45); margin: 0 0 22px;">Selecione um plano para ver as condições.</p>
+            <p id="condicoes-display" style="font-size: 0.82rem; font-weight: 300; line-height: 1.65; color: rgba(255,255,255,0.45); margin: 0 0 20px;">Selecione um plano para ver as condições.</p>
+
+            <!-- Botão WhatsApp -->
+            <button id="whatsapp-btn" onclick="sendWhatsApp()" 
+                    style="width: 100%; padding: 18px; background: #25d366; color: #fff; border: none; border-radius: 6px; font-family: var(--wedding-montserrat); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 25px; transition: all 0.3s; opacity: 0.3; pointer-events: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                Confirmar e enviar WhatsApp
+            </button>
 
             <!-- Divisor -->
             <div style="border-top: 1px solid rgba(255,255,255,0.07); margin-bottom: 18px;"></div>
@@ -1332,7 +1338,44 @@ if (!function_exists('fmt')) {
                 if (upgrades.boudoir)    total += upgradeData.boudoir;
                 if (upgrades.prewedding) total += upgradeData.prewedding;
                 document.getElementById('total-display').textContent = selectedPlan ? fmt(total) : '—';
+
+                // Ativar Botão WhatsApp
+                const btnWA = document.getElementById('whatsapp-btn');
+                if (selectedPlan) {
+                    btnWA.style.opacity = '1';
+                    btnWA.style.pointerEvents = 'auto';
+                    btnWA.style.transform = 'scale(1.02)';
+                } else {
+                    btnWA.style.opacity = '0.3';
+                    btnWA.style.pointerEvents = 'none';
+                    btnWA.style.transform = 'scale(1)';
+                }
             }
+
+            window.sendWhatsApp = function() {
+                if (!selectedPlan) return;
+                
+                const p = planData[selectedPlan];
+                let total = p.valor;
+                let msg = `Olá! Acabei de visualizar a proposta de casamento e gostaria de confirmar meu interesse:\n\n`;
+                msg += `*Plano:* ${p.nome}\n`;
+                
+                if (upgrades.boudoir) {
+                    msg += `*Upgrade:* Boudoir da Noiva\n`;
+                    total += upgradeData.boudoir;
+                }
+                if (upgrades.prewedding) {
+                    msg += `*Upgrade:* Ensaio Pré-Wedding\n`;
+                    total += upgradeData.prewedding;
+                }
+                
+                msg += `\n*Investimento Total:* ${fmt(total)}\n`;
+                msg += `\nAguardo o retorno para os próximos passos!`;
+                
+                const encodedMsg = encodeURIComponent(msg);
+                const url = `https://wa.me/5527988586935?text=${encodedMsg}`;
+                window.open(url, '_blank');
+            };
         })();
         </script>
     </div>
