@@ -1402,7 +1402,7 @@ if (!function_exists('fmt')) {
                         </div>
                         <div style="text-align: right;">
                             <p style="font-size: 0.85rem; font-weight: 400; color: #fff; margin: 0;">
-                                <?= fmt($p['preco_venda']) ?>
+                                R$ <?= number_format($p['preco_venda'], 0, ',', '.') ?>
                             </p>
                         </div>
                         <span class="badge-selecionado"
@@ -1444,13 +1444,13 @@ if (!function_exists('fmt')) {
                     style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06); opacity: 0.35;">
                     <span style="font-size: 0.78rem; color: rgba(255,255,255,0.7);">Upgrade Boudoir</span>
                     <span id="linha-boudoir-valor"
-                        style="font-size: 0.78rem; color: rgba(255,255,255,0.4); text-decoration: line-through;"><?= fmt($pBoudoir) ?></span>
+                        style="font-size: 0.78rem; color: rgba(255,255,255,0.4); text-decoration: line-through;">R$ <?= number_format($pBoudoir, 0, ',', '.') ?></span>
                 </div>
                 <div id="linha-prewedding" class="linha-upgrade"
                     style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06); opacity: 0.35;">
                     <span style="font-size: 0.78rem; color: rgba(255,255,255,0.7);">Upgrade Pré-Wedding</span>
                     <span id="linha-prewedding-valor"
-                        style="font-size: 0.78rem; color: rgba(255,255,255,0.4); text-decoration: line-through;"><?= fmt($pPrewedding) ?></span>
+                        style="font-size: 0.78rem; color: rgba(255,255,255,0.4); text-decoration: line-through;">R$ <?= number_format($pPrewedding, 0, ',', '.') ?></span>
                 </div>
             </div>
 
