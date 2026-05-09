@@ -585,6 +585,28 @@ if (!function_exists('fmt')) {
         .depo-col-right h2, .depo-col-right p {
             font-size: 1.5rem !important;
         }
+
+        /* Ajustes Contato Mobile */
+        .contato-slide {
+            flex-direction: column !important;
+            height: auto !important;
+        }
+        .contato-col-text {
+            flex: none !important;
+            width: 100% !important;
+            padding: 50px 30px !important;
+            order: 2;
+        }
+        .contato-col-img {
+            flex: none !important;
+            width: 100% !important;
+            height: 45vh !important;
+            order: 1;
+        }
+        .contato-title {
+            font-size: 2.2rem !important;
+            margin-bottom: 30px !important;
+        }
     }
 
     @keyframes modalFadeIn {
@@ -1614,15 +1636,15 @@ if (!function_exists('fmt')) {
     </section>
 
     <!-- PÁGINA 19: VAMOS DAR O PRÓXIMO PASSO? -->
-    <section class="slide" style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; height: 100vh; width: 100%;">
+    <section class="slide contato-slide" style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; height: 100vh; width: 100%;">
         
         <!-- Lado Esquerdo: Conteúdo -->
-        <div style="flex: 1; padding: 8vh 6vw; display: flex; flex-direction: column; justify-content: center; background: #f4f4f4; position: relative;">
+        <div class="contato-col-text" style="flex: 1; padding: 8vh 6vw; display: flex; flex-direction: column; justify-content: center; background: #f4f4f4; position: relative;">
             <!-- Decorativos -->
-            <div style="position: absolute; top: 0; left: 0; width: 80px; height: 40px; background: #dcdcdc;"></div>
-            <div style="position: absolute; bottom: 0; left: 0; width: 40px; height: 80px; background: #dcdcdc;"></div>
+            <div class="package-decor" style="position: absolute; top: 0; left: 0; width: 80px; height: 40px; background: #dcdcdc;"></div>
+            <div class="package-decor" style="position: absolute; bottom: 0; left: 0; width: 40px; height: 80px; background: #dcdcdc;"></div>
 
-            <h2 class="reveal-item" style="font-family: var(--wedding-montserrat); font-size: 4rem; font-weight: 300; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; line-height: 1.1; margin-bottom: 40px;">
+            <h2 class="reveal-item contato-title" style="font-family: var(--wedding-montserrat); font-size: 4rem; font-weight: 300; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; line-height: 1.1; margin-bottom: 40px;">
                 VAMOS DAR O<br>PRÓXIMO PASSO?
             </h2>
 
@@ -1663,10 +1685,10 @@ if (!function_exists('fmt')) {
         </div>
 
         <!-- Lado Direito: Imagem -->
-        <div class="reveal-item" style="flex: 1.2; height: 100%; position: relative;">
+        <div class="reveal-item contato-col-img" style="flex: 1.2; height: 100%; position: relative;">
             <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-18.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
             <!-- Elemento decorativo topo direito -->
-            <div style="position: absolute; top: 0; right: 0; width: 60px; height: 100px; background: #dcdcdc; opacity: 0.8;"></div>
+            <div class="package-decor" style="position: absolute; top: 0; right: 0; width: 60px; height: 100px; background: #dcdcdc; opacity: 0.8;"></div>
         </div>
     </section>
 
