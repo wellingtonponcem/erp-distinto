@@ -320,6 +320,27 @@ if (!function_exists('fmt')) {
         .boas-vindas-logo {
             display: none !important;
         }
+
+        /* Ajustes Manifesto Mobile */
+        .manifesto-slide {
+            flex-direction: column !important;
+            height: auto !important;
+            min-height: 100vh;
+        }
+        .manifesto-img-col {
+            flex: none !important;
+            height: 40vh !important;
+            width: 100% !important;
+        }
+        .manifesto-text-col {
+            flex: none !important;
+            padding: 40px 30px !important;
+            height: auto !important;
+        }
+        .manifesto-texto {
+            font-size: 1.4rem !important;
+            line-height: 1.4 !important;
+        }
     }
 
     @keyframes modalFadeIn {
@@ -418,11 +439,11 @@ if (!function_exists('fmt')) {
     </section>
 
     <!-- PÁGINA 03: ONDE O TEMPO PARA (MANIFESTO) -->
-    <section class="slide"
+    <section class="slide manifesto-slide"
         style="padding: 0; background: #f4f4f4; display: flex; flex-direction: row; align-items: center; justify-content: center; overflow: hidden; position: relative; height: 100vh; width: 100%;">
 
         <!-- Lado Esquerdo: Foto com Barra Decorativa -->
-        <div
+        <div class="manifesto-img-col"
             style="flex: 1.2; height: 100%; position: relative; display: flex; align-items: center; justify-content: center;">
             <!-- Barra Cinza -->
             <div
