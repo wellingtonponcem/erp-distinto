@@ -46,10 +46,92 @@ include __DIR__ . '/../includes/layout/head.php';
         margin-left: 0 !important;
         padding-top: 0 !important;
         background: transparent !important;
+        color: white !important;
     }
     .is-modal-layout .page-title {
         font-size: 1.5rem;
+        color: white !important;
     }
+    .is-modal-layout .card {
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        backdrop-filter: blur(10px);
+    }
+    .is-modal-layout .label {
+        color: rgba(255, 255, 255, 0.5) !important;
+    }
+    .is-modal-layout .input {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+    }
+    .is-modal-layout .input::placeholder {
+        color: rgba(255, 255, 255, 0.2) !important;
+    }
+    .label-premium {
+        display: block;
+        font-size: 10px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgba(255, 255, 255, 0.4);
+        margin-bottom: 8px;
+    }
+    .section-header-premium {
+        display: flex;
+        items-center;
+        gap: 12px;
+        font-size: 18px;
+        font-weight: 900;
+        color: white;
+        margin-bottom: 24px;
+    }
+    .card-plan {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.02);
+    }
+    .card-plan-active {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border-color: rgba(255, 255, 255, 0.2) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 20px 40px -20px rgba(0,0,0,0.5);
+    }
+    .upgrade-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.2s;
+    }
+    .upgrade-card:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 22px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-color: rgba(255, 255, 255, 0.1);
+        transition: .4s;
+        border-radius: 34px;
+    }
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px; width: 16px;
+        left: 3px; bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    input:checked + .slider { background-color: #10b981; }
+    input:checked + .slider:before { transform: translateX(18px); }
 </style>
 
 <?php 
@@ -83,91 +165,92 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                 <section class="card p-6" x-show="tipoProposta !== 'casamento'">
                     <h3 class="text-sm font-bold text-zinc-900 mb-4">Informações Básicas</h3>
                     
-                    <div class="grid grid-cols-1 gap-6">
-                        <div class="form-group" x-show="tipoProposta !== 'casamento'">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-group">
                             <label class="label">Cliente</label>
-                            <input type="text" class="input bg-zinc-50 text-zinc-500" value="<?= sanitizar($proposta['cliente_nome']) ?>" readonly>
+                            <input type="text" class="input bg-zinc-800/30 text-zinc-400" value="<?= sanitizar($proposta['cliente_nome']) ?>" readonly disabled>
                         </div>
+                        <div class="form-group">
+                            <label class="label">Tipo de Serviço</label>
+                            <select name="tipo" id="tipoProposta" class="input bg-zinc-800/30" required x-model="tipoProposta" disabled>
+                                <option value="marketing">Marketing Digital</option>
+                                <option value="casamento">Casamento</option>
+                                <option value="15anos">15 Anos</option>
+                                <option value="filmmaker">Filmmaker (Cinematic)</option>
+                            </select>
+                            <p class="text-[10px] text-zinc-500 mt-1">O tipo não pode ser alterado após a criação.</p>
+                        </div>
+                    </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-group" x-show="tipoProposta !== 'casamento'">
-                                <label class="label">Responsável(is)</label>
-                                <input type="text" name="responsavel" class="input" x-model="responsavel" placeholder="Ex: João Silva ou João e Maria">
-                            </div>
-                            <div class="form-group">
-                                <label class="label">WhatsApp do Cliente</label>
-                                <input type="text" name="whatsapp" class="input" x-model="whatsapp" placeholder="Ex: 27999998888" :disabled="tipoProposta === 'casamento'">
-                            </div>
-                            <div class="form-group">
-                                <label class="label">Tipo de Serviço</label>
-                                <select name="tipo" id="tipoProposta" class="input" required x-model="tipoProposta" disabled>
-                                    <option value="marketing">Marketing Digital</option>
-                                    <option value="casamento">Casamento</option>
-                                    <option value="15anos">15 Anos</option>
-                                    <option value="filmmaker">Filmmaker (Cinematic)</option>
-                                </select>
-                                <p class="text-[10px] text-zinc-400 mt-1">O tipo não pode ser alterado após a criação.</p>
-                            </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div class="form-group">
+                            <label class="label">Responsável(is)</label>
+                            <input type="text" name="responsavel" class="input" x-model="responsavel" placeholder="Ex: João Silva ou João e Maria">
                         </div>
+                        <div class="form-group">
+                            <label class="label">WhatsApp do Cliente</label>
+                            <input type="text" name="whatsapp" class="input" x-model="whatsapp" placeholder="Ex: 27999998888">
+                        </div>
+                    </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" x-show="tipoProposta !== 'casamento'">
-                            <div class="form-group">
-                                <label class="label">Título da Proposta</label>
-                                <input type="text" name="titulo" class="input" :value="tipoProposta === 'casamento' ? (nomeNoivo + ' & ' + nomeNoiva) : '<?= sanitizar($proposta['titulo']) ?>'" maxlength="100" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="label">Subtítulo (Opcional)</label>
-                                <input type="text" name="subtitulo" class="input" value="<?= sanitizar($proposta['subtitulo']) ?>" placeholder="Ex: Planejamento Estratégico Q3">
-                            </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div class="form-group">
+                            <label class="label">Título da Proposta</label>
+                            <input type="text" name="titulo" class="input" value="<?= sanitizar($proposta['titulo']) ?>" placeholder="Ex: Proposta Comercial">
                         </div>
+                        <div class="form-group">
+                            <label class="label">Subtítulo (Opcional)</label>
+                            <input type="text" name="subtitulo" class="input" value="<?= sanitizar($proposta['subtitulo']) ?>" placeholder="Ex: Planejamento Estratégico Q3">
+                        </div>
+                    </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <div class="form-group">
-                                <label class="label">Subtotal (R$)</label>
-                                <input type="number" step="0.01" class="input bg-zinc-50 font-bold text-zinc-500" readonly :value="valorSubtotal">
-                            </div>
-                            <div class="form-group">
-                                <label class="label">Desconto</label>
-                                <div class="flex">
-                                    <input type="number" step="0.01" name="desconto_valor" class="input rounded-r-none border-r-0" x-model="descontoValor" @input="recalcularTotal()">
-                                    <select name="desconto_tipo" class="input rounded-l-none w-16 px-1 text-center font-bold bg-zinc-50" x-model="descontoTipo" @change="recalcularTotal()">
-                                        <option value="porcentagem">%</option>
-                                        <option value="fixo">R$</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="label">Valor Total do Contrato</label>
-                                <input type="number" step="0.01" name="valor_total" class="input font-bold" required x-model="valorTotal" @input="calcularDescontoDoTotal()">
-                                <p class="text-[10px] text-zinc-400 mt-1" x-text="'R$ ' + (valorTotal / (parseInt(mesesContrato)||1)).toFixed(2).replace('.',',') + '/mês × ' + (parseInt(mesesContrato)||1) + ' meses'"></p>
-                            </div>
-                            <div class="form-group" x-show="tipoProposta !== 'casamento'">
-                                <label class="label">Tempo de Contrato</label>
-                                <input type="number" name="meses_contrato" class="input" x-model="mesesContrato">
-                            </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+                        <div class="form-group">
+                            <label class="label">Subtotal (R$)</label>
+                            <input type="number" step="0.01" class="input bg-zinc-800/30 font-bold text-zinc-500" readonly :value="valorSubtotal">
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-group" x-show="tipoProposta !== 'casamento'">
-                                <label class="label">Forma de Pagamento</label>
-                                <select name="forma_pagamento" class="input" x-model="formaPagamento">
-                                    <option value="boleto_pix">Boleto / PIX</option>
-                                    <option value="cartao">Cartão de Crédito (+2,13%)</option>
+                        <div class="form-group">
+                            <label class="label">Desconto</label>
+                            <div class="flex">
+                                <input type="number" step="0.01" name="desconto_valor" class="input rounded-r-none border-r-0" x-model="descontoValor" @input="recalcularTotal()">
+                                <select name="desconto_tipo" class="input rounded-l-none w-16 px-1 text-center font-bold bg-zinc-800/30" x-model="descontoTipo" @change="recalcularTotal()">
+                                    <option value="porcentagem">%</option>
+                                    <option value="fixo">R$</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label class="label">Status</label>
-                                <select name="status" class="input" x-model="statusProposta" :disabled="tipoProposta === 'casamento'">
-                                    <option value="rascunho">Rascunho</option>
-                                    <option value="pendente">Pendente</option>
-                                    <option value="aceita">Aceita</option>
-                                    <option value="recusada">Recusada</option>
-                                </select>
-                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Valor Total</label>
+                            <input type="number" step="0.01" name="valor_total" class="input font-bold" required x-model="valorTotal" @input="calcularDescontoDoTotal()">
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Meses</label>
+                            <input type="number" name="meses_contrato" class="input" x-model="mesesContrato" @input="recalcularTotal()">
                         </div>
                     </div>
                 </section>
 
-                <!-- Conteúdo Gerado pela IA (Editável) -->
+                <!-- CONFIGURAÇÕES DE CASAMENTO -->
+                <section class="card p-6" x-show="tipoProposta === 'casamento'">
+                    <h2 class="section-header-premium">
+                        <i data-lucide="heart" class="w-5 h-5 text-rose-500"></i>
+                        Dados do Casamento
+                    </h2>
+
+                    <!-- Campos movidos de Informações Básicas para Casamento -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 pb-8 border-b border-white/5">
+                        <div class="form-group">
+                            <label class="label-premium">WhatsApp do Cliente</label>
+                            <input type="text" name="whatsapp_casamento" class="input" x-model="whatsapp" placeholder="Ex: 27999998888">
+                            <!-- Input hidden para garantir que o 'whatsapp' seja enviado mesmo se o x-model mudar algo -->
+                            <input type="hidden" name="whatsapp" :value="whatsapp">
+                        </div>
+                        <div class="form-group">
+                            <label class="label-premium">Status da Proposta</label>
+                            <select name="status" class="input" x-model="statusProposta">
+                                <option value="rascunho">Rascunho</option>
+                                <option value="pendente">Pendente</option>
+                <!-- Conteúdo Gerado pela IA (Oculto para Casamento) -->
                 <section class="card p-6 border-zinc-200" x-show="tipoProposta !== 'casamento'">
                     <h3 class="text-sm font-bold text-zinc-900 mb-4">Conteúdo Gerado (IA)</h3>
                     <div class="space-y-6">
@@ -187,15 +270,16 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         Dados do Casamento
                     </h2>
 
-                    <!-- Campos movidos de Informações Básicas -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 pb-8 border-b border-zinc-100/50">
+                    <!-- Campos principais -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 pb-8 border-b border-white/5">
                         <div class="form-group">
                             <label class="label-premium">WhatsApp do Cliente</label>
-                            <input type="text" name="whatsapp" class="input" x-model="whatsapp" placeholder="Ex: 27999998888" :disabled="tipoProposta !== 'casamento'">
+                            <input type="text" name="whatsapp_casamento" class="input" x-model="whatsapp" placeholder="Ex: 27999998888">
+                            <input type="hidden" name="whatsapp" :value="whatsapp">
                         </div>
                         <div class="form-group">
                             <label class="label-premium">Status da Proposta</label>
-                            <select name="status" class="input" x-model="statusProposta" :disabled="tipoProposta !== 'casamento'">
+                            <select name="status" class="input" x-model="statusProposta">
                                 <option value="rascunho">Rascunho</option>
                                 <option value="pendente">Pendente</option>
                                 <option value="aceita">Aceita</option>
@@ -220,7 +304,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 pb-8 border-b border-zinc-100/50">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 pb-8 border-b border-white/5">
                         <div class="form-group">
                             <label class="label-premium">Data Limite para Desconto</label>
                             <input type="text" name="data_limite_desconto" class="input js-datepicker" x-model="dataLimiteDesconto" placeholder="Selecione a data" x-init="flatpickr($el, { locale: 'pt', dateFormat: 'd/m/Y' })">
@@ -232,10 +316,8 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     </div>
                     
                     <div class="space-y-6">
-                    <div class="space-y-6">
                         <?php foreach ($weddingPackages as $pkg): 
                             $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $pkg['nome'])));
-                            // Mapear para as flags existentes para manter compatibilidade
                             $flag = 'show' . (strpos($slug, 'heritage') !== false ? 'Heritage' : (strpos($slug, 'cinematic') !== false ? 'Cinematic' : 'Essencial'));
                             $valVar = 'valor' . (strpos($slug, 'heritage') !== false ? 'Heritage' : (strpos($slug, 'cinematic') !== false ? 'Cinematic' : 'Essencial'));
                             $itensVar = 'itens' . (strpos($slug, 'heritage') !== false ? 'Heritage' : (strpos($slug, 'cinematic') !== false ? 'Cinematic' : 'Essencial'));
@@ -243,33 +325,33 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         ?>
                         <div class="card-plan p-5 rounded-2xl bg-zinc-50/30 border-zinc-100" :class="<?= $flag ?> ? 'card-plan-active' : 'opacity-60'">
                             <div class="flex items-center justify-between mb-4">
-                                <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-<?= $color ?> shadow-[0_0_8px_rgba(var(--<?= $color ?>-rgb),0.5)]"></span> 
+                                <h4 class="text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-<?= $color ?>"></span> 
                                     <?= $pkg['nome'] ?>
                                 </h4>
                                 <label class="flex items-center gap-3 cursor-pointer bg-white/5 px-4 py-2 rounded-full border border-white/10 hover:border-white/20 transition-all">
-                                    <span class="text-[10px] font-black uppercase text-zinc-400 tracking-wider">Exibir na Proposta</span>
+                                    <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Mostrar</span>
                                     <div class="switch">
-                                        <?php $cleanName = str_replace('show', '', strtolower($flag)); ?>
-                                        <input type="checkbox" name="show_<?= $cleanName ?>" x-model="<?= $flag ?>">
+                                        <input type="checkbox" name="show_<?= strtolower(str_replace('show', '', $flag)) ?>" x-model="<?= $flag ?>">
                                         <span class="slider"></span>
                                     </div>
                                 </label>
                             </div>
+                            
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4" x-show="<?= $flag ?>" x-collapse>
-                                <div class="md:col-span-1">
-                                    <label class="label-premium">Valor (R$)</label>
-                                    <input type="text" name="valor_<?= strtolower($flag) ?>" class="input font-bold text-zinc-900" x-model="<?= $valVar ?>" placeholder="<?= number_format($pkg['preco_venda'], 2, ',', '.') ?>">
+                                <div class="form-group">
+                                    <label class="label-premium">Valor do Pacote</label>
+                                    <input type="number" name="valor_<?= strtolower(str_replace('show', '', $flag)) ?>" class="input font-bold" x-model="<?= $valVar ?>" placeholder="<?= number_format($pkg['preco_venda'], 2, ',', '.') ?>">
                                 </div>
                                 <div class="md:col-span-3">
                                     <label class="label-premium">Itens inclusos</label>
-                                    <textarea name="itens_<?= strtolower($flag) ?>" class="input text-xs leading-relaxed" x-model="<?= $itensVar ?>" rows="2"></textarea>
+                                    <textarea name="itens_<?= strtolower(str_replace('show', '', $flag)) ?>" class="input text-xs leading-relaxed" x-model="<?= $itensVar ?>" rows="2"></textarea>
                                 </div>
                             </div>
 
                             <!-- Upgrades dentro do pacote -->
-                            <div class="mt-6 pt-4 border-t border-zinc-100/50" x-show="<?= $flag ?>" x-collapse>
-                                <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4">Adicionais Disponíveis</p>
+                            <div class="mt-6 pt-4 border-t border-white/5" x-show="<?= $flag ?>" x-collapse>
+                                <p class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4">Adicionais Disponíveis</p>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <?php foreach ($weddingUpgrades as $upg): 
                                         $upgId = $upg['id'];
@@ -277,7 +359,6 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                                         $suffix = (strpos($slug, 'heritage') !== false ? 'Heritage' : (strpos($slug, 'cinematic') !== false ? 'Cinematic' : 'Essencial'));
                                         $pkgId = strtolower($suffix);
 
-                                        // Mapeamento para flags fixas (Retrocompatibilidade)
                                         $isBoudoir = strpos($upgNomeLower, 'boudoir') !== false;
                                         $isPrewedding = strpos($upgNomeLower, 'pre-wedding') !== false || strpos($upgNomeLower, 'prewedding') !== false || strpos($upgNomeLower, 'wedding') !== false;
                                         
@@ -288,7 +369,6 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                                             $upgFlag = 'includePrewedding' . $suffix;
                                             $upgName = 'include_prewedding_' . $pkgId;
                                         } else {
-                                            // Upgrade Dinâmico
                                             $upgFlag = "upgrades.{$pkgId}['{$upgId}']";
                                             $upgName = "upgrades[{$pkgId}][{$upgId}]";
                                         }
@@ -335,9 +415,9 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     </div>
                 </section>
 
-                <section class="card p-6" x-show="tipoProposta === 'marketing'">
-                    <h3 class="text-sm font-bold text-zinc-900 mb-6 flex items-center gap-2">
-                        <i data-lucide="heart" class="w-4 h-4 text-zinc-400"></i> Personalização Premium (Casamento)
+                <section class="card p-6" x-show="tipoProposta === 'casamento'">
+                    <h3 class="text-sm font-bold text-white mb-6 flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i> Personalização Premium
                     </h3>
                     
                     <div class="space-y-6">
