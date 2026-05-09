@@ -62,6 +62,26 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
     <link rel="icon" type="image/png" sizes="32x32" href="<?= raizUrl('/favicon_io/favicon-32x32.png') ?>">
     <link rel="icon" type="image/png" sizes="16x16" href="<?= raizUrl('/favicon_io/favicon-16x16.png') ?>">
     <link rel="manifest" href="<?= raizUrl('/favicon_io/site.webmanifest') ?>">
+    
+    <?php if ($tipo === 'casamento'): ?>
+    <style>
+        @media (max-width: 768px) {
+            #btn-approve {
+                display: flex !important;
+                bottom: 30px !important;
+                right: 20px !important;
+                left: 20px !important;
+                width: calc(100% - 40px) !important;
+                justify-content: center !important;
+                z-index: 10001 !important;
+            }
+            .mobile-action-bar {
+                display: none !important;
+            }
+        }
+    </style>
+    <?php endif; ?>
+
     <!-- Bibliotecas Externas -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -151,24 +171,19 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
     <?php endif; ?>
 
     <!-- Action Bar Mobile -->
+    <?php if ($tipo !== 'casamento'): ?>
     <div class="mobile-action-bar no-print">
-        <?php if ($tipo === 'casamento'): ?>
-        <button onclick="window.openInteractiveModal()" class="mobile-btn-approve">
-            <i data-lucide="heart"></i>
-            <span>Escolher</span>
-        </button>
-        <?php else: ?>
         <a href="https://wa.me/<?= preg_replace('/\D/', '', $configEmpresa['telefone'] ?? '') ?>?text=<?= rawurlencode('Olá! Gostaria de aprovar a proposta: ' . $proposta['titulo'] . ' (Ref: ' . $slug . ')') ?>"
            class="mobile-btn-approve">
             <i data-lucide="check-circle"></i>
             <span>Aprovar</span>
         </a>
-        <?php endif; ?>
         <button onclick="window.showExportModal()" class="mobile-btn-pdf">
             <i data-lucide="file-down"></i>
             <span>PDF</span>
         </button>
     </div>
+    <?php endif; ?>
 
     <!-- Modal de Exportação -->
     <div id="export-modal" class="export-modal no-print" style="display: none;">
