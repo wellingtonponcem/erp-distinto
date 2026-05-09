@@ -402,6 +402,33 @@ if (!function_exists('fmt')) {
             justify-content: flex-start !important;
             height: auto !important;
         }
+
+        /* Ajustes Experiências Mobile */
+        .experiencias-slide {
+            flex-direction: column !important;
+            height: auto !important;
+            min-height: 100vh;
+        }
+        .experiencias-text-col {
+            flex: none !important;
+            padding: 50px 30px !important;
+            height: auto !important;
+            order: 2;
+        }
+        .experiencias-img-col {
+            flex: none !important;
+            height: 45vh !important;
+            width: 100% !important;
+            order: 1;
+        }
+        .experiencias-titulo {
+            font-size: 2.2rem !important;
+            line-height: 1.1 !important;
+            margin-bottom: 25px !important;
+        }
+        .experiencias-decor {
+            display: none !important;
+        }
     }
 
     @keyframes modalFadeIn {
@@ -659,16 +686,16 @@ if (!function_exists('fmt')) {
     </section>
 
     <!-- PÁGINA 06: EXPERIÊNCIAS DISTINTAS -->
-    <section class="slide"
+    <section class="slide experiencias-slide"
         style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
 
         <!-- Lado Esquerdo: Textos -->
-        <div
+        <div class="experiencias-text-col"
             style="flex: 1; padding: 0 8vw; display: flex; flex-direction: column; justify-content: center; position: relative; height: 100%;">
             <!-- Decorativo Superior Esquerdo -->
-            <div style="position: absolute; top: 0; left: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
+            <div class="experiencias-decor" style="position: absolute; top: 0; left: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
 
-            <h2
+            <h2 class="experiencias-titulo"
                 style="font-family: var(--wedding-montserrat); font-size: 4rem; font-weight: 300; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; line-height: 1.1; margin-bottom: 40px;">
                 EXPERIÊNCIAS<br>DISTINTAS
             </h2>
@@ -694,15 +721,15 @@ if (!function_exists('fmt')) {
             </div>
 
             <!-- Decorativo Inferior Esquerdo -->
-            <div style="position: absolute; bottom: 10vh; left: 8vw; width: 180px; height: 60px; background: #dcdcdc;">
+            <div class="experiencias-decor" style="position: absolute; bottom: 10vh; left: 8vw; width: 180px; height: 60px; background: #dcdcdc;">
             </div>
         </div>
 
         <!-- Lado Direito: Imagem -->
-        <div
+        <div class="experiencias-img-col"
             style="flex: 1; position: relative; display: flex; align-items: center; justify-content: center; height: 100%;">
             <!-- Fundo Cinza Decorativo na Direita -->
-            <div
+            <div class="experiencias-decor"
                 style="position: absolute; top: 0; right: 0; width: 35%; height: 80%; background: #dcdcdc; z-index: 1;">
             </div>
 
