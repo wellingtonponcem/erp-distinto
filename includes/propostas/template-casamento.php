@@ -523,6 +523,35 @@ if (!function_exists('fmt')) {
         .portfolio-label p {
             font-size: 0.8rem !important;
         }
+
+        /* Ajustes Equipe Mobile */
+        .team-slide {
+            height: auto !important;
+            padding: 60px 20px !important;
+        }
+        .team-header {
+            margin-bottom: 30px !important;
+        }
+        .team-title {
+            font-size: 2.2rem !important;
+            line-height: 1.1 !important;
+        }
+        .team-decor-bar {
+            display: none !important;
+        }
+        .team-grid {
+            flex-direction: column !important;
+            gap: 40px !important;
+            width: 100% !important;
+        }
+        .team-item {
+            flex: none !important;
+            width: 100% !important;
+        }
+        .team-item div {
+            width: 60% !important;
+            margin: 0 auto 15px !important;
+        }
     }
 
     @keyframes modalFadeIn {
@@ -1422,12 +1451,12 @@ if (!function_exists('fmt')) {
     </section>
 
     <!-- PÁGINA 17: OS OLHARES POR TRÁS DAS LENTES (EQUIPE) -->
-    <section class="slide"
+    <section class="slide team-slide"
         style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; position: relative; height: 100vh; width: 100%;">
 
         <!-- Cabeçalho -->
-        <div class="reveal-item" style="text-align: center; margin-bottom: 60px; z-index: 10;">
-            <h2
+        <div class="reveal-item team-header" style="text-align: center; margin-bottom: 60px; z-index: 10;">
+            <h2 class="team-title"
                 style="font-family: var(--wedding-montserrat); font-size: 4rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 10px;">
                 OS OLHARES POR TRÁS DAS LENTES
             </h2>
@@ -1437,16 +1466,16 @@ if (!function_exists('fmt')) {
         </div>
 
         <!-- Barra Decorativa Cinza -->
-        <div
+        <div class="team-decor-bar"
             style="position: absolute; top: 50%; left: 0; width: 100%; height: 120px; background: #dcdcdc; transform: translateY(-50%); z-index: 1;">
         </div>
 
         <!-- Grid da Equipe -->
-        <div
+        <div class="team-grid"
             style="display: flex; flex-direction: row; gap: 40px; z-index: 10; width: 90%; max-width: 1400px; justify-content: center;">
 
             <!-- Jeane -->
-            <div class="reveal-item" style="flex: 1; text-align: center;">
+            <div class="reveal-item team-item" style="flex: 1; text-align: center;">
                 <div style="width: 100%; aspect-ratio: 1/1; overflow: hidden; margin-bottom: 20px; border-radius: 2px;">
                     <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-16-jeane.png') ?>"
                         style="width: 100%; height: 100%; object-fit: cover;">
@@ -1459,7 +1488,7 @@ if (!function_exists('fmt')) {
             </div>
 
             <!-- Wellington -->
-            <div class="reveal-item" style="flex: 1; text-align: center;">
+            <div class="reveal-item team-item" style="flex: 1; text-align: center;">
                 <div style="width: 100%; aspect-ratio: 1/1; overflow: hidden; margin-bottom: 20px; border-radius: 2px;">
                     <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-16-wellington.png') ?>"
                         style="width: 100%; height: 100%; object-fit: cover;">
@@ -1472,7 +1501,7 @@ if (!function_exists('fmt')) {
             </div>
 
             <!-- Isabelly -->
-            <div class="reveal-item" style="flex: 1; text-align: center;">
+            <div class="reveal-item team-item" style="flex: 1; text-align: center;">
                 <div style="width: 100%; aspect-ratio: 1/1; overflow: hidden; margin-bottom: 20px; border-radius: 2px;">
                     <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-16-isabelly.png') ?>"
                         style="width: 100%; height: 100%; object-fit: cover;">
@@ -1485,7 +1514,7 @@ if (!function_exists('fmt')) {
             </div>
 
             <!-- Gabryel -->
-            <div class="reveal-item" style="flex: 1; text-align: center;">
+            <div class="reveal-item team-item" style="flex: 1; text-align: center;">
                 <div style="width: 100%; aspect-ratio: 1/1; overflow: hidden; margin-bottom: 20px; border-radius: 2px;">
                     <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-16-gabriel.png') ?>"
                         style="width: 100%; height: 100%; object-fit: cover;">
