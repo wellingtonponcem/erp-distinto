@@ -151,9 +151,9 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
     <?php endif; ?>
 
     <!-- Action Bar Mobile -->
-    <div class="mobile-action-bar no-print" style="display: none;">
+    <div class="mobile-action-bar no-print">
         <?php if ($tipo === 'casamento'): ?>
-        <button onclick="window.openPlanModal()" class="mobile-btn-approve">
+        <button onclick="window.openInteractiveModal()" class="mobile-btn-approve">
             <i data-lucide="heart"></i>
             <span>Escolher</span>
         </button>
