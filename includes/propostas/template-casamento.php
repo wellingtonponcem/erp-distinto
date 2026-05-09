@@ -513,6 +513,9 @@ if (!function_exists('fmt')) {
             height: 50vh !important;
             flex: none !important;
         }
+        .portfolio-img-v {
+            height: 75vh !important;
+        }
         .portfolio-label {
             top: 20px !important;
             left: 20px !important;
@@ -1313,7 +1316,7 @@ if (!function_exists('fmt')) {
         </div>
 
         <!-- Coluna Direita (Foto inteira) -->
-        <div class="reveal-item portfolio-right-col portfolio-img-item" style="flex: 1.1; overflow: hidden; height: 100%;">
+        <div class="reveal-item portfolio-right-col portfolio-img-item portfolio-img-v" style="flex: 1.1; overflow: hidden; height: 100%;">
             <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-direita-12.png') ?>"
                 style="width: 100%; height: 100%; object-fit: cover;">
         </div>
