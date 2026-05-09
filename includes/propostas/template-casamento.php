@@ -254,13 +254,32 @@ if (!function_exists('fmt')) {
             padding: 40px 20px;
         }
 
-        h1 {
-            font-size: 3rem;
-        }
+        h1 { font-size: 3rem; }
+        h2 { font-size: 2.2rem; }
 
-        h2 {
-            font-size: 2.5rem;
+        /* Ajustes Capa Mobile */
+        .capa-content {
+            padding: 8vh 6vw !important;
         }
+        .capa-titulo {
+            font-size: 4rem !important;
+        }
+        .capa-subtitulo {
+            font-size: 0.9rem !important;
+            letter-spacing: 0.3em !important;
+            margin-top: 5px !important;
+        }
+        .capa-casal {
+            font-size: 2rem !important;
+            margin-bottom: 10px !important;
+        }
+        .capa-desc {
+            font-size: 1rem !important;
+            margin-bottom: 15px !important;
+            max-width: 100% !important;
+        }
+    }
+
     @keyframes modalFadeIn {
         from { opacity: 0; transform: scale(0.98); }
         to { opacity: 1; transform: scale(1); }
@@ -274,21 +293,21 @@ if (!function_exists('fmt')) {
         <img src="<?= raizUrl('/imagens-proposta-casamento/bg-section-01.jpg') ?>" class="img-bg"
             style="opacity: 1; z-index: 1;">
 
-        <div class="content-overlay"
+        <div class="content-overlay capa-content"
             style="height: 100%; width: 100%; display: flex; flex-direction: column; justify-content: space-between; padding: 10vh 8vw; box-sizing: border-box; max-width: 100%;">
             <!-- Topo Centro -->
             <div style="text-align: center; width: 100%;">
-                <h1
+                <h1 class="capa-titulo"
                     style="font-family: var(--wedding-script); font-size: 8rem; color: #1a1a1a; margin-bottom: 0; font-weight: 400; text-transform: none; letter-spacing: 0;">
                     Casamento</h1>
-                <p
+                <p class="capa-subtitulo"
                     style="font-family: var(--wedding-montserrat); font-size: 1.8rem; letter-spacing: 0.6em; color: #1a1a1a; margin-top: -10px; font-weight: 300;">
                     FOTOGRAFIA E FILMMAKING</p>
             </div>
 
             <!-- Baixo Esquerda -->
             <div style="text-align: left; max-width: 500px; color: #1a1a1a;">
-                <h2
+                <h2 class="capa-casal"
                     style="font-family: var(--wedding-montserrat); font-size: 2.2rem; font-weight: 800; letter-spacing: 0.05em; line-height: 1.2; margin-bottom: 20px;">
                     <?php
                     $noivoUpper = mb_strtoupper($primeiroNomeNoivo);
@@ -296,7 +315,7 @@ if (!function_exists('fmt')) {
                     echo "{$noivoUpper} &<br>{$noivaUpper}";
                     ?>
                 </h2>
-                <p
+                <p class="capa-desc"
                     style="font-family: var(--wedding-montserrat); font-size: 1.4rem; line-height: 1.6; font-weight: 400; margin-bottom: 20px; opacity: 0.8;">
                     Toda história tem sua beleza. Nós entregamos a nossa versão da sua sob a nossa perspectiva.
                 </p>
