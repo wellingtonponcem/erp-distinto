@@ -465,6 +465,36 @@ if (!function_exists('fmt')) {
         .package-decor {
             display: none !important;
         }
+
+        /* Ajustes Portfolio Capa Mobile */
+        .portfolio-capa-slide {
+            flex-direction: column !important;
+            height: auto !important;
+        }
+        .portfolio-capa-content {
+            flex-direction: column !important;
+            height: auto !important;
+        }
+        .portfolio-capa-text-box {
+            padding: 40px 30px !important;
+            order: 2;
+        }
+        .portfolio-capa-title-box {
+            padding: 40px 30px !important;
+            order: 1;
+            text-align: center;
+        }
+        .portfolio-capa-titulo {
+            font-size: 2.5rem !important;
+            margin-bottom: 10px !important;
+        }
+        .portfolio-capa-subtitulo {
+            font-size: 1.1rem !important;
+        }
+        .portfolio-capa-img-box {
+            height: 45vh !important;
+            order: 3;
+        }
     }
 
     @keyframes modalFadeIn {
@@ -1185,13 +1215,13 @@ if (!function_exists('fmt')) {
     </div>
 
     <!-- PÁGINA 12: WEDDING PORTFOLIO CAPA -->
-    <section class="slide"
+    <section class="slide portfolio-capa-slide"
         style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; overflow: hidden; position: relative; height: 100vh; width: 100%;">
 
         <!-- Topo: Textos -->
-        <div style="height: 50%; display: flex; flex-direction: row; width: 100%;">
+        <div class="portfolio-capa-content" style="height: 50%; display: flex; flex-direction: row; width: 100%;">
             <!-- Lado Esquerdo: Manifesto -->
-            <div style="flex: 2; padding: 6vh 6vw; display: flex; flex-direction: column; justify-content: center;">
+            <div class="portfolio-capa-text-box" style="flex: 2; padding: 6vh 6vw; display: flex; flex-direction: column; justify-content: center;">
                 <div
                     style="font-family: var(--wedding-montserrat); font-size: 1.15rem; line-height: 1.6; color: #333; font-weight: 400;">
                     <p style="margin-bottom: 20px;">
@@ -1205,33 +1235,29 @@ if (!function_exists('fmt')) {
                     <p style="font-size: 1rem; color: #444;">
                         Mais do que um registro, uma perspectiva. <strong>Sim</strong>, o casamento de vocês será
                         incrível, mas queremos que o filme e as fotos sejam uma experiência à parte. Nosso olhar busca o
-                        que está nas entrelinhas. Desde o sussurro do noivo no altar até o riso solto dos convidados. Do
-                        caos vibrante do making of à paz profunda da oração antes da cerimônia. Dos detalhes das mãos
-                        que se entrelaçam às grandes paisagens que moldam o dia.
+                        que está nas entrelinhas.
                     </p>
                 </div>
             </div>
 
             <!-- Lado Direito: Título -->
-            <div
+            <div class="portfolio-capa-title-box"
                 style="flex: 1.5; padding: 6vh 4vw; display: flex; flex-direction: column; justify-content: center; position: relative;">
                 <!-- Decorativo Superior Direito -->
-                <div style="position: absolute; top: 0; right: 0; width: 60px; height: 80px; background: #dcdcdc;">
+                <div class="package-decor" style="position: absolute; top: 0; right: 0; width: 60px; height: 80px; background: #dcdcdc;">
                 </div>
 
-                <h2
+                <h2 class="portfolio-capa-titulo"
                     style="font-family: var(--wedding-montserrat); font-size: 4.5rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; line-height: 1; margin-bottom: 5px;">
-                    WEDDING<br>PORTFOLIO
-                </h2>
-                <p
+                    WEDDING<br>PORTFOLIO</h2>
+                <p class="portfolio-capa-subtitulo"
                     style="font-family: var(--wedding-montserrat); font-size: 1.4rem; font-weight: 400; color: #444; letter-spacing: 0.2em; text-transform: uppercase;">
-                    VERSÕES DA SUA HISTÓRIA
-                </p>
+                    VERSÕES DA HISTÓRIA</p>
             </div>
         </div>
 
         <!-- Base: Grid de Fotos -->
-        <div style="height: 50%; width: 100%;">
+        <div class="portfolio-capa-img-box" style="height: 50%; width: 100%;">
             <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-11.png') ?>"
                 style="width: 100%; height: 100%; object-fit: cover;">
         </div>
