@@ -259,33 +259,35 @@ if (!function_exists('fmt')) {
 
         /* Ajustes Capa Mobile */
         .capa-content {
-            padding: 8vh 6vw !important;
-            justify-content: center !important;
-            gap: 30px !important;
+            padding: 5vh 6vw !important;
+            justify-content: flex-start !important;
+            gap: 15px !important;
         }
         .capa-titulo {
-            font-size: 4rem !important;
+            font-size: 3.5rem !important;
         }
         .capa-subtitulo {
-            font-size: 0.9rem !important;
-            letter-spacing: 0.3em !important;
-            margin-top: 5px !important;
+            font-size: 0.8rem !important;
+            letter-spacing: 0.25em !important;
+            margin-top: 0px !important;
         }
         .capa-bottom-box {
             text-align: center !important;
             max-width: 100% !important;
+            margin-top: 10px !important;
         }
         .capa-casal {
-            font-size: 2rem !important;
-            margin-bottom: 10px !important;
+            font-size: 1.8rem !important;
+            margin-bottom: 5px !important;
         }
         .capa-desc {
-            font-size: 1rem !important;
-            margin-bottom: 15px !important;
+            font-size: 0.95rem !important;
+            margin-bottom: 10px !important;
             max-width: 100% !important;
+            line-height: 1.4 !important;
         }
         .capa-line {
-            margin: 0 auto 20px auto !important;
+            margin: 0 auto 15px auto !important;
         }
     }
 
