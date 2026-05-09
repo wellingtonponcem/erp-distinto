@@ -443,14 +443,19 @@ if (!function_exists('fmt')) {
         }
         .package-img-col {
             flex: none !important;
-            height: 40vh !important;
+            height: 60vh !important;
             width: 100% !important;
+            background: transparent !important;
         }
         .package-text-col {
             flex: none !important;
             padding: 50px 30px !important;
             height: auto !important;
             background: #fff !important;
+        }
+        .package-img-box {
+            width: 100% !important;
+            height: 100% !important;
         }
         .package-titulo {
             font-size: 2.2rem !important;
@@ -764,7 +769,7 @@ if (!function_exists('fmt')) {
                 style="position: absolute; top: 0; right: 0; width: 35%; height: 80%; background: #dcdcdc; z-index: 1;">
             </div>
 
-            <div class="experiencias-img-box" style="width: 80%; height: 80%; position: relative; z-index: 2;">
+            <div class="package-img-box" style="width: 80%; height: 80%; position: relative; z-index: 2;">
                 <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-05.png') ?>"
                     style="width: 100%; height: 100%; object-fit: contain;">
             </div>
@@ -899,9 +904,9 @@ if (!function_exists('fmt')) {
             <div class="package-decor" style="position: absolute; top: 0; right: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
             <div class="package-decor" style="position: absolute; bottom: 0; left: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
 
-            <div class="experiencias-img-box" style="width: 80%; height: 80%; position: relative; z-index: 2;">
+            <div class="package-img-box" style="width: 80%; height: 80%; position: relative; z-index: 2;">
                 <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-08.png') ?>"
-                    style="width: 100%; height: 100%; object-fit: contain;">
+                    style="width: 100%; height: 100%; object-fit: cover;">
             </div>
         </div>
     </section>
