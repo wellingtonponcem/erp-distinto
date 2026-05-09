@@ -132,7 +132,8 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         <i data-lucide="arrow-left" class="w-4 h-4"></i> Voltar para escolha de tipo
                     </button>
                 </div>
-                <section class="card p-6">
+                <!-- Informações Básicas (Oculto para Casamento) -->
+                <section class="card p-6" x-show="tipoProposta !== 'casamento'">
                     <h3 class="text-sm font-bold text-zinc-900 mb-4">Informações Básicas</h3>
                     
                     <div class="flex gap-6 mb-6 pb-6 border-b border-zinc-100">
@@ -150,7 +151,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         <!-- Modo Cliente Cadastrado -->
                         <div id="wrapperClienteCadastrado" class="form-group">
                             <label class="label">Selecione o Cliente</label>
-                            <select name="cliente_id" id="cliente_id" class="input">
+                            <select name="cliente_id" id="cliente_id" class="input" :disabled="tipoProposta === 'casamento'">
                                 <option value="">Selecione um cliente...</option>
                                 <?php foreach ($clientes as $c): ?>
                                     <option value="<?= $c['id'] ?>"><?= sanitizar($c['nome']) ?></option>
@@ -175,12 +176,12 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="form-group">
                                 <label class="label">WhatsApp do Cliente (Opcional)</label>
-                                <input type="text" name="whatsapp" class="input" placeholder="Ex: 27999998888">
+                                <input type="text" name="whatsapp" class="input" placeholder="Ex: 27999998888" :disabled="tipoProposta === 'casamento'">
                                 <p class="text-[10px] text-zinc-500 mt-1">Apenas números com DDD. Será usado para enviar a proposta.</p>
                             </div>
                             <div class="form-group">
                                 <label class="label">Tipo de Serviço</label>
-                                <select name="tipo" id="tipoPropostaSelect" class="input" required x-model="tipoProposta">
+                                <select name="tipo" id="tipoPropostaSelect" class="input" required x-model="tipoProposta" :disabled="tipoProposta === 'casamento'">
                                     <option value="marketing">Marketing Digital</option>
                                     <option value="casamento">Casamento</option>
                                     <option value="15anos">15 Anos</option>
@@ -241,6 +242,36 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         <i data-lucide="heart" class="w-5 h-5 text-rose-500"></i>
                         Dados do Casamento
                     </h2>
+
+                    <!-- Campos movidos de Informações Básicas -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 pb-8 border-b border-zinc-100/50">
+                        <div class="form-group">
+                            <label class="label-premium">Selecione o Cliente</label>
+                            <select name="cliente_id" id="cliente_id_casamento" class="input" :required="tipoProposta === 'casamento'" :disabled="tipoProposta !== 'casamento'">
+                                <option value="">Selecione um cliente...</option>
+                                <?php foreach ($clientes as $c): ?>
+                                    <option value="<?= $c['id'] ?>"><?= sanitizar($c['nome']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="label-premium">WhatsApp do Cliente</label>
+                            <input type="text" name="whatsapp" class="input" x-model="whatsapp" placeholder="Ex: 27999998888" :disabled="tipoProposta !== 'casamento'">
+                        </div>
+                        <div class="form-group">
+                            <label class="label-premium">Tipo de Serviço</label>
+                            <input type="text" class="input bg-zinc-50/50 text-zinc-500" value="Casamento" readonly>
+                            <input type="hidden" name="tipo" value="casamento" :disabled="tipoProposta !== 'casamento'">
+                        </div>
+                        <div class="form-group">
+                            <label class="label-premium">Forma de Pagamento</label>
+                            <select name="forma_pagamento" class="input" :disabled="tipoProposta !== 'casamento'">
+                                <option value="boleto_pix">Boleto / PIX</option>
+                                <option value="cartao">Cartão de Crédito (+2,13%)</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                         <div class="form-group">
                             <label class="label-premium">Nome do Noivo</label>

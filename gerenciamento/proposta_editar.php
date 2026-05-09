@@ -75,7 +75,8 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
             <input type="hidden" name="id" value="<?= $id ?>">
             
             <div class="lg:col-span-2 space-y-6">
-                <section class="card p-6">
+                <!-- Informações Básicas (Oculto para Casamento) -->
+                <section class="card p-6" x-show="tipoProposta !== 'casamento'">
                     <h3 class="text-sm font-bold text-zinc-900 mb-4">Informações Básicas</h3>
                     
                     <div class="grid grid-cols-1 gap-6">
@@ -91,7 +92,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                             </div>
                             <div class="form-group">
                                 <label class="label">WhatsApp do Cliente</label>
-                                <input type="text" name="whatsapp" class="input" x-model="whatsapp" placeholder="Ex: 27999998888">
+                                <input type="text" name="whatsapp" class="input" x-model="whatsapp" placeholder="Ex: 27999998888" :disabled="tipoProposta === 'casamento'">
                             </div>
                             <div class="form-group">
                                 <label class="label">Tipo de Serviço</label>
@@ -151,7 +152,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                             </div>
                             <div class="form-group">
                                 <label class="label">Status</label>
-                                <select name="status" class="input" x-model="statusProposta">
+                                <select name="status" class="input" x-model="statusProposta" :disabled="tipoProposta === 'casamento'">
                                     <option value="rascunho">Rascunho</option>
                                     <option value="pendente">Pendente</option>
                                     <option value="aceita">Aceita</option>
@@ -181,6 +182,29 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         <i data-lucide="heart" class="w-5 h-5 text-rose-500"></i>
                         Dados do Casamento
                     </h2>
+
+                    <!-- Campos movidos de Informações Básicas -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 pb-8 border-b border-zinc-100/50">
+                        <div class="form-group">
+                            <label class="label-premium">WhatsApp do Cliente</label>
+                            <input type="text" name="whatsapp" class="input" x-model="whatsapp" placeholder="Ex: 27999998888" :disabled="tipoProposta !== 'casamento'">
+                        </div>
+                        <div class="form-group">
+                            <label class="label-premium">Tipo de Serviço</label>
+                            <input type="text" class="input bg-zinc-50/50 text-zinc-500" value="Casamento" readonly>
+                            <input type="hidden" name="tipo" value="casamento" :disabled="tipoProposta !== 'casamento'">
+                        </div>
+                        <div class="form-group">
+                            <label class="label-premium">Status da Proposta</label>
+                            <select name="status" class="input" x-model="statusProposta" :disabled="tipoProposta !== 'casamento'">
+                                <option value="rascunho">Rascunho</option>
+                                <option value="pendente">Pendente</option>
+                                <option value="aceita">Aceita</option>
+                                <option value="recusada">Recusada</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                         <div class="form-group">
                             <label class="label-premium">Nome do Noivo</label>
