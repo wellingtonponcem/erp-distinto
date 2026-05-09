@@ -45,58 +45,44 @@ try {
     }
 } catch (Exception $e) {}
 
-// BUSCAR DADOS DO BANCO (PLANOS E SERVIÇOS)
-$servicosWedding = [];
-$planosWedding = [];
-$carregouBanco = false;
+// PLANOS E SERVIÇOS (HARDCODED)
+$servicosWedding = [
+    'cobertura_6h' => ['nome' => 'Cobertura Fotográfica 6h', 'valor' => 0],
+    'cobertura_8h' => ['nome' => 'Cobertura Cinematográfica 8h', 'valor' => 0],
+    'cobertura_full' => ['nome' => 'Cobertura Documental Completa', 'valor' => 0],
+    'album_20x20' => ['nome' => 'Álbum 20x20 - 40 fotos', 'valor' => 800],
+    'album_30x30' => ['nome' => 'Álbum 30x30 - 60 fotos', 'valor' => 1500],
+    'prewedding' => ['nome' => 'Ensaio Pré-Wedding', 'valor' => 1200],
+    'boudoir' => ['nome' => 'Boudoir da Noiva', 'valor' => 800],
+    'pencard' => ['nome' => 'Pencard Exclusivo', 'valor' => 250]
+];
 
-try {
-    $dbWed = Database::get();
-    $colunas = $dbWed->query("DESCRIBE servicos")->fetchAll(PDO::FETCH_COLUMN);
-    
-    if (in_array('categoria', $colunas) && in_array('tipo', $colunas)) {
-        $allWed = $dbWed->query("SELECT * FROM servicos WHERE ativo = 1 AND categoria = 'wedding' ORDER BY nome")->fetchAll();
-        if (!empty($allWed)) {
-            foreach ($allWed as $w) {
-                if ($w['tipo'] === 'plano') {
-                    $planosWedding[] = [
-                        'id' => $w['id'],
-                        'nome' => $w['nome'],
-                        'preco_venda' => (float)$w['preco_venda'],
-                        'descricao' => $w['descricao'],
-                        'prazo_minimo' => $w['prazo_minimo'],
-                        'itens_json' => $w['itens_json']
-                    ];
-                } else {
-                    $servicosWedding[$w['id']] = [
-                        'nome' => $w['nome'],
-                        'valor' => (float)$w['preco_venda']
-                    ];
-                }
-            }
-            if (!empty($planosWedding)) $carregouBanco = true;
-        }
-    }
-} catch (Exception $e) {}
-
-// FALLBACK: Se o banco estiver vazio
-if (!$carregouBanco) {
-    $servicosWedding = [
-        'cobertura_6h' => ['nome' => 'Cobertura Fotográfica 6h', 'valor' => 0],
-        'cobertura_8h' => ['nome' => 'Cobertura Cinematográfica 8h', 'valor' => 0],
-        'cobertura_full' => ['nome' => 'Cobertura Documental Completa', 'valor' => 0],
-        'album_20x20' => ['nome' => 'Álbum 20x20 - 40 fotos', 'valor' => 800],
-        'album_30x30' => ['nome' => 'Álbum 30x30 - 60 fotos', 'valor' => 1500],
-        'prewedding' => ['nome' => 'Ensaio Pré-Wedding', 'valor' => 1200],
-        'boudoir' => ['nome' => 'Boudoir da Noiva', 'valor' => 800],
-        'pencard' => ['nome' => 'Pencard Exclusivo', 'valor' => 250]
-    ];
-    $planosWedding = [
-        ['id' => 'essencial', 'nome' => 'Registro Essencial', 'preco_venda' => (float)($dados['valor_essencial'] ?? 2800), 'descricao' => 'Cobertura Fotográfica 6h', 'prazo_minimo' => 5, 'itens_json' => json_encode(['cobertura_6h' => 'incluso', 'pencard' => 'incluso', 'album_20x20' => 'opcional'])],
-        ['id' => 'cinematic', 'nome' => 'Experiência Cinematic', 'preco_venda' => (float)($dados['valor_cinematic'] ?? 4500), 'descricao' => 'Cobertura Cinematográfica 8h', 'prazo_minimo' => 6, 'itens_json' => json_encode(['cobertura_8h' => 'incluso', 'album_20x20' => 'incluso', 'prewedding' => 'opcional', 'boudoir' => 'opcional'])],
-        ['id' => 'heritage', 'nome' => 'Experiência Heritage', 'preco_venda' => (float)($dados['valor_heritage'] ?? 7900), 'descricao' => 'Cobertura Documental Completa', 'prazo_minimo' => 6, 'itens_json' => json_encode(['cobertura_full' => 'incluso', 'album_30x30' => 'incluso', 'prewedding' => 'incluso', 'boudoir' => 'incluso'])]
-    ];
-}
+$planosWedding = [
+    [
+        'id' => 'essencial',
+        'nome' => 'Registro Essencial',
+        'preco_venda' => (float)($dados['valor_essencial'] ?? 2800),
+        'descricao' => 'Cobertura Fotográfica 6h',
+        'prazo_minimo' => 5,
+        'itens_json' => json_encode(['cobertura_6h' => 'incluso', 'pencard' => 'incluso', 'album_20x20' => 'opcional'])
+    ],
+    [
+        'id' => 'cinematic',
+        'nome' => 'Experiência Cinematic',
+        'preco_venda' => (float)($dados['valor_cinematic'] ?? 4500),
+        'descricao' => 'Cobertura Cinematográfica 8h',
+        'prazo_minimo' => 6,
+        'itens_json' => json_encode(['cobertura_8h' => 'incluso', 'album_20x20' => 'incluso', 'prewedding' => 'opcional', 'boudoir' => 'opcional'])
+    ],
+    [
+        'id' => 'heritage',
+        'nome' => 'Experiência Heritage',
+        'preco_venda' => (float)($dados['valor_heritage'] ?? 7900),
+        'descricao' => 'Cobertura Documental Completa',
+        'prazo_minimo' => 6,
+        'itens_json' => json_encode(['cobertura_full' => 'incluso', 'album_30x30' => 'incluso', 'prewedding' => 'incluso', 'boudoir' => 'incluso'])
+    ]
+];
 
 // Itens dos Pacotes
 $itensHeritage = $dados['itens_heritage'] ?? "Cobertura Documental Completa: Presença ilimitada no evento.\nO Álbum Heritage: Álbum luxo panorâmico 25x30cm.\nRéplicas para a Família: 02 Mini Álbuns réplicas.\nProdução Cinematográfica 4K: Filme completo (8 a 12 min).\nShort Film & Teasers: Vídeos curtos para redes sociais.\nUso de Drone Profissional: Imagens aéreas cinematográficas.\nEcossistema Digital: Galeria online vitalícia.";
@@ -1715,7 +1701,7 @@ if (!function_exists('fmt')) {
     </div>
 
     <!-- PÁGINA 12: WEDDING PORTFOLIO CAPA -->
-    <section class="slide portfolio-capa-slide"
+    <section id="wedding-portfolio" class="slide portfolio-capa-slide"
         style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; overflow: hidden; position: relative; height: 100vh; width: 100%;">
 
         <!-- Topo: Textos -->
@@ -2162,6 +2148,14 @@ if (!function_exists('fmt')) {
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // Scroll automático para o portfólio
+        const portfolioSection = document.getElementById('wedding-portfolio');
+        if (portfolioSection) {
+            setTimeout(() => {
+                portfolioSection.scrollIntoView({ behavior: 'smooth' });
+            }, 500);
+        }
+
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
