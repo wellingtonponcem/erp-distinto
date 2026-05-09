@@ -55,11 +55,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 2. Lógica do Botão Flutuante (Exclusiva por Scroll)
     let timeout;
+    const weddingContainer = document.querySelector('.wedding-proposal');
+
     function showButton() {
         if (!btn) return;
         
+        const scrollSource = weddingContainer || wrapper;
         // Só mostra se houver algum movimento de scroll real
-        if (wrapper.scrollTop > 10) {
+        if (scrollSource.scrollTop > 10) {
             btn.classList.add('show');
             
             clearTimeout(timeout);
@@ -72,8 +75,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     if (btn) {
-        // Mostrar EXCLUSIVAMENTE ao rolar dentro do wrapper
+        // Mostrar EXCLUSIVAMENTE ao rolar dentro do wrapper ou container de casamento
         wrapper.addEventListener('scroll', showButton, { passive: true });
+        if (weddingContainer) {
+            weddingContainer.addEventListener('scroll', showButton, { passive: true });
+        }
     }
 });
 

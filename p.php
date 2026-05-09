@@ -139,9 +139,9 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
     </button>
 
     <?php if ($tipo === 'casamento'): ?>
-    <button onclick="window.openPlanModal()" id="btn-approve" class="btn-floating no-print">
-        <span>Quero este plano</span>
-        <i data-lucide="heart"></i>
+    <button onclick="window.openInteractiveModal()" id="btn-approve" class="btn-floating no-print">
+        <span>✨ Escolher Nosso Plano</span>
+        <i data-lucide="sparkles"></i>
     </button>
     <?php else: ?>
     <a href="https://wa.me/<?= preg_replace('/\D/', '', $configEmpresa['telefone'] ?? '') ?>?text=<?= rawurlencode('Olá! Gostaria de aprovar a proposta: ' . $proposta['titulo'] . ' (Ref: ' . $slug . ')') ?>"

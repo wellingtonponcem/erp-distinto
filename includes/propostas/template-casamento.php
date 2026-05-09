@@ -261,6 +261,9 @@ if (!function_exists('fmt')) {
         h2 {
             font-size: 2.5rem;
         }
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: scale(0.98); }
+        to { opacity: 1; transform: scale(1); }
     }
 </style>
 
@@ -781,8 +784,13 @@ if (!function_exists('fmt')) {
     $cItem1 = trim(explode("\n", trim($itensCinematic))[0] ?? 'Cobertura Cinematográfica 8h');
     $eItem1 = trim(explode("\n", trim($itensEssencial))[0] ?? 'Cobertura Fotográfica 6h');
     ?>
-    <section class="slide" id="slide-pacote"
-        style="padding: 0; background: #1a1a1a; overflow: hidden; position: relative; height: 100vh; width: 100%; display: flex; flex-direction: row; font-family: var(--wedding-montserrat);">
+    <div id="slide-pacote"
+        style="display: none; position: fixed; inset: 0; z-index: 10000; background: #1a1a1a; overflow: hidden; flex-direction: row; font-family: var(--wedding-montserrat); animation: modalFadeIn 0.3s ease;">
+
+        <!-- Botão Fechar -->
+        <button onclick="window.closeInteractiveModal()" style="position: absolute; top: 30px; right: 30px; z-index: 10001; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; transition: all 0.3s;">
+            <i data-lucide="x"></i>
+        </button>
 
         <style>
             #slide-pacote .plan-card { transition: border-color 0.2s, background 0.2s; }
@@ -964,7 +972,7 @@ if (!function_exists('fmt')) {
             }
         })();
         </script>
-    </section>
+    </div>
 
     <!-- PÁGINA 12: WEDDING PORTFOLIO CAPA -->
     <section class="slide"
@@ -1403,5 +1411,25 @@ if (!function_exists('fmt')) {
                 return false;
             }
         }, false);
+        
+        // Funções para o Modal Interativo
+        window.openInteractiveModal = function() {
+            const modal = document.getElementById('slide-pacote');
+            if (modal) {
+                modal.style.display = 'flex';
+                const container = document.querySelector('.wedding-proposal');
+                if (container) container.style.overflow = 'hidden';
+                if (window.lucide) lucide.createIcons();
+            }
+        };
+
+        window.closeInteractiveModal = function() {
+            const modal = document.getElementById('slide-pacote');
+            if (modal) {
+                modal.style.display = 'none';
+                const container = document.querySelector('.wedding-proposal');
+                if (container) container.style.overflowY = 'scroll';
+            }
+        };
     });
 </script>
