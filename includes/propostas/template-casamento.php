@@ -123,14 +123,22 @@ if (!function_exists('fmt')) {
         background: #111;
     }
 
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+
     .wedding-proposal {
         background: var(--wedding-bg);
         color: var(--wedding-dark);
         font-family: var(--wedding-sans);
-        scroll-snap-type: y mandatory;
-        height: 100vh;
+        scroll-snap-type: y proximity;
+        height: 100%;
         overflow-y: scroll;
         scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
     }
 
     .slide {
@@ -2148,12 +2156,10 @@ if (!function_exists('fmt')) {
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Scroll automático para o portfólio
+        // Scroll automático para o portfólio (imediato para não travar o usuário)
         const portfolioSection = document.getElementById('wedding-portfolio');
         if (portfolioSection) {
-            setTimeout(() => {
-                portfolioSection.scrollIntoView({ behavior: 'smooth' });
-            }, 500);
+            portfolioSection.scrollIntoView();
         }
 
         const observerOptions = {
