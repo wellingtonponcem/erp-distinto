@@ -122,6 +122,16 @@ $dadosJson = json_encode([
     'itens_essencial' => $d['itens_essencial'] ?? ($dadosAntigos['itens_essencial'] ?? ''),
     'valor_boudoir' => $d['valor_boudoir'] ?? ($dadosAntigos['valor_boudoir'] ?? ''),
     'valor_prewedding' => $d['valor_prewedding'] ?? ($dadosAntigos['valor_prewedding'] ?? ''),
+    // Flags de Visibilidade e Inclusão
+    'show_heritage' => isset($d['show_heritage']),
+    'show_cinematic' => isset($d['show_cinematic']),
+    'show_essencial' => isset($d['show_essencial']),
+    'include_boudoir' => isset($d['include_boudoir']),
+    'include_prewedding' => isset($d['include_prewedding']),
+    // Condições de Pagamento (Página 10)
+    'condicoes_reserva' => $d['condicoes_reserva'] ?? ($dadosAntigos['condicoes_reserva'] ?? ''),
+    'condicoes_heritage_cinematic' => $d['condicoes_heritage_cinematic'] ?? ($dadosAntigos['condicoes_heritage_cinematic'] ?? ''),
+    'condicoes_essencial' => $d['condicoes_essencial'] ?? ($dadosAntigos['condicoes_essencial'] ?? ''),
 ], JSON_UNESCAPED_UNICODE);
 
 // 4. Atualizar no Banco

@@ -458,6 +458,70 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
         .dark svg { stroke: currentColor !important; }
         .dark .btn-secondary svg { color: #ffffff !important; }
         .dark .text-zinc-500 svg { color: #a1a1aa !important; }
+        /* Classes Premium Distinto - Refinamento de UI */
+        .label-premium {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(0, 0, 0, 0.7);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .dark .label-premium { color: rgba(255, 255, 255, 0.85); }
+
+        .input-readonly {
+            background: rgba(0, 0, 0, 0.02) !important;
+            border: 1px dashed rgba(0, 0, 0, 0.1) !important;
+            cursor: not-allowed;
+            color: #666 !important;
+        }
+        .dark .input-readonly {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+            color: #999 !important;
+        }
+
+        .card-plan {
+            border: 2px solid transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-plan-active {
+            border-color: #d4af37 !important; /* Dourado Premium */
+            background: rgba(212, 175, 55, 0.03) !important;
+            transform: scale(1.01);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1) !important;
+        }
+        .dark .card-plan-active {
+            background: rgba(212, 175, 55, 0.05) !important;
+        }
+
+        .section-header-premium {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #111;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .dark .section-header-premium { color: #fff; }
+
+        .contract-block {
+            padding: 16px;
+            background: #fcfcfc;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #555;
+        }
+        .dark .contract-block {
+            background: #151515;
+            border-color: #222;
+            color: #aaa;
+        }
     </style>
 </head>
 <body>

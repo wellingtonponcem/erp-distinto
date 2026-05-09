@@ -84,6 +84,14 @@ $planosWedding = [
     ]
 ];
 
+// Filtrar planos conforme visibilidade (Retrocompatibilidade inclusa)
+$planosWedding = array_filter($planosWedding, function($p) use ($dados) {
+    if ($p['id'] === 'heritage') return ($dados['show_heritage'] ?? true) !== false;
+    if ($p['id'] === 'cinematic') return ($dados['show_cinematic'] ?? true) !== false;
+    if ($p['id'] === 'essencial') return ($dados['show_essencial'] ?? true) !== false;
+    return true;
+});
+
 // Itens dos Pacotes
 $itensHeritage = $dados['itens_heritage'] ?? "Cobertura Documental Completa: Presença ilimitada no evento.\nO Álbum Heritage: Álbum luxo panorâmico 25x30cm.\nRéplicas para a Família: 02 Mini Álbuns réplicas.\nProdução Cinematográfica 4K: Filme completo (8 a 12 min).\nShort Film & Teasers: Vídeos curtos para redes sociais.\nUso de Drone Profissional: Imagens aéreas cinematográficas.\nEcossistema Digital: Galeria online vitalícia.";
 $itensCinematic = $dados['itens_cinematic'] ?? "Cobertura Cinematográfica 8h: Foco narrativo e estético.\nSessão Engagement (Pré-Wedding): Ensaio externo com fotos e vídeo.\nShort Film: Filme de 4 a 6 minutos.\nSocial Content Kit: Material otimizado para Instagram.\nMaking Of Completo: Registro dos preparativos do casal.\nBônus: Pendrive de luxo com arquivos em alta resolução.";
@@ -1054,10 +1062,10 @@ if (!function_exists('fmt')) {
             style="opacity: 1; z-index: 1;">
     </section>
 
+    <?php if (($dados['show_heritage'] ?? true) !== false): ?>
     <!-- PÁGINA 08: EXPERIÊNCIA HERITAGE -->
     <section class="slide package-slide"
         style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
-
         <!-- Lado Esquerdo: Imagem -->
         <div class="package-img-col" style="flex: 1; height: 100%;">
             <picture>
@@ -1067,7 +1075,6 @@ if (!function_exists('fmt')) {
                     style="width: 100%; height: 100%; object-fit: cover;">
             </picture>
         </div>
-
         <!-- Lado Direito: Detalhes -->
         <div class="package-text-col"
             style="flex: 1.2; padding: 0 6vw; display: flex; flex-direction: column; justify-content: center; position: relative; height: 100%; background: #f9f9f9;">
@@ -1080,17 +1087,14 @@ if (!function_exists('fmt')) {
                 style="position: absolute; top: 0; left: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
             <div class="package-decor"
                 style="position: absolute; bottom: 0; left: 0; width: 140px; height: 80px; background: #dcdcdc;"></div>
-
             <h2 class="package-titulo"
                 style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; line-height: 1.1; margin-bottom: 30px;">
                 EXPERIÊNCIA<br>HERITAGE
             </h2>
-
             <div style="font-family: var(--wedding-montserrat); font-size: 0.95rem; line-height: 1.6; color: #444;">
                 <p style="margin-bottom: 25px; font-weight: 400;">
                     Para quem quer o registro mais completo possível. A gente não deixa passar nada, cuidando de cada detalhe para que a história da família de vocês comece com o registro que ela merece.
                 </p>
-
                 <ul style="list-style: none; padding: 0; margin-bottom: 30px;">
                     <?php
                     $linhas = explode("\n", trim($itensHeritage));
@@ -1104,7 +1108,6 @@ if (!function_exists('fmt')) {
                         </li>
                     <?php endforeach; ?>
                 </ul>
-
                 <div style="margin-top: auto; padding-top: 20px; position: relative; z-index: 10;">
                     <p style="font-style: italic; color: #666; font-size: 1.1rem; margin: 0;">
                         Investimento: <?= $dados['valor_heritage'] ? fmt($dados['valor_heritage']) : 'R$ 7.900,00' ?>
@@ -1115,10 +1118,11 @@ if (!function_exists('fmt')) {
                         <?php endif; ?>
                 </div>
             </div>
-
         </div>
     </section>
+    <?php endif; ?>
 
+    <?php if (($dados['show_cinematic'] ?? true) !== false): ?>
     <!-- PÁGINA 09: EXPERIÊNCIA CINEMATIC -->
     <section class="slide package-slide"
         style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
@@ -1192,18 +1196,18 @@ if (!function_exists('fmt')) {
             </div>
         </div>
     </section>
+    <?php endif; ?>
 
+    <?php if (($dados['show_essencial'] ?? true) !== false): ?>
     <!-- PÁGINA 10: REGISTRO ESSENCIAL -->
     <section class="slide package-slide"
         style="padding: 0; background: #f4f4f4; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
-
         <!-- Lado Esquerdo: Imagem -->
         <div class="package-img-col"
             style="flex: 1; height: 100%; display: flex; align-items: center; justify-content: center;">
             <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-09.png') ?>"
                 style="width: 100%; height: 100%; object-fit: cover;">
         </div>
-
         <!-- Lado Direito: Detalhes -->
         <div class="package-text-col"
             style="flex: 1.2; padding: 0 6vw; display: flex; flex-direction: column; justify-content: center; position: relative; height: 100%;">
@@ -1216,18 +1220,15 @@ if (!function_exists('fmt')) {
                 style="position: absolute; top: 0; left: 0; width: 60px; height: 80px; background: #dcdcdc;"></div>
             <div class="package-decor"
                 style="position: absolute; bottom: 0; left: 0; width: 140px; height: 80px; background: #dcdcdc;"></div>
-
             <h2 class="package-titulo"
                 style="font-family: var(--wedding-montserrat); font-size: 3.5rem; font-weight: 300; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; line-height: 1.1; margin-bottom: 25px;">
                 REGISTRO<br>ESSENCIAL
             </h2>
-
             <div style="font-family: var(--wedding-montserrat); font-size: 0.95rem; line-height: 1.5; color: #444;">
                 <p style="margin-bottom: 20px; font-weight: 400;">
                     Um registro focado estritamente no protocolo, ideal para cerimônias curtas e objetivas que exigem um
                     olhar profissional sobre os momentos principais.
                 </p>
-
                 <ul style="list-style: none; padding: 0; margin-bottom: 20px;">
                     <?php
                     $linhas = explode("\n", trim($itensEssencial));
@@ -1241,33 +1242,47 @@ if (!function_exists('fmt')) {
                         </li>
                     <?php endforeach; ?>
                 </ul>
-
                 <p style="font-style: italic; color: #333; font-size: 1.1rem; margin-bottom: 25px;">
                     Investimento: <?= $dados['valor_essencial'] ? fmt($dados['valor_essencial']) : 'R$ 2.800,00' ?>
                 </p>
-
                 <div style="margin-top: 10px; border-top: 1px solid #dcdcdc; padding-top: 20px;">
                     <p
                         style="font-weight: 700; color: #1a1a1a; margin-bottom: 15px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.05em;">
                         Upgrades que fazem toda diferença:
                     </p>
                     <ul style="list-style: none; padding: 0;">
+                        <?php if (($dados['include_boudoir'] ?? false) !== false): ?>
                         <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
                             <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
                             <strong>Boudoir da Noiva (no dia do casamento):</strong> Um ensaio de 1 h realizado após a
-                            maquiagem para registrar a beleza da noiva por R$ 500,00
+                            maquiagem para registrar a beleza da noiva por <?= fmt($dados['valor_boudoir'] ?: 500) ?>
                         </li>
+                        <?php endif; ?>
+                        <?php if (($dados['include_prewedding'] ?? false) !== false): ?>
                         <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
                             <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
                             <strong>Ensaio Pré-Wedding:</strong> Caso desejem apenas o ensaio externo antes do
-                            casamento, ele pode ser contratado separadamente por R$ 1.100,00 (incluindo pencard e 30
+                            casamento, ele pode ser contratado separadamente por <?= fmt($dados['valor_prewedding'] ?: 1100) ?> (incluindo pencard e 30
                             fotos reveladas)
                         </li>
+                        <?php endif; ?>
+                        <?php if (!isset($dados['include_boudoir']) && !isset($dados['include_prewedding'])): ?>
+                        <!-- Fallback para propostas antigas (mostra tudo) -->
+                        <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
+                            <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
+                            <strong>Boudoir da Noiva:</strong> R$ 500,00
+                        </li>
+                        <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
+                            <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
+                            <strong>Ensaio Pré-Wedding:</strong> R$ 1.100,00
+                        </li>
+                        <?php endif; ?>
                     </ul>
                 </div>
             </div>
         </div>
     </section>
+    <?php endif; ?>
 
     <!-- PÁGINA 11: ESCOLHA SEU PACOTE — INTERATIVO -->
     <?php
@@ -1689,6 +1704,12 @@ if (!function_exists('fmt')) {
                     const url = `https://wa.me/5527988586935?text=${encodedMsg}`;
                     window.open(url, '_blank');
                 };
+
+                // Selecionar o primeiro plano disponível por padrão
+                const availablePlans = Object.keys(planPresets);
+                if (availablePlans.length > 0) {
+                    window.selectPlan(availablePlans[0]);
+                }
             })();
         </script>
     </div>

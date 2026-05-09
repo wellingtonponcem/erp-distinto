@@ -237,112 +237,154 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
 
                 <!-- CONFIGURAÇÕES DE CASAMENTO -->
                 <section class="card p-6" x-show="tipoProposta === 'casamento'">
-                    <h3 class="text-sm font-bold text-zinc-900 mb-4">Dados do Casamento</h3>
+                    <h2 class="section-header-premium">
+                        <i data-lucide="heart" class="w-5 h-5 text-rose-500"></i>
+                        Dados do Casamento
+                    </h2>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                         <div class="form-group">
-                            <label class="label">Nome do Noivo</label>
+                            <label class="label-premium">Nome do Noivo</label>
                             <input type="text" name="nome_noivo" class="input" x-model="nomeNoivo" placeholder="Ex: Rodolfo Elias" :required="tipoProposta === 'casamento'">
                         </div>
                         <div class="form-group">
-                            <label class="label">Nome da Noiva</label>
+                            <label class="label-premium">Nome da Noiva</label>
                             <input type="text" name="nome_noiva" class="input" x-model="nomeNoiva" placeholder="Ex: Rhuana Fonseca" :required="tipoProposta === 'casamento'">
                         </div>
                         <div class="form-group">
-                            <label class="label">Data do Casamento</label>
+                            <label class="label-premium">Data do Casamento</label>
                             <input type="date" name="data_casamento" class="input" x-model="dataCasamento">
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 pb-8 border-b border-zinc-100/50">
                         <div class="form-group">
-                            <label class="label">Data Limite para Desconto</label>
+                            <label class="label-premium">Data Limite para Desconto</label>
                             <input type="text" name="data_limite_desconto" class="input" x-model="dataLimiteDesconto" placeholder="Ex: 05/04/2026">
                         </div>
                         <div class="form-group">
-                            <label class="label">Condição Especial</label>
+                            <label class="label-premium">Condição Especial</label>
                             <input type="text" name="condicao_especial" class="input" x-model="condicaoEspecial" placeholder="Ex: Condição especial p/ amigos lagoinha">
                         </div>
                     </div>
                     
                     <div class="space-y-6">
-                        <div class="p-4 border border-zinc-100 rounded-2xl bg-zinc-50/50">
-                            <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-amber-500"></span> Plano Heritage (Completo)
-                            </h4>
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <!-- PLANO HERITAGE -->
+                        <div class="card-plan p-5 rounded-2xl bg-zinc-50/30 border-zinc-100" :class="showHeritage ? 'card-plan-active' : 'opacity-60'">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]"></span> 
+                                    Experiência Heritage
+                                </h4>
+                                <label class="flex items-center gap-2 cursor-pointer bg-white/50 px-3 py-1 rounded-full border border-zinc-200">
+                                    <input type="checkbox" name="show_heritage" x-model="showHeritage" class="w-4 h-4 rounded border-zinc-300 text-amber-500 focus:ring-amber-500">
+                                    <span class="text-[10px] font-black uppercase text-zinc-600">Exibir na Proposta</span>
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4" x-show="showHeritage" x-collapse>
                                 <div class="md:col-span-1">
-                                    <label class="label">Valor (R$)</label>
-                                    <input type="text" name="valor_heritage" class="input" x-model="valorHeritage" placeholder="7.900,00">
+                                    <label class="label-premium">Valor (R$)</label>
+                                    <input type="text" name="valor_heritage" class="input font-bold text-zinc-900" x-model="valorHeritage" placeholder="7.900,00">
                                 </div>
                                 <div class="md:col-span-3">
-                                    <label class="label">Itens / Descrição</label>
-                                    <textarea name="itens_heritage" class="input text-xs" x-model="itensHeritage" rows="2"></textarea>
+                                    <label class="label-premium">Itens inclusos</label>
+                                    <textarea name="itens_heritage" class="input text-xs leading-relaxed" x-model="itensHeritage" rows="2"></textarea>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="p-4 border border-zinc-100 rounded-2xl bg-zinc-50/50">
-                            <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-blue-500"></span> Plano Cinematic (Intermediário)
-                            </h4>
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <!-- PLANO CINEMATIC -->
+                        <div class="card-plan p-5 rounded-2xl bg-zinc-50/30 border-zinc-100" :class="showCinematic ? 'card-plan-active' : 'opacity-60'">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span> 
+                                    Experiência Cinematic
+                                </h4>
+                                <label class="flex items-center gap-2 cursor-pointer bg-white/50 px-3 py-1 rounded-full border border-zinc-200">
+                                    <input type="checkbox" name="show_cinematic" x-model="showCinematic" class="w-4 h-4 rounded border-zinc-300 text-blue-500 focus:ring-blue-500">
+                                    <span class="text-[10px] font-black uppercase text-zinc-600">Exibir na Proposta</span>
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4" x-show="showCinematic" x-collapse>
                                 <div class="md:col-span-1">
-                                    <label class="label">Valor (R$)</label>
-                                    <input type="text" name="valor_cinematic" class="input" x-model="valorCinematic" placeholder="5.900,00">
+                                    <label class="label-premium">Valor (R$)</label>
+                                    <input type="text" name="valor_cinematic" class="input font-bold text-zinc-900" x-model="valorCinematic" placeholder="5.900,00">
                                 </div>
                                 <div class="md:col-span-3">
-                                    <label class="label">Itens / Descrição</label>
-                                    <textarea name="itens_cinematic" class="input text-xs" x-model="itensCinematic" rows="2"></textarea>
+                                    <label class="label-premium">Itens inclusos</label>
+                                    <textarea name="itens_cinematic" class="input text-xs leading-relaxed" x-model="itensCinematic" rows="2"></textarea>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="p-4 border border-zinc-100 rounded-2xl bg-zinc-50/50">
-                            <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-zinc-500"></span> Plano Essencial
-                            </h4>
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <!-- PLANO ESSENCIAL -->
+                        <div class="card-plan p-5 rounded-2xl bg-zinc-50/30 border-zinc-100" :class="showEssencial ? 'card-plan-active' : 'opacity-60'">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-widest flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-zinc-400 shadow-[0_0_8px_rgba(156,163,175,0.5)]"></span> 
+                                    Registro Essencial
+                                </h4>
+                                <label class="flex items-center gap-2 cursor-pointer bg-white/50 px-3 py-1 rounded-full border border-zinc-200">
+                                    <input type="checkbox" name="show_essencial" x-model="showEssencial" class="w-4 h-4 rounded border-zinc-300 text-zinc-500 focus:ring-zinc-500">
+                                    <span class="text-[10px] font-black uppercase text-zinc-600">Exibir na Proposta</span>
+                                </label>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4" x-show="showEssencial" x-collapse>
                                 <div class="md:col-span-1">
-                                    <label class="label">Valor (R$)</label>
-                                    <input type="text" name="valor_essencial" class="input" x-model="valorEssencial" placeholder="3.900,00">
+                                    <label class="label-premium">Valor (R$)</label>
+                                    <input type="text" name="valor_essencial" class="input font-bold text-zinc-900" x-model="valorEssencial" placeholder="3.900,00">
                                 </div>
                                 <div class="md:col-span-3">
-                                    <label class="label">Itens / Descrição</label>
-                                    <textarea name="itens_essencial" class="input text-xs" x-model="itensEssencial" rows="2"></textarea>
+                                    <label class="label-premium">Itens inclusos</label>
+                                    <textarea name="itens_essencial" class="input text-xs leading-relaxed" x-model="itensEssencial" rows="2"></textarea>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="border-t border-zinc-100 pt-6">
-                            <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-4">Condições de Pagamento (Página 10)</h4>
-                            <div class="space-y-4">
+                        <div class="border-t border-zinc-100/50 pt-8 mt-8">
+                            <h4 class="text-[11px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-6">Condições de Pagamento e Reserva</h4>
+                            <div class="space-y-6">
                                 <div class="form-group">
-                                    <label class="label">Texto Geral de Reserva</label>
-                                    <textarea name="condicoes_reserva" class="input text-xs" x-model="condicoesReserva" rows="3"></textarea>
+                                    <label class="label-premium">Texto Geral de Reserva (Contrato)</label>
+                                    <div class="contract-block">
+                                        <textarea name="condicoes_reserva" class="w-full bg-transparent border-0 focus:ring-0 p-0 text-xs leading-relaxed" x-model="condicoesReserva" rows="3"></textarea>
+                                    </div>
+                                    <p class="text-[10px] text-zinc-400 mt-2 italic">Este texto aparece no final da proposta como cláusula legal.</p>
                                 </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div class="form-group">
-                                        <label class="label">Condições Heritage & Cinematic</label>
-                                        <textarea name="condicoes_heritage_cinematic" class="input text-xs" x-model="condicoesHeritageCinematic" rows="2"></textarea>
+                                        <label class="label-premium">Heritage & Cinematic (Parcelamento)</label>
+                                        <input type="text" name="condicoes_heritage_cinematic" class="input text-xs" x-model="condicoesHeritageCinematic">
                                     </div>
                                     <div class="form-group">
-                                        <label class="label">Condições Registro Essencial</label>
-                                        <textarea name="condicoes_essencial" class="input text-xs" x-model="condicoesEssencial" rows="2"></textarea>
+                                        <label class="label-premium">Registro Essencial (Parcelamento)</label>
+                                        <input type="text" name="condicoes_essencial" class="input text-xs" x-model="condicoesEssencial">
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="p-4 border border-zinc-100 rounded-2xl bg-zinc-50/50">
-                                <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-3">Upgrade Boudoir</h4>
-                                <label class="label">Valor (R$)</label>
-                                <input type="text" name="valor_boudoir" class="input" x-model="valorBoudoir" placeholder="800,00">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                            <div class="card-plan p-5 rounded-2xl bg-zinc-50/30 border-zinc-100" :class="includeBoudoir ? 'card-plan-active' : 'opacity-60'">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="text-[10px] font-black text-zinc-900 uppercase tracking-widest">Upgrade Boudoir</h4>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" name="include_boudoir" x-model="includeBoudoir" class="sr-only peer">
+                                        <div class="w-9 h-5 bg-zinc-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
+                                    </label>
+                                </div>
+                                <label class="label-premium">Valor Adicional</label>
+                                <input type="text" name="valor_boudoir" class="input font-bold" x-model="valorBoudoir" placeholder="800,00" :disabled="!includeBoudoir">
                             </div>
-                            <div class="p-4 border border-zinc-100 rounded-2xl bg-zinc-50/50">
-                                <h4 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-3">Upgrade Pré-Wedding</h4>
-                                <label class="label">Valor (R$)</label>
-                                <input type="text" name="valor_prewedding" class="input" x-model="valorPrewedding" placeholder="1.200,00">
+                            <div class="card-plan p-5 rounded-2xl bg-zinc-50/30 border-zinc-100" :class="includePrewedding ? 'card-plan-active' : 'opacity-60'">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="text-[10px] font-black text-zinc-900 uppercase tracking-widest">Upgrade Pré-Wedding</h4>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" name="include_prewedding" x-model="includePrewedding" class="sr-only peer">
+                                        <div class="w-9 h-5 bg-zinc-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
+                                    </label>
+                                </div>
+                                <label class="label-premium">Valor Adicional</label>
+                                <input type="text" name="valor_prewedding" class="input font-bold" x-model="valorPrewedding" placeholder="1.200,00" :disabled="!includePrewedding">
                             </div>
                         </div>
                     </div>
@@ -608,6 +650,15 @@ document.addEventListener('alpine:init', () => {
         dataCasamento: '',
         dataLimiteDesconto: '',
         condicaoEspecial: '',
+        // Visibilidade de Pacotes (Casamento)
+        showHeritage: true,
+        showCinematic: true,
+        showEssencial: true,
+        
+        // Upgrades Selecionados
+        includeBoudoir: false,
+        includePrewedding: false,
+
         valorHeritage: '',
         itensHeritage: 'Cobertura Documental, Álbum Heritage, Réplicas, Filme 4K, Drone, Ecossistema Digital',
         valorCinematic: '',
