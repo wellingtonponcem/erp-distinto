@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $vals[] = trim($_POST['groq_api_key']);
     }
     
-    $sets = implode(', ', array_map(fn($c) => "`$c` = ?", $campos));
+    $sets = implode(', ', array_map(fn($c) => "\"$c\" = ?", $campos));
     $vals[] = 'principal';
     $stmt = $db->prepare("UPDATE configuracao_empresa SET $sets WHERE id = ?");
     $stmt->execute($vals);
