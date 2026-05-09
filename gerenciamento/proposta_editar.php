@@ -272,20 +272,32 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                                 <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4">Adicionais Disponíveis</p>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <?php foreach ($weddingUpgrades as $upg): 
-                                        $upgSlug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $upg['nome'])));
-                                        $upgFlag = strpos($upgSlug, 'boudoir') !== false ? 'includeBoudoir' : (strpos($upgSlug, 'pre-wedding') !== false ? 'includePrewedding' : '');
-                                        if (!$upgFlag) continue;
+                                        $upgId = $upg['id'];
+                                        $upgNomeLower = strtolower($upg['nome']);
+                                        $suffix = (strpos($slug, 'heritage') !== false ? 'Heritage' : (strpos($slug, 'cinematic') !== false ? 'Cinematic' : 'Essencial'));
+                                        $pkgId = strtolower($suffix);
+
+                                        // Mapeamento para flags fixas (Retrocompatibilidade)
+                                        $isBoudoir = strpos($upgNomeLower, 'boudoir') !== false;
+                                        $isPrewedding = strpos($upgNomeLower, 'pre-wedding') !== false || strpos($upgNomeLower, 'prewedding') !== false || strpos($upgNomeLower, 'wedding') !== false;
+                                        
+                                        if ($isBoudoir) {
+                                            $upgFlag = 'includeBoudoir' . $suffix;
+                                            $upgName = 'include_boudoir_' . $pkgId;
+                                        } elseif ($isPrewedding) {
+                                            $upgFlag = 'includePrewedding' . $suffix;
+                                            $upgName = 'include_prewedding_' . $pkgId;
+                                        } else {
+                                            // Upgrade Dinâmico
+                                            $upgFlag = "upgrades.{$pkgId}['{$upgId}']";
+                                            $upgName = "upgrades[{$pkgId}][{$upgId}]";
+                                        }
                                     ?>
                                     <label class="flex items-center justify-between p-4 rounded-2xl upgrade-card cursor-pointer">
                                         <div class="flex flex-col">
                                             <span class="text-[11px] font-bold text-zinc-100"><?= $upg['nome'] ?></span>
                                             <span class="text-[9px] text-zinc-500">Incluir neste pacote</span>
                                         </div>
-                                        <?php 
-                                            $suffix = (strpos($slug, 'heritage') !== false ? 'Heritage' : (strpos($slug, 'cinematic') !== false ? 'Cinematic' : 'Essencial'));
-                                            $upgFlag = (strpos($upgSlug, 'boudoir') !== false ? 'includeBoudoir' : 'includePrewedding') . $suffix;
-                                            $upgName = (strpos($upgSlug, 'boudoir') !== false ? 'include_boudoir_' : 'include_prewedding_') . strtolower($suffix);
-                                        ?>
                                         <div class="switch">
                                             <input type="checkbox" name="<?= $upgName ?>" x-model="<?= $upgFlag ?>">
                                             <span class="slider"></span>
@@ -724,6 +736,16 @@ document.addEventListener('alpine:init', () => {
             
             this.includeBoudoirEssencial = (dados.include_boudoir_essencial !== undefined) ? !!dados.include_boudoir_essencial : !!dados.include_boudoir;
             this.includePreweddingEssencial = (dados.include_prewedding_essencial !== undefined) ? !!dados.include_prewedding_essencial : !!dados.include_prewedding;
+
+            // Objeto de Upgrades Dinâmicos
+            this.upgrades = dados.upgrades || {
+                heritage: {},
+                cinematic: {},
+                essencial: {}
+            };
+
+            // Retrocompatibilidade global
+sencial !== undefined) ? !!dados.include_prewedding_essencial : !!dados.include_prewedding;
 
             // Retrocompatibilidade global
             this.includeBoudoir = !!dados.include_boudoir;

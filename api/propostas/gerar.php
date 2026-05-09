@@ -181,6 +181,7 @@ $dadosJson = json_encode([
     'condicoes_reserva' => $d['condicoes_reserva'] ?? '',
     'condicoes_heritage_cinematic' => $d['condicoes_heritage_cinematic'] ?? '',
     'condicoes_essencial' => $d['condicoes_essencial'] ?? '',
+    'upgrades' => $d['upgrades'] ?? ['heritage' => [], 'cinematic' => [], 'essencial' => []],
 ], JSON_UNESCAPED_UNICODE);
 
 $stmt = $db->prepare("INSERT INTO propostas (id, cliente_nome, tipo, slug, titulo, subtitulo, validade, dados_json, valor_total, status) 

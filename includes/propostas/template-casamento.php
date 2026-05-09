@@ -75,7 +75,8 @@ try {
             'prazo_minimo' => $pkg['prazo_minimo'] ?? 6,
             'itens_json' => $pkg['beneficios_json'],
             'show_boudoir' => ($dados["include_boudoir_{$id}"] ?? $dados['include_boudoir'] ?? false) !== false,
-            'show_prewedding' => ($dados["include_prewedding_{$id}"] ?? $dados['include_prewedding'] ?? false) !== false
+            'show_prewedding' => ($dados["include_prewedding_{$id}"] ?? $dados['include_prewedding'] ?? false) !== false,
+            'extra_upgrades' => $dados['upgrades'][$id] ?? []
         ];
     }
 } catch (Exception $e) {
@@ -1609,7 +1610,8 @@ if (!function_exists('fmt')) {
                     showBoudoir: <?= $p['show_boudoir'] ? 'true' : 'false' ?>,
                     showPrewedding: <?= $p['show_prewedding'] ? 'true' : 'false' ?>,
                     valorBoudoir: <?= (float)($dados['valor_boudoir'] ?: 500) ?>,
-                    valorPrewedding: <?= (float)($dados['valor_prewedding'] ?: 1100) ?>
+                    valorPrewedding: <?= (float)($dados['valor_prewedding'] ?: 1100) ?>,
+                    extraUpgrades: <?= json_encode($p['extra_upgrades']) ?>
                 };
                 <?php endforeach; ?>
 
@@ -1656,7 +1658,19 @@ if (!function_exists('fmt')) {
                         renderRow(container, 'prewedding_static', 'Ensaio Pré-Wedding', plan.valorPrewedding, true);
                     }
 
-                    // 2. Outros Serviços Dinâmicos do Plano
+                    // 2. Upgrades Dinâmicos selecionados no Admin
+                    if (plan.extraUpgrades) {
+                        Object.entries(plan.extraUpgrades).forEach(([upgId, active]) => {
+                            if (active) {
+                                const s = allServices[upgId];
+                                if (s) {
+                                    renderRow(container, upgId, s.nome, s.valor, true);
+                                }
+                            }
+                        });
+                    }
+
+                    // 3. Outros Serviços Dinâmicos do Plano (do banco)
                     Object.entries(plan.servicos).forEach(([sId, status]) => {
                         const s = allServices[sId];
                         if (!s) return;
