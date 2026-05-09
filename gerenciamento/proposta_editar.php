@@ -250,7 +250,8 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                                 <label class="flex items-center gap-3 cursor-pointer bg-white/5 px-4 py-2 rounded-full border border-white/10 hover:border-white/20 transition-all">
                                     <span class="text-[10px] font-black uppercase text-zinc-400 tracking-wider">Exibir na Proposta</span>
                                     <div class="switch">
-                                        <input type="checkbox" name="show_<?= strtolower($flag) ?>" x-model="<?= $flag ?>">
+                                        <?php $cleanName = str_replace('show', '', strtolower($flag)); ?>
+                                        <input type="checkbox" name="show_<?= $cleanName ?>" x-model="<?= $flag ?>">
                                         <span class="slider"></span>
                                     </div>
                                 </label>
@@ -280,8 +281,13 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                                             <span class="text-[11px] font-bold text-zinc-100"><?= $upg['nome'] ?></span>
                                             <span class="text-[9px] text-zinc-500">Incluir neste pacote</span>
                                         </div>
+                                        <?php 
+                                            $suffix = (strpos($slug, 'heritage') !== false ? 'Heritage' : (strpos($slug, 'cinematic') !== false ? 'Cinematic' : 'Essencial'));
+                                            $upgFlag = (strpos($upgSlug, 'boudoir') !== false ? 'includeBoudoir' : 'includePrewedding') . $suffix;
+                                            $upgName = (strpos($upgSlug, 'boudoir') !== false ? 'include_boudoir_' : 'include_prewedding_') . strtolower($suffix);
+                                        ?>
                                         <div class="switch">
-                                            <input type="checkbox" x-model="<?= $upgFlag ?>">
+                                            <input type="checkbox" name="<?= $upgName ?>" x-model="<?= $upgFlag ?>">
                                             <span class="slider"></span>
                                         </div>
                                     </label>
@@ -708,6 +714,18 @@ document.addEventListener('alpine:init', () => {
             this.showHeritage = (dados.show_heritage !== undefined) ? !!dados.show_heritage : true;
             this.showCinematic = (dados.show_cinematic !== undefined) ? !!dados.show_cinematic : true;
             this.showEssencial = (dados.show_essencial !== undefined) ? !!dados.show_essencial : true;
+            
+            // Flags Específicas por Pacote
+            this.includeBoudoirHeritage = (dados.include_boudoir_heritage !== undefined) ? !!dados.include_boudoir_heritage : !!dados.include_boudoir;
+            this.includePreweddingHeritage = (dados.include_prewedding_heritage !== undefined) ? !!dados.include_prewedding_heritage : !!dados.include_prewedding;
+            
+            this.includeBoudoirCinematic = (dados.include_boudoir_cinematic !== undefined) ? !!dados.include_boudoir_cinematic : !!dados.include_boudoir;
+            this.includePreweddingCinematic = (dados.include_prewedding_cinematic !== undefined) ? !!dados.include_prewedding_cinematic : !!dados.include_prewedding;
+            
+            this.includeBoudoirEssencial = (dados.include_boudoir_essencial !== undefined) ? !!dados.include_boudoir_essencial : !!dados.include_boudoir;
+            this.includePreweddingEssencial = (dados.include_prewedding_essencial !== undefined) ? !!dados.include_prewedding_essencial : !!dados.include_prewedding;
+
+            // Retrocompatibilidade global
             this.includeBoudoir = !!dados.include_boudoir;
             this.includePrewedding = !!dados.include_prewedding;
 

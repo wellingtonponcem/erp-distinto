@@ -1098,14 +1098,24 @@ if (!function_exists('fmt')) {
                         </li>
                     <?php endforeach; ?>
                 </ul>
-                <div style="margin-top: auto; padding-top: 20px; position: relative; z-index: 10;">
-                    <p style="font-style: italic; color: #666; font-size: 1.1rem; margin: 0;">
-                        Investimento: <?= $dados['valor_heritage'] ? fmt($dados['valor_heritage']) : 'R$ 7.900,00' ?>
-                        <?php if (!empty($dados['condicao_especial'])): ?>
-                            <span style="font-size: 0.9rem;">(<?= $dados['condicao_especial'] ?>)</span>
-                        <?php else: ?>
-                            <span style="font-size: 0.9rem;">(Condição especial p/ amigos lagoinha)</span>
+                <div style="margin-top: 20px; border-top: 1px solid #dcdcdc; padding-top: 20px;">
+                    <p style="font-weight: 700; color: #1a1a1a; margin-bottom: 15px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.05em;">
+                        Upgrades que fazem toda diferença:
+                    </p>
+                    <ul style="list-style: none; padding: 0;">
+                        <?php if (($dados['include_boudoir_heritage'] ?? $dados['include_boudoir'] ?? false) !== false): ?>
+                        <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
+                            <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
+                            <strong>Boudoir da Noiva:</strong> <?= fmt($dados['valor_boudoir'] ?: 500) ?>
+                        </li>
                         <?php endif; ?>
+                        <?php if (($dados['include_prewedding_heritage'] ?? $dados['include_prewedding'] ?? false) !== false): ?>
+                        <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
+                            <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
+                            <strong>Ensaio Pré-Wedding:</strong> <?= fmt($dados['valor_prewedding'] ?: 1100) ?>
+                        </li>
+                        <?php endif; ?>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -1154,14 +1164,33 @@ if (!function_exists('fmt')) {
                         <?php if (!empty($dados['condicao_especial_cinematic'])): ?>
                             <span style="font-size: 0.9rem;">(<?= $dados['condicao_especial_cinematic'] ?>)</span>
                         <?php else: ?>
-                            <span style="font-size: 0.9rem;">(10% de desconto na entrada para contratos até
-                                05/04/2026)</span>
+                            <span style="font-size: 0.9rem;">(10% de desconto na entrada para contratos até 05/04/2026)</span>
                         <?php endif; ?>
                     </p>
+                </div>
 
-                    <p style="font-weight: 700; color: #1a1a1a; font-size: 0.9rem; margin: 0;">
-                        • Upgrade Família: Adicione o Álbum Master por apenas R$ 950,00.
+                <div style="margin-top: 20px; border-top: 1px solid #dcdcdc; padding-top: 20px;">
+                    <p style="font-weight: 700; color: #1a1a1a; margin-bottom: 15px; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.05em;">
+                        Upgrades que fazem toda diferença:
                     </p>
+                    <ul style="list-style: none; padding: 0;">
+                        <?php if (($dados['include_boudoir_cinematic'] ?? $dados['include_boudoir'] ?? false) !== false): ?>
+                        <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
+                            <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
+                            <strong>Boudoir da Noiva:</strong> <?= fmt($dados['valor_boudoir'] ?: 500) ?>
+                        </li>
+                        <?php endif; ?>
+                        <?php if (($dados['include_prewedding_cinematic'] ?? $dados['include_prewedding'] ?? false) !== false): ?>
+                        <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
+                            <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
+                            <strong>Ensaio Pré-Wedding:</strong> <?= fmt($dados['valor_prewedding'] ?: 1100) ?>
+                        </li>
+                        <?php endif; ?>
+                        <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
+                            <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
+                            <strong>Upgrade Família:</strong> Adicione o Álbum Master por apenas R$ 950,00.
+                        </li>
+                    </ul>
                 </div>
             </div>
 
@@ -1241,30 +1270,16 @@ if (!function_exists('fmt')) {
                         Upgrades que fazem toda diferença:
                     </p>
                     <ul style="list-style: none; padding: 0;">
-                        <?php if (($dados['include_boudoir'] ?? false) !== false): ?>
+                        <?php if (($dados['include_boudoir_essencial'] ?? $dados['include_boudoir'] ?? false) !== false): ?>
                         <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
                             <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                            <strong>Boudoir da Noiva (no dia do casamento):</strong> Um ensaio de 1 h realizado após a
-                            maquiagem para registrar a beleza da noiva por <?= fmt($dados['valor_boudoir'] ?: 500) ?>
+                            <strong>Boudoir da Noiva:</strong> <?= fmt($dados['valor_boudoir'] ?: 500) ?>
                         </li>
                         <?php endif; ?>
-                        <?php if (($dados['include_prewedding'] ?? false) !== false): ?>
+                        <?php if (($dados['include_prewedding_essencial'] ?? $dados['include_prewedding'] ?? false) !== false): ?>
                         <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
                             <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                            <strong>Ensaio Pré-Wedding:</strong> Caso desejem apenas o ensaio externo antes do
-                            casamento, ele pode ser contratado separadamente por <?= fmt($dados['valor_prewedding'] ?: 1100) ?> (incluindo pencard e 30
-                            fotos reveladas)
-                        </li>
-                        <?php endif; ?>
-                        <?php if (!isset($dados['include_boudoir']) && !isset($dados['include_prewedding'])): ?>
-                        <!-- Fallback para propostas antigas (mostra tudo) -->
-                        <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
-                            <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                            <strong>Boudoir da Noiva:</strong> R$ 500,00
-                        </li>
-                        <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
-                            <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                            <strong>Ensaio Pré-Wedding:</strong> R$ 1.100,00
+                            <strong>Ensaio Pré-Wedding:</strong> <?= fmt($dados['valor_prewedding'] ?: 1100) ?>
                         </li>
                         <?php endif; ?>
                     </ul>

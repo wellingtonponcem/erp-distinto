@@ -122,12 +122,20 @@ $dadosJson = json_encode([
     'itens_essencial' => $d['itens_essencial'] ?? ($dadosAntigos['itens_essencial'] ?? ''),
     'valor_boudoir' => $d['valor_boudoir'] ?? ($dadosAntigos['valor_boudoir'] ?? ''),
     'valor_prewedding' => $d['valor_prewedding'] ?? ($dadosAntigos['valor_prewedding'] ?? ''),
-    // Flags de Visibilidade e Inclusão
+    // Flags de Visibilidade e Inclusão (Globais)
     'show_heritage' => isset($d['show_heritage']),
     'show_cinematic' => isset($d['show_cinematic']),
     'show_essencial' => isset($d['show_essencial']),
     'include_boudoir' => isset($d['include_boudoir']),
     'include_prewedding' => isset($d['include_prewedding']),
+    
+    // Flags Específicas por Pacote
+    'include_boudoir_heritage' => isset($d['include_boudoir_heritage']),
+    'include_prewedding_heritage' => isset($d['include_prewedding_heritage']),
+    'include_boudoir_cinematic' => isset($d['include_boudoir_cinematic']),
+    'include_prewedding_cinematic' => isset($d['include_prewedding_cinematic']),
+    'include_boudoir_essencial' => isset($d['include_boudoir_essencial']),
+    'include_prewedding_essencial' => isset($d['include_prewedding_essencial']),
     // Condições de Pagamento (Página 10)
     'condicoes_reserva' => $d['condicoes_reserva'] ?? ($dadosAntigos['condicoes_reserva'] ?? ''),
     'condicoes_heritage_cinematic' => $d['condicoes_heritage_cinematic'] ?? ($dadosAntigos['condicoes_heritage_cinematic'] ?? ''),

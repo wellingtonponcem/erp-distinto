@@ -322,7 +322,8 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                                 <label class="flex items-center gap-3 cursor-pointer bg-white/5 px-4 py-2 rounded-full border border-white/10 hover:border-white/20 transition-all">
                                     <span class="text-[10px] font-black uppercase text-zinc-400 tracking-wider">Exibir na Proposta</span>
                                     <div class="switch">
-                                        <input type="checkbox" name="show_<?= strtolower($flag) ?>" x-model="<?= $flag ?>">
+                                        <?php $cleanName = str_replace('show', '', strtolower($flag)); ?>
+                                        <input type="checkbox" name="show_<?= $cleanName ?>" x-model="<?= $flag ?>">
                                         <span class="slider"></span>
                                     </div>
                                 </label>
@@ -352,8 +353,13 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                                             <span class="text-[11px] font-bold text-zinc-100"><?= $upg['nome'] ?></span>
                                             <span class="text-[9px] text-zinc-500">Incluir neste pacote</span>
                                         </div>
+                                        <?php 
+                                            $suffix = (strpos($slug, 'heritage') !== false ? 'Heritage' : (strpos($slug, 'cinematic') !== false ? 'Cinematic' : 'Essencial'));
+                                            $upgFlag = (strpos($upgSlug, 'boudoir') !== false ? 'includeBoudoir' : 'includePrewedding') . $suffix;
+                                            $upgName = (strpos($upgSlug, 'boudoir') !== false ? 'include_boudoir_' : 'include_prewedding_') . strtolower($suffix);
+                                        ?>
                                         <div class="switch">
-                                            <input type="checkbox" x-model="<?= $upgFlag ?>">
+                                            <input type="checkbox" name="<?= $upgName ?>" x-model="<?= $upgFlag ?>">
                                             <span class="slider"></span>
                                         </div>
                                     </label>
@@ -654,7 +660,15 @@ document.addEventListener('alpine:init', () => {
         showCinematic: true,
         showEssencial: true,
         
-        // Upgrades Selecionados
+        // Upgrades Selecionados (Inicia tudo como true para facilitar)
+        includeBoudoirHeritage: true,
+        includePreweddingHeritage: true,
+        includeBoudoirCinematic: true,
+        includePreweddingCinematic: true,
+        includeBoudoirEssencial: true,
+        includePreweddingEssencial: true,
+        
+        // Mantido para compatibilidade global se necessário
         includeBoudoir: true,
         includePrewedding: true,
 
