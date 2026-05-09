@@ -12,3 +12,7 @@ Thumbs.db
 
 # Pasta dos pdf
 modelos_propostas_pdf
+
+# Dumps de Banco
+*.sql
+*.zip

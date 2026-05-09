@@ -14,7 +14,7 @@ $primeiroNomeNoivo = explode(' ', trim($nomeNoivo))[0];
 $saudacaoCasal = "Olá, " . (($primeiroNomeNoivo && $primeiroNomeNoiva) ? "{$primeiroNomeNoivo} & {$primeiroNomeNoiva}" : $proposta['cliente_nome']) . "!";
 
 // Novas Variáveis Dinâmicas
-$mensagemPessoal = $dados['mensagem_pessoal'] ?? 'Na Distinto, entendemos que o nosso papel vai muito além de apertar um botão: nossa missão é registrar histórias de amor com autenticidade e emoção.';
+$mensagemPessoal = $dados['mensagem_pessoal'] ?? 'A gente sabe que fotografia é muito mais do que só apertar um botão. Nosso trabalho é capturar o que vocês sentem um pelo outro, de um jeito que pareça real e sem poses forçadas.';
 $prazoPrevias = $dados['prazo_previas'] ?? '48 horas';
 $prazoFinal = $dados['prazo_final'] ?? '60 dias úteis';
 $validadeProposta = $dados['validade_proposta'] ?? '7';
@@ -790,7 +790,7 @@ if (!function_exists('fmt')) {
                 </h2>
                 <p class="capa-desc"
                     style="font-family: var(--wedding-montserrat); font-size: 1.4rem; line-height: 1.6; font-weight: 400; margin-bottom: 20px; opacity: 0.8;">
-                    Toda história tem sua beleza. Nós entregamos a nossa versão da sua sob a nossa perspectiva.
+                    Toda história tem algo bonito para mostrar. A gente olha para o dia de vocês e busca os momentos que outros deixariam passar.
                 </p>
                 <div class="capa-line"
                     style="width: 40px; height: 1px; background: #1a1a1a; margin-bottom: 20px; opacity: 0.5;"></div>
@@ -824,7 +824,7 @@ if (!function_exists('fmt')) {
             style="flex: 1.2; padding: 0 8vw; display: flex; flex-direction: column; justify-content: center; position: relative; background: #fff; height: 100%;">
             <h1 class="boas-vindas-titulo"
                 style="font-family: var(--wedding-montserrat); font-size: 3.8rem; font-weight: 700; line-height: 1.1; margin-bottom: 40px; color: #1a1a1a; text-transform: uppercase; letter-spacing: -1px;">
-                BEM-VINDOS<br>AO INÍCIO DA<br>MEMÓRIA DE<br>VOCÊS
+                O REGISTRO<br>DO QUE VOCÊS<br>ESTÃO CONSTRUINDO<br>COMEÇA AQUI
             </h1>
 
             <div style="max-width: 480px;">
@@ -879,19 +879,13 @@ if (!function_exists('fmt')) {
             <div
                 style="font-family: var(--wedding-montserrat); font-size: 1.1rem; line-height: 1.8; color: #333; font-weight: 400; max-width: 500px;">
                 <p style="margin-bottom: 25px;">
-                    Para nós, a melhor foto não é a mais nítida ou a que segue todas as regras. É aquela que faz vocês
-                    sentirem tudo de novo.
+                    Uma foto boa não é aquela que é tecnicamente perfeita. É aquela que te faz lembrar do frio na barriga, do cheiro das flores e do nó na garganta na hora dos votos.
                 </p>
                 <p style="margin-bottom: 25px;">
-                    Acreditamos que toda história tem sua beleza. A "melhor foto" do nosso portfólio não é um troféu na
-                    estante, mas sim aquele frame que captura o extraordinário no comum: o sussurro do noivo, o brilho
-                    no olhar da <strong><?= $primeiroNomeNoiva ?></strong> ou a emoção genuína dos seus convidados.
+                    A gente foca no que é invisível: o sussurro no altar, o jeito que vocês se olham quando acham que ninguém está vendo ou a emoção real dos seus convidados.
                 </p>
                 <p style="margin-bottom: 25px;">
-                    <strong>O Arrepio em um Clique.</strong> Nossa busca constante é pela imagem que faz o tempo parar.
-                    Queremos que a fotografia seja uma experiência totalmente nova, permitindo que vocês vejam o
-                    casamento de vocês sob uma perspectiva artística e sensível. É o registro que transforma variáveis,
-                    como a luz e a fé que os une, no mais lindo sentido.
+                    <strong>O arrepio em um clique.</strong> Nossa busca é pela imagem que faz o tempo parar. Queremos que vocês vejam o próprio casamento por um ângulo artístico e sensível, onde a luz e a fé que os une ganham um sentido novo e verdadeiro.
                 </p>
             </div>
 
@@ -926,27 +920,20 @@ if (!function_exists('fmt')) {
                 <div style="flex: 1;">
                     <h3
                         style="font-family: var(--wedding-montserrat); font-size: 1.5rem; font-weight: 700; color: #1a1a1a; margin-bottom: 15px; text-transform: uppercase; text-align: center;">
-                        MISSÃO</h3>
+                        O QUE BUSCAMOS</h3>
                     <p
                         style="font-family: var(--wedding-montserrat); font-size: 1rem; line-height: 1.8; color: #555; text-align: justify;">
-                        Nossa missão é registrar histórias de amor com autenticidade e emoção. No Distinto, não buscamos
-                        apenas o registro oficial, mas o "arrepio" que cada momento carrega. Estamos aqui para capturar
-                        o que é real, do sussurro no altar à oração silenciosa, garantindo que cada detalhe seja
-                        preservado com a verdade que ele merece, fazendo com que todas as variáveis do dia ganhem o mais
-                        bonito sentido.
+                        A gente está aqui para guardar o que é de verdade. Do silêncio da oração à bagunça da pista. Nossa meta é criar uma memória que faça sentido hoje e daqui a cinquenta anos, registrando cada detalhe com a verdade que o momento merece.
                     </p>
                 </div>
                 <!-- Visão -->
                 <div style="flex: 1;">
                     <h3
                         style="font-family: var(--wedding-montserrat); font-size: 1.5rem; font-weight: 700; color: #1a1a1a; margin-bottom: 15px; text-transform: uppercase; text-align: center;">
-                        VISÃO</h3>
+                        COMO ENXERGAMOS</h3>
                     <p
                         style="font-family: var(--wedding-montserrat); font-size: 1rem; line-height: 1.8; color: #555; text-align: justify;">
-                        Ser o portal que permitirá reviverem a emoção do seu "sim" para sempre, reforçando que toda
-                        história tem sua beleza. Enxergamos o nosso trabalho como uma ferramenta para transformar o
-                        casamento de vocês em uma experiência totalmente nova, onde a nossa perspectiva artística cria
-                        uma herança visual que se torna mais valiosa a cada ano que passa.
+                        Queremos que as fotos e o filme sejam o caminho mais curto para vocês reviverem a emoção do "sim". Enxergamos nosso trabalho como uma ferramenta para que vocês vejam o casamento por uma perspectiva nova, criando uma herança visual que só cresce de valor com o tempo.
                     </p>
                 </div>
             </div>
@@ -987,24 +974,16 @@ if (!function_exists('fmt')) {
                     style="flex: 1; background: #d9d9d9; padding: 40px; box-sizing: border-box;">
                     <p
                         style="font-family: var(--wedding-montserrat); font-size: 1rem; line-height: 1.8; color: #333; text-align: left;">
-                        Não somos apenas um estúdio que aperta botões; somos uma equipe de especialistas focada em
-                        comunicação inteligente e em transformar desafios em direção estratégica.
-                        Não começamos com ideias soltas. Começamos com clareza. Nós analisamos a essência da história de
-                        vocês para garantir que a nossa presença seja distinta e posicionada. Nossa meta é uma só:
-                        arrepiar, entregando versões da história de vocês sob uma perspectiva que torna o casamento uma
-                        experiência totalmente nova.
+                        A gente não trabalha com fórmulas prontas. Olhamos para cada casal com um olhar novo, tentando entender o que torna vocês únicos. 
+                        Não começamos com ideias soltas, mas com clareza sobre o que vocês querem sentir ao ver essas imagens no futuro. Nossa meta é arrepiar, entregando uma versão da história de vocês que torne o casamento uma lembrança viva e pulsante.
                     </p>
                 </div>
                 <div class="perspectiva-box"
                     style="flex: 1; background: #d9d9d9; padding: 40px; box-sizing: border-box;">
                     <p
                         style="font-family: var(--wedding-montserrat); font-size: 1rem; line-height: 1.8; color: #333; text-align: left;">
-                        Conteúdo com estratégia, não só estética. Acreditamos que a beleza ganha força quando tem
-                        propósito. Por isso, nosso olhar vai além do "bonito". Criamos narrativas com intenção e foco no
-                        sentir, capturando desde o sussurro do noivo até as lágrimas incontidas, em uma sequência que
-                        transporta vocês de volta para o íntimo daquele momento.
-                        Por que ser um DISTINTO? Porque acreditamos que toda história tem sua beleza e que ela merece
-                        ser contada com clareza de posicionamento.
+                        Acreditamos que a beleza ganha força quando tem propósito. Por isso, nosso olhar vai além do "bonito" estético. 
+                        Criamos narrativas com intenção e foco no sentir, capturando desde o sussurro no altar até as lágrimas que ninguém viu cair. É um trabalho feito por pessoas que acreditam que toda história tem algo único para ser contado.
                     </p>
                 </div>
             </div>
@@ -1109,8 +1088,7 @@ if (!function_exists('fmt')) {
 
             <div style="font-family: var(--wedding-montserrat); font-size: 0.95rem; line-height: 1.6; color: #444;">
                 <p style="margin-bottom: 25px; font-weight: 400;">
-                    Este é o plano definitivo para casais que não aceitam lacunas. É a garantia de uma cobertura
-                    onipresente, focada na construção da herança visual da sua família, do papel à tela.
+                    Para quem quer o registro mais completo possível. A gente não deixa passar nada, cuidando de cada detalhe para que a história da família de vocês comece com o registro que ela merece.
                 </p>
 
                 <ul style="list-style: none; padding: 0; margin-bottom: 30px;">
@@ -1159,8 +1137,7 @@ if (!function_exists('fmt')) {
 
             <div style="font-family: var(--wedding-montserrat); font-size: 0.95rem; line-height: 1.6; color: #444;">
                 <p style="margin-bottom: 20px; font-weight: 400;">
-                    A união entre a fotografia artística e a dinâmica do vídeo moderno. Ideal para casamentos íntimos
-                    (60 convidados) que buscam impacto visual e compartilhamento imediato.
+                    O melhor da fotografia com a energia do vídeo atual. É um registro dinâmico, pensado para quem quer reviver o dia com a intensidade de um filme e compartilhar cada momento.
                 </p>
 
                 <ul style="list-style: none; padding: 0; margin-bottom: 20px;">
@@ -1728,17 +1705,13 @@ if (!function_exists('fmt')) {
                 <div
                     style="font-family: var(--wedding-montserrat); font-size: 1.15rem; line-height: 1.6; color: #333; font-weight: 400;">
                     <p style="margin-bottom: 20px;">
-                        Acreditamos que, daqui a vinte anos, o que restará não serão apenas arquivos digitais, mas a
-                        sensação exata do que foi o dia <strong>do seu casamento</strong>.
+                        Daqui a vinte anos, as fotos e o filme serão o caminho mais curto para vocês voltarem no tempo e sentirem exatamente o que foi o dia do casamento.
                     </p>
                     <p style="margin-bottom: 20px;">
-                        Para nós, toda história tem sua beleza, e a beleza de vocês reside na intimidade de um
-                        <strong>'sim'</strong> compartilhado entre amigos e na fé que os une.
+                        A gente busca registrar a essência desse 'sim' e a fé que une vocês, focando na beleza real que acontece nos intervalos entre um protocolo e outro.
                     </p>
                     <p style="font-size: 1rem; color: #444;">
-                        Mais do que um registro, uma perspectiva. <strong>Sim</strong>, o casamento de vocês será
-                        incrível, mas queremos que o filme e as fotos sejam uma experiência à parte. Nosso olhar busca o
-                        que está nas entrelinhas.
+                        Mais do que um registro, é um olhar que busca o que está nas entrelinhas. Queremos que vocês vejam essas memórias e se reconheçam em cada frame.
                     </p>
                 </div>
             </div>
@@ -1911,7 +1884,7 @@ if (!function_exists('fmt')) {
                 OS OLHARES POR TRÁS DAS LENTES
             </h2>
             <p style="font-family: var(--wedding-montserrat); font-size: 1.2rem; color: #888; font-weight: 400;">
-                Não somos apenas técnicos. Somos contadores de histórias.
+                A gente não está aqui só para operar câmeras. Estamos aqui para contar a história de vocês.
             </p>
         </div>
 
@@ -2095,14 +2068,10 @@ if (!function_exists('fmt')) {
             <div class="reveal-item"
                 style="font-family: var(--wedding-montserrat); font-size: 0.95rem; line-height: 1.8; color: #555; font-style: italic; max-width: 480px;">
                 <p style="margin-bottom: 20px;">
-                    Se algo aqui ainda não fez o coração de vocês vibrar, vamos trocar uma ideia. Estamos prontos para
-                    encontrar uma solução para o seu caso em particular, moldando cada detalhe para que esta experiência
-                    seja totalmente nova e única para vocês.
+                    Se algo aqui ainda não bateu com o que vocês imaginaram, vamos conversar. Estamos prontos para ajustar o que for preciso para que esse registro seja tão único quanto a história de vocês.
                 </p>
                 <p style="margin-bottom: 20px;">
-                    Este é o primeiro capítulo da história oficial de <strong><?= $nomeCasal ?></strong>, e nossa meta é
-                    uma só: fazer todas as variáveis desse dia ganharem o mais bonito sentido, garantindo que o arrepio
-                    do 'sim' dure para sempre através do nosso olhar.
+                    Este é o primeiro capítulo oficial de <strong><?= $nomeCasal ?></strong>. Nossa meta é garantir que o arrepio do 'sim' dure para sempre, guardado com o carinho e o olhar que o momento pede.
                 </p>
                 <p
                     style="font-size: 0.8rem; color: var(--wedding-gold); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 10px;">
@@ -2141,7 +2110,7 @@ if (!function_exists('fmt')) {
             </h2>
             <p class="reveal-item thanks-subtitle"
                 style="font-family: var(--wedding-montserrat); font-size: 1.4rem; color: #333; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px;">
-                REGISTRANDO HISTÓRIAS DE AMOR COM AUTENTICIDADE E EMOÇÃO
+                GUARDANDO CADA DETALHE DO JEITO QUE ELE ACONTECEU
             </p>
             <p class="reveal-item"
                 style="font-family: var(--wedding-montserrat); font-size: 0.9rem; color: #888; letter-spacing: 0.1em;">
