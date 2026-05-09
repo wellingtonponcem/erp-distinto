@@ -21,6 +21,10 @@ $validadeProposta = $dados['validade_proposta'] ?? '7';
 $instagramHandle = $dados['instagram_handle'] ?? '@distintowedding';
 $emailContato = $dados['email_contato'] ?? 'contato@wedistinto.com';
 $whatsappNumero = $dados['whatsapp_numero'] ?? '+55 27 9 8858-6935';
+// Gerar mensagem personalizada para o WhatsApp via IA
+require_once __DIR__ . '/../ia_propostas.php';
+$mensagemWA = IAPropostas::gerarMensagemWhatsApp($nomeNoivo, $nomeNoiva, $nomeCasal);
+
 // Buscar 2 depoimentos ativos da categoria 'casamento' do banco
 $depoimento01Texto = 'Foi a melhor escolha que fizemos. Eles capturaram a essência do nosso dia de uma forma que nunca imaginamos.';
 $depoimento01Autor = 'Fernanda & Thiago';
@@ -763,61 +767,203 @@ if (!function_exists('fmt')) {
         </div>
     </section>
 
-    <!-- PÁGINA 11: INVESTIMENTO E PLANEJAMENTO -->
-    <section class="slide"
-        style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; overflow: hidden; position: relative; height: 100vh; width: 100%;">
+    <!-- PÁGINA 11: ESCOLHA SEU PACOTE — INTERATIVO -->
+    <?php
+    $pHeritage   = is_numeric($dados['valor_heritage']   ?? '') ? (float)$dados['valor_heritage']   : 7900;
+    $pCinematic  = is_numeric($dados['valor_cinematic']  ?? '') ? (float)$dados['valor_cinematic']  : 4500;
+    $pEssencial  = is_numeric($dados['valor_essencial']  ?? '') ? (float)$dados['valor_essencial']  : 2800;
+    $pBoudoir    = is_numeric($dados['valor_boudoir']    ?? '') ? (float)$dados['valor_boudoir']    : 800;
+    $pPrewedding = is_numeric($dados['valor_prewedding'] ?? '') ? (float)$dados['valor_prewedding'] : 1200;
+    $condHC  = $dados['condicoes_heritage_cinematic'] ?? 'Entrada de 20% + saldo parcelado em até 6x';
+    $condE   = $dados['condicoes_essencial']          ?? 'Entrada de 25% + saldo parcelado em até 5x';
+    $clausula = $dados['condicoes_reserva']           ?? 'A reserva da data é oficializada mediante a assinatura do contrato e o pagamento do sinal (entrada). Oferecemos flexibilidade para que o saldo seja quitado de forma equilibrada até a data do evento.';
+    $hItem1 = trim(explode("\n", trim($itensHeritage))[0]  ?? 'Cobertura Documental Completa');
+    $cItem1 = trim(explode("\n", trim($itensCinematic))[0] ?? 'Cobertura Cinematográfica 8h');
+    $eItem1 = trim(explode("\n", trim($itensEssencial))[0] ?? 'Cobertura Fotográfica 6h');
+    ?>
+    <section class="slide" id="slide-pacote"
+        style="padding: 0; background: #1a1a1a; overflow: hidden; position: relative; height: 100vh; width: 100%; display: flex; flex-direction: row; font-family: var(--wedding-montserrat);">
 
-        <!-- Topo: Imagem -->
-        <div style="height: 40%; width: 100%;">
-            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-10.png') ?>"
-                style="width: 100%; height: 100%; object-fit: cover;">
-        </div>
+        <style>
+            #slide-pacote .plan-card { transition: border-color 0.2s, background 0.2s; }
+            #slide-pacote .plan-card:hover { background: rgba(255,255,255,0.05) !important; }
+            #slide-pacote .toggle-track { width: 36px; height: 20px; border-radius: 20px; background: rgba(255,255,255,0.12); cursor: pointer; flex-shrink: 0; position: relative; transition: background 0.2s; }
+            #slide-pacote .toggle-track.on { background: var(--wedding-gold); }
+            #slide-pacote .toggle-thumb { width: 14px; height: 14px; border-radius: 50%; background: #fff; position: absolute; top: 3px; left: 3px; transition: left 0.2s; }
+            #slide-pacote .toggle-track.on .toggle-thumb { left: 19px; }
+            #slide-pacote .linha-upgrade { transition: opacity 0.2s; }
+        </style>
 
-        <!-- Conteúdo -->
-        <div
-            style="flex: 1; padding: 40px 8vw; display: flex; flex-direction: column; align-items: center; text-align: center;">
-            <h2
-                style="font-family: var(--wedding-montserrat); font-size: 3rem; font-weight: 300; letter-spacing: 0.1em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 5px;">
-                INVESTIMENTO E PLANEJAMENTO
-            </h2>
-            <p
-                style="font-family: var(--wedding-montserrat); font-size: 1.2rem; font-weight: 400; color: #444; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 40px;">
-                FORMAS DE RESERVA E PAGAMENTO
-            </p>
+        <!-- Coluna Esquerda: Seleção de Plano + Upgrades -->
+        <div style="flex: 1.4; padding: 5vh 5vw; display: flex; flex-direction: column; justify-content: center; gap: 0; border-right: 1px solid rgba(255,255,255,0.06); overflow-y: auto;">
 
-            <!-- Blocos de Condições -->
-            <div style="width: 100%; max-width: 1200px;">
-                <!-- Bloco Geral -->
-                <div
-                    style="background: #dcdcdc; padding: 25px 40px; margin-bottom: 15px; border-radius: 2px; text-align: center; font-family: var(--wedding-montserrat); font-size: 0.9rem; line-height: 1.6; color: #333;">
-                    <?= nl2br($dados['condicoes_reserva'] ?? "A reserva da data é oficializada mediante a assinatura do contrato e o pagamento do sinal (entrada), que pode ser de 20% ou 25% do valor do pacote escolhido.\nOpções de Parcelamento: Oferecemos flexibilidade para que o saldo seja quitado de forma equilibrada até a data do evento:") ?>
-                </div>
+            <p style="font-size: 0.6rem; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: var(--wedding-gold); margin: 0 0 16px;">ESCOLHA SEU PACOTE</p>
 
-                <!-- Blocos Lado a Lado -->
-                <div style="display: flex; gap: 15px; width: 100%;">
-                    <div
-                        style="flex: 1; background: #dcdcdc; padding: 25px 40px; border-radius: 2px; text-align: left;">
-                        <h4
-                            style="font-family: var(--wedding-montserrat); font-size: 0.95rem; font-weight: 700; color: #1a1a1a; text-transform: uppercase; margin-bottom: 10px;">
-                            PARA EXPERIÊNCIA HERITAGE & EXPERIÊNCIA CINEMATIC</h4>
-                        <p
-                            style="font-family: var(--wedding-montserrat); font-size: 0.85rem; line-height: 1.5; color: #444;">
-                            <?= nl2br($dados['condicoes_heritage_cinematic'] ?? "Entrada de 20% + Saldo parcelado em até 6x (dependendo do pacote selecionado)") ?>
-                        </p>
+            <!-- Cards de Plano -->
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px;">
+
+                <?php
+                $planos = [
+                    'heritage'  => ['label' => 'EXPERIÊNCIA HERITAGE',  'sub' => $hItem1, 'valor' => $pHeritage],
+                    'cinematic' => ['label' => 'EXPERIÊNCIA CINEMATIC', 'sub' => $cItem1, 'valor' => $pCinematic],
+                    'essencial' => ['label' => 'REGISTRO ESSENCIAL',    'sub' => $eItem1, 'valor' => $pEssencial],
+                ];
+                foreach ($planos as $key => $pl): ?>
+                <div class="plan-card" data-plan="<?= $key ?>" onclick="selectPlan('<?= $key ?>')"
+                    style="padding: 14px 18px; border-radius: 6px; border: 1.5px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); cursor: pointer; display: flex; align-items: center; gap: 14px;">
+                    <div class="plan-radio" style="width: 17px; height: 17px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.25); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s;">
+                        <div class="plan-radio-dot" style="width: 7px; height: 7px; border-radius: 50%; background: var(--wedding-gold); opacity: 0; transition: opacity 0.2s;"></div>
                     </div>
-                    <div
-                        style="flex: 1; background: #dcdcdc; padding: 25px 40px; border-radius: 2px; text-align: left;">
-                        <h4
-                            style="font-family: var(--wedding-montserrat); font-size: 0.95rem; font-weight: 700; color: #1a1a1a; text-transform: uppercase; margin-bottom: 10px;">
-                            PARA O REGISTRO ESSENCIAL</h4>
-                        <p
-                            style="font-family: var(--wedding-montserrat); font-size: 0.85rem; line-height: 1.5; color: #444;">
-                            <?= nl2br($dados['condicoes_essencial'] ?? "Entrada de 25% + Saldo parcelado em até 5x (dependendo do pacote selecionado)") ?>
-                        </p>
+                    <div style="flex: 1; min-width: 0;">
+                        <p style="font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.88); text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 2px;"><?= htmlspecialchars($pl['label']) ?></p>
+                        <p style="font-size: 0.68rem; color: rgba(255,255,255,0.35); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?= htmlspecialchars($pl['sub']) ?></p>
+                    </div>
+                    <p style="font-size: 0.95rem; font-weight: 300; color: rgba(255,255,255,0.88); margin: 0; flex-shrink: 0;"><?= fmt($pl['valor']) ?></p>
+                    <span class="selected-badge" style="display: none; font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--wedding-gold); border: 1px solid var(--wedding-gold); padding: 2px 8px; border-radius: 20px; white-space: nowrap; flex-shrink: 0;">Selecionado</span>
+                </div>
+                <?php endforeach; ?>
+            </div>
+
+            <!-- Divisor -->
+            <div style="border-top: 1px solid rgba(255,255,255,0.07); margin-bottom: 20px;"></div>
+
+            <!-- Upgrades -->
+            <p style="font-size: 0.6rem; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin: 0 0 14px;">UPGRADES OPCIONAIS</p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+
+                <?php
+                $upgrades = [
+                    'boudoir'    => ['label' => 'Boudoir da Noiva',  'valor' => $pBoudoir],
+                    'prewedding' => ['label' => 'Ensaio Pré-Wedding','valor' => $pPrewedding],
+                ];
+                foreach ($upgrades as $uKey => $up): ?>
+                <div style="display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.02);">
+                    <div style="flex: 1;">
+                        <p style="font-size: 0.75rem; font-weight: 500; color: rgba(255,255,255,0.82); margin: 0 0 1px; text-transform: uppercase; letter-spacing: 0.04em;"><?= htmlspecialchars($up['label']) ?></p>
+                        <p style="font-size: 0.75rem; font-weight: 300; color: rgba(255,255,255,0.55); margin: 0;"><?= fmt($up['valor']) ?></p>
+                    </div>
+                    <span style="font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.12); padding: 2px 8px; border-radius: 20px;">Opcional</span>
+                    <div class="toggle-track" id="toggle-<?= $uKey ?>" onclick="toggleUpgrade('<?= $uKey ?>', <?= $up['valor'] ?>)">
+                        <div class="toggle-thumb"></div>
                     </div>
                 </div>
+                <?php endforeach; ?>
+
             </div>
         </div>
+
+        <!-- Coluna Direita: Resumo + Condições + Cláusula -->
+        <div style="flex: 1; padding: 5vh 4vw; display: flex; flex-direction: column; justify-content: center; gap: 0; overflow-y: auto;">
+
+            <!-- Resumo -->
+            <p style="font-size: 0.6rem; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin: 0 0 14px;">RESUMO</p>
+
+            <div id="resumo-linhas" style="display: flex; flex-direction: column; gap: 0; margin-bottom: 6px;">
+                <div id="linha-plano" class="linha-upgrade" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06); opacity: 0.35;">
+                    <span id="linha-plano-nome" style="font-size: 0.78rem; color: rgba(255,255,255,0.7);">Nenhum plano selecionado</span>
+                    <span id="linha-plano-valor" style="font-size: 0.78rem; color: rgba(255,255,255,0.7);">—</span>
+                </div>
+                <div id="linha-boudoir" class="linha-upgrade" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06); opacity: 0.35;">
+                    <span style="font-size: 0.78rem; color: rgba(255,255,255,0.7);">Upgrade Boudoir</span>
+                    <span id="linha-boudoir-valor" style="font-size: 0.78rem; color: rgba(255,255,255,0.4); text-decoration: line-through;"><?= fmt($pBoudoir) ?></span>
+                </div>
+                <div id="linha-prewedding" class="linha-upgrade" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06); opacity: 0.35;">
+                    <span style="font-size: 0.78rem; color: rgba(255,255,255,0.7);">Upgrade Pré-Wedding</span>
+                    <span id="linha-prewedding-valor" style="font-size: 0.78rem; color: rgba(255,255,255,0.4); text-decoration: line-through;"><?= fmt($pPrewedding) ?></span>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: baseline; padding: 14px 0; margin-bottom: 22px;">
+                <span style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.5);">Total do pacote</span>
+                <span id="total-display" style="font-size: 1.8rem; font-weight: 300; letter-spacing: -0.02em; color: #fff;">—</span>
+            </div>
+
+            <!-- Divisor -->
+            <div style="border-top: 1px solid rgba(255,255,255,0.07); margin-bottom: 18px;"></div>
+
+            <!-- Condições de Pagamento -->
+            <p style="font-size: 0.6rem; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: var(--wedding-gold); margin: 0 0 8px;">CONDIÇÕES DE PAGAMENTO</p>
+            <p id="condicoes-display" style="font-size: 0.82rem; font-weight: 300; line-height: 1.65; color: rgba(255,255,255,0.45); margin: 0 0 22px;">Selecione um plano para ver as condições.</p>
+
+            <!-- Divisor -->
+            <div style="border-top: 1px solid rgba(255,255,255,0.07); margin-bottom: 18px;"></div>
+
+            <!-- Cláusula de Reserva -->
+            <p style="font-size: 0.6rem; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin: 0 0 10px;">CLÁUSULA DE RESERVA</p>
+            <div style="border-left: 2px solid rgba(197,168,128,0.4); padding-left: 14px;">
+                <p style="font-size: 0.78rem; font-weight: 300; line-height: 1.7; color: rgba(255,255,255,0.45); margin: 0;"><?= htmlspecialchars($clausula) ?></p>
+            </div>
+        </div>
+
+        <script>
+        (function () {
+            const planData = {
+                heritage:  { nome: 'Experiência Heritage',  valor: <?= $pHeritage ?>,  cond: <?= json_encode($condHC) ?> },
+                cinematic: { nome: 'Experiência Cinematic', valor: <?= $pCinematic ?>, cond: <?= json_encode($condHC) ?> },
+                essencial: { nome: 'Registro Essencial',    valor: <?= $pEssencial ?>, cond: <?= json_encode($condE)  ?> },
+            };
+            const upgradeData = {
+                boudoir:    <?= $pBoudoir ?>,
+                prewedding: <?= $pPrewedding ?>,
+            };
+            let selectedPlan = null;
+            const upgrades = { boudoir: false, prewedding: false };
+
+            function fmt(v) {
+                return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            }
+
+            window.selectPlan = function (key) {
+                selectedPlan = key;
+                document.querySelectorAll('#slide-pacote .plan-card').forEach(card => {
+                    const on = card.dataset.plan === key;
+                    card.style.borderColor = on ? 'var(--wedding-gold)' : 'rgba(255,255,255,0.1)';
+                    card.style.background  = on ? 'rgba(197,168,128,0.07)' : 'rgba(255,255,255,0.03)';
+                    card.querySelector('.plan-radio').style.borderColor = on ? 'var(--wedding-gold)' : 'rgba(255,255,255,0.25)';
+                    card.querySelector('.plan-radio-dot').style.opacity = on ? '1' : '0';
+                    card.querySelector('.selected-badge').style.display = on ? 'inline-block' : 'none';
+                });
+                atualizarResumo();
+            };
+
+            window.toggleUpgrade = function (key, valor) {
+                upgrades[key] = !upgrades[key];
+                const track = document.getElementById('toggle-' + key);
+                track.classList.toggle('on', upgrades[key]);
+                atualizarResumo();
+            };
+
+            function atualizarResumo() {
+                // Linha plano
+                const linhP  = document.getElementById('linha-plano');
+                const linhPN = document.getElementById('linha-plano-nome');
+                const linhPV = document.getElementById('linha-plano-valor');
+                if (selectedPlan) {
+                    const p = planData[selectedPlan];
+                    linhPN.textContent = p.nome;
+                    linhPV.textContent = fmt(p.valor);
+                    linhP.style.opacity = '1';
+                    document.getElementById('condicoes-display').textContent = p.cond;
+                    document.getElementById('condicoes-display').style.color = 'rgba(255,255,255,0.7)';
+                }
+
+                // Linhas upgrade
+                ['boudoir', 'prewedding'].forEach(u => {
+                    const on = upgrades[u];
+                    document.getElementById('linha-' + u).style.opacity = on ? '1' : '0.35';
+                    const valEl = document.getElementById('linha-' + u + '-valor');
+                    valEl.style.textDecoration = on ? 'none' : 'line-through';
+                    valEl.style.color = on ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.4)';
+                });
+
+                // Total
+                let total = selectedPlan ? planData[selectedPlan].valor : 0;
+                if (upgrades.boudoir)    total += upgradeData.boudoir;
+                if (upgrades.prewedding) total += upgradeData.prewedding;
+                document.getElementById('total-display').textContent = selectedPlan ? fmt(total) : '—';
+            }
+        })();
+        </script>
     </section>
 
     <!-- PÁGINA 12: WEDDING PORTFOLIO CAPA -->
@@ -1148,10 +1294,9 @@ if (!function_exists('fmt')) {
 
             <!-- Contatos -->
             <div class="reveal-item" style="margin-bottom: 40px; font-family: var(--wedding-montserrat); font-size: 1.2rem; line-height: 2; color: #1a1a1a;">
-                <?php 
+                <?php
                     $wa_clean = str_replace([' ', '-', '+'], '', $whatsappNumero);
-                    $wa_msg = urlencode("Olá! Acabamos de ver a proposta da Distinto para o nosso casamento e ficamos encantados com o olhar de vocês. Gostaríamos de conversar sobre os próximos passos para garantir nossa data!");
-                    $wa_link = "https://wa.me/{$wa_clean}?text=" . $wa_msg;
+                    $wa_link = "https://wa.me/{$wa_clean}?text=" . urlencode($mensagemWA);
                 ?>
                 <a href="<?= $wa_link ?>" target="_blank" style="display: block; text-decoration: none; color: #1a1a1a; transition: all 0.3s;">
                     <span style="border-bottom: 1px solid #ccc;"><?= $whatsappNumero ?></span>

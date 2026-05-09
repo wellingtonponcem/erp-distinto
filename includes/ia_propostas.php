@@ -87,6 +87,30 @@ class IAPropostas {
         ]);
     }
 
+    public static function gerarMensagemWhatsApp(string $nomeNoivo, string $nomeNoiva, string $nomeCasal): string {
+        $primeiro = $nomeNoivo ? explode(' ', trim($nomeNoivo))[0] : '';
+        $primeiraNoiva = $nomeNoiva ? explode(' ', trim($nomeNoiva))[0] : '';
+
+        $promptSistema = "Você é o casal que está visualizando uma proposta de fotografia e vídeo de casamento da Distinto Wedding. Escreva uma mensagem de WhatsApp que o casal enviaria para o estúdio após visualizar a proposta. A mensagem deve soar natural, humana, calorosa — como alguém que já teve contato com o estúdio e quer conversar mais. Pode ser uma curiosidade, uma dúvida, ou só um interesse genuíno. NUNCA seja genérico ou formal. NUNCA use emojis. Máximo de 2 frases curtas. Escreva na primeira pessoa do plural (nós, nosso, nossa). Use português do Brasil coloquial mas elegante.";
+
+        $ctx = $primeiro && $primeiraNoiva ? "O casal se chama {$primeiro} e {$primeiraNoiva}." : "O casal é {$nomeCasal}.";
+
+        $promptUsuario = "{$ctx} Escreva a mensagem de WhatsApp que eles enviariam para a Distinto Wedding após ver a proposta. Lembre-se: eles já tiveram algum contato antes, então não é uma primeira abordagem fria. Retorne apenas o texto da mensagem, sem aspas, sem explicações.";
+
+        $msg = self::chamarGroq([
+            ['role' => 'system', 'content' => $promptSistema],
+            ['role' => 'user', 'content' => $promptUsuario]
+        ]);
+
+        // Fallback se a API falhar
+        if (str_starts_with($msg, 'Erro')) {
+            $saudacao = $primeiro ? "Oi! Sou {$primeiro}" . ($primeiraNoiva ? " e {$primeiraNoiva}" : '') : "Oi";
+            return "{$saudacao}, acabamos de ver a proposta da Distinto e queríamos conversar sobre alguns detalhes.";
+        }
+
+        return $msg;
+    }
+
     public static function melhorarObjetivo(string $objetivoOriginal, array $contexto) {
         $cliente = $contexto['cliente'] ?? 'o cliente';
         $servicos = $contexto['servicos'] ?? '';
