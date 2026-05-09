@@ -267,22 +267,6 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
         });
         <?php endif; ?>
 
-        // Persistência de Scroll
-        const proposalSlug = '<?= $proposta['slug'] ?>';
-        window.addEventListener('load', () => {
-            const savedScroll = localStorage.getItem('scroll_' + proposalSlug);
-            if (savedScroll) {
-                window.scrollTo({ top: parseInt(savedScroll), behavior: 'instant' });
-            }
-        });
-
-        let scrollTimeout;
-        window.addEventListener('scroll', () => {
-            clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(() => {
-                localStorage.setItem('scroll_' + proposalSlug, window.scrollY);
-            }, 100);
-        });
     </script>
     <script src="<?= raizUrl('/assets/js/propostas.js') ?>"></script>
 
