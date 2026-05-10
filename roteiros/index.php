@@ -147,6 +147,58 @@ exigirAutenticacao();
             transform: translateX(5px);
         }
 
+        /* Swipe Actions Support */
+        .swipe-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            background: var(--surface);
+            margin-bottom: 10px;
+        }
+
+        .swipe-actions {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: stretch;
+            z-index: 1;
+        }
+
+        .swipe-btn {
+            border: none;
+            color: #0a0a0a;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .swipe-btn-archive { background: #4a4a4a; color: white; }
+        .swipe-btn-delete { background: var(--accent2); color: white; }
+
+        .script-card {
+            position: relative;
+            z-index: 2;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.2s;
+            touch-action: pan-y;
+            user-select: none;
+        }
+
         .card-info { flex: 1; }
         
         .card-status {
@@ -288,28 +340,91 @@ exigirAutenticacao();
         <div class="cards-list">
             <template x-if="scripts.length === 0">
                 <div style="text-align: center; padding: 4rem; color: var(--muted); border: 1px dashed var(--border); border-radius: 8px;">
-                    Nenhum roteiro encontrado. <br>
-                    <small x-text="'Debug: ' + filter"></small>
+                    Nenhum roteiro encontrado.
                 </div>
             </template>
 
             <template x-for="script in filteredScripts" :key="script.id">
-                <a :href="'detalhes.php?id=' + script.id" class="script-card">
-                    <div class="card-info">
-                        <div class="card-status" :class="'status-' + script.status">
-                            <div class="status-dot"></div>
-                            <span x-text="script.status"></span>
-                        </div>
-                        <div class="card-title" x-text="script.titulo"></div>
-                        <div class="card-meta">
-                            <span x-text="script.formato"></span>
-                            <span x-text="formatDate(script.created_at)"></span>
-                        </div>
+                <div class="swipe-container" x-data="{ 
+                        startX: 0, 
+                        currentX: 0, 
+                        offsetX: 0, 
+                        isSwiping: false,
+                        maxSwipe: 150,
+                        open: false,
+                        
+                        touchStart(e) {
+                            this.startX = e.touches[0].clientX;
+                            this.isSwiping = true;
+                        },
+                        touchMove(e) {
+                            if (!this.isSwiping) return;
+                            let moveX = e.touches[0].clientX;
+                            let diff = moveX - this.startX;
+                            
+                            // Apenas para a esquerda
+                            if (diff > 0 && !this.open) return;
+                            
+                            this.offsetX = this.open ? diff - this.maxSwipe : diff;
+                            
+                            // Limites
+                            if (this.offsetX < -this.maxSwipe) this.offsetX = -this.maxSwipe;
+                            if (this.offsetX > 0) this.offsetX = 0;
+                        },
+                        touchEnd() {
+                            this.isSwiping = false;
+                            if (this.offsetX < -70) {
+                                this.offsetX = -this.maxSwipe;
+                                this.open = true;
+                            } else {
+                                this.offsetX = 0;
+                                this.open = false;
+                            }
+                        },
+                        archive() {
+                            if(confirm('Arquivar este roteiro?')) {
+                                // Lógica de arquivamento aqui
+                                this.offsetX = 0;
+                                this.open = false;
+                            }
+                        },
+                        remove() {
+                            if(confirm('Apagar este roteiro permanentemente?')) {
+                                fetch('../api/roteiros/remover.php?id=' + script.id)
+                                    .then(r => r.json())
+                                    .then(data => {
+                                        if(data.success) {
+                                            $root.closest('.swipe-container').remove();
+                                        }
+                                    });
+                            }
+                        }
+                    }">
+                    <div class="swipe-actions">
+                        <button @click.prevent="archive()" class="swipe-btn swipe-btn-archive">Arquivar</button>
+                        <button @click.prevent="remove()" class="swipe-btn swipe-btn-delete">Apagar</button>
                     </div>
-                    <div class="score-badge">
-                        Score: <span x-text="Math.round(script.score)"></span>
-                    </div>
-                </a>
+                    <a :href="'detalhes.php?id=' + script.id" class="script-card"
+                        :style="`transform: translateX(${offsetX}px)`"
+                        @touchstart="touchStart($event)"
+                        @touchmove="touchMove($event)"
+                        @touchend="touchEnd()">
+                        <div class="card-info">
+                            <div class="card-status" :class="'status-' + script.status">
+                                <div class="status-dot"></div>
+                                <span x-text="script.status"></span>
+                            </div>
+                            <div class="card-title" x-text="script.titulo"></div>
+                            <div class="card-meta">
+                                <span x-text="script.formato"></span>
+                                <span x-text="formatDate(script.created_at)"></span>
+                            </div>
+                        </div>
+                        <div class="score-badge">
+                            Score: <span x-text="Math.round(script.score)"></span>
+                        </div>
+                    </a>
+                </div>
             </template>
         </div>
     </div>
