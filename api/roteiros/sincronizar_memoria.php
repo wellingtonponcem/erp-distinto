@@ -22,10 +22,10 @@ try {
     // Chama a função que lê todas as fontes e reconstrói o cérebro da IA
     $sucesso = IARoteiros::reconstruirMemoria();
 
-    if ($sucesso) {
+    if ($sucesso === true) {
         responderJson(['success' => true]);
     } else {
-        responderJson(['success' => false, 'error' => 'Falha na reconstrução da memória.'], 500);
+        responderJson(['success' => false, 'error' => $sucesso ?: 'Falha na reconstrução da memória.'], 500);
     }
 
 } catch (Exception $e) {

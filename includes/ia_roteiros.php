@@ -160,21 +160,25 @@ Gere a nova Memória Mestra Consolidada:";
                 return true;
             }
 
-            // Começamos com a primeira fonte e vamos consolidando as outras
-            $db->exec("DELETE FROM roteiros_memoria");
+            // Unifica todos os textos para uma única destilação potente
+            $textoUnificado = implode("\n\n---\n\n", $textos);
             
-            $memoriaAcumulada = "";
-            foreach ($textos as $t) {
-                // Se for a primeira, apenas salva. Se já tiver algo, consolida.
-                if (empty($memoriaAcumulada)) {
-                    $memoriaAcumulada = $t;
-                    // Salva inicial para o consolidarMemoria ter algo para ler
-                    $stmt = $db->prepare("INSERT INTO roteiros_memoria (conteudo) VALUES (?)");
-                    $stmt->execute([$t]);
-                } else {
-                    self::consolidarMemoria($t);
-                }
-            }
+            $promptSistema = "Você é um Engenheiro de Conhecimento. Sua tarefa é ler diversos fragmentos de conhecimento e criar uma ÚNICA Memória Mestra Organizada.
+Extraia a essência estratégica, metodologias e diretrizes. Remova repetições. O resultado deve ser denso e pronto para orientar uma IA roteirista.";
+
+            $promptUsuario = "Abaixo estão as fontes de conhecimento:\n\n$textoUnificado\n\nGere a Memória Mestra Consolidada:";
+
+            $novaMemoria = self::chamarGroq([
+                ['role' => 'system', 'content' => $promptSistema],
+                ['role' => 'user', 'content' => $promptUsuario]
+            ]);
+
+            if (strpos($novaMemoria, 'Erro') === 0) return false;
+
+            $db->exec("DELETE FROM roteiros_memoria");
+            $stmt = $db->prepare("INSERT INTO roteiros_memoria (conteudo) VALUES (?)");
+            $stmt->execute([$novaMemoria]);
+            
             return true;
         } catch (Exception $e) {
             return false;
