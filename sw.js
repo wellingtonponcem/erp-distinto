@@ -1,4 +1,4 @@
-const CACHE_NAME = 'distinto-roteiros-v1';
+const CACHE_NAME = 'distinto-roteiros-v2';
 const ASSETS = [
   '/roteiros/index.php',
   'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap',
@@ -25,30 +25,28 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch: Stale-while-revalidate for assets, Network-first for APIs
+// Fetch: Network First, Fallback to Cache
 self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
+  // Only cache GET requests
+  if (event.request.method !== 'GET') return;
 
-  // If it's an API call, try network first
-  if (url.pathname.startsWith('/api/')) {
-    event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match(event.request);
-      })
-    );
-    return;
-  }
-
-  // For other assets, stale-while-revalidate
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      const fetchPromise = fetch(event.request).then((networkResponse) => {
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, networkResponse.clone());
-        });
+    caches.open(CACHE_NAME).then(async (cache) => {
+      try {
+        // Try network first
+        const networkResponse = await fetch(event.request);
+        // Save clone to cache for offline use
+        cache.put(event.request, networkResponse.clone());
         return networkResponse;
-      });
-      return cachedResponse || fetchPromise;
+      } catch (err) {
+        // If offline, try fetching from cache
+        const cachedResponse = await cache.match(event.request);
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        // If not in cache, let the browser show its offline page or fail
+        throw err;
+      }
     })
   );
 });

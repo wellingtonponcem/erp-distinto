@@ -647,6 +647,19 @@ exigirAutenticacao();
                         .then(data => {
                             if (data.success) {
                                 this.scripts = data.data;
+                                
+                                // Download em segundo plano dos roteiros pendentes para modo avião (offline)
+                                if ('caches' in window) {
+                                    caches.open('distinto-roteiros-v2').then(cache => {
+                                        const pendentesUrls = this.scripts
+                                            .filter(s => s.status === 'pendente')
+                                            .map(s => `detalhes.php?id=${s.id}`);
+                                        
+                                        if (pendentesUrls.length > 0) {
+                                            cache.addAll(pendentesUrls).catch(e => console.log('Erro cache offline:', e));
+                                        }
+                                    });
+                                }
                             } else {
                                 alert('Erro na API: ' + data.error);
                             }
