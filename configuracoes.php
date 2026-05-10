@@ -3,6 +3,8 @@ require_once __DIR__ . '/config/env.php';
 require_once __DIR__ . '/config/auth.php';
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/includes/helpers.php';
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 exigirAutenticacao();
 
 $tituloPagina = 'Configurações';
