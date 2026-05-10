@@ -245,6 +245,28 @@ exigirAutenticacao();
             align-items: center;
         }
 
+        .desktop-delete {
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+        .desktop-delete:hover {
+            color: #ff4a4a;
+            background: rgba(255, 74, 74, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .desktop-delete {
+                display: none !important;
+            }
+        }
+
         .card-info { 
             width: 100%;
         }
@@ -443,9 +465,14 @@ exigirAutenticacao();
                         
                         <div class="card-header">
                             <div class="card-num" x-text="String(script.numero || 0).padStart(2, '0')"></div>
-                            <div class="score-mini">
-                                <span style="opacity: 0.5; font-size: 9px;">SCORE</span>
-                                <span x-text="Math.round(script.score)"></span>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <button class="desktop-delete" @click.prevent="remove()" title="Excluir Roteiro">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                                <div class="score-mini">
+                                    <span style="opacity: 0.5; font-size: 9px;">SCORE</span>
+                                    <span x-text="Math.round(script.score)"></span>
+                                </div>
                             </div>
                         </div>
 

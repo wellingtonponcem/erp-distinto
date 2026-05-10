@@ -55,7 +55,7 @@ try {
             $d['id']
         ]);
         
-        responderJson(['success' => true, 'id' => $d['id'], 'score' => $score]);
+        $script_id = $d['id'];
     } else {
         // Insert - Calculate next sequence number
         $st = $db->query("SELECT COALESCE(MAX(numero), 0) + 1 as prox FROM roteiros");
@@ -73,9 +73,40 @@ try {
             $likes, $comentarios, $shares, $reposts, $salvamentos, $score,
             $prox, $d['intencao'] ?? '', $d['tema'] ?? ''
         ]);
-        
-        responderJson(['success' => true, 'id' => $db->lastInsertId(), 'score' => $score]);
+        $script_id = $db->lastInsertId();
     }
+
+    // --- LOOP DE APRENDIZAGEM (VOZ DO USUÁRIO) ---
+    // Pega o conteúdo do roteiro e joga na base de conhecimento como texto
+    $textoCompleto = trim(
+        "Roteiro Escrito/Editado pelo Usuário (Aprender Voz e Estilo):\n\n" .
+        "TÍTULO: {$d['titulo']}\n" .
+        "GANCHO: " . ($d['gancho'] ?? '') . "\n" .
+        "DESENVOLVIMENTO: " . trim(($d['quebra_crenca'] ?? '') . " " . ($d['desenvolvimento'] ?? '') . " " . ($d['conexao'] ?? '')) . "\n" .
+        "FECHAMENTO/CTA: " . trim(($d['fechamento'] ?? '') . " " . ($d['cta'] ?? ''))
+    );
+
+    // Salva apenas se tiver conteúdo substancial
+    if (strlen($textoCompleto) > 100) {
+        $caminho_interno = 'roteiro_interno_' . (isset($script_id) ? $script_id : $d['id']);
+        
+        $stmtFonte = $db->prepare("SELECT id FROM roteiros_conhecimento WHERE caminho_arquivo = ? LIMIT 1");
+        $stmtFonte->execute([$caminho_interno]);
+        $fonte_id = $stmtFonte->fetchColumn();
+
+        $nomeArquivo = "📝 Roteiro: {$d['titulo']}";
+
+        if ($fonte_id) {
+            $db->prepare("UPDATE roteiros_conhecimento SET texto_extraido = ?, sincronizado = FALSE, nome_arquivo = ? WHERE id = ?")
+               ->execute([$textoCompleto, $nomeArquivo, $fonte_id]);
+        } else {
+            // Cria coluna sincronizado na hora da inserção, caso não exista (já foi tratada no outro script, mas garantimos aqui via query simples)
+            $db->prepare("INSERT INTO roteiros_conhecimento (nome_arquivo, caminho_arquivo, tipo_arquivo, texto_extraido, sincronizado) VALUES (?, ?, 'text', ?, FALSE)")
+               ->execute([$nomeArquivo, $caminho_interno, $textoCompleto]);
+        }
+    }
+
+    responderJson(['success' => true, 'id' => $script_id, 'score' => $score]);
 
 } catch (Exception $e) {
     responderJson(['success' => false, 'error' => $e->getMessage()], 500);
