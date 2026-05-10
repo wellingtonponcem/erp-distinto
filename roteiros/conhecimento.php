@@ -123,6 +123,15 @@ $arquivos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             text-transform: uppercase;
             letter-spacing: 0.1em;
         }
+
+        input[type="file"] { 
+            position: absolute;
+            width: 0;
+            height: 0;
+            opacity: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body x-data="knowledgeManager()">

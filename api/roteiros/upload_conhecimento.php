@@ -10,6 +10,10 @@ require_once __DIR__ . '/../../includes/helpers.php';
 
 exigirAutenticacao();
 
+// Aumentar tempo de execução para processamento da IA
+set_time_limit(180); 
+ini_set('memory_limit', '512M');
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     responderJson(['erro' => 'Método não permitido'], 405);
 }
