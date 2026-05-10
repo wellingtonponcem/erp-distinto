@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../config/env.php';
 require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/helpers.php';
 exigirAutenticacao();
 
 $id = $_GET['id'] ?? null;
@@ -10,14 +11,18 @@ if (!$id) {
     exit;
 }
 
-$db = Database::get();
-$stmt = $db->prepare("SELECT * FROM roteiros WHERE id = ?");
-$stmt->execute([$id]);
-$roteiro = $stmt->fetch(PDO::FETCH_ASSOC);
+try {
+    $db = Database::get();
+    $stmt = $db->prepare("SELECT id, titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, tags, formato, status, score, views, likes, shares, reposts FROM roteiros WHERE id = ?");
+    $stmt->execute([$id]);
+    $roteiro = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$roteiro) {
-    header('Location: index.php');
-    exit;
+    if (!$roteiro) {
+        header('Location: index.php');
+        exit;
+    }
+} catch (Exception $e) {
+    die("Erro ao buscar roteiro: " . $e->getMessage());
 }
 ?>
 <!DOCTYPE html>
@@ -106,12 +111,6 @@ if (!$roteiro) {
             gap: 3rem;
         }
 
-        .main-content {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 2.5rem;
-            border-radius: 12px;
-        }
 
         .sidebar {
             display: flex;
@@ -351,7 +350,7 @@ if (!$roteiro) {
 
                 save() {
                     this.saving = true;
-                    fetch('../api/roteiros/salvar.php', {
+                    fetch('<?= raizUrl('/api/roteiros/salvar.php') ?>', {
                         method: 'POST',
                         body: JSON.stringify(this.data)
                     })
