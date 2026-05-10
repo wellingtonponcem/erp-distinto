@@ -135,29 +135,31 @@ try {
 
         .script-section { margin-bottom: 2rem; }
         .section-label {
-            font-size: 9px;
+            font-size: 10px;
             font-weight: 500;
-            letter-spacing: 0.18em;
+            letter-spacing: 0.15em;
             text-transform: uppercase;
             color: var(--muted);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
         .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
         .hook-block {
             background: var(--surface2);
-            border-left: 3px solid var(--accent);
-            padding: 1.5rem;
-            border-radius: 0 4px 4px 0;
+            border-left: 4px solid var(--accent) !important;
+            padding: 2rem !important;
+            border-radius: 4px;
             font-family: var(--serif);
             font-style: italic;
-            font-size: 20px;
+            font-size: 24px;
             color: var(--text);
-            margin-bottom: 2rem;
-            line-height: 1.5;
+            margin-bottom: 2.5rem;
+            line-height: 1.4;
+            width: 100%;
+            border-top: none; border-right: none; border-bottom: none;
         }
 
         .form-control:focus {
@@ -261,7 +263,7 @@ try {
             <!-- Conteúdo Principal Estruturado -->
             <div class="main-content" style="margin-bottom: 2rem;">
                 <div class="script-section">
-                    <div class="section-label">Gancho / Título IA</div>
+                    <div class="section-label">GANCHO — 3 PRIMEIROS SEGUNDOS</div>
                     <textarea class="form-control hook-block" style="border: none; min-height: 80px; resize: none; margin-bottom: 0;" x-model="data.gancho"></textarea>
                 </div>
 
