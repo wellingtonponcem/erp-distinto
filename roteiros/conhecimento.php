@@ -302,7 +302,13 @@ try {
         </div>
 
         <!-- NotebookLM Style Input Zone -->
-        <div class="upload-zone" x-show="!uploading">
+        <div class="upload-zone" 
+             x-show="!uploading"
+             @dragover.prevent="isDragging = true"
+             @dragleave.prevent="isDragging = false"
+             @drop.prevent="isDragging = false; handleDrop($event)"
+             :style="isDragging ? 'border-color: var(--accent); background: rgba(232, 255, 71, 0.05)' : ''">
+            
             <div class="upload-title">ou solte seus arquivos</div>
             <div class="upload-subtitle">pdf, imagens, documentos, links e outros</div>
             
@@ -318,7 +324,7 @@ try {
                     <i class="fa-solid fa-paste"></i> Texto copiado
                 </div>
             </div>
-            <input type="file" x-ref="fileInput" @change="uploadFile($event)" accept=".pdf,.txt,.md,.png,.jpg,.jpeg" style="display: none;">
+            <input type="file" x-ref="fileInput" @change="uploadFile($event.target.files[0])" accept=".pdf,.txt,.md,.png,.jpg,.jpeg" style="display: none;">
         </div>
 
         <!-- Estado de Upload / Processamento -->
@@ -399,6 +405,7 @@ try {
                 files: <?php echo json_encode($arquivos); ?>,
                 masterMemory: <?php echo json_encode($memoriaMestra ?: ''); ?>,
                 uploading: false,
+                isDragging: false,
                 progress: 0,
                 statusMsg: '',
                 modal: {
@@ -461,8 +468,12 @@ try {
                     });
                 },
 
-                uploadFile(event) {
-                    const file = event.target.files[0];
+                handleDrop(e) {
+                    const file = e.dataTransfer.files[0];
+                    if (file) this.uploadFile(file);
+                },
+
+                uploadFile(file) {
                     if (!file) return;
 
                     this.uploading = true;
