@@ -11,11 +11,6 @@ require_once __DIR__ . '/../../includes/ia_roteiros.php';
 
 exigirAutenticacao();
 
-// DEBUG: Ativar logs de erro para descobrir o motivo do 500
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-$logFile = __DIR__ . '/../../uploads/roteiros/conhecimento/erro_upload.log';
-
 // Aumentar tempo de execução para processamento da IA
 set_time_limit(600); 
 ini_set('memory_limit', '1024M');
@@ -88,7 +83,6 @@ if (move_uploaded_file($arquivo['tmp_name'], $targetPath)) {
             'nome' => $arquivo['name']
         ]);
     } catch (Exception $e) {
-        file_put_contents($logFile, "[" . date('Y-m-d H:i:s') . "] ERRO: " . $e->getMessage() . "\n", FILE_APPEND);
         responderJson(['success' => false, 'error' => $e->getMessage()], 500);
     }
 } else {
