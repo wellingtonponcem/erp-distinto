@@ -35,16 +35,32 @@ try {
         $nome = "Texto Copiado (" . date('H:i') . ")";
         $texto = $value;
     } elseif ($type === 'url') {
-        $nome = "Link: " . parse_url($value, PHP_URL_HOST);
+        $host = parse_url($value, PHP_URL_HOST);
+        $nome = "Link: " . $host;
         
         // Scraping básico
-        $html = @file_get_contents($value);
-        if (!$html) throw new Exception("Não foi possível acessar a URL.");
+        $ctx = stream_context_create(['http' => ['timeout' => 10, 'header' => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\r\n"]]);
+        $html = @file_get_contents($value, false, $ctx);
         
-        // Limpeza básica de HTML
-        $texto = strip_tags($html);
-        $texto = preg_replace('/\s+/', ' ', $texto); // Remove espaços duplos e quebras excessivas
+        if (!$html) throw new Exception("Não foi possível acessar a URL. Verifique se o site permite acesso.");
+        
+        // Tentar pegar o título da página
+        if (preg_match('/<title>(.*?)<\/title>/is', $html, $matches)) {
+            $nome = "Link: " . trim($matches[1]);
+        }
+
+        // Limpeza de HTML
+        $texto = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $html);
+        $texto = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', '', $texto);
+        $texto = strip_tags($texto);
+        $texto = html_entity_decode($texto);
+        $texto = preg_replace('/\s+/', ' ', $texto); 
         $texto = trim($texto);
+
+        // Se for YouTube, adicionar nota
+        if (strpos($host, 'youtube.com') !== false || strpos($host, 'youtu.be') !== false) {
+            $texto = "Conteúdo de Vídeo (YouTube): \n" . $texto;
+        }
     }
 
     $stmt = $db->prepare("INSERT INTO roteiros_conhecimento (nome_arquivo, caminho_arquivo, tipo_arquivo, texto_extraido) VALUES (?, ?, ?, ?) RETURNING id");

@@ -6,7 +6,7 @@ exigirAutenticacao();
 
 $db = Database::get();
 
-// Buscar arquivos
+// Buscar arquivos/fontes
 $stmt = $db->query("SELECT * FROM roteiros_conhecimento ORDER BY created_at DESC");
 $arquivos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -25,6 +25,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Base de Conhecimento — Distinto</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         :root {
@@ -75,81 +76,89 @@ try {
             color: var(--text);
         }
 
-        .upload-card {
+        /* NotebookLM Style Upload Zone */
+        .upload-zone {
             background: var(--surface);
             border: 2px dashed var(--border);
-            padding: 3rem;
+            padding: 4rem 2rem;
             text-align: center;
-            border-radius: 12px;
+            border-radius: 24px;
             margin-bottom: 3rem;
-            cursor: pointer;
-            transition: border-color 0.2s;
+            transition: all 0.3s;
+            position: relative;
         }
 
-        .upload-card:hover { border-color: var(--accent); }
-
-        .input-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 3rem;
+        .upload-zone:hover {
+            border-color: rgba(232, 255, 71, 0.3);
+            background: rgba(255,255,255,0.01);
         }
 
-        .input-option {
-            background: var(--surface);
+        .upload-title {
+            font-size: 24px;
+            font-family: var(--serif);
+            font-style: italic;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .upload-subtitle {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 2.5rem;
+        }
+
+        .input-pills {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            background: rgba(255,255,255,0.03);
             border: 1px solid var(--border);
-            padding: 1.5rem;
-            border-radius: 16px;
-            text-align: center;
+            padding: 10px 20px;
+            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             cursor: pointer;
             transition: all 0.2s;
-        }
-
-        .input-option:hover {
-            border-color: var(--accent);
-            transform: translateY(-2px);
-            background: var(--surface2);
-        }
-
-        .input-option i {
-            font-size: 24px;
-            color: var(--accent);
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .input-option span {
             font-size: 13px;
             font-weight: 500;
-            display: block;
+            color: var(--text);
         }
 
-        .input-option .desc {
-            font-size: 10px;
-            color: var(--muted);
-            margin-top: 5px;
+        .pill:hover {
+            background: rgba(255,255,255,0.07);
+            border-color: var(--accent);
+            transform: translateY(-2px);
         }
 
+        .pill i { font-size: 14px; }
+        .pill i.fa-youtube { color: #ff0000; }
+
+        /* File List */
         .file-list { display: flex; flex-direction: column; gap: 10px; }
-        
         .file-item {
             background: var(--surface);
             border: 1px solid var(--border);
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
+            padding: 1.2rem 1.5rem;
+            border-radius: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
         .file-info { display: flex; align-items: center; gap: 15px; }
-        .file-icon { color: var(--accent); font-size: 20px; }
-        .file-name { font-weight: 500; }
-        .file-date { font-size: 12px; color: var(--muted); }
+        .file-icon { color: var(--accent); font-size: 18px; }
+        .file-name { font-weight: 500; font-size: 14px; }
+        .file-date { font-size: 11px; color: var(--muted); }
 
         .btn-delete {
             background: none; border: none; color: #ff4747; cursor: pointer; font-size: 12px;
+            opacity: 0.6; transition: opacity 0.2s;
         }
+        .btn-delete:hover { opacity: 1; }
 
         /* Memória Mestra */
         .memory-section {
@@ -161,19 +170,10 @@ try {
         .memory-card {
             background: linear-gradient(145deg, #181818, #111111);
             border: 1px solid rgba(232, 255, 71, 0.1);
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 2.5rem;
             position: relative;
             overflow: hidden;
-        }
-
-        .memory-card::before {
-            content: '';
-            position: absolute;
-            top: 0; right: 0;
-            width: 150px; height: 150px;
-            background: radial-gradient(circle, rgba(232, 255, 71, 0.05) 0%, transparent 70%);
-            pointer-events: none;
         }
 
         .memory-content {
@@ -181,13 +181,6 @@ try {
             line-height: 1.8;
             color: rgba(255,255,255,0.8);
             white-space: pre-wrap;
-        }
-
-        .memory-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
         }
 
         .memory-badge {
@@ -219,8 +212,8 @@ try {
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.9);
-            backdrop-filter: blur(8px);
+            background: rgba(0,0,0,0.92);
+            backdrop-filter: blur(10px);
             z-index: 2000;
             display: flex;
             align-items: center;
@@ -232,16 +225,16 @@ try {
             background: var(--surface2);
             border: 1px solid var(--border);
             padding: 2.5rem;
-            border-radius: 20px;
-            max-width: 400px;
+            border-radius: 24px;
+            max-width: 450px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
         }
 
         .modal-title {
             font-family: var(--display);
-            font-size: 24px;
+            font-size: 28px;
             margin-bottom: 1rem;
             color: var(--text);
         }
@@ -254,7 +247,7 @@ try {
 
         .modal-footer {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: center;
         }
 
@@ -262,19 +255,19 @@ try {
             background: rgba(255,255,255,0.05);
             color: var(--text);
             border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 10px 24px;
+            border-radius: 10px;
             cursor: pointer;
+            font-weight: 500;
         }
 
         .progress-container {
             width: 100%;
-            height: 6px;
+            height: 4px;
             background: rgba(255,255,255,0.05);
             border-radius: 10px;
-            margin-top: 20px;
+            margin-top: 25px;
             overflow: hidden;
-            display: none;
         }
 
         .progress-bar {
@@ -287,57 +280,51 @@ try {
         .status-msg {
             font-size: 11px;
             color: var(--accent);
-            margin-top: 10px;
+            margin-top: 15px;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        input[type="file"] { 
-            position: absolute;
-            width: 0;
-            height: 0;
-            opacity: 0;
-            overflow: hidden;
-            pointer-events: none;
+            letter-spacing: 0.15em;
+            font-weight: 600;
         }
     </style>
 </head>
 <body x-data="knowledgeManager()">
     <div class="page-wrap">
-        <a href="index.php" class="back-link">← Voltar para Roteiros</a>
-        
-        <div class="header" style="display: flex; justify-content: space-between; align-items: flex-end;">
-            <div>
-                <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 8px;">Aprendizado IA (NotebookLM Style)</div>
-                <h1>Base de <em>Conhecimento</em></h1>
-            </div>
-            <button @click="rebuildMemory()" class="btn-accent" :disabled="uploading">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <a href="index.php" class="back-link">← Voltar para Roteiros</a>
+            <button @click="rebuildMemory()" class="btn-accent" style="padding: 6px 14px; font-size: 11px; border-radius: 6px;" :disabled="uploading">
                 <i class="fa-solid fa-sync" :class="uploading ? 'fa-spin' : ''"></i> Sincronizar Memória
             </button>
         </div>
+        
+        <div class="header">
+            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.25em; color: var(--accent); margin-bottom: 12px; font-weight: 700;">Inteligência Artificial</div>
+            <h1>Base de <em>Conhecimento</em></h1>
+        </div>
 
-        <div class="input-grid" x-show="!uploading">
-            <div class="input-option" @click="$refs.fileInput.click()">
-                <i class="fa-solid fa-file-arrow-up"></i>
-                <span>Arquivo</span>
-                <div class="desc">PDF, TXT, MD</div>
-            </div>
-            <div class="input-option" @click="openLinkModal()">
-                <i class="fa-solid fa-link"></i>
-                <span>Link / URL</span>
-                <div class="desc">Artigos, Blogs, Sites</div>
-            </div>
-            <div class="input-option" @click="openTextModal()">
-                <i class="fa-solid fa-paste"></i>
-                <span>Texto Copiado</span>
-                <div class="desc">Colar manualmente</div>
+        <!-- NotebookLM Style Input Zone -->
+        <div class="upload-zone" x-show="!uploading">
+            <div class="upload-title">ou solte seus arquivos</div>
+            <div class="upload-subtitle">pdf, imagens, documentos, links e outros</div>
+            
+            <div class="input-pills">
+                <div class="pill" @click="$refs.fileInput.click()">
+                    <i class="fa-solid fa-arrow-up-from-bracket"></i> Enviar arquivos
+                </div>
+                <div class="pill" @click="openLinkModal()">
+                    <i class="fa-solid fa-link"></i>
+                    <i class="fa-brands fa-youtube"></i> Sites
+                </div>
+                <div class="pill" @click="openTextModal()">
+                    <i class="fa-solid fa-paste"></i> Texto copiado
+                </div>
             </div>
             <input type="file" x-ref="fileInput" @change="uploadFile($event)" accept=".pdf,.txt,.md" style="display: none;">
         </div>
 
-        <div x-show="uploading" class="upload-card" style="pointer-events: none; opacity: 0.9">
+        <!-- Estado de Upload / Processamento -->
+        <div x-show="uploading" class="upload-zone" style="opacity: 0.9; border-style: solid;">
             <div class="status-msg" x-text="statusMsg"></div>
-            <div class="progress-container" style="display: block;">
+            <div class="progress-container">
                 <div class="progress-bar" :style="`width: ${progress}%`"></div>
             </div>
         </div>
@@ -346,16 +333,18 @@ try {
             <template x-for="file in files" :key="file.id">
                 <div class="file-item">
                     <div class="file-info">
-                        <div class="file-icon" x-text="file.tipo_arquivo === 'pdf' ? '📕' : '📄'"></div>
+                        <div class="file-icon">
+                            <i :class="file.tipo_arquivo === 'url' ? 'fa-solid fa-link' : (file.tipo_arquivo === 'text' ? 'fa-solid fa-paste' : 'fa-solid fa-file-lines')"></i>
+                        </div>
                         <div>
                             <div class="file-name" x-text="file.nome_arquivo"></div>
                             <div class="file-date" x-text="formatDate(file.created_at)"></div>
                         </div>
                     </div>
-                    <div style="display: flex; gap: 15px; align-items: center;">
-                        <span style="font-size: 10px; color: #47ff85;" x-show="file.ativo">Processado</span>
+                    <div style="display: flex; gap: 20px; align-items: center;">
+                        <span style="font-size: 10px; color: var(--accent); font-weight: 700; opacity: 0.8;" x-show="file.ativo">APRENDIDO</span>
                         <button class="btn-delete" @click="deleteFile(file.id)" :disabled="uploading">
-                            <i class="fa-solid fa-trash"></i> Excluir
+                            <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </div>
                 </div>
@@ -365,9 +354,9 @@ try {
         <!-- Memória Mestra Consolidada -->
         <template x-if="masterMemory">
             <div class="memory-section">
-                <div class="memory-header">
-                    <h2 style="font-family: var(--serif); font-style: italic; font-size: 24px;">Memória Mestra Destilada</h2>
-                    <span class="memory-badge">Inteligência Consolidada</span>
+                <div class="memory-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h2 style="font-family: var(--serif); font-style: italic; font-size: 28px;">O que a IA sabe</h2>
+                    <span class="memory-badge">Cérebro Digital</span>
                 </div>
                 <div class="memory-card">
                     <div class="memory-content" x-text="masterMemory"></div>
@@ -375,7 +364,7 @@ try {
             </div>
         </template>
 
-        <!-- Modal Customizado (Geral) -->
+        <!-- Modal Customizado -->
         <template x-if="modal.show">
             <div class="modal-overlay">
                 <div class="modal-card">
@@ -383,13 +372,13 @@ try {
                     <div class="modal-text" x-text="modal.text"></div>
                     
                     <template x-if="modal.input === 'url'">
-                        <input type="url" x-model="modal.inputValue" placeholder="https://exemplo.com/artigo" 
-                               style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; margin-bottom: 1.5rem;">
+                        <input type="url" x-model="modal.inputValue" placeholder="https://exemplo.com ou link do YouTube" 
+                               style="width: 100%; padding: 14px; background: #000; border: 1px solid var(--border); border-radius: 12px; color: #fff; margin-bottom: 2rem; outline: none; font-family: inherit;">
                     </template>
 
                     <template x-if="modal.input === 'textarea'">
-                        <textarea x-model="modal.inputValue" placeholder="Cole seu texto aqui..." rows="6"
-                               style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; margin-bottom: 1.5rem; font-family: inherit; font-size: 13px;"></textarea>
+                        <textarea x-model="modal.inputValue" placeholder="Cole seu conhecimento estratégico aqui..." rows="8"
+                               style="width: 100%; padding: 14px; background: #000; border: 1px solid var(--border); border-radius: 12px; color: #fff; margin-bottom: 2rem; font-family: inherit; font-size: 14px; outline: none; resize: none;"></textarea>
                     </template>
 
                     <div class="modal-footer">
@@ -413,8 +402,8 @@ try {
                     show: false,
                     title: '',
                     text: '',
-                    type: 'alert', // 'alert', 'confirm', 'input'
-                    input: '', // 'url', 'textarea'
+                    type: 'alert',
+                    input: '',
                     inputValue: '',
                     onConfirm: null
                 },
@@ -429,7 +418,7 @@ try {
 
                 openLinkModal() {
                     this.modal = { 
-                        show: true, title: 'Adicionar Link', text: 'Insira a URL de um site ou artigo:', 
+                        show: true, title: 'Adicionar Link', text: 'Insira a URL de um site, artigo ou vídeo do YouTube:', 
                         type: 'confirm', input: 'url', inputValue: '',
                         onConfirm: () => this.saveSource('url', this.modal.inputValue)
                     };
@@ -452,7 +441,7 @@ try {
                     if (!value) return;
                     this.uploading = true;
                     this.progress = 50;
-                    this.statusMsg = type === 'url' ? 'Lendo site...' : 'Salvando texto...';
+                    this.statusMsg = type === 'url' ? 'Lendo conteúdo...' : 'Salvando texto...';
 
                     fetch('../api/roteiros/salvar_fonte.php', {
                         method: 'POST',
@@ -464,7 +453,7 @@ try {
                         if (res.success) {
                             location.reload();
                         } else {
-                            this.showAlert('Erro', res.error);
+                            this.showAlert('Ops!', res.error);
                         }
                     });
                 },
@@ -481,13 +470,10 @@ try {
                     formData.append('arquivo', file);
 
                     const xhr = new XMLHttpRequest();
-                    
                     xhr.upload.addEventListener('progress', (e) => {
                         if (e.lengthComputable) {
                             this.progress = Math.round((e.loaded / e.total) * 100);
-                            if (this.progress === 100) {
-                                this.statusMsg = 'Processando pela IA (Destilando Conhecimento)...';
-                            }
+                            if (this.progress === 100) this.statusMsg = 'Destilando Conhecimento (IA)...';
                         }
                     });
 
@@ -497,56 +483,41 @@ try {
                             if (xhr.status === 200) {
                                 try {
                                     const res = JSON.parse(xhr.responseText);
-                                    if (res.success) {
-                                        location.reload();
-                                    } else {
-                                        this.showAlert('Ops!', res.error);
-                                    }
-                                } catch(e) {
-                                    this.showAlert('Erro', 'Resposta inválida do servidor');
-                                }
-                            } else {
-                                this.showAlert('Erro', 'Falha crítica no servidor');
-                            }
+                                    if (res.success) location.reload();
+                                    else this.showAlert('Ops!', res.error);
+                                } catch(e) { this.showAlert('Erro', 'Resposta inválida do servidor'); }
+                            } else { this.showAlert('Erro', 'Falha no servidor'); }
                         }
                     };
-
                     xhr.open('POST', '../api/roteiros/upload_conhecimento.php', true);
                     xhr.send(formData);
                 },
 
                 deleteFile(id) {
-                    this.showConfirm('Remover Fonte', 'Deseja remover esta fonte? A memória da IA será reconstruída sem este conteúdo.', () => {
+                    this.showConfirm('Remover Fonte', 'Deseja remover esta fonte? A memória será reconstruída.', () => {
                         fetch('../api/roteiros/deletar_conhecimento.php', {
                             method: 'POST',
                             body: JSON.stringify({ id })
                         })
                         .then(r => r.json())
                         .then(res => {
-                            if (res.success) {
-                                location.reload();
-                            } else {
-                                this.showAlert('Erro', res.error);
-                            }
+                            if (res.success) location.reload();
+                            else this.showAlert('Erro', res.error);
                         });
                     });
                 },
 
                 rebuildMemory() {
-                    this.showConfirm('Sincronizar Memória', 'Deseja reconstruir a memória mestra? A IA lerá todas as fontes novamente.', () => {
+                    this.showConfirm('Sincronizar', 'Deseja reconstruir a inteligência consolidada?', () => {
                         this.uploading = true;
-                        this.statusMsg = 'Reconstruindo Memória Mestra...';
+                        this.statusMsg = 'Reconstruindo Memória...';
                         this.progress = 50;
-
                         fetch('../api/roteiros/sincronizar_memoria.php', { method: 'POST' })
                         .then(r => r.json())
                         .then(res => {
                             this.uploading = false;
-                            if (res.success) {
-                                location.reload();
-                            } else {
-                                this.showAlert('Erro', res.error);
-                            }
+                            if (res.success) location.reload();
+                            else this.showAlert('Erro', res.error);
                         });
                     });
                 },
