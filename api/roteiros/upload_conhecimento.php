@@ -25,10 +25,10 @@ if (empty($_FILES['arquivo'])) {
 
 $arquivo = $_FILES['arquivo'];
 $ext = strtolower(pathinfo($arquivo['name'], PATHINFO_EXTENSION));
-$permitidos = ['pdf', 'txt', 'md'];
+$permitidos = ['pdf', 'txt', 'md', 'png', 'jpg', 'jpeg'];
 
 if (!in_array($ext, $permitidos)) {
-    responderJson(['erro' => 'Formato de arquivo não permitido. Use PDF, TXT ou MD.'], 422);
+    responderJson(['erro' => 'Formato não permitido. Use PDF, TXT, MD ou Imagens (JPG, PNG).'], 422);
 }
 
 $targetDir = __DIR__ . '/../../uploads/roteiros/conhecimento/';
@@ -43,8 +43,16 @@ if (move_uploaded_file($arquivo['tmp_name'], $targetPath)) {
     if ($ext === 'txt' || $ext === 'md') {
         $texto = file_get_contents($targetPath);
     } elseif ($ext === 'pdf') {
-        // Tentativa de extração básica de PDF (sem bibliotecas externas)
         $texto = extrairTextoPdfBasico($targetPath);
+    } elseif (in_array($ext, ['png', 'jpg', 'jpeg'])) {
+        // IA Vision: Transforma imagem em texto
+        $imageData = base64_encode(file_get_contents($targetPath));
+        $mimeType = mime_content_type($targetPath);
+        $texto = IARoteiros::descreverImagem($imageData, $mimeType);
+        
+        if (strpos($texto, 'Erro') === 0) {
+            throw new Exception($texto);
+        }
     }
 
     try {

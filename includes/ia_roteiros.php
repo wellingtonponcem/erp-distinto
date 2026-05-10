@@ -10,14 +10,14 @@ require_once __DIR__ . '/../config/database.php';
 class IARoteiros
 {
 
-    private static function chamarGroq(array $mensagens)
+    public static function chamarGroq(array $mensagens, string $model = null)
     {
         $apiKey = defined('GROQ_API_KEY') ? GROQ_API_KEY : '';
         if (!$apiKey)
             return "Erro: GROQ_API_KEY não configurada.";
 
         $payload = json_encode([
-            'model' => defined('GROQ_MODEL') ? GROQ_MODEL : 'llama-3.3-70b-versatile',
+            'model' => $model ?: (defined('GROQ_MODEL') ? GROQ_MODEL : 'llama-3.3-70b-versatile'),
             'messages' => $mensagens,
             'temperature' => 0.8,
             'max_tokens' => 2000
@@ -43,6 +43,32 @@ class IARoteiros
 
         $dados = json_decode($resposta, true);
         return $dados['choices'][0]['message']['content'] ?? "Erro ao processar resposta da IA.";
+    }
+
+    /**
+     * Utiliza o modelo Vision do Groq para extrair texto de uma imagem
+     */
+    public static function descreverImagem(string $base64Image, string $mimeType) {
+        $prompt = "Extraia todo o texto estratégico, diretrizes, metodologias ou ideias contidas nesta imagem. 
+Se for um print de rede social, identifique o tom de voz e os ganchos utilizados. 
+Responda apenas com o texto extraído e organizado.";
+
+        $mensagens = [
+            [
+                'role' => 'user',
+                'content' => [
+                    ['type' => 'text', 'text' => $prompt],
+                    [
+                        'type' => 'image_url',
+                        'image_url' => [
+                            'url' => "data:$mimeType;base64,$base64Image"
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        return self::chamarGroq($mensagens, 'llama-3.2-11b-vision-preview');
     }
 
     /**
