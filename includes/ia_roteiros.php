@@ -7,11 +7,14 @@
 require_once __DIR__ . '/../config/env.php';
 require_once __DIR__ . '/../config/database.php';
 
-class IARoteiros {
-    
-    private static function chamarGroq(array $mensagens) {
+class IARoteiros
+{
+
+    private static function chamarGroq(array $mensagens)
+    {
         $apiKey = defined('GROQ_API_KEY') ? GROQ_API_KEY : '';
-        if (!$apiKey) return "Erro: GROQ_API_KEY não configurada.";
+        if (!$apiKey)
+            return "Erro: GROQ_API_KEY não configurada.";
 
         $payload = json_encode([
             'model' => defined('GROQ_MODEL') ? GROQ_MODEL : 'llama-3.3-70b-versatile',
@@ -45,12 +48,13 @@ class IARoteiros {
     /**
      * Obtém os roteiros com melhor score para servir de exemplo.
      */
-    private static function getMelhoresRoteiros() {
+    private static function getMelhoresRoteiros()
+    {
         try {
             $db = Database::get();
             $stmt = $db->query("SELECT titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta FROM roteiros WHERE score > 0 ORDER BY score DESC LIMIT 3");
             $roteiros = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
+
             $texto = "";
             foreach ($roteiros as $r) {
                 $texto .= "EXEMPLO DE ALTO SCORE:\n";
@@ -65,20 +69,22 @@ class IARoteiros {
     /**
      * Obtém a memória consolidada ou a base de conhecimento bruta.
      */
-    private static function getBaseConhecimento() {
+    private static function getBaseConhecimento()
+    {
         try {
             $db = Database::get();
-            
+
             // Tenta pegar a memória consolidada primeiro
             $stmt = $db->query("SELECT conteudo FROM roteiros_memoria LIMIT 1");
             $memoria = $stmt->fetchColumn();
-            
-            if ($memoria) return $memoria;
+
+            if ($memoria)
+                return $memoria;
 
             // Fallback: Base bruta se não houver memória
             $stmt = $db->query("SELECT texto_extraido FROM roteiros_conhecimento WHERE ativo = TRUE");
             $textos = $stmt->fetchAll(PDO::FETCH_COLUMN);
-            
+
             return implode("\n\n---\n\n", $textos);
         } catch (Exception $e) {
             return "";
@@ -88,9 +94,10 @@ class IARoteiros {
     /**
      * Pega o conhecimento bruto e consolida na memória mestra.
      */
-    public static function consolidarMemoria(string $novoTexto) {
+    public static function consolidarMemoria(string $novoTexto)
+    {
         $memoriaAtual = self::getBaseConhecimento();
-        
+
         $promptSistema = "Você é um Engenheiro de Conhecimento e Estrategista.
 Sua tarefa é REUNIR e DESTILAR informações em uma única 'Memória Mestra'.
 
@@ -119,18 +126,55 @@ Gere a nova Memória Mestra Consolidada:";
             ['role' => 'user', 'content' => $promptUsuario]
         ]);
 
-        if (strpos($novaMemoria, 'Erro') === 0) return false;
+        if (strpos($novaMemoria, 'Erro') === 0)
+            return false;
 
         try {
             $db = Database::get();
             // Garante tabela de memória
             $db->exec("CREATE TABLE IF NOT EXISTS roteiros_memoria (id SERIAL PRIMARY KEY, conteudo TEXT, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
-            
+
             // Limpa e insere a nova memória (Sempre mantemos apenas 1 registro mestre)
             $db->exec("DELETE FROM roteiros_memoria");
             $stmt = $db->prepare("INSERT INTO roteiros_memoria (conteudo) VALUES (?)");
             $stmt->execute([$novaMemoria]);
+
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Reconstrói a memória mestra do zero usando todas as fontes ativas.
+     * Útil quando uma fonte é removida.
+     */
+    public static function reconstruirMemoria() {
+        try {
+            $db = Database::get();
+            $stmt = $db->query("SELECT texto_extraido FROM roteiros_conhecimento WHERE ativo = TRUE");
+            $textos = $stmt->fetchAll(PDO::FETCH_COLUMN);
             
+            if (empty($textos)) {
+                $db->exec("DELETE FROM roteiros_memoria");
+                return true;
+            }
+
+            // Começamos com a primeira fonte e vamos consolidando as outras
+            $db->exec("DELETE FROM roteiros_memoria");
+            
+            $memoriaAcumulada = "";
+            foreach ($textos as $t) {
+                // Se for a primeira, apenas salva. Se já tiver algo, consolida.
+                if (empty($memoriaAcumulada)) {
+                    $memoriaAcumulada = $t;
+                    // Salva inicial para o consolidarMemoria ter algo para ler
+                    $stmt = $db->prepare("INSERT INTO roteiros_memoria (conteudo) VALUES (?)");
+                    $stmt->execute([$t]);
+                } else {
+                    self::consolidarMemoria($t);
+                }
+            }
             return true;
         } catch (Exception $e) {
             return false;
@@ -140,10 +184,11 @@ Gere a nova Memória Mestra Consolidada:";
     /**
      * Gera um novo roteiro baseado em um tema e no conhecimento prévio.
      */
-    public static function gerarRoteiro(string $briefing = '') {
+    public static function gerarRoteiro(string $briefing = '')
+    {
         $conhecimento = self::getBaseConhecimento();
         $exemplos = self::getMelhoresRoteiros();
-        
+
         $promptSistema = "Você é um Estrategista de Social Media e Roteirista de Elite.
 Sua missão é criar roteiros de alto impacto baseados no contexto abaixo.
 

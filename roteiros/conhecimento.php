@@ -99,7 +99,30 @@ $arquivos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             background: none; border: none; color: #ff4747; cursor: pointer; font-size: 12px;
         }
 
-        input[type="file"] { display: none; }
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-top: 20px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .status-msg {
+            font-size: 11px;
+            color: var(--accent);
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
     </style>
 </head>
 <body x-data="knowledgeManager()">
@@ -111,12 +134,18 @@ $arquivos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <h1>Base de <em>Conhecimento</em></h1>
         </div>
 
-        <div class="upload-card" @click="$refs.fileInput.click()">
+        <div class="upload-card" @click="$refs.fileInput.click()" :style="uploading ? 'pointer-events: none; opacity: 0.7' : ''">
             <input type="file" x-ref="fileInput" @change="uploadFile($event)" accept=".pdf,.txt,.md">
             <div style="font-size: 40px; margin-bottom: 10px;">📄</div>
             <p style="font-size: 18px; font-family: var(--serif); font-style: italic;">Clique para subir suas aulas, PDFs ou notas</p>
             <p style="font-size: 12px; color: var(--muted); margin-top: 10px;">Suporta PDF, TXT e MD</p>
-            <div x-show="uploading" style="margin-top: 20px; color: var(--accent);">Subindo arquivo...</div>
+            
+            <div x-show="uploading" style="display: block; width: 100%;">
+                <div class="status-msg" x-text="statusMsg"></div>
+                <div class="progress-container" style="display: block;">
+                    <div class="progress-bar" :style="`width: ${progress}%`"></div>
+                </div>
+            </div>
         </div>
 
         <div class="file-list">
@@ -130,8 +159,10 @@ $arquivos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                     </div>
                     <div style="display: flex; gap: 15px; align-items: center;">
-                        <span style="font-size: 10px; color: #47ff85;" x-show="file.ativo">Ativo</span>
-                        <!-- <button class="btn-delete">Excluir</button> -->
+                        <span style="font-size: 10px; color: #47ff85;" x-show="file.ativo">Processado</span>
+                        <button class="btn-delete" @click="deleteFile(file.id)" :disabled="uploading">
+                            <i class="fa-solid fa-trash"></i> Excluir
+                        </button>
                     </div>
                 </div>
             </template>
@@ -143,26 +174,64 @@ $arquivos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             return {
                 files: <?php echo json_encode($arquivos); ?>,
                 uploading: false,
+                progress: 0,
+                statusMsg: '',
 
                 uploadFile(event) {
                     const file = event.target.files[0];
                     if (!file) return;
 
                     this.uploading = true;
+                    this.progress = 0;
+                    this.statusMsg = 'Subindo arquivo...';
+
                     const formData = new FormData();
                     formData.append('arquivo', file);
 
-                    fetch('../api/roteiros/upload_conhecimento.php', {
+                    const xhr = new XMLHttpRequest();
+                    
+                    xhr.upload.addEventListener('progress', (e) => {
+                        if (e.lengthComputable) {
+                            this.progress = Math.round((e.loaded / e.total) * 100);
+                            if (this.progress === 100) {
+                                this.statusMsg = 'Processando pela IA (Destilando Conhecimento)...';
+                            }
+                        }
+                    });
+
+                    xhr.onreadystatechange = () => {
+                        if (xhr.readyState === 4) {
+                            this.uploading = false;
+                            if (xhr.status === 200) {
+                                const res = JSON.parse(xhr.responseText);
+                                if (res.success) {
+                                    location.reload();
+                                } else {
+                                    alert('Erro: ' + res.error);
+                                }
+                            } else {
+                                alert('Erro no servidor');
+                            }
+                        }
+                    };
+
+                    xhr.open('POST', '../api/roteiros/upload_conhecimento.php', true);
+                    xhr.send(formData);
+                },
+
+                deleteFile(id) {
+                    if (!confirm('Tem certeza que deseja remover esta fonte? A memória da IA será reconstruída sem este conteúdo.')) return;
+                    
+                    fetch('../api/roteiros/deletar_conhecimento.php', {
                         method: 'POST',
-                        body: formData
+                        body: JSON.stringify({ id })
                     })
                     .then(r => r.json())
                     .then(res => {
-                        this.uploading = false;
                         if (res.success) {
                             location.reload();
                         } else {
-                            alert('Erro: ' + res.error);
+                            alert('Erro ao deletar: ' + res.error);
                         }
                     });
                 },
