@@ -151,7 +151,7 @@ exigirAutenticacao();
         .swipe-container {
             position: relative;
             overflow: hidden;
-            border-radius: 8px;
+            border-radius: 12px;
             background: var(--surface);
             margin-bottom: 10px;
         }

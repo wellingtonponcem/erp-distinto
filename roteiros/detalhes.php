@@ -441,7 +441,7 @@ try {
                     <textarea class="form-control"
                         :readonly="!editing"
                         x-init="resize($el)" @input="resize($el)"
-                        style="background: var(--surface2); border-left: 3px solid var(--accent2); border-radius: 0 4px 4px 0; font-size: 1rem;"
+                        style="background: var(--surface2); border-left: 3px solid var(--accent2); border-radius: 0 4px 4px 0; font-size: 1rem; padding-left: 15px;"
                         x-model="data.cta"></textarea>
                 </div>
             </div>
