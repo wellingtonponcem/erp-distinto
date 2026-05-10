@@ -6,8 +6,17 @@ exigirAutenticacao();
 
 $db = Database::get();
 
+// Garante que a coluna sincronizado existe (migração segura)
+try {
+    $db->exec("ALTER TABLE roteiros_conhecimento ADD COLUMN IF NOT EXISTS sincronizado BOOLEAN DEFAULT FALSE");
+} catch (Exception $e) {}
+
 // Buscar arquivos/fontes
-$stmt = $db->query("SELECT id, nome_arquivo, caminho_arquivo, tipo_arquivo, ativo, created_at, COALESCE(sincronizado, FALSE) as sincronizado FROM roteiros_conhecimento ORDER BY created_at DESC");
+try {
+    $stmt = $db->query("SELECT id, nome_arquivo, caminho_arquivo, tipo_arquivo, ativo, created_at, COALESCE(sincronizado, FALSE) as sincronizado FROM roteiros_conhecimento ORDER BY created_at DESC");
+} catch (Exception $e) {
+    $stmt = $db->query("SELECT id, nome_arquivo, caminho_arquivo, tipo_arquivo, ativo, created_at, FALSE as sincronizado FROM roteiros_conhecimento ORDER BY created_at DESC");
+}
 $arquivos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Buscar memória mestra consolidada
