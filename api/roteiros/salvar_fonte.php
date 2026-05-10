@@ -32,7 +32,16 @@ try {
     $texto = "";
 
     if ($type === 'text') {
-        $nome = "Texto Copiado (" . date('H:i') . ")";
+        // Tenta gerar um título curto via IA para o texto colado
+        $promptTitulo = "Dê um título de no máximo 4 palavras para este texto estratégico:\n\n" . substr($value, 0, 500);
+        $nome = IARoteiros::chamarGroq([['role' => 'user', 'content' => $promptTitulo]]);
+        
+        // Limpa possíveis aspas ou erros do título
+        $nome = trim(str_replace('"', '', $nome));
+        if (strpos($nome, 'Erro') === 0 || strlen($nome) > 60) {
+            $nome = "Texto Copiado (" . date('H:i') . ")";
+        }
+        
         $texto = $value;
     } elseif ($type === 'url') {
         $host = parse_url($value, PHP_URL_HOST);

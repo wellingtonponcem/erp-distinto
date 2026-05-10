@@ -334,7 +334,10 @@ try {
                 <div class="file-item">
                     <div class="file-info">
                         <div class="file-icon">
-                            <i :class="file.tipo_arquivo === 'url' ? 'fa-solid fa-link' : (file.tipo_arquivo === 'text' ? 'fa-solid fa-paste' : 'fa-solid fa-file-lines')"></i>
+                            <template x-if="file.tipo_arquivo === 'url'"><i class="fa-solid fa-link"></i></template>
+                            <template x-if="file.tipo_arquivo === 'text'"><i class="fa-solid fa-paste"></i></template>
+                            <template x-if="file.tipo_arquivo === 'pdf'"><i class="fa-solid fa-file-pdf"></i></template>
+                            <template x-if="file.tipo_arquivo !== 'url' && file.tipo_arquivo !== 'text' && file.tipo_arquivo !== 'pdf'"><i class="fa-solid fa-file-lines"></i></template>
                         </div>
                         <div>
                             <div class="file-name" x-text="file.nome_arquivo"></div>

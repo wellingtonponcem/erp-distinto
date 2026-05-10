@@ -164,13 +164,25 @@ Gere a nova Memória Mestra Consolidada:";
                 return true;
             }
 
-            // Unifica todos os textos para uma única destilação potente
-            $textoUnificado = implode("\n\n---\n\n", $textos);
+            // Filtra textos vazios para não confundir a IA
+            $textosFiltrados = array_filter($textos, fn($t) => !empty(trim($t)));
             
-            $promptSistema = "Você é um Engenheiro de Conhecimento. Sua tarefa é ler diversos fragmentos de conhecimento e criar uma ÚNICA Memória Mestra Organizada.
-Extraia a essência estratégica, metodologias e diretrizes. Remova repetições. O resultado deve ser denso e pronto para orientar uma IA roteirista.";
+            if (empty($textosFiltrados)) {
+                $db->exec("DELETE FROM roteiros_memoria");
+                return true;
+            }
 
-            $promptUsuario = "Abaixo estão as fontes de conhecimento:\n\n$textoUnificado\n\nGere a Memória Mestra Consolidada:";
+            $textoUnificado = implode("\n\n--- PRÓXIMA FONTE ---\n\n", $textosFiltrados);
+            
+            $promptSistema = "Você é um Engenheiro de Conhecimento Senior. Sua missão é criar o 'Cérebro Digital' do usuário.
+Você receberá múltiplos fragmentos de fontes diferentes (PDFs, Notas, Sites).
+### REGRAS CRÍTICAS:
+1. NÃO ignore nenhuma fonte. Se houver 3 fontes, a memória deve refletir o conhecimento das 3.
+2. Organize por tópicos (Diretrizes, Tom de Voz, Gatilhos, Estruturas).
+3. Seja denso. Se uma fonte fala de 'Gatilhos Mentais' e outra de 'Copywriting', combine ambas sem perder detalhes técnicos.
+4. Nunca use emojis. Responda apenas com a Memória Mestra Consolidada.";
+
+            $promptUsuario = "Abaixo estão todas as fontes carregadas pelo usuário:\n\n$textoUnificado\n\nPor favor, consolide TODO esse conhecimento em uma Memória Mestra única e organizada:";
 
             $novaMemoria = self::chamarGroq([
                 ['role' => 'system', 'content' => $promptSistema],
