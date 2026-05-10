@@ -13,6 +13,11 @@ try {
     if (!$stmt->fetch()) {
         $db->exec("ALTER TABLE configuracao_empresa ADD COLUMN groq_api_key VARCHAR(255) NULL");
     }
+    
+    $stmt = $db->query("SHOW COLUMNS FROM configuracao_empresa LIKE 'gemini_api_key'");
+    if (!$stmt->fetch()) {
+        $db->exec("ALTER TABLE configuracao_empresa ADD COLUMN gemini_api_key VARCHAR(255) NULL");
+    }
 } catch (Exception $e) {}
 
 $config = $db->query("SELECT * FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
@@ -26,6 +31,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($_POST['groq_api_key'])) {
         $campos[] = 'groq_api_key';
         $vals[] = trim($_POST['groq_api_key']);
+    }
+
+    if (!empty($_POST['gemini_api_key'])) {
+        $campos[] = 'gemini_api_key';
+        $vals[] = trim($_POST['gemini_api_key']);
     }
     
     $sets = implode(', ', array_map(fn($c) => "`$c` = ?", $campos));
@@ -88,8 +98,20 @@ include __DIR__ . '/includes/layout/head.php';
                         <?php endif; ?>
                     </label>
                     <input class="input" type="password" name="groq_api_key" placeholder="<?= !empty($config['groq_api_key']) ? '••••••••••••••••••••••••••••••••' : 'gsk_...' ?>">
-                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">Deixe em branco para manter a chave atual. Essa chave substitui a do arquivo .env.</p>
+                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">Utilizada para geração de roteiros ultra-rápida.</p>
                 </div>
+
+                <div style="margin-bottom:24px;">
+                    <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>Gemini API Key (Google)</span>
+                        <?php if (!empty($config['gemini_api_key'])): ?>
+                            <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Chave salva</span>
+                        <?php endif; ?>
+                    </label>
+                    <input class="input" type="password" name="gemini_api_key" placeholder="<?= !empty($config['gemini_api_key']) ? '••••••••••••••••••••••••••••••••' : 'AIza...' ?>">
+                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">Essencial para Visão (OCR), leitura de imagens e PDFs.</p>
+                </div>
+
                 <button type="submit" class="btn-primary">
                     <i data-lucide="save" style="width:15px;height:15px;"></i> Salvar Configurações
                 </button>
@@ -113,6 +135,13 @@ include __DIR__ . '/includes/layout/head.php';
                     <?php $temGroq = !empty($config['groq_api_key']) || !empty(GROQ_API_KEY); ?>
                     <div style="color:<?= $temGroq ? '#10b981' : '#ef4444' ?>;">
                         <?= $temGroq ? '✓ Configurada' : '✗ Não configurada' ?>
+                    </div>
+                </div>
+                <div>
+                    <div style="color:#6b7280; margin-bottom:2px;">Gemini API Key</div>
+                    <?php $temGemini = !empty($config['gemini_api_key']) || !empty(GEMINI_API_KEY); ?>
+                    <div style="color:<?= $temGemini ? '#10b981' : '#ef4444' ?>;">
+                        <?= $temGemini ? '✓ Configurada' : '✗ Não configurada' ?>
                     </div>
                 </div>
                 <div>
