@@ -430,15 +430,25 @@ try {
                     </template>
 
                     <template x-if="!textModal.carregando">
-                        <div style="flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 1rem;">
-                            <textarea 
-                                x-model="textModal.texto"
-                                :readonly="!textModal.editavel"
-                                style="flex: 1; min-height: 450px; padding: 16px; border-radius: 12px; font-family: inherit; font-size: 14px; line-height: 1.7; outline: none; resize: vertical; width: 100%; box-sizing: border-box;"
-                                :style="textModal.editavel ? 'background: #111; border: 1px solid rgba(232,255,71,0.3); color: #fff;' : 'background: transparent; border: none; color: #fff; cursor: default;'"
-                            ></textarea>
+                        <div style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; padding-right: 8px;">
+                            
+                            <template x-if="!textModal.editavel">
+                                <div 
+                                    x-text="textModal.texto"
+                                    style="color: #fff; font-family: inherit; font-size: 14px; line-height: 1.7; white-space: pre-wrap; word-wrap: break-word;"
+                                ></div>
+                            </template>
 
-                            <div class="modal-footer" style="padding: 0;">
+                            <template x-if="textModal.editavel">
+                                <textarea 
+                                    x-model="textModal.texto"
+                                    style="flex: 1; min-height: 450px; padding: 16px; background: #111; border: 1px solid rgba(232,255,71,0.3); border-radius: 12px; color: #fff; font-family: inherit; font-size: 14px; line-height: 1.7; outline: none; resize: vertical; width: 100%; box-sizing: border-box; overflow: hidden;"
+                                    x-init="$nextTick(() => { $el.style.height = $el.scrollHeight + 'px' })"
+                                    @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'"
+                                ></textarea>
+                            </template>
+
+                            <div class="modal-footer" style="padding: 0; margin-top: 1rem; position: sticky; bottom: 0; background: var(--bg-card); padding-top: 1rem;">
                                 <button class="btn-modal-cancel" @click="textModal.show = false">Fechar</button>
                                 <template x-if="textModal.editavel">
                                     <button class="btn-accent" @click="salvarTextoFonte()" :disabled="textModal.salvando">
