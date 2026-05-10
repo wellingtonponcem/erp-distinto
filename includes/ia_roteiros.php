@@ -10,11 +10,22 @@ require_once __DIR__ . '/../config/database.php';
 class IARoteiros
 {
 
+    private static function getConfig(string $chave) {
+        try {
+            $db = Database::get();
+            $stmt = $db->prepare("SELECT valor FROM sistema_config WHERE chave = ?");
+            $stmt->execute([$chave]);
+            return $stmt->fetchColumn();
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
     public static function chamarGroq(array $mensagens, string $model = null)
     {
-        $apiKey = defined('GROQ_API_KEY') ? GROQ_API_KEY : '';
-        if (!$apiKey)
-            return "Erro: GROQ_API_KEY não configurada.";
+        $apiKey = self::getConfig('groq_api_key') ?: (defined('GROQ_API_KEY') ? GROQ_API_KEY : '');
+        if (!$apiKey || strpos($apiKey, 'SUA_') === 0)
+            return "Erro: GROQ_API_KEY não configurada no banco de dados ou env.php.";
 
         $payload = json_encode([
             'model' => $model ?: (defined('GROQ_MODEL') ? GROQ_MODEL : 'llama-3.3-70b-versatile'),
@@ -48,14 +59,53 @@ class IARoteiros
         return $dados['choices'][0]['message']['content'] ?? "Erro: Resposta da IA não contém conteúdo. Body: " . json_encode($dados);
     }
 
+    public static function chamarGemini(array $parts)
+    {
+        $apiKey = self::getConfig('gemini_api_key') ?: (defined('GEMINI_API_KEY') ? GEMINI_API_KEY : '');
+        if (!$apiKey || strpos($apiKey, 'SUA_') === 0)
+            return "Erro: GEMINI_API_KEY não configurada no banco de dados ou env.php.";
+
+        $payload = json_encode([
+            'contents' => [
+                ['parts' => $parts]
+            ],
+            'generationConfig' => [
+                'temperature' => 0.4,
+                'maxOutputTokens' => 4096
+            ]
+        ]);
+
+        $ch = curl_init("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=$apiKey");
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $payload,
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json']
+        ]);
+
+        $resposta = curl_exec($ch);
+        $dados = json_decode($resposta, true);
+
+        return $dados['candidates'][0]['content']['parts'][0]['text'] ?? "Erro ao processar Gemini: " . $resposta;
+    }
+
     /**
-     * Utiliza o modelo Vision do Groq para extrair texto de uma imagem
+     * Utiliza o modelo Vision (Gemini 1.5 Flash ou Groq) para extrair texto de uma imagem
      */
     public static function descreverImagem(string $base64Image, string $mimeType) {
         $prompt = "Extraia todo o texto estratégico, diretrizes, metodologias ou ideias contidas nesta imagem. 
 Se for um print de rede social, identifique o tom de voz e os ganchos utilizados. 
 Responda apenas com o texto extraído e organizado.";
 
+        // Tenta usar Gemini primeiro (Melhor para visão)
+        if (defined('GEMINI_API_KEY') && strpos(GEMINI_API_KEY, 'SUA_') === false) {
+            return self::chamarGemini([
+                ['text' => $prompt],
+                ['inline_data' => ['mime_type' => $mimeType, 'data' => $base64Image]]
+            ]);
+        }
+
+        // Fallback para Groq Vision
         $mensagens = [
             [
                 'role' => 'user',
@@ -63,9 +113,7 @@ Responda apenas com o texto extraído e organizado.";
                     ['type' => 'text', 'text' => $prompt],
                     [
                         'type' => 'image_url',
-                        'image_url' => [
-                            'url' => 'data:' . $mimeType . ';base64,' . $base64Image
-                        ]
+                        'image_url' => ['url' => 'data:' . $mimeType . ';base64,' . $base64Image]
                     ]
                 ]
             ]
