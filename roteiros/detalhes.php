@@ -106,7 +106,7 @@ try {
             color: var(--accent);
         }
 
-        .header h1 {
+        .header-main h1 {
             font-family: var(--serif);
             font-style: italic;
             font-size: 1.2rem;
