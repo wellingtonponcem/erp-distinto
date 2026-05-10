@@ -5,8 +5,18 @@ require_once __DIR__ . '/../config/database.php';
 exigirAutenticacao();
 
 $db = Database::get();
+
+// Buscar arquivos
 $stmt = $db->query("SELECT * FROM roteiros_conhecimento ORDER BY created_at DESC");
 $arquivos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Buscar memória mestra consolidada
+try {
+    $stmtMem = $db->query("SELECT conteudo FROM roteiros_memoria LIMIT 1");
+    $memoriaMestra = $stmtMem->fetchColumn();
+} catch(Exception $e) {
+    $memoriaMestra = "";
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -99,6 +109,56 @@ $arquivos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             background: none; border: none; color: #ff4747; cursor: pointer; font-size: 12px;
         }
 
+        /* Memória Mestra */
+        .memory-section {
+            margin-top: 5rem;
+            border-top: 1px solid var(--border);
+            padding-top: 3rem;
+        }
+
+        .memory-card {
+            background: linear-gradient(145deg, #181818, #111111);
+            border: 1px solid rgba(232, 255, 71, 0.1);
+            border-radius: 16px;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .memory-card::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 150px; height: 150px;
+            background: radial-gradient(circle, rgba(232, 255, 71, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .memory-content {
+            font-size: 14px;
+            line-height: 1.8;
+            color: rgba(255,255,255,0.8);
+            white-space: pre-wrap;
+        }
+
+        .memory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .memory-badge {
+            background: var(--accent);
+            color: #000;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
         .progress-container {
             width: 100%;
             height: 6px;
@@ -138,9 +198,14 @@ $arquivos = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="page-wrap">
         <a href="index.php" class="back-link">← Voltar para Roteiros</a>
         
-        <div class="header">
-            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 8px;">Aprendizado IA (NotebookLM Style)</div>
-            <h1>Base de <em>Conhecimento</em></h1>
+        <div class="header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+                <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 8px;">Aprendizado IA (NotebookLM Style)</div>
+                <h1>Base de <em>Conhecimento</em></h1>
+            </div>
+            <button @click="rebuildMemory()" class="btn-secondary" style="font-size: 11px; padding: 6px 12px;" :disabled="uploading">
+                <i class="fa-solid fa-sync" :class="uploading ? 'fa-spin' : ''"></i> Sincronizar Memória
+            </button>
         </div>
 
         <div class="upload-card" @click="$refs.fileInput.click()" :style="uploading ? 'pointer-events: none; opacity: 0.7' : ''">
@@ -176,12 +241,26 @@ $arquivos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </template>
         </div>
+
+        <!-- Memória Mestra Consolidada -->
+        <template x-if="masterMemory">
+            <div class="memory-section">
+                <div class="memory-header">
+                    <h2 style="font-family: var(--serif); font-style: italic; font-size: 24px;">Memória Mestra Destilada</h2>
+                    <span class="memory-badge">Inteligência Consolidada</span>
+                </div>
+                <div class="memory-card">
+                    <div class="memory-content" x-text="masterMemory"></div>
+                </div>
+            </div>
+        </template>
     </div>
 
     <script>
         function knowledgeManager() {
             return {
                 files: <?php echo json_encode($arquivos); ?>,
+                masterMemory: <?php echo json_encode($memoriaMestra ?: ''); ?>,
                 uploading: false,
                 progress: 0,
                 statusMsg: '',
@@ -241,6 +320,25 @@ $arquivos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             location.reload();
                         } else {
                             alert('Erro ao deletar: ' + res.error);
+                        }
+                    });
+                },
+
+                rebuildMemory() {
+                    if (!confirm('Deseja reconstruir a memória mestra? A IA lerá todas as fontes novamente para garantir que nada foi esquecido.')) return;
+                    
+                    this.uploading = true;
+                    this.statusMsg = 'Reconstruindo Memória Mestra...';
+                    this.progress = 50;
+
+                    fetch('../api/roteiros/sincronizar_memoria.php', { method: 'POST' })
+                    .then(r => r.json())
+                    .then(res => {
+                        this.uploading = false;
+                        if (res.success) {
+                            location.reload();
+                        } else {
+                            alert('Erro: ' + res.error);
                         }
                     });
                 },
