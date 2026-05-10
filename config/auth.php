@@ -29,11 +29,21 @@ function exigirAutenticacao(): void {
             exit;
         }
 
+        // Tenta usar a APP_URL se disponível, senão usa lógica de path
+        if (defined('APP_URL')) {
+            header('Location: ' . rtrim(APP_URL, '/') . '/index.php');
+            exit;
+        }
+
         $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
-        // Calcula profundidade do arquivo atual para achar o index.php
-        $depth = substr_count(str_replace($base, '', $_SERVER['SCRIPT_NAME']), '/') - 1;
-        $prefix = str_repeat('../', max(0, $depth));
-        header('Location: ' . $prefix . 'index.php');
+        // Se já estivermos no index.php da raiz, não redireciona (evita loop)
+        if ($base === '' || $base === '/' || $base === '/sistema') {
+             // Se cair aqui e não estiver autenticado, algo está errado no roteamento
+             // mas vamos evitar o redirect loop forçado
+             die("Acesso negado. Faça login na página inicial.");
+        }
+
+        header('Location: ../index.php');
         exit;
     }
 }

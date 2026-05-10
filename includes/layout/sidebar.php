@@ -132,6 +132,10 @@ function menuAtivo(string $path): string {
             <i data-lucide="message-square-quote" style="width:17px;height:17px;"></i>
             <span class="nav-label">Depoimentos</span>
         </a>
+        <a href="<?= raizUrl('/roteiros/index.php') ?>" class="nav-link <?= menuAtivo('/roteiros') ?>">
+            <i data-lucide="video" style="width:17px;height:17px;"></i>
+            <span class="nav-label">Roteiros</span>
+        </a>
 
         <div class="nav-section">Sistema</div>
         <a href="<?= raizUrl('/configuracoes.php') ?>" class="nav-link <?= menuAtivo('/configuracoes') ?>">
