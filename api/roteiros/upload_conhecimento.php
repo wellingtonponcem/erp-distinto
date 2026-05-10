@@ -71,16 +71,15 @@ if (move_uploaded_file($arquivo['tmp_name'], $targetPath)) {
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )");
 
-        $stmt = $db->prepare("INSERT INTO roteiros_conhecimento (nome_arquivo, caminho_arquivo, tipo_arquivo, texto_extraido) VALUES (?, ?, ?, ?) RETURNING id");
+        $stmt = $db->prepare("INSERT INTO roteiros_conhecimento (nome_arquivo, caminho_arquivo, tipo_arquivo, texto_extraido) VALUES (?, ?, ?, ?) RETURNING id, nome_arquivo, tipo_arquivo, created_at, ativo");
         $stmt->execute([$arquivo['name'], 'uploads/roteiros/conhecimento/' . $novoNome, $ext, $texto]);
-        $newId = $stmt->fetchColumn();
+        $arquivo_salvo = $stmt->fetch(PDO::FETCH_ASSOC);
 
         // Consolidação de Memória
         IARoteiros::consolidarMemoria($texto);
 
-        // Busca a memória atualizada e os dados completos do arquivo para retornar ao frontend
+        // Busca a memória atualizada para retornar ao frontend
         $novaMemoria = $db->query("SELECT conteudo FROM roteiros_memoria LIMIT 1")->fetchColumn();
-        $arquivo_salvo = $db->query("SELECT id, nome_arquivo, tipo_arquivo, created_at, ativo FROM roteiros_conhecimento WHERE id = $newId")->fetch(PDO::FETCH_ASSOC);
 
         responderJson([
             'success'       => true,
