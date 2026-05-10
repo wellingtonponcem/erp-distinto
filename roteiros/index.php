@@ -58,8 +58,8 @@ exigirAutenticacao();
 
         .header-title h1 {
             font-family: var(--display);
-            font-size: clamp(40px, 6vw, 64px);
-            line-height: 0.92;
+            font-size: 1.3rem;
+            line-height: 1;
             letter-spacing: 0.01em;
             color: var(--text);
         }
