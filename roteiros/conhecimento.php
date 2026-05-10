@@ -318,7 +318,7 @@ try {
                     <i class="fa-solid fa-paste"></i> Texto copiado
                 </div>
             </div>
-            <input type="file" x-ref="fileInput" @change="uploadFile($event)" accept=".pdf,.txt,.md" style="display: none;">
+            <input type="file" x-ref="fileInput" @change="uploadFile($event)" accept=".pdf,.txt,.md,.png,.jpg,.jpeg" style="display: none;">
         </div>
 
         <!-- Estado de Upload / Processamento -->
