@@ -414,15 +414,15 @@ try {
                     <h3>Identificação & Intenção</h3>
                     <div style="margin-bottom: 1rem;">
                         <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Número / ID</label>
-                        <input type="number" class="form-control" x-model="data.numero" :readonly="!editing">
+                        <input type="number" class="form-control" x-model="data.numero" @input="editing = true">
                     </div>
                     <div style="margin-bottom: 1rem;">
                         <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Intenção</label>
-                        <input type="text" class="form-control" x-model="data.intencao" :readonly="!editing" placeholder="Ex: CONSTRUIR AUTORIDADE">
+                        <input type="text" class="form-control" x-model="data.intencao" @input="editing = true" placeholder="Ex: CONSTRUIR AUTORIDADE">
                     </div>
                     <div>
                         <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Tema</label>
-                        <input type="text" class="form-control" x-model="data.tema" :readonly="!editing" placeholder="Ex: Exposição e medo de aparecer">
+                        <input type="text" class="form-control" x-model="data.tema" @input="editing = true" placeholder="Ex: Exposição e medo de aparecer">
                     </div>
                 </div>
 
@@ -431,7 +431,7 @@ try {
                     <div style="margin-bottom: 1rem;">
                         <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Status
                             Atual</label>
-                        <select class="form-control" x-model="data.status" :disabled="!editing">
+                        <select class="form-control" x-model="data.status" @change="editing = true">
                             <option value="pendente">Pendente</option>
                             <option value="gravado">Gravado</option>
                             <option value="editado">Editado</option>
@@ -441,7 +441,7 @@ try {
                     <div>
                         <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Tags
                             (separadas por vírgula)</label>
-                        <input type="text" class="form-control" x-model="data.tags" :readonly="!editing">
+                        <input type="text" class="form-control" x-model="data.tags" @input="editing = true">
                     </div>
                 </div>
 
@@ -450,19 +450,19 @@ try {
                     <div class="metrics-grid">
                         <div>
                             <label style="font-size: 10px;">Views</label>
-                            <input type="number" class="form-control" x-model="data.views" :readonly="!editing">
+                            <input type="number" class="form-control" x-model="data.views" @input="editing = true">
                         </div>
                         <div>
                             <label style="font-size: 10px;">Likes</label>
-                            <input type="number" class="form-control" x-model="data.likes" :readonly="!editing">
+                            <input type="number" class="form-control" x-model="data.likes" @input="editing = true">
                         </div>
                         <div>
                             <label style="font-size: 10px;">Shares</label>
-                            <input type="number" class="form-control" x-model="data.shares" :readonly="!editing">
+                            <input type="number" class="form-control" x-model="data.shares" @input="editing = true">
                         </div>
                         <div>
                             <label style="font-size: 10px;">Reposts</label>
-                            <input type="number" class="form-control" x-model="data.reposts" :readonly="!editing">
+                            <input type="number" class="form-control" x-model="data.reposts" @input="editing = true">
                         </div>
                     </div>
                 </div>
