@@ -8,12 +8,6 @@ exigirAutenticacao();
 $tituloPagina = 'Configurações';
 $db = Database::get();
 
-// Garante que as colunas de IA existam (PostgreSQL nativo)
-try {
-    $db->exec("ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS groq_api_key VARCHAR(255) NULL");
-    $db->exec("ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS gemini_api_key VARCHAR(255) NULL");
-} catch (Exception $e) {}
-
 $config = $db->query("SELECT id, nome, cnpj, telefone, email, endereco, groq_api_key, gemini_api_key FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
 
 $sucesso = '';
