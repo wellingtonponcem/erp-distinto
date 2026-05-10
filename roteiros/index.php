@@ -119,6 +119,24 @@ exigirAutenticacao();
             cursor: pointer;
             transition: all 0.2s;
             background: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .pill-count {
+            font-size: 10px;
+            font-family: var(--display);
+            background: rgba(255,255,255,0.1);
+            padding: 2px 6px;
+            border-radius: 10px;
+            opacity: 0.7;
+        }
+
+        .nav-pill.active .pill-count {
+            background: rgba(10,10,10,0.2);
+            opacity: 1;
         }
 
         .nav-pill:hover, .nav-pill.active {
@@ -335,10 +353,18 @@ exigirAutenticacao();
 
         <div class="nav-bar">
             <div class="nav-pills">
-                <button class="nav-pill" :class="filter === 'pendente' ? 'active' : ''" @click="setFilter('pendente')">Pendentes</button>
-                <button class="nav-pill" :class="filter === 'gravado' ? 'active' : ''" @click="setFilter('gravado')">Gravados</button>
-                <button class="nav-pill" :class="filter === 'postado' ? 'active' : ''" @click="setFilter('postado')">Postados</button>
-                <button class="nav-pill" :class="filter === 'todos' ? 'active' : ''" @click="setFilter('todos')">Todos</button>
+                <button class="nav-pill" :class="filter === 'pendente' ? 'active' : ''" @click="setFilter('pendente')">
+                    Pendentes <span class="pill-count" x-text="getCount('pendente')"></span>
+                </button>
+                <button class="nav-pill" :class="filter === 'gravado' ? 'active' : ''" @click="setFilter('gravado')">
+                    Gravados <span class="pill-count" x-text="getCount('gravado')"></span>
+                </button>
+                <button class="nav-pill" :class="filter === 'postado' ? 'active' : ''" @click="setFilter('postado')">
+                    Postados <span class="pill-count" x-text="getCount('postado')"></span>
+                </button>
+                <button class="nav-pill" :class="filter === 'todos' ? 'active' : ''" @click="setFilter('todos')">
+                    Todos <span class="pill-count" x-text="scripts.length"></span>
+                </button>
             </div>
         </div>
 
@@ -517,6 +543,10 @@ exigirAutenticacao();
                 },
 
                 setFilter(f) { this.filter = f; },
+
+                getCount(status) {
+                    return this.scripts.filter(s => s.status === status).length;
+                },
 
                 openModal() {
                     this.newScript = { tema: '', briefing: '' };
