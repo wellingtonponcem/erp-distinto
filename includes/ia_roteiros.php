@@ -280,7 +280,7 @@ Sua tarefa é REUNIR e DESTILAR informações em uma única 'Memória Mestra'.
 OBJETIVO: extrair apenas a essência estratégica, metodologias, tom de voz e diretrizes.
 Elimine redundâncias, mescle o novo conteúdo com a memória atual de forma fluida.
 REGRAS: Nunca use emojis. Seja direto. Priorize o conteúdo mais recente em contradições. Português do Brasil."],
-            ['role' => 'user', 'content' => "### MEMÓRIA ATUAL:\n$memoriaAtual\n\n### NOVO CONTEÚDO:\n$novoTexto\n\nGere a nova Memória Mestra Consolidada:"]
+            ['role' => 'user', 'content' => "### MEMÓRIA ATUAL:\n" . mb_substr($memoriaAtual, 0, 14000) . "\n\n### NOVO CONTEÚDO:\n" . mb_substr($novoTexto, 0, 10000) . "\n\nGere a nova Memória Mestra Consolidada:"]
         ]);
 
         if (strpos($novaMemoria, 'Erro') === 0) return false;
@@ -315,13 +315,15 @@ REGRAS: Nunca use emojis. Seja direto. Priorize o conteúdo mais recente em cont
 
             $textoUnificado = implode("\n\n--- PRÓXIMA FONTE ---\n\n", $textosFiltrados);
 
+            $textoUnificadoTruncado = mb_substr($textoUnificado, 0, 24000);
+
             $novaMemoria = self::chamarGroq([
                 ['role' => 'system', 'content' => "Você é um Engenheiro de Conhecimento Senior. Crie o 'Cérebro Digital' do usuário.
 REGRAS CRÍTICAS:
 1. NÃO ignore nenhuma fonte.
 2. Organize por tópicos (Diretrizes, Tom de Voz, Gatilhos, Estruturas).
 3. Seja denso e técnico. Nunca use emojis. Português do Brasil."],
-                ['role' => 'user', 'content' => "Fontes carregadas:\n\n$textoUnificado\n\nConsolide TODO esse conhecimento em uma Memória Mestra única e organizada:"]
+                ['role' => 'user', 'content' => "Fontes carregadas:\n\n$textoUnificadoTruncado\n\nConsolide TODO esse conhecimento em uma Memória Mestra única e organizada:"]
             ]);
 
             if (strpos($novaMemoria, 'Erro') === 0) return $novaMemoria;

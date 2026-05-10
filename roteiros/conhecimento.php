@@ -7,7 +7,7 @@ exigirAutenticacao();
 $db = Database::get();
 
 // Buscar arquivos/fontes
-$stmt = $db->query("SELECT * FROM roteiros_conhecimento ORDER BY created_at DESC");
+$stmt = $db->query("SELECT id, nome_arquivo, caminho_arquivo, tipo_arquivo, ativo, created_at, COALESCE(sincronizado, FALSE) as sincronizado FROM roteiros_conhecimento ORDER BY created_at DESC");
 $arquivos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Buscar memória mestra consolidada
@@ -343,15 +343,21 @@ try {
                             <template x-if="file.tipo_arquivo === 'url'"><i class="fa-solid fa-link"></i></template>
                             <template x-if="file.tipo_arquivo === 'text'"><i class="fa-solid fa-paste"></i></template>
                             <template x-if="file.tipo_arquivo === 'pdf'"><i class="fa-solid fa-file-pdf"></i></template>
-                            <template x-if="file.tipo_arquivo !== 'url' && file.tipo_arquivo !== 'text' && file.tipo_arquivo !== 'pdf'"><i class="fa-solid fa-file-lines"></i></template>
+                            <template x-if="['png','jpg','jpeg'].includes(file.tipo_arquivo)"><i class="fa-solid fa-image"></i></template>
+                            <template x-if="!['url','text','pdf','png','jpg','jpeg'].includes(file.tipo_arquivo)"><i class="fa-solid fa-file-lines"></i></template>
                         </div>
                         <div>
                             <div class="file-name" x-text="file.nome_arquivo"></div>
                             <div class="file-date" x-text="formatDate(file.created_at)"></div>
                         </div>
                     </div>
-                    <div style="display: flex; gap: 20px; align-items: center;">
-                        <span style="font-size: 10px; color: var(--accent); font-weight: 700; opacity: 0.8;" x-show="file.ativo">APRENDIDO</span>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <template x-if="file.sincronizado">
+                            <span title="Destilado na Memória Mestra" style="font-size: 9px; color: var(--accent); font-weight: 700; letter-spacing: 1px; background: rgba(232,255,71,0.08); padding: 3px 8px; border-radius: 20px; border: 1px solid rgba(232,255,71,0.2);">✦ NA MEMÓRIA</span>
+                        </template>
+                        <template x-if="!file.sincronizado">
+                            <span title="Ainda não destilado" style="font-size: 9px; color: #888; font-weight: 600; letter-spacing: 1px; background: rgba(255,255,255,0.03); padding: 3px 8px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08);">PENDENTE</span>
+                        </template>
                         <button class="btn-delete" @click="deleteFile(file.id)" :disabled="uploading">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
@@ -531,7 +537,10 @@ try {
                 // Atualiza o estado local com o resultado do upload/fonte — sem F5
                 adicionarResultado(res) {
                     if (res.arquivo) {
-                        this.files.unshift(res.arquivo);
+                        // Marca como sincronizado com base na resposta do servidor
+                        const novoArquivo = res.arquivo;
+                        novoArquivo.sincronizado = res.arquivo.sincronizado || false;
+                        this.files.unshift(novoArquivo);
                     }
                     if (res.nova_memoria) {
                         this.masterMemory = res.nova_memoria;

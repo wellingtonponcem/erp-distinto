@@ -75,11 +75,21 @@ if (move_uploaded_file($arquivo['tmp_name'], $targetPath)) {
         $stmt->execute([$arquivo['name'], 'uploads/roteiros/conhecimento/' . $novoNome, $ext, $texto]);
         $arquivo_salvo = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Consolidação de Memória
-        IARoteiros::consolidarMemoria($texto);
+        // Adicionar coluna sincronizado se não existir
+        $db->exec("ALTER TABLE roteiros_conhecimento ADD COLUMN IF NOT EXISTS sincronizado BOOLEAN DEFAULT FALSE");
+
+        // Consolidação de Memória e marcação de sincronizado
+        $consolidou = IARoteiros::consolidarMemoria($texto);
+
+        if ($consolidou) {
+            $db->prepare("UPDATE roteiros_conhecimento SET sincronizado = TRUE WHERE id = ?")->execute([$arquivo_salvo['id']]);
+        }
 
         // Busca a memória atualizada para retornar ao frontend
         $novaMemoria = $db->query("SELECT conteudo FROM roteiros_memoria LIMIT 1")->fetchColumn();
+
+        // Retorna também o arquivo com status de sincronização
+        $arquivo_salvo['sincronizado'] = $consolidou;
 
         responderJson([
             'success'       => true,
