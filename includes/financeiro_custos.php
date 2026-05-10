@@ -27,10 +27,18 @@ function colunaInfo(PDO $db, string $tabela, string $coluna): ?array {
     if (!in_array($tabela, $tabelasPermitidas, true)) return null;
 
     try {
-        $stmt = $db->prepare("SHOW COLUMNS FROM {$tabela} LIKE ?");
-        $stmt->execute([$coluna]);
-        $row = $stmt->fetch();
-        return $row ?: null;
+        $driver = $db->getAttribute(PDO::ATTR_DRIVER_NAME);
+        if ($driver === 'pgsql') {
+            $stmt = $db->prepare("SELECT column_name as \"Field\", data_type as \"Type\" FROM information_schema.columns WHERE table_name = ? AND column_name = ?");
+            $stmt->execute([$tabela, $coluna]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $row ?: null;
+        } else {
+            $stmt = $db->prepare("SHOW COLUMNS FROM {$tabela} LIKE ?");
+            $stmt->execute([$coluna]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $row ?: null;
+        }
     } catch (Exception $e) {
         return null;
     }
