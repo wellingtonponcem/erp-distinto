@@ -190,13 +190,21 @@ exigirAutenticacao();
             border-radius: 8px;
             padding: 1.5rem 2rem;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 1.5rem;
             text-decoration: none;
             color: inherit;
             transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.2s;
             touch-action: pan-y;
             user-select: none;
+        }
+
+        .card-num {
+            font-family: var(--display);
+            font-size: 32px;
+            color: var(--accent);
+            opacity: 0.5;
+            min-width: 40px;
         }
 
         .card-info { flex: 1; }
@@ -409,6 +417,7 @@ exigirAutenticacao();
                         @touchstart="touchStart($event)"
                         @touchmove="touchMove($event)"
                         @touchend="touchEnd()">
+                        <div class="card-num" x-text="String(script.numero || 0).padStart(2, '0')"></div>
                         <div class="card-info">
                             <div class="card-status" :class="'status-' + script.status">
                                 <div class="status-dot"></div>

@@ -375,7 +375,7 @@ try {
         <a href="index.php" class="back-link">← Voltar para todos</a>
 
         <div class="header-main">
-            <div class="header-id" x-text="data.numero || '01'"></div>
+            <div class="header-id" x-text="String(data.numero || 0).padStart(2, '0')"></div>
             <div style="flex: 1;">
                 <div class="header-intent" x-text="data.intencao || 'INTENÇÃO NÃO DEFINIDA'"></div>
                 <h1 x-text="data.titulo"></h1>
@@ -452,8 +452,8 @@ try {
                 <div class="sidebar-card">
                     <h3>Identificação & Intenção</h3>
                     <div style="margin-bottom: 1rem;">
-                        <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Número / ID</label>
-                        <input type="number" class="form-control" x-model="data.numero" @input="editing = true">
+                        <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Número de Registro (Permanente)</label>
+                        <input type="number" class="form-control" x-model="data.numero" readonly style="opacity: 0.7; cursor: not-allowed; background: var(--bg);">
                     </div>
                     <div style="margin-bottom: 1rem;">
                         <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Intenção</label>

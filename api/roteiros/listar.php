@@ -16,7 +16,7 @@ try {
     $status = $_GET['status'] ?? null;
     $tag = $_GET['tag'] ?? null;
 
-    $query = "SELECT id, titulo, status, formato, score, created_at FROM roteiros ORDER BY created_at DESC";
+    $query = "SELECT id, numero, titulo, status, formato, score, created_at FROM roteiros ORDER BY created_at DESC";
     $params = [];
 
     $stmt = $db->prepare($query);

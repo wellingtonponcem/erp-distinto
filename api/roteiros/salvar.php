@@ -29,12 +29,12 @@ try {
     $score = ($likes * 1) + ($comentarios * 5) + ($shares * 10) + ($reposts * 15) + ($salvamentos * 20);
 
     if (!empty($d['id'])) {
-        // Update
+        // Update - Numero is NOT updated here to remain permanent
         $stmt = $db->prepare("UPDATE roteiros SET 
             titulo = ?, gancho = ?, quebra_crenca = ?, desenvolvimento = ?, 
             conexao = ?, fechamento = ?, cta = ?, tags = ?, status = ?, 
             likes = ?, comentarios = ?, shares = ?, reposts = ?, salvamentos = ?, score = ?,
-            intencao = ?, tema = ?, numero = ?, updated_at = CURRENT_TIMESTAMP 
+            intencao = ?, tema = ?, updated_at = CURRENT_TIMESTAMP 
             WHERE id = ?");
         
         $stmt->execute([
@@ -42,23 +42,27 @@ try {
             $d['desenvolvimento'] ?? '', $d['conexao'] ?? '', $d['fechamento'] ?? '',
             $d['cta'] ?? '', $d['tags'] ?? '', $d['status'] ?? 'pendente',
             $likes, $comentarios, $shares, $reposts, $salvamentos, $score,
-            $d['intencao'] ?? '', $d['tema'] ?? '', $d['numero'] ?? 0,
+            $d['intencao'] ?? '', $d['tema'] ?? '',
             $d['id']
         ]);
         
         responderJson(['success' => true, 'id' => $d['id'], 'score' => $score]);
     } else {
-        // Insert
+        // Insert - Calculate next sequence number
+        $st = $db->query("SELECT COALESCE(MAX(numero), 0) + 1 as prox FROM roteiros");
+        $prox = $st->fetch(PDO::FETCH_ASSOC)['prox'];
+
         $stmt = $db->prepare("INSERT INTO roteiros 
             (titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, tags, formato, status, 
-            likes, comentarios, shares, reposts, salvamentos, score) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            likes, comentarios, shares, reposts, salvamentos, score, numero, intencao, tema) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         
         $stmt->execute([
             $d['titulo'], $d['gancho'] ?? '', $d['quebra_crenca'] ?? '',
             $d['desenvolvimento'] ?? '', $d['conexao'] ?? '', $d['fechamento'] ?? '',
             $d['cta'] ?? '', $d['tags'] ?? '', $d['formato'] ?? '', $d['status'] ?? 'pendente',
-            $likes, $comentarios, $shares, $reposts, $salvamentos, $score
+            $likes, $comentarios, $shares, $reposts, $salvamentos, $score,
+            $prox, $d['intencao'] ?? '', $d['tema'] ?? ''
         ]);
         
         responderJson(['success' => true, 'id' => $db->lastInsertId(), 'score' => $score]);
