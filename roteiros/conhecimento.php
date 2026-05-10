@@ -88,6 +88,48 @@ try {
 
         .upload-card:hover { border-color: var(--accent); }
 
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 3rem;
+        }
+
+        .input-option {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .input-option:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            background: var(--surface2);
+        }
+
+        .input-option i {
+            font-size: 24px;
+            color: var(--accent);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .input-option span {
+            font-size: 13px;
+            font-weight: 500;
+            display: block;
+        }
+
+        .input-option .desc {
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 5px;
+        }
+
         .file-list { display: flex; flex-direction: column; gap: 10px; }
         
         .file-item {
@@ -274,17 +316,29 @@ try {
             </button>
         </div>
 
-        <div class="upload-card" @click="$refs.fileInput.click()" :style="uploading ? 'pointer-events: none; opacity: 0.7' : ''">
-            <input type="file" x-ref="fileInput" @change="uploadFile($event)" accept=".pdf,.txt,.md">
-            <div style="font-size: 40px; margin-bottom: 10px;">📄</div>
-            <p style="font-size: 18px; font-family: var(--serif); font-style: italic;">Clique para subir suas aulas, PDFs ou notas</p>
-            <p style="font-size: 12px; color: var(--muted); margin-top: 10px;">Suporta PDF, TXT e MD</p>
-            
-            <div x-show="uploading" style="display: block; width: 100%;">
-                <div class="status-msg" x-text="statusMsg"></div>
-                <div class="progress-container" style="display: block;">
-                    <div class="progress-bar" :style="`width: ${progress}%`"></div>
-                </div>
+        <div class="input-grid" x-show="!uploading">
+            <div class="input-option" @click="$refs.fileInput.click()">
+                <i class="fa-solid fa-file-arrow-up"></i>
+                <span>Arquivo</span>
+                <div class="desc">PDF, TXT, MD</div>
+            </div>
+            <div class="input-option" @click="openLinkModal()">
+                <i class="fa-solid fa-link"></i>
+                <span>Link / URL</span>
+                <div class="desc">Artigos, Blogs, Sites</div>
+            </div>
+            <div class="input-option" @click="openTextModal()">
+                <i class="fa-solid fa-paste"></i>
+                <span>Texto Copiado</span>
+                <div class="desc">Colar manualmente</div>
+            </div>
+            <input type="file" x-ref="fileInput" @change="uploadFile($event)" accept=".pdf,.txt,.md" style="display: none;">
+        </div>
+
+        <div x-show="uploading" class="upload-card" style="pointer-events: none; opacity: 0.9">
+            <div class="status-msg" x-text="statusMsg"></div>
+            <div class="progress-container" style="display: block;">
+                <div class="progress-bar" :style="`width: ${progress}%`"></div>
             </div>
         </div>
 
@@ -321,14 +375,25 @@ try {
             </div>
         </template>
 
-        <!-- Modal Customizado -->
+        <!-- Modal Customizado (Geral) -->
         <template x-if="modal.show">
             <div class="modal-overlay">
                 <div class="modal-card">
                     <div class="modal-title" x-text="modal.title"></div>
                     <div class="modal-text" x-text="modal.text"></div>
+                    
+                    <template x-if="modal.input === 'url'">
+                        <input type="url" x-model="modal.inputValue" placeholder="https://exemplo.com/artigo" 
+                               style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; margin-bottom: 1.5rem;">
+                    </template>
+
+                    <template x-if="modal.input === 'textarea'">
+                        <textarea x-model="modal.inputValue" placeholder="Cole seu texto aqui..." rows="6"
+                               style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); border-radius: 8px; color: #fff; margin-bottom: 1.5rem; font-family: inherit; font-size: 13px;"></textarea>
+                    </template>
+
                     <div class="modal-footer">
-                        <button class="btn-modal-cancel" x-show="modal.type === 'confirm'" @click="modal.show = false">Cancelar</button>
+                        <button class="btn-modal-cancel" @click="modal.show = false">Cancelar</button>
                         <button class="btn-accent" @click="modalAction()">Confirmar</button>
                     </div>
                 </div>
@@ -348,7 +413,9 @@ try {
                     show: false,
                     title: '',
                     text: '',
-                    type: 'alert', // 'alert' ou 'confirm'
+                    type: 'alert', // 'alert', 'confirm', 'input'
+                    input: '', // 'url', 'textarea'
+                    inputValue: '',
                     onConfirm: null
                 },
 
@@ -360,9 +427,46 @@ try {
                     this.modal = { show: true, title, text, type: 'confirm', onConfirm: callback };
                 },
 
+                openLinkModal() {
+                    this.modal = { 
+                        show: true, title: 'Adicionar Link', text: 'Insira a URL de um site ou artigo:', 
+                        type: 'confirm', input: 'url', inputValue: '',
+                        onConfirm: () => this.saveSource('url', this.modal.inputValue)
+                    };
+                },
+
+                openTextModal() {
+                    this.modal = { 
+                        show: true, title: 'Colar Texto', text: 'Cole o conhecimento estratégico abaixo:', 
+                        type: 'confirm', input: 'textarea', inputValue: '',
+                        onConfirm: () => this.saveSource('text', this.modal.inputValue)
+                    };
+                },
+
                 modalAction() {
                     if (this.modal.onConfirm) this.modal.onConfirm();
                     this.modal.show = false;
+                },
+
+                saveSource(type, value) {
+                    if (!value) return;
+                    this.uploading = true;
+                    this.progress = 50;
+                    this.statusMsg = type === 'url' ? 'Lendo site...' : 'Salvando texto...';
+
+                    fetch('../api/roteiros/salvar_fonte.php', {
+                        method: 'POST',
+                        body: JSON.stringify({ type, value })
+                    })
+                    .then(r => r.json())
+                    .then(res => {
+                        this.uploading = false;
+                        if (res.success) {
+                            location.reload();
+                        } else {
+                            this.showAlert('Erro', res.error);
+                        }
+                    });
                 },
 
                 uploadFile(event) {
