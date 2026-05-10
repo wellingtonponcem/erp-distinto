@@ -347,7 +347,7 @@ try {
         <div class="file-list">
             <template x-for="file in files" :key="file.id">
                 <div class="file-item">
-                    <div class="file-info">
+                    <div class="file-info" style="cursor: pointer; flex: 1;" @click="openFonteModal(file)">
                         <div class="file-icon">
                             <template x-if="file.tipo_arquivo === 'url'"><i class="fa-solid fa-link"></i></template>
                             <template x-if="file.tipo_arquivo === 'text'"><i class="fa-solid fa-paste"></i></template>
@@ -356,7 +356,7 @@ try {
                             <template x-if="!['url','text','pdf','png','jpg','jpeg'].includes(file.tipo_arquivo)"><i class="fa-solid fa-file-lines"></i></template>
                         </div>
                         <div>
-                            <div class="file-name" x-text="file.nome_arquivo"></div>
+                            <div class="file-name" x-text="file.nome_arquivo" style="text-decoration: none; transition: color 0.2s;" :style="'cursor:pointer'" onmouseenter="this.style.color='var(--accent)'" onmouseleave="this.style.color=''"></div>
                             <div class="file-date" x-text="formatDate(file.created_at)"></div>
                         </div>
                     </div>
@@ -412,6 +412,45 @@ try {
                 </div>
             </div>
         </template>
+
+        <!-- Modal de Ver/Editar Texto da Fonte -->
+        <template x-if="textModal.show">
+            <div class="modal-overlay" @click.self="textModal.show = false">
+                <div class="modal-card" style="max-width: 700px; width: 95vw; max-height: 85vh; display: flex; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                        <div>
+                            <div class="modal-title" style="font-size: 20px;" x-text="textModal.nome"></div>
+                            <div style="font-size: 11px; color: var(--muted); margin-top: 4px;" x-text="textModal.editavel ? 'Clique no texto para editar' : 'Texto extraído pela IA (somente leitura)'"></div>
+                        </div>
+                        <button @click="textModal.show = false" style="background: none; border: none; color: var(--muted); cursor: pointer; font-size: 20px; line-height: 1;">✕</button>
+                    </div>
+
+                    <template x-if="textModal.carregando">
+                        <div style="text-align: center; padding: 3rem; color: var(--muted);">Carregando...</div>
+                    </template>
+
+                    <template x-if="!textModal.carregando">
+                        <div style="flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 1rem;">
+                            <textarea 
+                                x-model="textModal.texto"
+                                :readonly="!textModal.editavel"
+                                style="flex: 1; min-height: 350px; max-height: 50vh; padding: 16px; background: #000; border: 1px solid var(--border); border-radius: 12px; color: #d0cfc9; font-family: inherit; font-size: 13px; line-height: 1.7; outline: none; resize: vertical;"
+                                :style="textModal.editavel ? 'border-color: rgba(232,255,71,0.3);' : 'cursor: default;'"
+                            ></textarea>
+
+                            <div class="modal-footer" style="padding: 0;">
+                                <button class="btn-modal-cancel" @click="textModal.show = false">Fechar</button>
+                                <template x-if="textModal.editavel">
+                                    <button class="btn-accent" @click="salvarTextoFonte()" :disabled="textModal.salvando">
+                                        <span x-text="textModal.salvando ? 'Salvando...' : 'Salvar Alterações'"></span>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
     </div>
 
     <script>
@@ -433,8 +472,64 @@ try {
                     onConfirm: null
                 },
 
+                textModal: {
+                    show: false,
+                    id: null,
+                    nome: '',
+                    tipo: '',
+                    texto: '',
+                    carregando: true,
+                    editavel: false,
+                    salvando: false
+                },
+
                 showAlert(title, text) {
                     this.modal = { show: true, title, text, type: 'alert', onConfirm: null };
+                },
+
+                async openFonteModal(file) {
+                    this.textModal = {
+                        show: true,
+                        id: file.id,
+                        nome: file.nome_arquivo,
+                        tipo: file.tipo_arquivo,
+                        texto: '',
+                        carregando: true,
+                        editavel: file.tipo_arquivo === 'text',
+                        salvando: false
+                    };
+                    try {
+                        const res = await fetch(`../api/roteiros/fonte_texto.php?id=${file.id}`);
+                        const data = await res.json();
+                        if (data.success) {
+                            this.textModal.texto = data.fonte.texto_extraido || '(Sem conteúdo extraído ainda)';
+                        }
+                    } catch(e) {
+                        this.textModal.texto = 'Erro ao carregar o texto.';
+                    }
+                    this.textModal.carregando = false;
+                },
+
+                async salvarTextoFonte() {
+                    this.textModal.salvando = true;
+                    const formData = new FormData();
+                    formData.append('id', this.textModal.id);
+                    formData.append('texto', this.textModal.texto);
+                    try {
+                        const res = await fetch('../api/roteiros/fonte_texto.php', { method: 'POST', body: formData });
+                        const data = await res.json();
+                        if (data.success) {
+                            // Marca a fonte como pendente na lista (precisará resincronizar)
+                            const idx = this.files.findIndex(f => f.id === this.textModal.id);
+                            if (idx !== -1) this.files[idx].sincronizado = false;
+                            this.textModal.show = false;
+                        } else {
+                            this.showAlert('Erro', data.error);
+                        }
+                    } catch(e) {
+                        this.showAlert('Erro', 'Falha ao salvar.');
+                    }
+                    this.textModal.salvando = false;
                 },
 
                 showConfirm(title, text, callback) {
