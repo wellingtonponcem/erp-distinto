@@ -16,7 +16,7 @@ try {
     case 'GET':
         sincronizarLancamentosCustosFixos($db);
         $rows = $db->query("
-            SELECT *,
+            SELECT /* bypass_cache_v2 */ *,
               CASE
                 WHEN valor_pago >= valor THEN 'pago'
                 WHEN valor_pago > 0 THEN 'pago_parcial'
