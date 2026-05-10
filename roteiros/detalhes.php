@@ -107,7 +107,7 @@ try {
         .header h1 {
             font-family: var(--serif);
             font-style: italic;
-            font-size: clamp(28px, 4vw, 42px);
+            font-size: 1.3rem;
             line-height: 1.2;
             color: var(--text);
             margin: 0.5rem 0;
