@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $db->prepare("UPDATE configuracao_empresa SET $sets WHERE id = ?");
     $stmt->execute($vals);
     $sucesso = 'Configurações salvas com sucesso!';
-    $config = $db->query("SELECT * FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
+    $config = $db->query("SELECT id, nome, cnpj, telefone, email, endereco, groq_api_key, gemini_api_key FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
 }
 
 include __DIR__ . '/includes/layout/head.php';
