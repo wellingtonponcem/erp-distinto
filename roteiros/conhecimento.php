@@ -500,12 +500,19 @@ try {
                     };
                     try {
                         const res = await fetch(`../api/roteiros/fonte_texto.php?id=${file.id}`);
-                        const data = await res.json();
-                        if (data.success) {
-                            this.textModal.texto = data.fonte.texto_extraido || '(Sem conteúdo extraído ainda)';
+                        const text = await res.text();
+                        try {
+                            const data = JSON.parse(text);
+                            if (data.success) {
+                                this.textModal.texto = data.fonte.texto_extraido || '(Sem conteúdo extraído ainda)';
+                            } else {
+                                this.textModal.texto = 'Erro da API: ' + (data.error || data.erro || text);
+                            }
+                        } catch(jsonErr) {
+                            this.textModal.texto = 'Resposta inválida do servidor:\n\n' + text.replace(/<[^>]*>/g, '').trim().substring(0, 500);
                         }
                     } catch(e) {
-                        this.textModal.texto = 'Erro ao carregar o texto.';
+                        this.textModal.texto = 'Falha de rede ao carregar o texto: ' + e.message;
                     }
                     this.textModal.carregando = false;
                 },

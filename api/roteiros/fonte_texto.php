@@ -5,10 +5,15 @@
  * POST id + texto    → salva o texto editado
  */
 
+header('Content-Type: application/json; charset=utf-8');
+ob_start(); // Captura qualquer output indesejado (warnings, redirects)
+
 require_once __DIR__ . '/../../config/env.php';
 require_once __DIR__ . '/../../config/auth.php';
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../includes/helpers.php';
+
+ob_clean(); // Descarta qualquer output do auth/includes
 
 exigirAutenticacao();
 
