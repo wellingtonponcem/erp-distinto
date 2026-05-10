@@ -57,7 +57,7 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
         * { box-sizing: border-box; }
 
         html {
-            background: #050505;
+            background: #e0e2eb;
         }
 
         body {
@@ -75,36 +75,47 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
             display: flex;
             min-height: 100vh;
             background: transparent;
+            padding: 16px;
+            gap: 16px;
         }
 
         .sidebar {
             width: 256px !important;
-            min-height: 100vh !important;
-            height: 100vh !important;
+            min-height: calc(100vh - 32px) !important;
+            height: calc(100vh - 32px) !important;
             margin-left: 0;
             flex-shrink: 0;
             position: sticky;
-            top: 0;
-            color: #b8b8b8;
-            background: #171717;
-            border-right: 1px solid rgba(255,255,255,0.08);
-            border-radius: 0;
-            box-shadow: none;
+            top: 16px;
+            color: #111111;
+            background: #f7f3da;
+            border-right: none;
+            border-radius: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
             overflow: hidden;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar.collapsed {
+            width: 88px !important;
+        }
+        
+        .sidebar.collapsed .hide-on-collapse {
+            display: none !important;
         }
 
         #main-content,
         .content-sheet {
             flex: 1;
             min-width: 0;
-            min-height: 100vh;
+            min-height: calc(100vh - 32px);
             margin: 0;
             padding: 30px 34px !important;
             overflow-y: auto;
             max-width: none !important;
             background: #fbfbfb;
             border: 0;
-            border-radius: 0;
+            border-radius: 32px;
             box-shadow: none;
         }
 
@@ -172,18 +183,24 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
             align-items: center;
             gap: 12px;
             padding: 11px 13px;
-            border-radius: 10px;
-            color: #969696;
+            border-radius: 16px;
+            color: #777;
             text-decoration: none;
             font-size: 13px;
             font-weight: 600;
             transition: all 0.18s ease;
+            white-space: nowrap;
         }
 
         .nav-link:hover,
         .nav-link.ativo {
-            color: #ffffff;
-            background: rgba(255,255,255,0.08);
+            color: #111;
+            background: rgba(0,0,0,0.05);
+        }
+
+        .sidebar.collapsed .nav-link {
+            justify-content: center;
+            padding: 14px;
         }
 
         .nav-section {
@@ -424,6 +441,9 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
         .dark body { background: #000000; color: #f1f1f1; }
         .dark #main-content, 
         .dark .content-sheet { background: #0a0a0a; border-color: #1a1a1a; }
+        .dark .sidebar { background: #111111; color: #ffffff; border: 1px solid #222; box-shadow: none; }
+        .dark .nav-link { color: #888; }
+        .dark .nav-link:hover, .dark .nav-link.ativo { color: #fff; background: rgba(255,255,255,0.08); }
         .dark .card { background: #111111; border-color: #222222; box-shadow: none; }
         .dark .card:hover { border-color: #333333; }
         .dark .page-title { color: #ffffff; }
