@@ -494,13 +494,20 @@ try {
                     xhr.onreadystatechange = () => {
                         if (xhr.readyState === 4) {
                             this.uploading = false;
-                            if (xhr.status === 200) {
-                                try {
-                                    const res = JSON.parse(xhr.responseText);
-                                    if (res.success) location.reload();
-                                    else this.showAlert('Ops!', res.error);
-                                } catch(e) { this.showAlert('Erro', 'Resposta inválida do servidor'); }
-                            } else { this.showAlert('Erro', 'Falha no servidor'); }
+                            try {
+                                const res = JSON.parse(xhr.responseText);
+                                if (res.success) {
+                                    location.reload();
+                                } else {
+                                    this.showAlert('Ops!', res.error || 'Falha no processamento');
+                                }
+                            } catch(e) {
+                                if (xhr.status === 200) {
+                                    this.showAlert('Erro', 'Resposta inválida do servidor');
+                                } else {
+                                    this.showAlert('Erro ' + xhr.status, 'O servidor encontrou um problema técnico. Tente uma imagem menor.');
+                                }
+                            }
                         }
                     };
                     xhr.open('POST', '../api/roteiros/upload_conhecimento.php', true);

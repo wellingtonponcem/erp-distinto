@@ -86,7 +86,7 @@ if (move_uploaded_file($arquivo['tmp_name'], $targetPath)) {
         responderJson(['success' => false, 'error' => $e->getMessage()], 500);
     }
 } else {
-    responderJson(['erro' => 'Falha ao salvar arquivo no servidor.'], 500);
+    responderJson(['success' => false, 'error' => 'Falha ao salvar arquivo no servidor.'], 400);
 }
 
 /**
