@@ -434,8 +434,8 @@ try {
                             <textarea 
                                 x-model="textModal.texto"
                                 :readonly="!textModal.editavel"
-                                style="flex: 1; min-height: 350px; max-height: 50vh; padding: 16px; background: #000; border: 1px solid var(--border); border-radius: 12px; color: #d0cfc9; font-family: inherit; font-size: 13px; line-height: 1.7; outline: none; resize: vertical;"
-                                :style="textModal.editavel ? 'border-color: rgba(232,255,71,0.3);' : 'cursor: default;'"
+                                style="flex: 1; min-height: 450px; padding: 16px; border-radius: 12px; font-family: inherit; font-size: 14px; line-height: 1.7; outline: none; resize: vertical; width: 100%; box-sizing: border-box;"
+                                :style="textModal.editavel ? 'background: #111; border: 1px solid rgba(232,255,71,0.3); color: #fff;' : 'background: transparent; border: none; color: #fff; cursor: default;'"
                             ></textarea>
 
                             <div class="modal-footer" style="padding: 0;">
