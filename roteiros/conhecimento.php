@@ -159,6 +159,72 @@ try {
             letter-spacing: 0.1em;
         }
 
+        .btn-accent {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        /* Modal Customizado */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-card {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            padding: 2.5rem;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .modal-title {
+            font-family: var(--display);
+            font-size: 24px;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .modal-text {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 2rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn-modal-cancel {
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
         .progress-container {
             width: 100%;
             height: 6px;
@@ -203,7 +269,7 @@ try {
                 <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 8px;">Aprendizado IA (NotebookLM Style)</div>
                 <h1>Base de <em>Conhecimento</em></h1>
             </div>
-            <button @click="rebuildMemory()" class="btn-secondary" style="font-size: 11px; padding: 6px 12px;" :disabled="uploading">
+            <button @click="rebuildMemory()" class="btn-accent" :disabled="uploading">
                 <i class="fa-solid fa-sync" :class="uploading ? 'fa-spin' : ''"></i> Sincronizar Memória
             </button>
         </div>
@@ -254,6 +320,20 @@ try {
                 </div>
             </div>
         </template>
+
+        <!-- Modal Customizado -->
+        <template x-if="modal.show">
+            <div class="modal-overlay">
+                <div class="modal-card">
+                    <div class="modal-title" x-text="modal.title"></div>
+                    <div class="modal-text" x-text="modal.text"></div>
+                    <div class="modal-footer">
+                        <button class="btn-modal-cancel" x-show="modal.type === 'confirm'" @click="modal.show = false">Cancelar</button>
+                        <button class="btn-accent" @click="modalAction()">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+        </template>
     </div>
 
     <script>
@@ -264,6 +344,26 @@ try {
                 uploading: false,
                 progress: 0,
                 statusMsg: '',
+                modal: {
+                    show: false,
+                    title: '',
+                    text: '',
+                    type: 'alert', // 'alert' ou 'confirm'
+                    onConfirm: null
+                },
+
+                showAlert(title, text) {
+                    this.modal = { show: true, title, text, type: 'alert', onConfirm: null };
+                },
+
+                showConfirm(title, text, callback) {
+                    this.modal = { show: true, title, text, type: 'confirm', onConfirm: callback };
+                },
+
+                modalAction() {
+                    if (this.modal.onConfirm) this.modal.onConfirm();
+                    this.modal.show = false;
+                },
 
                 uploadFile(event) {
                     const file = event.target.files[0];
@@ -291,14 +391,18 @@ try {
                         if (xhr.readyState === 4) {
                             this.uploading = false;
                             if (xhr.status === 200) {
-                                const res = JSON.parse(xhr.responseText);
-                                if (res.success) {
-                                    location.reload();
-                                } else {
-                                    alert('Erro: ' + res.error);
+                                try {
+                                    const res = JSON.parse(xhr.responseText);
+                                    if (res.success) {
+                                        location.reload();
+                                    } else {
+                                        this.showAlert('Ops!', res.error);
+                                    }
+                                } catch(e) {
+                                    this.showAlert('Erro', 'Resposta inválida do servidor');
                                 }
                             } else {
-                                alert('Erro no servidor');
+                                this.showAlert('Erro', 'Falha crítica no servidor');
                             }
                         }
                     };
@@ -308,38 +412,38 @@ try {
                 },
 
                 deleteFile(id) {
-                    if (!confirm('Tem certeza que deseja remover esta fonte? A memória da IA será reconstruída sem este conteúdo.')) return;
-                    
-                    fetch('../api/roteiros/deletar_conhecimento.php', {
-                        method: 'POST',
-                        body: JSON.stringify({ id })
-                    })
-                    .then(r => r.json())
-                    .then(res => {
-                        if (res.success) {
-                            location.reload();
-                        } else {
-                            alert('Erro ao deletar: ' + res.error);
-                        }
+                    this.showConfirm('Remover Fonte', 'Deseja remover esta fonte? A memória da IA será reconstruída sem este conteúdo.', () => {
+                        fetch('../api/roteiros/deletar_conhecimento.php', {
+                            method: 'POST',
+                            body: JSON.stringify({ id })
+                        })
+                        .then(r => r.json())
+                        .then(res => {
+                            if (res.success) {
+                                location.reload();
+                            } else {
+                                this.showAlert('Erro', res.error);
+                            }
+                        });
                     });
                 },
 
                 rebuildMemory() {
-                    if (!confirm('Deseja reconstruir a memória mestra? A IA lerá todas as fontes novamente para garantir que nada foi esquecido.')) return;
-                    
-                    this.uploading = true;
-                    this.statusMsg = 'Reconstruindo Memória Mestra...';
-                    this.progress = 50;
+                    this.showConfirm('Sincronizar Memória', 'Deseja reconstruir a memória mestra? A IA lerá todas as fontes novamente.', () => {
+                        this.uploading = true;
+                        this.statusMsg = 'Reconstruindo Memória Mestra...';
+                        this.progress = 50;
 
-                    fetch('../api/roteiros/sincronizar_memoria.php', { method: 'POST' })
-                    .then(r => r.json())
-                    .then(res => {
-                        this.uploading = false;
-                        if (res.success) {
-                            location.reload();
-                        } else {
-                            alert('Erro: ' + res.error);
-                        }
+                        fetch('../api/roteiros/sincronizar_memoria.php', { method: 'POST' })
+                        .then(r => r.json())
+                        .then(res => {
+                            this.uploading = false;
+                            if (res.success) {
+                                location.reload();
+                            } else {
+                                this.showAlert('Erro', res.error);
+                            }
+                        });
                     });
                 },
 

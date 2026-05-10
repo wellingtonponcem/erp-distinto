@@ -152,6 +152,10 @@ Gere a nova Memória Mestra Consolidada:";
     public static function reconstruirMemoria() {
         try {
             $db = Database::get();
+
+            // Garante tabela de memória antes de qualquer coisa
+            $db->exec("CREATE TABLE IF NOT EXISTS roteiros_memoria (id SERIAL PRIMARY KEY, conteudo TEXT, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
+
             $stmt = $db->query("SELECT texto_extraido FROM roteiros_conhecimento WHERE ativo = TRUE");
             $textos = $stmt->fetchAll(PDO::FETCH_COLUMN);
             
