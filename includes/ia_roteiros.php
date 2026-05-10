@@ -13,8 +13,7 @@ class IARoteiros
     private static function getConfig(string $chave) {
         try {
             $db = Database::get();
-            $stmt = $db->prepare("SELECT valor FROM sistema_config WHERE chave = ?");
-            $stmt->execute([$chave]);
+            $stmt = $db->query("SELECT $chave FROM configuracao_empresa WHERE id = 'principal' LIMIT 1");
             return $stmt->fetchColumn();
         } catch (Exception $e) {
             return null;
