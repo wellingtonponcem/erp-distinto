@@ -15,9 +15,9 @@ exigirAutenticacao();
 
 try {
     $db  = Database::get();
-    $id  = intval($_GET['id'] ?? $_POST['id'] ?? 0);
+    $id  = $_GET['id'] ?? $_POST['id'] ?? '';
 
-    if (!$id) {
+    if (empty($id)) {
         responderJson(['success' => false, 'error' => 'ID inválido.'], 400);
         exit;
     }

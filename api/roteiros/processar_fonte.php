@@ -18,8 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     responderJson(['erro' => 'Método não permitido'], 405);
 }
 
-$id = intval($_POST['id'] ?? 0);
-if (!$id) {
+$id = $_POST['id'] ?? '';
+if (empty($id)) {
     responderJson(['success' => false, 'error' => 'ID de fonte inválido.'], 400);
     exit;
 }
