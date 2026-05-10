@@ -33,7 +33,7 @@ $saldoInicialTotal = (float)$stmtSaldoInicial->fetchColumn() ?: 0;
 $stmtFluxoBancos = $db->query("
     SELECT SUM(CASE WHEN l.tipo='receber' THEN l.valor_pago ELSE -l.valor_pago END) 
     FROM lancamentos l
-    INNER JOIN contas_bancarias c ON l.conta_id = c.id COLLATE utf8mb4_unicode_ci
+    INNER JOIN contas_bancarias c ON l.conta_id = c.id
     WHERE l.status IN ('pago', 'efetivado') AND c.ativo = 1
 ");
 $fluxoBancos = (float)$stmtFluxoBancos->fetchColumn() ?: 0;
