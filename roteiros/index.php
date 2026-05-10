@@ -477,13 +477,9 @@ exigirAutenticacao();
             <h2 style="font-family: var(--serif); font-style: italic; font-size: 32px; margin-bottom: 2rem;">Criar Novo Roteiro</h2>
             
             <div class="form-group">
-                <label>Tema ou Título</label>
-                <input type="text" x-model="newScript.tema" class="form-control" placeholder="Ex: Medo de aparecer na câmera">
-            </div>
-
-            <div class="form-group">
-                <label>Briefing / Detalhes (Opcional)</label>
-                <textarea x-model="newScript.briefing" class="form-control" placeholder="Dê mais contexto para a IA..."></textarea>
+                <label>Briefing / O que você quer falar?</label>
+                <textarea x-model="newScript.briefing" class="form-control" 
+                    placeholder="Descreva o conteúdo ou deixe em branco para a IA criar algo baseado no seu estilo e base de conhecimento..."></textarea>
             </div>
 
             <div style="display: flex; gap: 10px; margin-top: 2rem;">
@@ -559,19 +555,16 @@ exigirAutenticacao();
                 },
 
                 generateIA() {
-                    if (!this.newScript.tema) return alert('Informe o tema');
                     this.loadingIA = true;
                     
                     fetch('../api/roteiros/gerar.php', {
                         method: 'POST',
-                        body: JSON.stringify(this.newScript)
+                        body: JSON.stringify({ briefing: this.newScript.briefing })
                     })
                     .then(r => r.json())
                     .then(data => {
                         this.loadingIA = false;
                         if (data.success) {
-                            // Redireciona para página de edição com o conteúdo gerado
-                            // Por enquanto vamos simular o salvamento
                             this.saveManual(data.roteiro);
                         } else {
                             alert('Erro: ' + data.error);
@@ -579,10 +572,18 @@ exigirAutenticacao();
                     });
                 },
 
-                saveManual(conteudoGerado = null) {
-                    const payload = {
-                        titulo: this.newScript.tema,
-                        conteudo: conteudoGerado || '',
+                saveManual(roteiroIA = null) {
+                    const payload = roteiroIA ? {
+                        titulo: roteiroIA.titulo,
+                        gancho: roteiroIA.gancho,
+                        quebra_crenca: roteiroIA.quebra_crenca,
+                        desenvolvimento: roteiroIA.desenvolvimento,
+                        conexao: roteiroIA.conexao,
+                        fechamento: roteiroIA.fechamento,
+                        cta: roteiroIA.cta,
+                        status: 'pendente'
+                    } : {
+                        titulo: 'Novo Roteiro ' + new Date().toLocaleDateString(),
                         status: 'pendente'
                     };
 
@@ -596,7 +597,7 @@ exigirAutenticacao();
                             window.location.href = 'detalhes.php?id=' + data.id;
                         }
                     });
-                }
+                },
             }
         }
     </script>

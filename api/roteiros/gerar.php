@@ -17,12 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $d = lerCorpo();
 
-if (empty($d['tema'])) {
-    responderJson(['erro' => 'O tema é obrigatório.'], 422);
-}
-
 try {
-    $roteiro = IARoteiros::gerarRoteiro($d['tema'], $d['briefing'] ?? '');
+    $roteiro = IARoteiros::gerarRoteiro($d['briefing'] ?? '');
     
     responderJson([
         'success' => true, 

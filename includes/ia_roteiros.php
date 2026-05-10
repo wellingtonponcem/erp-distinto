@@ -43,6 +43,26 @@ class IARoteiros {
     }
 
     /**
+     * Obtém os roteiros com melhor score para servir de exemplo.
+     */
+    private static function getMelhoresRoteiros() {
+        try {
+            $db = Database::get();
+            $stmt = $db->query("SELECT titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta FROM roteiros WHERE score > 0 ORDER BY score DESC LIMIT 3");
+            $roteiros = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            $texto = "";
+            foreach ($roteiros as $r) {
+                $texto .= "EXEMPLO DE ALTO SCORE:\n";
+                $texto .= "Título: {$r['titulo']}\nGancho: {$r['gancho']}\nConteúdo: {$r['quebra_crenca']} {$r['desenvolvimento']} {$r['conexao']}\nCTA: {$r['cta']}\n\n";
+            }
+            return $texto;
+        } catch (Exception $e) {
+            return "";
+        }
+    }
+
+    /**
      * Obtém o conteúdo de toda a base de conhecimento ativa.
      */
     private static function getBaseConhecimento() {
@@ -60,34 +80,58 @@ class IARoteiros {
     /**
      * Gera um novo roteiro baseado em um tema e no conhecimento prévio.
      */
-    public static function gerarRoteiro(string $tema, string $briefing = '') {
+    public static function gerarRoteiro(string $briefing = '') {
         $conhecimento = self::getBaseConhecimento();
+        $exemplos = self::getMelhoresRoteiros();
         
-        $promptSistema = "Você é um Estrategista de Social Media e Roteirista de Elite, especializado em conteúdo de alto impacto para Instagram.
-Sua missão é criar roteiros baseados na METODOLOGIA do usuário, fornecida no CONTEXTO abaixo.
+        $promptSistema = "Você é um Estrategista de Social Media e Roteirista de Elite.
+Sua missão é criar roteiros de alto impacto baseados no contexto abaixo.
 
-### CONTEXTO DE CONHECIMENTO (DIRETRIZES DO USUÁRIO):
-$conhecimento
+### BASE DE CONHECIMENTO (DIRETRIZES):
+" . ($conhecimento ?: "Nenhuma base de conhecimento cadastrada ainda. Use seu conhecimento geral de marketing de alto nível.") . "
 
-### INSTRUÇÕES DE FORMATO:
-1. Use um tom direto, provocativo e estratégico.
-2. Estrutura obrigatória:
-   - TÍTULO ESTRATÉGICO
-   - GANCHO (3 primeiros segundos)
-   - DESENVOLVIMENTO (com quebra de crença)
-   - FECHAMENTO IMPACTANTE
-   - CTA (Chamada para ação)
+### EXEMPLOS DE SUCESSO (ESTILO DO USUÁRIO):
+" . ($exemplos ?: "Nenhum exemplo disponível. Crie algo inovador.") . "
+
+### REGRAS CRÍTICAS:
+1. Responda APENAS em formato JSON válido.
+2. Campos obrigatórios no JSON: 
+   - 'titulo' (Atraente e curto)
+   - 'gancho' (3 primeiros segundos)
+   - 'quebra_crenca' (O que as pessoas pensam vs Realidade)
+   - 'desenvolvimento' (O corpo do vídeo)
+   - 'conexao' (Toque emocional/vulnerabilidade)
+   - 'fechamento' (Resumo impactante)
+   - 'cta' (Chamada para ação direta)
 3. NUNCA use emojis.
 4. Use Português do Brasil.
-5. Foque em autoridade e conversão.";
+5. Tom direto, provocativo e focado em autoridade.";
 
-        $promptUsuario = "Gere um novo roteiro para o Instagram.
-Tema: $tema
-Detalhes adicionais/Briefing: $briefing";
+        $promptUsuario = "Gere um novo roteiro completo.
+" . ($briefing ? "Briefing/Instruções: $briefing" : "Como não foi fornecido um briefing, analise os exemplos de sucesso e crie um roteiro inédito que siga o mesmo padrão de qualidade e estilo.");
 
-        return self::chamarGroq([
+        $respostaRaw = self::chamarGroq([
             ['role' => 'system', 'content' => $promptSistema],
             ['role' => 'user', 'content' => $promptUsuario]
         ]);
+
+        // Limpar possíveis Markdown fences
+        $json = preg_replace('/```json\n?|\n?```/', '', $respostaRaw);
+        $dados = json_decode(trim($json), true);
+
+        if (!$dados || !isset($dados['titulo'])) {
+            // Fallback se o JSON falhar
+            return [
+                'titulo' => 'Roteiro Gerado automaticamente',
+                'gancho' => 'Gancho não gerado corretamente.',
+                'quebra_crenca' => $respostaRaw, // Coloca a resposta bruta aqui para não perder nada
+                'desenvolvimento' => '',
+                'conexao' => '',
+                'fechamento' => '',
+                'cta' => ''
+            ];
+        }
+
+        return $dados;
     }
 }
