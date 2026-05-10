@@ -1110,10 +1110,12 @@ exigirAutenticacao();
                         conexao: roteiroIA.conexao,
                         fechamento: roteiroIA.fechamento,
                         cta: roteiroIA.cta,
-                        status: 'pendente'
+                        status: 'pendente',
+                        is_ia_generated: true
                     } : {
                         titulo: 'Novo Roteiro ' + new Date().toLocaleDateString(),
-                        status: 'pendente'
+                        status: 'pendente',
+                        is_ia_generated: false
                     };
 
                     fetch('../api/roteiros/salvar.php', {
