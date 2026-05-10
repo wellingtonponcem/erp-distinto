@@ -457,8 +457,9 @@ exigirAutenticacao();
                         <button @click.prevent="archive()" class="swipe-btn swipe-btn-archive">Arquivar</button>
                         <button @click.prevent="remove()" class="swipe-btn swipe-btn-delete">Apagar</button>
                     </div>
-                    <a :href="'detalhes.php?id=' + script.id" class="script-card"
-                        :style="`transform: translateX(${offsetX}px)`"
+                    <div class="script-card"
+                        :style="`transform: translateX(${offsetX}px); cursor: pointer;`"
+                        @click="window.location.href = 'detalhes.php?id=' + script.id"
                         @touchstart="touchStart($event)"
                         @touchmove="touchMove($event)"
                         @touchend="touchEnd()">
@@ -466,7 +467,7 @@ exigirAutenticacao();
                         <div class="card-header">
                             <div class="card-num" x-text="String(script.numero || 0).padStart(2, '0')"></div>
                             <div style="display: flex; gap: 8px; align-items: center;">
-                                <button class="desktop-delete" @click.prevent="remove()" title="Excluir Roteiro">
+                                <button class="desktop-delete" @click.stop.prevent="remove()" title="Excluir Roteiro">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
                                 <div class="score-mini">
@@ -491,7 +492,7 @@ exigirAutenticacao();
                                 <i class="fa-solid fa-chevron-right" style="opacity: 0.3;"></i>
                             </div>
                         </div>
-                    </a>
+                    </div>
                 </div>
             </template>
         </div>
