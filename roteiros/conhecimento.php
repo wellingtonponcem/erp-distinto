@@ -561,22 +561,46 @@ try {
                     });
                 },
 
-                rebuildMemory() {
-                    this.showConfirm('Sincronizar', 'Deseja reconstruir a inteligência consolidada?', () => {
-                        this.uploading = true;
-                        this.statusMsg = 'Reconstruindo Memória...';
-                        this.progress = 50;
-                        fetch('../api/roteiros/sincronizar_memoria.php', { method: 'POST' })
-                        .then(r => r.json())
-                        .then(res => {
-                            this.uploading = false;
-                            if (res.success) {
-                                if (res.nova_memoria) this.masterMemory = res.nova_memoria;
-                            } else {
-                                this.showAlert('Erro', res.error);
+                async rebuildMemory() {
+                    const pendentes = this.files.filter(f => !f.sincronizado);
+
+                    if (pendentes.length === 0) {
+                        this.showAlert('Memória Atualizada', 'Todas as fontes já estão na memória mestra. Nada a processar.');
+                        return;
+                    }
+
+                    this.uploading = true;
+                    const total = pendentes.length;
+
+                    for (let i = 0; i < total; i++) {
+                        const fonte = pendentes[i];
+                        this.statusMsg = `Processando (${i + 1}/${total}): ${fonte.nome_arquivo}`;
+                        this.progress = Math.round((i / total) * 100);
+
+                        try {
+                            const formData = new FormData();
+                            formData.append('id', fonte.id);
+
+                            const res = await fetch('../api/roteiros/processar_fonte.php', {
+                                method: 'POST',
+                                body: formData
+                            });
+                            const data = await res.json();
+
+                            if (data.success) {
+                                // Atualiza o badge do arquivo na lista em tempo real
+                                const idx = this.files.findIndex(f => f.id === fonte.id);
+                                if (idx !== -1) this.files[idx].sincronizado = data.sincronizado;
+                                // Atualiza a memória mestra na tela
+                                if (data.nova_memoria) this.masterMemory = data.nova_memoria;
                             }
-                        });
-                    });
+                            // Se falhou, continua para o próximo sem parar
+                        } catch(e) { /* segue pro próximo */ }
+                    }
+
+                    this.progress = 100;
+                    this.statusMsg = `✓ ${total} fonte(s) processada(s) com sucesso!`;
+                    setTimeout(() => { this.uploading = false; }, 2000);
                 },
 
                 formatDate(dateStr) {
