@@ -63,17 +63,77 @@ class IARoteiros {
     }
 
     /**
-     * Obtém o conteúdo de toda a base de conhecimento ativa.
+     * Obtém a memória consolidada ou a base de conhecimento bruta.
      */
     private static function getBaseConhecimento() {
         try {
             $db = Database::get();
+            
+            // Tenta pegar a memória consolidada primeiro
+            $stmt = $db->query("SELECT conteudo FROM roteiros_memoria LIMIT 1");
+            $memoria = $stmt->fetchColumn();
+            
+            if ($memoria) return $memoria;
+
+            // Fallback: Base bruta se não houver memória
             $stmt = $db->query("SELECT texto_extraido FROM roteiros_conhecimento WHERE ativo = TRUE");
             $textos = $stmt->fetchAll(PDO::FETCH_COLUMN);
             
             return implode("\n\n---\n\n", $textos);
         } catch (Exception $e) {
             return "";
+        }
+    }
+
+    /**
+     * Pega o conhecimento bruto e consolida na memória mestra.
+     */
+    public static function consolidarMemoria(string $novoTexto) {
+        $memoriaAtual = self::getBaseConhecimento();
+        
+        $promptSistema = "Você é um Engenheiro de Conhecimento e Estrategista.
+Sua tarefa é REUNIR e DESTILAR informações em uma única 'Memória Mestra'.
+
+### OBJETIVO:
+1. Extrair APENAS a essência estratégica, metodologias, tom de voz e diretrizes.
+2. Eliminar redundâncias e informações irrelevantes.
+3. Mesclar o 'Novo Conteúdo' com a 'Memória Atual' de forma fluida.
+4. O resultado final deve ser um guia denso, organizado e pronto para orientar uma IA a escrever roteiros perfeitos.
+
+### REGRAS:
+- Nunca use emojis.
+- Seja direto e técnico.
+- Se houver contradições, priorize o conteúdo mais recente.
+- Mantenha o texto em Português do Brasil.";
+
+        $promptUsuario = "### MEMÓRIA ATUAL (O que você já sabe):
+$memoriaAtual
+
+### NOVO CONTEÚDO (O que você acabou de aprender):
+$novoTexto
+
+Gere a nova Memória Mestra Consolidada:";
+
+        $novaMemoria = self::chamarGroq([
+            ['role' => 'system', 'content' => $promptSistema],
+            ['role' => 'user', 'content' => $promptUsuario]
+        ]);
+
+        if (strpos($novaMemoria, 'Erro') === 0) return false;
+
+        try {
+            $db = Database::get();
+            // Garante tabela de memória
+            $db->exec("CREATE TABLE IF NOT EXISTS roteiros_memoria (id SERIAL PRIMARY KEY, conteudo TEXT, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
+            
+            // Limpa e insere a nova memória (Sempre mantemos apenas 1 registro mestre)
+            $db->exec("DELETE FROM roteiros_memoria");
+            $stmt = $db->prepare("INSERT INTO roteiros_memoria (conteudo) VALUES (?)");
+            $stmt->execute([$novaMemoria]);
+            
+            return true;
+        } catch (Exception $e) {
+            return false;
         }
     }
 

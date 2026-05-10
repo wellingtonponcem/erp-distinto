@@ -60,6 +60,10 @@ if (move_uploaded_file($arquivo['tmp_name'], $targetPath)) {
         $stmt->execute([$arquivo['name'], 'uploads/roteiros/conhecimento/' . $novoNome, $ext, $texto]);
         $newId = $stmt->fetchColumn();
 
+        // NOVIDADE: Consolidação de Memória
+        // A IA lê o que já sabe + o novo arquivo e cria uma memória única destilada
+        IARoteiros::consolidarMemoria($texto);
+
         responderJson([
             'success' => true,
             'id' => $newId,
