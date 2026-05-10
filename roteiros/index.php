@@ -187,11 +187,11 @@ exigirAutenticacao();
             z-index: 2;
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            padding: 1.5rem;
             display: flex;
-            align-items: center;
-            gap: 1.5rem;
+            flex-direction: column;
+            gap: 1rem;
             text-decoration: none;
             color: inherit;
             transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.2s;
@@ -199,46 +199,52 @@ exigirAutenticacao();
             user-select: none;
         }
 
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
         .card-num {
             font-family: var(--display);
-            font-size: 32px;
+            font-size: 42px;
             color: var(--accent);
-            opacity: 0.3;
-            min-width: 45px;
-            flex-shrink: 0;
+            line-height: 1;
         }
 
-        .card-info { 
-            flex: 1; 
-            min-width: 0; /* Permite que o texto quebre corretamente */
-        }
-
-        .score-badge {
+        .score-mini {
             background: rgba(232,255,71,0.05);
             border: 1px solid rgba(232,255,71,0.1);
             color: var(--accent);
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+            padding: 4px 12px;
+            border-radius: 100px;
             font-family: var(--display);
-            line-height: 1;
-            text-align: center;
+            font-size: 14px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
         }
 
-        .score-label {
-            font-size: 10px;
-            text-transform: uppercase;
-            margin-bottom: 2px;
-            opacity: 0.7;
+        .card-info { 
+            width: 100%;
         }
 
-        .score-val {
-            font-size: 20px;
+        .card-title {
+            font-family: var(--serif);
+            font-style: italic;
+            font-size: 24px;
+            line-height: 1.2;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .card-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-size: 11px;
+            color: var(--muted);
         }
 
         /* Modal / New Page simulation */
@@ -407,21 +413,29 @@ exigirAutenticacao();
                         @touchstart="touchStart($event)"
                         @touchmove="touchMove($event)"
                         @touchend="touchEnd()">
-                        <div class="card-num" x-text="String(script.numero || 0).padStart(2, '0')"></div>
+                        
+                        <div class="card-header">
+                            <div class="card-num" x-text="String(script.numero || 0).padStart(2, '0')"></div>
+                            <div class="score-mini">
+                                <span style="opacity: 0.5; font-size: 9px;">SCORE</span>
+                                <span x-text="Math.round(script.score)"></span>
+                            </div>
+                        </div>
+
                         <div class="card-info">
                             <div class="card-status" :class="'status-' + script.status">
                                 <div class="status-dot"></div>
                                 <span x-text="script.status"></span>
                             </div>
                             <div class="card-title" x-text="script.titulo"></div>
-                            <div class="card-meta">
-                                <span x-text="script.formato"></span>
-                                <span x-text="formatDate(script.created_at)"></span>
+                            
+                            <div class="card-meta-row">
+                                <div style="display: flex; flex-direction: column; gap: 2px;">
+                                    <span x-text="script.formato"></span>
+                                    <span x-text="formatDate(script.created_at)"></span>
+                                </div>
+                                <i class="fa-solid fa-chevron-right" style="opacity: 0.3;"></i>
                             </div>
-                        </div>
-                        <div class="score-badge">
-                            <div class="score-label">Score</div>
-                            <div class="score-val" x-text="Math.round(script.score)"></div>
                         </div>
                     </a>
                 </div>
