@@ -21,7 +21,7 @@ class IARoteiros
         }
     }
 
-    public static function chamarGroq(array $mensagens, string $model = null)
+    public static function chamarGroq(array $mensagens, ?string $model = null)
     {
         $apiKey = self::getConfig('groq_api_key') ?: (defined('GROQ_API_KEY') ? GROQ_API_KEY : '');
         if (!$apiKey || strpos($apiKey, 'SUA_') === 0)
