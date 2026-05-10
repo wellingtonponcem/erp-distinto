@@ -47,7 +47,7 @@ if (move_uploaded_file($arquivo['tmp_name'], $targetPath)) {
     } elseif (in_array($ext, ['png', 'jpg', 'jpeg'])) {
         // IA Vision: Transforma imagem em texto
         $imageData = base64_encode(file_get_contents($targetPath));
-        $mimeType = mime_content_type($targetPath);
+        $mimeType = ($ext === 'png') ? 'image/png' : 'image/jpeg';
         $texto = IARoteiros::descreverImagem($imageData, $mimeType);
         
         if (strpos($texto, 'Erro') === 0) {

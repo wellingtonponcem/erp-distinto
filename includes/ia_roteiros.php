@@ -64,7 +64,7 @@ Responda apenas com o texto extraído e organizado.";
                     [
                         'type' => 'image_url',
                         'image_url' => [
-                            'url' => "data:$mimeType;base64,$base64Image"
+                            'url' => 'data:' . $mimeType . ';base64,' . $base64Image
                         ]
                     ]
                 ]
