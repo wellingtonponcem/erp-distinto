@@ -181,6 +181,19 @@ if (!$roteiro) {
             white-space: pre-wrap; 
         }
 
+        .closing-block {
+            background: rgba(232,255,71,0.05);
+            border: 1px solid rgba(232,255,71,0.15);
+            border-radius: 4px;
+            padding: 1.5rem;
+            font-family: var(--serif);
+            font-style: italic;
+            font-size: 20px;
+            color: var(--accent);
+            line-height: 1.5;
+            width: 100%;
+        }
+
         .form-control {
             width: 100%;
             background: var(--surface2);
@@ -246,7 +259,7 @@ if (!$roteiro) {
         </div>
 
         <div class="layout-grid" style="display: block;">
-            <!-- Conteúdo Principal -->
+            <!-- Conteúdo Principal Estruturado -->
             <div class="main-content" style="margin-bottom: 2rem;">
                 <div class="script-section">
                     <div class="section-label">Gancho / Título IA</div>
@@ -254,10 +267,23 @@ if (!$roteiro) {
                 </div>
 
                 <div class="script-section">
-                    <div class="section-label">Conteúdo do Roteiro</div>
-                    <textarea class="form-control" 
-                              style="min-height: 500px; background: transparent; border: none; padding: 0; line-height: 1.8; font-size: 16px; color: var(--text); resize: vertical;" 
-                              x-model="data.conteudo"></textarea>
+                    <div class="section-label">Quebra de Crença</div>
+                    <textarea class="form-control content-body" style="background: transparent; border: none; padding: 0; min-height: 100px; resize: vertical;" x-model="data.quebra_crenca"></textarea>
+                </div>
+
+                <div class="script-section">
+                    <div class="section-label">Desenvolvimento</div>
+                    <textarea class="form-control content-body" style="background: transparent; border: none; padding: 0; min-height: 150px; resize: vertical;" x-model="data.desenvolvimento"></textarea>
+                </div>
+
+                <div class="script-section">
+                    <div class="section-label">Conexão Emocional</div>
+                    <textarea class="form-control content-body" style="background: transparent; border: none; padding: 0; min-height: 100px; resize: vertical;" x-model="data.conexao"></textarea>
+                </div>
+
+                <div class="script-section">
+                    <div class="section-label">Fechamento Impactante</div>
+                    <textarea class="form-control closing-block" style="background: rgba(232,255,71,0.05); border: 1px solid rgba(232,255,71,0.15); border-radius: 4px; padding: 1.5rem; min-height: 100px; resize: vertical;" x-model="data.fechamento"></textarea>
                 </div>
 
                 <div class="script-section">

@@ -30,13 +30,14 @@ try {
     if (!empty($d['id'])) {
         // Update
         $stmt = $db->prepare("UPDATE roteiros SET 
-            titulo = ?, gancho = ?, conteudo = ?, cta = ?, tags = ?, formato = ?, 
-            status = ?, views = ?, likes = ?, shares = ?, reposts = ?, score = ?, updated_at = CURRENT_TIMESTAMP 
+            titulo = ?, gancho = ?, quebra_crenca = ?, desenvolvimento = ?, conexao = ?, fechamento = ?, 
+            cta = ?, tags = ?, formato = ?, status = ?, views = ?, likes = ?, shares = ?, reposts = ?, score = ?, updated_at = CURRENT_TIMESTAMP 
             WHERE id = ?");
         
         $stmt->execute([
-            $d['titulo'], $d['gancho'] ?? '', $d['conteudo'] ?? '', $d['cta'] ?? '', 
-            $d['tags'] ?? '', $d['formato'] ?? '', $d['status'] ?? 'pendente',
+            $d['titulo'], $d['gancho'] ?? '', $d['quebra_crenca'] ?? '', 
+            $d['desenvolvimento'] ?? '', $d['conexao'] ?? '', $d['fechamento'] ?? '',
+            $d['cta'] ?? '', $d['tags'] ?? '', $d['formato'] ?? '', $d['status'] ?? 'pendente',
             $views, $likes, $shares, $reposts, $score, $d['id']
         ]);
         
@@ -44,12 +45,13 @@ try {
     } else {
         // Insert
         $stmt = $db->prepare("INSERT INTO roteiros 
-            (titulo, gancho, conteudo, cta, tags, formato, status, views, likes, shares, reposts, score) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            (titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, tags, formato, status, views, likes, shares, reposts, score) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         
         $stmt->execute([
-            $d['titulo'], $d['gancho'] ?? '', $d['conteudo'] ?? '', $d['cta'] ?? '', 
-            $d['tags'] ?? '', $d['formato'] ?? '', $d['status'] ?? 'pendente',
+            $d['titulo'], $d['gancho'] ?? '', $d['quebra_crenca'] ?? '',
+            $d['desenvolvimento'] ?? '', $d['conexao'] ?? '', $d['fechamento'] ?? '',
+            $d['cta'] ?? '', $d['tags'] ?? '', $d['formato'] ?? '', $d['status'] ?? 'pendente',
             $views, $likes, $shares, $reposts, $score
         ]);
         
