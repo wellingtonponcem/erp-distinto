@@ -77,11 +77,20 @@ try {
 
     $stmt = $db->prepare("INSERT INTO roteiros_conhecimento (nome_arquivo, caminho_arquivo, tipo_arquivo, texto_extraido) VALUES (?, ?, ?, ?) RETURNING id");
     $stmt->execute([$nome, $type === 'url' ? $value : 'manual_entry', $type, $texto]);
-    
+    $newId = $stmt->fetchColumn();
+
     // RECONSTRUÇÃO DA MEMÓRIA
     IARoteiros::reconstruirMemoria();
 
-    responderJson(['success' => true]);
+    // Retorna dados atualizados para o frontend
+    $novaMemoria   = $db->query("SELECT conteudo FROM roteiros_memoria LIMIT 1")->fetchColumn();
+    $arquivo_salvo = $db->query("SELECT id, nome_arquivo, tipo_arquivo, created_at, ativo FROM roteiros_conhecimento WHERE id = $newId")->fetch(PDO::FETCH_ASSOC);
+
+    responderJson([
+        'success'      => true,
+        'arquivo'      => $arquivo_salvo,
+        'nova_memoria' => $novaMemoria ?: '',
+    ]);
 
 } catch (Exception $e) {
     responderJson(['success' => false, 'error' => $e->getMessage()], 500);

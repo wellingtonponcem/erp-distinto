@@ -78,10 +78,14 @@ if (move_uploaded_file($arquivo['tmp_name'], $targetPath)) {
         // Consolidação de Memória
         IARoteiros::consolidarMemoria($texto);
 
+        // Busca a memória atualizada e os dados completos do arquivo para retornar ao frontend
+        $novaMemoria = $db->query("SELECT conteudo FROM roteiros_memoria LIMIT 1")->fetchColumn();
+        $arquivo_salvo = $db->query("SELECT id, nome_arquivo, tipo_arquivo, created_at, ativo FROM roteiros_conhecimento WHERE id = $newId")->fetch(PDO::FETCH_ASSOC);
+
         responderJson([
-            'success' => true,
-            'id' => $newId,
-            'nome' => $arquivo['name']
+            'success'       => true,
+            'arquivo'       => $arquivo_salvo,
+            'nova_memoria'  => $novaMemoria ?: '',
         ]);
 
     } catch (Exception $e) {

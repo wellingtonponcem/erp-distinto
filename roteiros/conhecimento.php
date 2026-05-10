@@ -461,11 +461,12 @@ try {
                     .then(res => {
                         this.uploading = false;
                         if (res.success) {
-                            location.reload();
+                            this.adicionarResultado(res);
                         } else {
                             this.showAlert('Ops!', res.error);
                         }
-                    });
+                    })
+                    .catch(() => this.showAlert('Erro', 'Falha na comunicação com o servidor.'));
                 },
 
                 handleDrop(e) {
@@ -497,12 +498,11 @@ try {
                             try {
                                 const res = JSON.parse(xhr.responseText);
                                 if (res.success) {
-                                    location.reload();
+                                    this.adicionarResultado(res);
                                 } else {
                                     this.showAlert('Ops!', res.error || 'Falha no processamento');
                                 }
                             } catch(e) {
-                                // Resposta não é JSON — mostra o texto bruto para facilitar diagnóstico
                                 const preview = xhr.responseText
                                     ? xhr.responseText.replace(/<[^>]*>/g, '').trim().substring(0, 300)
                                     : 'Sem resposta do servidor';
@@ -528,6 +528,21 @@ try {
                     });
                 },
 
+                // Atualiza o estado local com o resultado do upload/fonte — sem F5
+                adicionarResultado(res) {
+                    if (res.arquivo) {
+                        this.files.unshift(res.arquivo);
+                    }
+                    if (res.nova_memoria) {
+                        this.masterMemory = res.nova_memoria;
+                    }
+                    // Animação: rola suavemente até a memória atualizada
+                    this.$nextTick(() => {
+                        const mem = document.querySelector('.memory-section');
+                        if (mem) mem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    });
+                },
+
                 rebuildMemory() {
                     this.showConfirm('Sincronizar', 'Deseja reconstruir a inteligência consolidada?', () => {
                         this.uploading = true;
@@ -537,8 +552,11 @@ try {
                         .then(r => r.json())
                         .then(res => {
                             this.uploading = false;
-                            if (res.success) location.reload();
-                            else this.showAlert('Erro', res.error);
+                            if (res.success) {
+                                if (res.nova_memoria) this.masterMemory = res.nova_memoria;
+                            } else {
+                                this.showAlert('Erro', res.error);
+                            }
                         });
                     });
                 },

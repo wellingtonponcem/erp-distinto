@@ -5,6 +5,7 @@
 
 require_once __DIR__ . '/../../config/env.php';
 require_once __DIR__ . '/../../config/auth.php';
+require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../includes/ia_roteiros.php';
 require_once __DIR__ . '/../../includes/helpers.php';
 
@@ -23,7 +24,9 @@ try {
     $sucesso = IARoteiros::reconstruirMemoria();
 
     if ($sucesso === true) {
-        responderJson(['success' => true]);
+        $db = Database::get();
+        $novaMemoria = $db->query("SELECT conteudo FROM roteiros_memoria LIMIT 1")->fetchColumn();
+        responderJson(['success' => true, 'nova_memoria' => $novaMemoria ?: '']);
     } else {
         responderJson(['success' => false, 'error' => $sucesso ?: 'Falha na reconstrução da memória.'], 500);
     }
