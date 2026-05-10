@@ -38,26 +38,28 @@ $novoNome = uniqid() . '_' . basename($arquivo['name']);
 $targetPath = $targetDir . $novoNome;
 
 if (move_uploaded_file($arquivo['tmp_name'], $targetPath)) {
-    $texto = "";
-
-    if ($ext === 'txt' || $ext === 'md') {
-        $texto = file_get_contents($targetPath);
-    } elseif ($ext === 'pdf') {
-        $texto = extrairTextoPdfBasico($targetPath);
-    } elseif (in_array($ext, ['png', 'jpg', 'jpeg'])) {
-        // IA Vision: Transforma imagem em texto
-        $imageData = base64_encode(file_get_contents($targetPath));
-        $mimeType = ($ext === 'png') ? 'image/png' : 'image/jpeg';
-        $texto = IARoteiros::descreverImagem($imageData, $mimeType);
-        
-        if (strpos($texto, 'Erro') === 0) {
-            throw new Exception($texto);
-        }
-    }
-
     try {
+        $texto = "";
+
+        if ($ext === 'txt' || $ext === 'md') {
+            $texto = file_get_contents($targetPath);
+
+        } elseif ($ext === 'pdf') {
+            // Gemini lê PDF nativamente via base64
+            $base64 = base64_encode(file_get_contents($targetPath));
+            $texto  = IARoteiros::processarPdf($base64);
+            if (strpos($texto, 'Erro') === 0) throw new Exception($texto);
+
+        } elseif (in_array($ext, ['png', 'jpg', 'jpeg'])) {
+            // Gemini Vision via base64
+            $base64   = base64_encode(file_get_contents($targetPath));
+            $mimeType = ($ext === 'png') ? 'image/png' : 'image/jpeg';
+            $texto    = IARoteiros::processarImagem($base64, $mimeType);
+            if (strpos($texto, 'Erro') === 0) throw new Exception($texto);
+        }
+
         $db = Database::get();
-        
+
         // Auto-migração: Garantir que a tabela exista
         $db->exec("CREATE TABLE IF NOT EXISTS roteiros_conhecimento (
             id SERIAL PRIMARY KEY,
@@ -73,8 +75,7 @@ if (move_uploaded_file($arquivo['tmp_name'], $targetPath)) {
         $stmt->execute([$arquivo['name'], 'uploads/roteiros/conhecimento/' . $novoNome, $ext, $texto]);
         $newId = $stmt->fetchColumn();
 
-        // NOVIDADE: Consolidação de Memória
-        // A IA lê o que já sabe + o novo arquivo e cria uma memória única destilada
+        // Consolidação de Memória
         IARoteiros::consolidarMemoria($texto);
 
         responderJson([
@@ -82,6 +83,7 @@ if (move_uploaded_file($arquivo['tmp_name'], $targetPath)) {
             'id' => $newId,
             'nome' => $arquivo['name']
         ]);
+
     } catch (Exception $e) {
         responderJson(['success' => false, 'error' => $e->getMessage()], 500);
     }
@@ -89,29 +91,4 @@ if (move_uploaded_file($arquivo['tmp_name'], $targetPath)) {
     responderJson(['success' => false, 'error' => 'Falha ao salvar arquivo no servidor.'], 400);
 }
 
-/**
- * Extrator básico de texto de PDF
- * Nota: Funciona apenas para PDFs que não estão comprimidos ou encriptados de forma complexa.
- * O ideal seria uma biblioteca como Smalot/PdfParser.
- */
-function extrairTextoPdfBasico($filename) {
-    $content = file_get_contents($filename);
-    
-    // Tenta encontrar blocos de texto (BT ... ET)
-    preg_match_all("/BT\s*(.*?)\s*ET/s", $content, $matches);
-    $text = "";
-    foreach ($matches[1] as $match) {
-        // Tenta extrair strings dentro de parênteses ( ... )
-        preg_match_all("/\((.*?)\)/", $match, $strings);
-        foreach ($strings[1] as $str) {
-            $text .= $str . " ";
-        }
-    }
-    
-    if (empty(trim($text))) {
-        // Fallback: Tenta pegar qualquer coisa que pareça texto se o PDF for muito simples
-        $text = preg_replace('/[^\x20-\x7E\s]/', '', $content);
-    }
-
-    return mb_convert_encoding($text, 'UTF-8', 'UTF-8');
-}
+// PDFs agora são lidos pelo Gemini (base64) — extrator manual removido.

@@ -32,38 +32,46 @@ try {
     $texto = "";
 
     if ($type === 'text') {
-        // Pega as primeiras 40 letras para o título de forma instantânea
         $tituloLimpo = strip_tags($value);
-        $nome = mb_substr($tituloLimpo, 0, 40) . (mb_strlen($tituloLimpo) > 40 ? '...' : '');
+        $nome  = mb_substr($tituloLimpo, 0, 40) . (mb_strlen($tituloLimpo) > 40 ? '...' : '');
         if (!$nome) $nome = "Texto Copiado (" . date('H:i') . ")";
-        
         $texto = $value;
+
     } elseif ($type === 'url') {
-        $host = parse_url($value, PHP_URL_HOST);
-        $nome = "Link: " . $host;
-        
-        // Scraping básico
-        $ctx = stream_context_create(['http' => ['timeout' => 10, 'header' => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\r\n"]]);
-        $html = @file_get_contents($value, false, $ctx);
-        
-        if (!$html) throw new Exception("Não foi possível acessar a URL. Verifique se o site permite acesso.");
-        
-        // Tentar pegar o título da página
-        if (preg_match('/<title>(.*?)<\/title>/is', $html, $matches)) {
-            $nome = "Link: " . trim($matches[1]);
-        }
+        $host    = parse_url($value, PHP_URL_HOST) ?: $value;
+        $nome    = "Link: " . $host;
+        $isYouTube = strpos($host, 'youtube.com') !== false || strpos($host, 'youtu.be') !== false;
 
-        // Limpeza de HTML
-        $texto = preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '', $html);
-        $texto = preg_replace('/<style\b[^>]*>(.*?)<\/style>/is', '', $texto);
-        $texto = strip_tags($texto);
-        $texto = html_entity_decode($texto);
-        $texto = preg_replace('/\s+/', ' ', $texto); 
-        $texto = trim($texto);
+        if ($isYouTube) {
+            // ── YouTube: Gemini lê o vídeo diretamente pela URL ──────────────
+            $nome  = "YouTube: " . $value;
+            $texto = IARoteiros::processarYoutube($value);
+            if (strpos($texto, 'Erro') === 0) throw new Exception($texto);
 
-        // Se for YouTube, adicionar nota
-        if (strpos($host, 'youtube.com') !== false || strpos($host, 'youtu.be') !== false) {
-            $texto = "Conteúdo de Vídeo (YouTube): \n" . $texto;
+        } else {
+            // ── Site/artigo: scraping + Gemini resume o conteúdo ─────────────
+            $ctx  = stream_context_create(['http' => [
+                'timeout' => 15,
+                'header'  => "User-Agent: Mozilla/5.0 (compatible; Googlebot/2.1)\r\n"
+            ]]);
+            $html = @file_get_contents($value, false, $ctx);
+            if (!$html) throw new Exception("Não foi possível acessar a URL. Verifique se o site permite acesso.");
+
+            if (preg_match('/<title>(.*?)<\/title>/is', $html, $m)) {
+                $nome = "Link: " . html_entity_decode(trim($m[1]));
+            }
+
+            // Limpeza básica de HTML
+            $bruto = preg_replace('/<script\b[^>]*>.*?<\/script>/is', '', $html);
+            $bruto = preg_replace('/<style\b[^>]*>.*?<\/style>/is', '', $bruto);
+            $bruto = strip_tags($bruto);
+            $bruto = html_entity_decode($bruto, ENT_QUOTES, 'UTF-8');
+            $bruto = preg_replace('/\s+/', ' ', $bruto);
+            $bruto = trim($bruto);
+
+            // Gemini extrai apenas o que é estratégico
+            $texto = IARoteiros::resumirConteudoUrl($bruto, $value);
+            if (strpos($texto, 'Erro') === 0) throw new Exception($texto);
         }
     }
 

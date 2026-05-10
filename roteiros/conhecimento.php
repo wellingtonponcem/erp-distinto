@@ -502,11 +502,11 @@ try {
                                     this.showAlert('Ops!', res.error || 'Falha no processamento');
                                 }
                             } catch(e) {
-                                if (xhr.status === 200) {
-                                    this.showAlert('Erro', 'Resposta inválida do servidor');
-                                } else {
-                                    this.showAlert('Erro ' + xhr.status, 'O servidor encontrou um problema técnico. Tente uma imagem menor.');
-                                }
+                                // Resposta não é JSON — mostra o texto bruto para facilitar diagnóstico
+                                const preview = xhr.responseText
+                                    ? xhr.responseText.replace(/<[^>]*>/g, '').trim().substring(0, 300)
+                                    : 'Sem resposta do servidor';
+                                this.showAlert('Erro ' + xhr.status, preview || 'O servidor encontrou um problema técnico.');
                             }
                         }
                     };
