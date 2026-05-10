@@ -9,12 +9,15 @@ $tituloPagina = 'Configurações';
 $db = Database::get();
 
 try {
-    $stmt = $db->query("SHOW COLUMNS FROM configuracao_empresa LIKE 'groq_api_key'");
+    // Verificação compatível com PostgreSQL
+    $stmt = $db->prepare("SELECT column_name FROM information_schema.columns WHERE table_name = 'configuracao_empresa' AND column_name = 'groq_api_key'");
+    $stmt->execute();
     if (!$stmt->fetch()) {
         $db->exec("ALTER TABLE configuracao_empresa ADD COLUMN groq_api_key VARCHAR(255) NULL");
     }
     
-    $stmt = $db->query("SHOW COLUMNS FROM configuracao_empresa LIKE 'gemini_api_key'");
+    $stmt = $db->prepare("SELECT column_name FROM information_schema.columns WHERE table_name = 'configuracao_empresa' AND column_name = 'gemini_api_key'");
+    $stmt->execute();
     if (!$stmt->fetch()) {
         $db->exec("ALTER TABLE configuracao_empresa ADD COLUMN gemini_api_key VARCHAR(255) NULL");
     }
@@ -38,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $vals[] = trim($_POST['gemini_api_key']);
     }
     
-    $sets = implode(', ', array_map(fn($c) => "`$c` = ?", $campos));
+    $sets = implode(', ', array_map(fn($c) => "\"$c\" = ?", $campos));
     $vals[] = 'principal';
     $stmt = $db->prepare("UPDATE configuracao_empresa SET $sets WHERE id = ?");
     $stmt->execute($vals);
