@@ -383,7 +383,10 @@ include __DIR__ . '/../includes/layout/head.php';
                         <template x-for="(txn, i) in ofxTransacoes" :key="i">
                             <tr style="border-bottom:1px solid #1e293b;">
                                 <td style="padding:10px 12px; color:#cbd5e1;" x-text="formatarData(txn.data)"></td>
-                                <td style="padding:10px 12px; color:#cbd5e1;" x-text="txn.descricao"></td>
+                                <td style="padding:10px 12px; color:#cbd5e1;">
+                                    <span x-text="txn.descricao"></span>
+                                    <span x-show="txn.duplicado_hint" style="background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); font-size:10px; padding:2px 6px; border-radius:4px; margin-left:6px; display:inline-block;">Já Lançado</span>
+                                </td>
                                 <td style="padding:10px 12px; font-weight:600;" :style="txn.tipo==='receber'?'color:#10b981':'color:#ef4444'" x-text="formatarMoeda(txn.valor)"></td>
                                 <td style="padding:10px 12px;">
                                     <select class="select" x-model="txn.acao_id" style="width:100%; padding:4px 8px; font-size:12px; height:auto; min-height:28px;">
@@ -862,8 +865,20 @@ function lancamentos() {
                         return;
                     }
                     this.ofxTransacoes = res.transacoes.map(t => {
-                        const match = this.buscarPendentesParaOfx(t)[0];
-                        return { ...t, acao_id: match ? match.id : 'novo', categoria: 'outros', categoriaCustom: '' };
+                        const matchPendente = this.buscarPendentesParaOfx(t)[0];
+                        const matchPago = this.buscarPagosParaOfx(t)[0];
+                        
+                        let acao_id = 'novo';
+                        let duplicado_hint = false;
+
+                        if (matchPendente) {
+                            acao_id = matchPendente.id;
+                        } else if (matchPago) {
+                            acao_id = 'ignorar';
+                            duplicado_hint = true;
+                        }
+
+                        return { ...t, acao_id, duplicado_hint, categoria: 'outros', categoriaCustom: '' };
                     });
                     this.modalOfxAberto = true;
                     this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
@@ -884,6 +899,16 @@ function lancamentos() {
                 l.status !== 'pago' && 
                 l.status !== 'cancelado' &&
                 Math.abs(l.valor - txn.valor) <= (txn.valor * 0.10)
+            );
+        },
+
+        buscarPagosParaOfx(txn) {
+            // Busca contas já pagas com o MESMO valor e MESMA data
+            return this.lista.filter(l => 
+                l.tipo === txn.tipo && 
+                l.status === 'pago' && 
+                Math.abs(l.valor - txn.valor) < 0.05 &&
+                l.vencimento === txn.data
             );
         },
 
