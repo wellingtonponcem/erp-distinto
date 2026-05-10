@@ -13,7 +13,7 @@ if (!$id) {
 
 try {
     $db = Database::get();
-    
+
     // Migração: Adicionar colunas se não existirem
     try {
         $db->exec("ALTER TABLE roteiros ADD COLUMN IF NOT EXISTS intencao TEXT");
@@ -44,7 +44,9 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $roteiro['titulo']; ?> — Detalhes</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <style>
@@ -107,8 +109,8 @@ try {
         .header h1 {
             font-family: var(--serif);
             font-style: italic;
-            font-size: 1.3rem;
-            line-height: 1.2;
+            font-size: 1.2rem;
+            line-height: 1.1;
             color: var(--text);
             margin: 0.5rem 0;
             font-weight: 400;
@@ -362,7 +364,7 @@ try {
             .layout-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .metrics-area {
                 grid-template-columns: 1fr !important;
             }
@@ -393,54 +395,42 @@ try {
             <div class="main-content" style="margin-bottom: 2rem;">
                 <div class="script-section">
                     <div class="section-label">GANCHO — 3 PRIMEIROS SEGUNDOS</div>
-                    <textarea class="form-control hook-block"
-                        :readonly="!editing"
-                        x-init="resize($el)" @input="resize($el)"
-                        style="border: none; margin-bottom: 0;"
-                        x-model="data.gancho"></textarea>
+                    <textarea class="form-control hook-block" :readonly="!editing" x-init="resize($el)"
+                        @input="resize($el)" style="border: none; margin-bottom: 0;" x-model="data.gancho"></textarea>
                 </div>
 
                 <div class="script-section">
                     <div class="section-label">Quebra de Crença</div>
-                    <textarea class="form-control content-body"
-                        :readonly="!editing"
-                        x-init="resize($el)" @input="resize($el)"
-                        style="background: transparent; border: none; padding: 0;"
+                    <textarea class="form-control content-body" :readonly="!editing" x-init="resize($el)"
+                        @input="resize($el)" style="background: transparent; border: none; padding: 0;"
                         x-model="data.quebra_crenca"></textarea>
                 </div>
 
                 <div class="script-section">
                     <div class="section-label">Desenvolvimento</div>
-                    <textarea class="form-control content-body"
-                        :readonly="!editing"
-                        x-init="resize($el)" @input="resize($el)"
-                        style="background: transparent; border: none; padding: 0;"
+                    <textarea class="form-control content-body" :readonly="!editing" x-init="resize($el)"
+                        @input="resize($el)" style="background: transparent; border: none; padding: 0;"
                         x-model="data.desenvolvimento"></textarea>
                 </div>
 
                 <div class="script-section">
                     <div class="section-label">Conexão Emocional</div>
-                    <textarea class="form-control content-body"
-                        :readonly="!editing"
-                        x-init="resize($el)" @input="resize($el)"
-                        style="background: transparent; border: none; padding: 0;"
+                    <textarea class="form-control content-body" :readonly="!editing" x-init="resize($el)"
+                        @input="resize($el)" style="background: transparent; border: none; padding: 0;"
                         x-model="data.conexao"></textarea>
                 </div>
 
                 <div class="script-section">
                     <div class="section-label">FECHAMENTO IMPACTANTE</div>
-                    <textarea class="form-control closing-block"
-                        :readonly="!editing"
-                        x-init="resize($el)" @input="resize($el)"
+                    <textarea class="form-control closing-block" :readonly="!editing" x-init="resize($el)"
+                        @input="resize($el)"
                         style="background: rgba(232,255,71,0.05); border: 1px solid rgba(232,255,71,0.15); border-radius: 4px; padding: 1.5rem;"
                         x-model="data.fechamento"></textarea>
                 </div>
 
                 <div class="script-section">
                     <div class="section-label">CTA (Call to Action)</div>
-                    <textarea class="form-control"
-                        :readonly="!editing"
-                        x-init="resize($el)" @input="resize($el)"
+                    <textarea class="form-control" :readonly="!editing" x-init="resize($el)" @input="resize($el)"
                         style="background: var(--surface2); border-left: 3px solid var(--accent2); border-radius: 0 4px 4px 0; font-size: 1rem; padding-left: 15px;"
                         x-model="data.cta"></textarea>
                 </div>
@@ -452,16 +442,22 @@ try {
                 <div class="sidebar-card">
                     <h3>Identificação & Intenção</h3>
                     <div style="margin-bottom: 1rem;">
-                        <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Número de Registro (Permanente)</label>
-                        <input type="number" class="form-control" x-model="data.numero" readonly style="opacity: 0.7; cursor: not-allowed; background: var(--bg);">
+                        <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Número
+                            de Registro (Permanente)</label>
+                        <input type="number" class="form-control" x-model="data.numero" readonly
+                            style="opacity: 0.7; cursor: not-allowed; background: var(--bg);">
                     </div>
                     <div style="margin-bottom: 1rem;">
-                        <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Intenção</label>
-                        <input type="text" class="form-control" x-model="data.intencao" @input="editing = true" placeholder="Ex: CONSTRUIR AUTORIDADE">
+                        <label
+                            style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Intenção</label>
+                        <input type="text" class="form-control" x-model="data.intencao" @input="editing = true"
+                            placeholder="Ex: CONSTRUIR AUTORIDADE">
                     </div>
                     <div>
-                        <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Tema</label>
-                        <input type="text" class="form-control" x-model="data.tema" @input="editing = true" placeholder="Ex: Exposição e medo de aparecer">
+                        <label
+                            style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Tema</label>
+                        <input type="text" class="form-control" x-model="data.tema" @input="editing = true"
+                            placeholder="Ex: Exposição e medo de aparecer">
                     </div>
                 </div>
 
@@ -488,24 +484,31 @@ try {
                     <h3>Métricas de Performance</h3>
                     <div class="metrics-grid">
                         <div>
-                            <label style="font-size: 10px;"><i class="fa-solid fa-heart" style="color: #ff4747; margin-right: 5px;"></i> Likes</label>
+                            <label style="font-size: 10px;"><i class="fa-solid fa-heart"
+                                    style="color: #ff4747; margin-right: 5px;"></i> Likes</label>
                             <input type="number" class="form-control" x-model="data.likes" @input="editing = true">
                         </div>
                         <div>
-                            <label style="font-size: 10px;"><i class="fa-solid fa-comment" style="color: var(--accent); margin-right: 5px;"></i> Comentários</label>
-                            <input type="number" class="form-control" x-model="data.comentarios" @input="editing = true">
+                            <label style="font-size: 10px;"><i class="fa-solid fa-comment"
+                                    style="color: var(--accent); margin-right: 5px;"></i> Comentários</label>
+                            <input type="number" class="form-control" x-model="data.comentarios"
+                                @input="editing = true">
                         </div>
                         <div>
-                            <label style="font-size: 10px;"><i class="fa-solid fa-paper-plane" style="color: var(--accent); margin-right: 5px;"></i> Envios</label>
+                            <label style="font-size: 10px;"><i class="fa-solid fa-paper-plane"
+                                    style="color: var(--accent); margin-right: 5px;"></i> Envios</label>
                             <input type="number" class="form-control" x-model="data.shares" @input="editing = true">
                         </div>
                         <div>
-                            <label style="font-size: 10px;"><i class="fa-solid fa-arrows-rotate" style="color: var(--accent); margin-right: 5px;"></i> Repost</label>
+                            <label style="font-size: 10px;"><i class="fa-solid fa-arrows-rotate"
+                                    style="color: var(--accent); margin-right: 5px;"></i> Repost</label>
                             <input type="number" class="form-control" x-model="data.reposts" @input="editing = true">
                         </div>
                         <div>
-                            <label style="font-size: 10px;"><i class="fa-solid fa-bookmark" style="color: var(--accent); margin-right: 5px;"></i> Salvamento</label>
-                            <input type="number" class="form-control" x-model="data.salvamentos" @input="editing = true">
+                            <label style="font-size: 10px;"><i class="fa-solid fa-bookmark"
+                                    style="color: var(--accent); margin-right: 5px;"></i> Salvamento</label>
+                            <input type="number" class="form-control" x-model="data.salvamentos"
+                                @input="editing = true">
                         </div>
                     </div>
                 </div>
