@@ -236,6 +236,16 @@ try {
             border-radius: 6px;
             font-family: inherit;
             margin-bottom: 10px;
+            overflow: hidden;
+            resize: none;
+        }
+
+        .form-control:read-only {
+            cursor: default;
+            border-color: transparent;
+            background: transparent;
+            padding-left: 0;
+            padding-right: 0;
         }
 
         .btn-save {
@@ -300,42 +310,54 @@ try {
                 <div class="script-section">
                     <div class="section-label">GANCHO — 3 PRIMEIROS SEGUNDOS</div>
                     <textarea class="form-control hook-block"
-                        style="border: none; min-height: 80px; resize: none; margin-bottom: 0;"
+                        :readonly="!editing"
+                        x-init="resize($el)" @input="resize($el)"
+                        style="border: none; margin-bottom: 0;"
                         x-model="data.gancho"></textarea>
                 </div>
 
                 <div class="script-section">
                     <div class="section-label">Quebra de Crença</div>
                     <textarea class="form-control content-body"
-                        style="background: transparent; border: none; padding: 0; min-height: 100px; resize: vertical;"
+                        :readonly="!editing"
+                        x-init="resize($el)" @input="resize($el)"
+                        style="background: transparent; border: none; padding: 0;"
                         x-model="data.quebra_crenca"></textarea>
                 </div>
 
                 <div class="script-section">
                     <div class="section-label">Desenvolvimento</div>
                     <textarea class="form-control content-body"
-                        style="background: transparent; border: none; padding: 0; min-height: 150px; resize: vertical;"
+                        :readonly="!editing"
+                        x-init="resize($el)" @input="resize($el)"
+                        style="background: transparent; border: none; padding: 0;"
                         x-model="data.desenvolvimento"></textarea>
                 </div>
 
                 <div class="script-section">
                     <div class="section-label">Conexão Emocional</div>
                     <textarea class="form-control content-body"
-                        style="background: transparent; border: none; padding: 0; min-height: 100px; resize: vertical;"
+                        :readonly="!editing"
+                        x-init="resize($el)" @input="resize($el)"
+                        style="background: transparent; border: none; padding: 0;"
                         x-model="data.conexao"></textarea>
                 </div>
 
                 <div class="script-section">
                     <div class="section-label">Fechamento Impactante</div>
                     <textarea class="form-control closing-block"
-                        style="background: rgba(232,255,71,0.05); border: 1px solid rgba(232,255,71,0.15); border-radius: 4px; padding: 1.5rem; min-height: 100px; resize: vertical;"
+                        :readonly="!editing"
+                        x-init="resize($el)" @input="resize($el)"
+                        style="background: rgba(232,255,71,0.05); border: 1px solid rgba(232,255,71,0.15); border-radius: 4px; padding: 1.5rem;"
                         x-model="data.fechamento"></textarea>
                 </div>
 
                 <div class="script-section">
                     <div class="section-label">CTA (Call to Action)</div>
                     <textarea class="form-control"
-                        style="background: var(--surface2); border-left: 3px solid var(--accent2); border-radius: 0 4px 4px 0; min-height: 80px; font-size: 1rem;"
+                        :readonly="!editing"
+                        x-init="resize($el)" @input="resize($el)"
+                        style="background: var(--surface2); border-left: 3px solid var(--accent2); border-radius: 0 4px 4px 0; font-size: 1rem;"
                         x-model="data.cta"></textarea>
                 </div>
             </div>
@@ -348,7 +370,7 @@ try {
                     <div style="margin-bottom: 1rem;">
                         <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Status
                             Atual</label>
-                        <select class="form-control" x-model="data.status">
+                        <select class="form-control" x-model="data.status" :disabled="!editing">
                             <option value="pendente">Pendente</option>
                             <option value="gravado">Gravado</option>
                             <option value="editado">Editado</option>
@@ -358,7 +380,7 @@ try {
                     <div>
                         <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Tags
                             (separadas por vírgula)</label>
-                        <input type="text" class="form-control" x-model="data.tags">
+                        <input type="text" class="form-control" x-model="data.tags" :readonly="!editing">
                     </div>
                 </div>
 
@@ -367,28 +389,28 @@ try {
                     <div class="metrics-grid">
                         <div>
                             <label style="font-size: 10px;">Views</label>
-                            <input type="number" class="form-control" x-model="data.views">
+                            <input type="number" class="form-control" x-model="data.views" :readonly="!editing">
                         </div>
                         <div>
                             <label style="font-size: 10px;">Likes</label>
-                            <input type="number" class="form-control" x-model="data.likes">
+                            <input type="number" class="form-control" x-model="data.likes" :readonly="!editing">
                         </div>
                         <div>
                             <label style="font-size: 10px;">Shares</label>
-                            <input type="number" class="form-control" x-model="data.shares">
+                            <input type="number" class="form-control" x-model="data.shares" :readonly="!editing">
                         </div>
                         <div>
                             <label style="font-size: 10px;">Reposts</label>
-                            <input type="number" class="form-control" x-model="data.reposts">
+                            <input type="number" class="form-control" x-model="data.reposts" :readonly="!editing">
                         </div>
                     </div>
                 </div>
             </div>
 
             <div style="position: sticky; bottom: 2rem; z-index: 100;">
-                <button @click="save()" class="btn-save" :disabled="saving"
+                <button @click="handleActionButton()" class="btn-save" :disabled="saving"
                     style="box-shadow: 0 10px 30px rgba(232,255,71,0.2);">
-                    <span x-show="!saving">Salvar Alterações</span>
+                    <span x-show="!saving" x-text="editing ? 'Salvar Alterações' : 'Editar Roteiro'"></span>
                     <span x-show="saving">Salvando...</span>
                 </button>
             </div>
@@ -400,6 +422,24 @@ try {
             return {
                 data: <?php echo json_encode($roteiro); ?>,
                 saving: false,
+                editing: false,
+
+                resize(el) {
+                    el.style.height = 'auto';
+                    el.style.height = el.scrollHeight + 'px';
+                },
+
+                handleActionButton() {
+                    if (this.editing) {
+                        this.save();
+                    } else {
+                        this.editing = true;
+                        this.$nextTick(() => {
+                            const textareas = document.querySelectorAll('textarea');
+                            textareas.forEach(ta => this.resize(ta));
+                        });
+                    }
+                },
 
                 save() {
                     this.saving = true;
@@ -412,7 +452,12 @@ try {
                             this.saving = false;
                             if (res.success) {
                                 this.data.score = res.score;
-                                alert('Salvo com sucesso!');
+                                this.editing = false;
+                                // Recalcular alturas após salvar para garantir visual limpo
+                                this.$nextTick(() => {
+                                    const textareas = document.querySelectorAll('textarea');
+                                    textareas.forEach(ta => this.resize(ta));
+                                });
                             }
                         });
                 }
