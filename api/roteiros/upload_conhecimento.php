@@ -44,12 +44,25 @@ if (move_uploaded_file($arquivo['tmp_name'], $targetPath)) {
 
     try {
         $db = Database::get();
-        $stmt = $db->prepare("INSERT INTO roteiros_conhecimento (nome_arquivo, caminho_arquivo, tipo_arquivo, texto_extraido) VALUES (?, ?, ?, ?)");
+        
+        // Auto-migração: Garantir que a tabela exista
+        $db->exec("CREATE TABLE IF NOT EXISTS roteiros_conhecimento (
+            id SERIAL PRIMARY KEY,
+            nome_arquivo TEXT NOT NULL,
+            caminho_arquivo TEXT NOT NULL,
+            tipo_arquivo TEXT,
+            texto_extraido TEXT,
+            ativo BOOLEAN DEFAULT TRUE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )");
+
+        $stmt = $db->prepare("INSERT INTO roteiros_conhecimento (nome_arquivo, caminho_arquivo, tipo_arquivo, texto_extraido) VALUES (?, ?, ?, ?) RETURNING id");
         $stmt->execute([$arquivo['name'], 'uploads/roteiros/conhecimento/' . $novoNome, $ext, $texto]);
+        $newId = $stmt->fetchColumn();
 
         responderJson([
             'success' => true,
-            'id' => $db->lastInsertId(),
+            'id' => $newId,
             'nome' => $arquivo['name']
         ]);
     } catch (Exception $e) {
