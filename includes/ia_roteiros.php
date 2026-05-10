@@ -173,7 +173,7 @@ Extraia a essência estratégica, metodologias e diretrizes. Remova repetições
                 ['role' => 'user', 'content' => $promptUsuario]
             ]);
 
-            if (strpos($novaMemoria, 'Erro') === 0) return false;
+            if (strpos($novaMemoria, 'Erro') === 0) return $novaMemoria;
 
             $db->exec("DELETE FROM roteiros_memoria");
             $stmt = $db->prepare("INSERT INTO roteiros_memoria (conteudo) VALUES (?)");
@@ -181,7 +181,7 @@ Extraia a essência estratégica, metodologias e diretrizes. Remova repetições
             
             return true;
         } catch (Exception $e) {
-            return false;
+            return "Erro Interno: " . $e->getMessage();
         }
     }
 
