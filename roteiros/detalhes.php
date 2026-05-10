@@ -27,18 +27,21 @@ try {
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $roteiro['titulo']; ?> — Detalhes</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         :root {
             --bg: #0a0a0a;
             --surface: #111111;
             --surface2: #181818;
-            --border: rgba(255,255,255,0.07);
+            --border: rgba(255, 255, 255, 0.07);
             --accent: #E8FF47;
             --accent2: #FF4747;
             --text: #F0EDE6;
@@ -48,7 +51,11 @@ try {
             --display: 'Bebas Neue', sans-serif;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body {
             background: var(--bg);
@@ -82,7 +89,9 @@ try {
             margin-bottom: 1rem;
         }
 
-        .back-link:hover { color: var(--accent); }
+        .back-link:hover {
+            color: var(--accent);
+        }
 
         h1 {
             font-family: var(--display);
@@ -101,9 +110,20 @@ try {
             margin-top: 10px;
         }
 
-        .status-pendente { background: rgba(255,255,255,0.1); color: #fff; }
-        .status-gravado { background: rgba(71,255,133,0.15); color: #47ff85; }
-        .status-postado { background: rgba(71,163,255,0.15); color: #47a3ff; }
+        .status-pendente {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .status-gravado {
+            background: rgba(71, 255, 133, 0.15);
+            color: #47ff85;
+        }
+
+        .status-postado {
+            background: rgba(71, 163, 255, 0.15);
+            color: #47a3ff;
+        }
 
         .layout-grid {
             display: grid;
@@ -133,7 +153,10 @@ try {
             margin-bottom: 1rem;
         }
 
-        .script-section { margin-bottom: 2rem; }
+        .script-section {
+            margin-bottom: 2rem;
+        }
+
         .section-label {
             font-size: 10px;
             font-weight: 500;
@@ -145,7 +168,13 @@ try {
             align-items: center;
             gap: 10px;
         }
-        .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
 
         .hook-block {
             background: var(--surface2);
@@ -154,12 +183,14 @@ try {
             border-radius: 4px;
             font-family: var(--serif);
             font-style: italic;
-            font-size: 24px;
+            font-size: 1rem;
             color: var(--text);
             margin-bottom: 2.5rem;
             line-height: 1.4;
             width: 100%;
-            border-top: none; border-right: none; border-bottom: none;
+            border-top: none;
+            border-right: none;
+            border-bottom: none;
         }
 
         .form-control:focus {
@@ -170,21 +201,22 @@ try {
         .main-content {
             background: var(--surface);
             border: 1px solid var(--border);
-            padding: 4rem; /* Mais respiro */
+            padding: 4rem;
+            /* Mais respiro */
             border-radius: 4px;
         }
 
-        .content-body { 
-            font-size: 17px; 
+        .content-body {
+            font-size: 1rem;
             line-height: 1.8;
             letter-spacing: 0.01em;
             color: var(--text);
-            white-space: pre-wrap; 
+            white-space: pre-wrap;
         }
 
         .closing-block {
-            background: rgba(232,255,71,0.05);
-            border: 1px solid rgba(232,255,71,0.15);
+            background: rgba(232, 255, 71, 0.05);
+            border: 1px solid rgba(232, 255, 71, 0.15);
             border-radius: 4px;
             padding: 1.5rem;
             font-family: var(--serif);
@@ -227,8 +259,8 @@ try {
         .score-display {
             text-align: center;
             padding: 1.5rem;
-            background: rgba(232,255,71,0.05);
-            border: 1px solid rgba(232,255,71,0.2);
+            background: rgba(232, 255, 71, 0.05);
+            border: 1px solid rgba(232, 255, 71, 0.2);
             border-radius: 8px;
         }
 
@@ -240,14 +272,17 @@ try {
         }
 
         @media (max-width: 768px) {
-            .layout-grid { grid-template-columns: 1fr; }
+            .layout-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
+
 <body x-data="scriptDetail()">
     <div class="page-wrap">
         <a href="index.php" class="back-link">← Voltar para todos</a>
-        
+
         <div class="header">
             <div>
                 <h1 x-text="data.titulo"></h1>
@@ -264,41 +299,55 @@ try {
             <div class="main-content" style="margin-bottom: 2rem;">
                 <div class="script-section">
                     <div class="section-label">GANCHO — 3 PRIMEIROS SEGUNDOS</div>
-                    <textarea class="form-control hook-block" style="border: none; min-height: 80px; resize: none; margin-bottom: 0;" x-model="data.gancho"></textarea>
+                    <textarea class="form-control hook-block"
+                        style="border: none; min-height: 80px; resize: none; margin-bottom: 0;"
+                        x-model="data.gancho"></textarea>
                 </div>
 
                 <div class="script-section">
                     <div class="section-label">Quebra de Crença</div>
-                    <textarea class="form-control content-body" style="background: transparent; border: none; padding: 0; min-height: 100px; resize: vertical;" x-model="data.quebra_crenca"></textarea>
+                    <textarea class="form-control content-body"
+                        style="background: transparent; border: none; padding: 0; min-height: 100px; resize: vertical;"
+                        x-model="data.quebra_crenca"></textarea>
                 </div>
 
                 <div class="script-section">
                     <div class="section-label">Desenvolvimento</div>
-                    <textarea class="form-control content-body" style="background: transparent; border: none; padding: 0; min-height: 150px; resize: vertical;" x-model="data.desenvolvimento"></textarea>
+                    <textarea class="form-control content-body"
+                        style="background: transparent; border: none; padding: 0; min-height: 150px; resize: vertical;"
+                        x-model="data.desenvolvimento"></textarea>
                 </div>
 
                 <div class="script-section">
                     <div class="section-label">Conexão Emocional</div>
-                    <textarea class="form-control content-body" style="background: transparent; border: none; padding: 0; min-height: 100px; resize: vertical;" x-model="data.conexao"></textarea>
+                    <textarea class="form-control content-body"
+                        style="background: transparent; border: none; padding: 0; min-height: 100px; resize: vertical;"
+                        x-model="data.conexao"></textarea>
                 </div>
 
                 <div class="script-section">
                     <div class="section-label">Fechamento Impactante</div>
-                    <textarea class="form-control closing-block" style="background: rgba(232,255,71,0.05); border: 1px solid rgba(232,255,71,0.15); border-radius: 4px; padding: 1.5rem; min-height: 100px; resize: vertical;" x-model="data.fechamento"></textarea>
+                    <textarea class="form-control closing-block"
+                        style="background: rgba(232,255,71,0.05); border: 1px solid rgba(232,255,71,0.15); border-radius: 4px; padding: 1.5rem; min-height: 100px; resize: vertical;"
+                        x-model="data.fechamento"></textarea>
                 </div>
 
                 <div class="script-section">
                     <div class="section-label">CTA (Call to Action)</div>
-                    <textarea class="form-control" style="background: var(--surface2); border-left: 3px solid var(--accent2); border-radius: 0 4px 4px 0; min-height: 80px;" x-model="data.cta"></textarea>
+                    <textarea class="form-control"
+                        style="background: var(--surface2); border-left: 3px solid var(--accent2); border-radius: 0 4px 4px 0; min-height: 80px;"
+                        x-model="data.cta"></textarea>
                 </div>
             </div>
 
             <!-- Ações e Métricas (Agora abaixo do texto) -->
-            <div class="metrics-area" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+            <div class="metrics-area"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
                 <div class="sidebar-card">
                     <h3>Status & Classificação</h3>
                     <div style="margin-bottom: 1rem;">
-                        <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Status Atual</label>
+                        <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Status
+                            Atual</label>
                         <select class="form-control" x-model="data.status">
                             <option value="pendente">Pendente</option>
                             <option value="gravado">Gravado</option>
@@ -307,7 +356,8 @@ try {
                         </select>
                     </div>
                     <div>
-                        <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Tags (separadas por vírgula)</label>
+                        <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Tags
+                            (separadas por vírgula)</label>
                         <input type="text" class="form-control" x-model="data.tags">
                     </div>
                 </div>
@@ -336,7 +386,8 @@ try {
             </div>
 
             <div style="position: sticky; bottom: 2rem; z-index: 100;">
-                <button @click="save()" class="btn-save" :disabled="saving" style="box-shadow: 0 10px 30px rgba(232,255,71,0.2);">
+                <button @click="save()" class="btn-save" :disabled="saving"
+                    style="box-shadow: 0 10px 30px rgba(232,255,71,0.2);">
                     <span x-show="!saving">Salvar Alterações</span>
                     <span x-show="saving">Salvando...</span>
                 </button>
@@ -356,17 +407,18 @@ try {
                         method: 'POST',
                         body: JSON.stringify(this.data)
                     })
-                    .then(r => r.json())
-                    .then(res => {
-                        this.saving = false;
-                        if (res.success) {
-                            this.data.score = res.score;
-                            alert('Salvo com sucesso!');
-                        }
-                    });
+                        .then(r => r.json())
+                        .then(res => {
+                            this.saving = false;
+                            if (res.success) {
+                                this.data.score = res.score;
+                                alert('Salvo com sucesso!');
+                            }
+                        });
                 }
             }
         }
     </script>
 </body>
+
 </html>
