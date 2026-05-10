@@ -151,16 +151,35 @@ if (!$roteiro) {
         .hook-block {
             background: var(--surface2);
             border-left: 3px solid var(--accent);
-            padding: 1rem 1.2rem;
+            padding: 1.5rem;
             border-radius: 0 4px 4px 0;
             font-family: var(--serif);
             font-style: italic;
-            font-size: 18px;
+            font-size: 20px;
             color: var(--text);
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            line-height: 1.5;
         }
 
-        .content-body { font-size: 16px; white-space: pre-wrap; }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .main-content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 4rem; /* Mais respiro */
+            border-radius: 4px;
+        }
+
+        .content-body { 
+            font-size: 17px; 
+            line-height: 1.8;
+            letter-spacing: 0.01em;
+            color: var(--text);
+            white-space: pre-wrap; 
+        }
 
         .form-control {
             width: 100%;
@@ -226,35 +245,44 @@ if (!$roteiro) {
             </div>
         </div>
 
-        <div class="layout-grid">
-            <div class="main-content">
+        <div class="layout-grid" style="display: block;">
+            <!-- Conteúdo Principal -->
+            <div class="main-content" style="margin-bottom: 2rem;">
                 <div class="script-section">
                     <div class="section-label">Gancho / Título IA</div>
-                    <div class="hook-block" x-text="data.gancho"></div>
+                    <textarea class="form-control hook-block" style="border: none; min-height: 80px; resize: none; margin-bottom: 0;" x-model="data.gancho"></textarea>
                 </div>
 
                 <div class="script-section">
                     <div class="section-label">Conteúdo do Roteiro</div>
-                    <textarea class="form-control" style="min-height: 400px; background: transparent; border: none; padding: 0;" x-model="data.conteudo"></textarea>
+                    <textarea class="form-control" 
+                              style="min-height: 500px; background: transparent; border: none; padding: 0; line-height: 1.8; font-size: 16px; color: var(--text); resize: vertical;" 
+                              x-model="data.conteudo"></textarea>
                 </div>
 
                 <div class="script-section">
                     <div class="section-label">CTA (Call to Action)</div>
-                    <input type="text" class="form-control" x-model="data.cta">
+                    <textarea class="form-control" style="background: var(--surface2); border-left: 3px solid var(--accent2); border-radius: 0 4px 4px 0; min-height: 80px;" x-model="data.cta"></textarea>
                 </div>
             </div>
 
-            <div class="sidebar">
+            <!-- Ações e Métricas (Agora abaixo do texto) -->
+            <div class="metrics-area" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
                 <div class="sidebar-card">
                     <h3>Status & Classificação</h3>
-                    <select class="form-control" x-model="data.status">
-                        <option value="pendente">Pendente</option>
-                        <option value="gravado">Gravado</option>
-                        <option value="editado">Editado</option>
-                        <option value="postado">Postado</option>
-                    </select>
-                    <label style="font-size: 11px; color: var(--muted);">Tags (separadas por vírgula)</label>
-                    <input type="text" class="form-control" x-model="data.tags">
+                    <div style="margin-bottom: 1rem;">
+                        <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Status Atual</label>
+                        <select class="form-control" x-model="data.status">
+                            <option value="pendente">Pendente</option>
+                            <option value="gravado">Gravado</option>
+                            <option value="editado">Editado</option>
+                            <option value="postado">Postado</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Tags (separadas por vírgula)</label>
+                        <input type="text" class="form-control" x-model="data.tags">
+                    </div>
                 </div>
 
                 <div class="sidebar-card">
@@ -278,8 +306,10 @@ if (!$roteiro) {
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <button @click="save()" class="btn-save" :disabled="saving">
+            <div style="position: sticky; bottom: 2rem; z-index: 100;">
+                <button @click="save()" class="btn-save" :disabled="saving" style="box-shadow: 0 10px 30px rgba(232,255,71,0.2);">
                     <span x-show="!saving">Salvar Alterações</span>
                     <span x-show="saving">Salvando...</span>
                 </button>
