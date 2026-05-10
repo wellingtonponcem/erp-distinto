@@ -598,6 +598,11 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
         .dark .upgrade-card:hover {
             background: rgba(255, 255, 255, 0.06);
         }
+        #main-content [style*="#f1f5f9"],
+        #main-content [style*="#e2e8f0"],
+        #main-content [style*="#cbd5e1"] {
+            color: #ffffff !important;
+        }
     </style>
 </head>
 <body>
