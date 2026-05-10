@@ -385,10 +385,10 @@ exigirAutenticacao();
 
         @media (max-width: 600px) {
             .page-wrap { padding: 2rem 1.25rem 4rem; }
-            .header { 
-                flex-direction: column; 
-                align-items: flex-start; 
-                gap: 1.5rem; 
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
                 text-align: left;
             }
             .header-actions {
@@ -406,6 +406,211 @@ exigirAutenticacao();
             }
             .modal-content { padding: 2rem 1.5rem; }
         }
+
+        /* ── Offline / Sync ─────────────────────────────── */
+        .offline-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,71,71,0.15);
+            border: 1px solid rgba(255,71,71,0.3);
+            color: #ff4747;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 100px;
+            letter-spacing: 0.05em;
+        }
+
+        .sync-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 11px;
+            padding: 4px 12px;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .sync-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .sync-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* ── Reader Overlay ─────────────────────────────── */
+        .reader-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: var(--bg);
+            z-index: 3000;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .reader-header {
+            position: sticky;
+            top: 0;
+            background: rgba(10,10,10,0.97);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .reader-close {
+            background: none; border: none;
+            color: var(--muted); font-size: 22px;
+            cursor: pointer; padding: 6px 10px;
+            line-height: 1;
+        }
+
+        .reader-progress {
+            font-family: var(--display);
+            font-size: 22px;
+            color: var(--accent);
+            letter-spacing: 0.05em;
+        }
+
+        .reader-nav-arrows {
+            display: flex;
+            gap: 8px;
+        }
+
+        .reader-arrow {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .reader-arrow:not(:disabled):hover { border-color: var(--accent); color: var(--accent); }
+        .reader-arrow:disabled { opacity: 0.25; cursor: not-allowed; }
+
+        .reader-body {
+            padding: 2.5rem 1.5rem 9rem;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .reader-num {
+            font-family: var(--display);
+            font-size: 80px;
+            color: var(--accent);
+            line-height: 1;
+            opacity: 0.7;
+        }
+
+        .reader-title {
+            font-family: var(--serif);
+            font-style: italic;
+            font-size: 26px;
+            line-height: 1.2;
+            margin: 0.5rem 0 0.75rem;
+        }
+
+        .reader-meta {
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .reader-section { margin-bottom: 2rem; }
+
+        .reader-label {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .reader-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .reader-text {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            color: var(--text);
+        }
+
+        .reader-gancho {
+            background: var(--surface2);
+            border-left: 3px solid var(--accent);
+            padding: 1.25rem 1.5rem;
+            border-radius: 0 8px 8px 0;
+            font-family: var(--serif);
+            font-style: italic;
+            font-size: 1.15rem;
+            line-height: 1.5;
+        }
+
+        .reader-cta {
+            background: rgba(232,255,71,0.04);
+            border: 1px solid rgba(232,255,71,0.2);
+            border-radius: 8px;
+            padding: 1.25rem 1.5rem;
+            color: var(--accent);
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .reader-footer {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(10,10,10,0.97);
+            border-top: 1px solid var(--border);
+            padding: 1rem 1.5rem;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .reader-btn {
+            flex: 1;
+            padding: 13px;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+            color: var(--text);
+            background: transparent;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .reader-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+        .reader-btn:not(:disabled):hover { border-color: var(--accent); color: var(--accent); }
+        .reader-btn.accent {
+            background: var(--accent);
+            color: #0a0a0a;
+            border-color: var(--accent);
+            font-weight: 700;
+            flex: 2;
+        }
+
+        .empty-offline {
+            text-align: center;
+            padding: 5rem 2rem;
+            color: var(--muted);
+        }
+        .empty-offline i { font-size: 40px; margin-bottom: 1rem; opacity: 0.3; }
     </style>
 </head>
 <body x-data="scriptManager()">
@@ -414,6 +619,16 @@ exigirAutenticacao();
             <div class="header-title">
                 <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 8px;">Sistema de Gestão</div>
                 <h1>Meus <em>Roteiros</em></h1>
+                <div style="display:flex; align-items:center; gap:10px; margin-top:10px; flex-wrap:wrap;">
+                    <span x-show="isOffline" class="offline-badge">
+                        <i class="fa-solid fa-wifi-slash" style="font-size:10px;"></i> OFFLINE
+                    </span>
+                    <button @click="syncOffline()" :disabled="syncing || isOffline" class="sync-btn" x-show="!isOffline">
+                        <i class="fa-solid fa-rotate" :class="syncing ? 'fa-spin' : ''"></i>
+                        <span x-text="syncing ? ' Sincronizando...' : (lastSync ? ' Sincronizado' : ' Sincronizar Offline')"></span>
+                    </button>
+                    <span x-show="lastSync && !syncing" class="sync-btn" style="cursor:default; pointer-events:none;" x-text="'⏱ ' + formatSync(lastSync)"></span>
+                </div>
             </div>
             <div class="header-actions">
                 <a href="conhecimento.php" class="btn-secondary">Base de Conhecimento</a>
@@ -436,6 +651,15 @@ exigirAutenticacao();
                     Todos <span class="pill-count" x-text="scripts.length"></span>
                 </button>
             </div>
+            <button
+                x-show="pendentes.length > 0"
+                @click="abrirLeitura(0)"
+                class="nav-pill"
+                style="background: var(--accent); color: #0a0a0a; border-color: var(--accent); font-weight: 700;">
+                <i class="fa-solid fa-book-open" style="font-size:11px;"></i>
+                Modo Leitura
+                <span class="pill-count" style="background:rgba(0,0,0,0.15);" x-text="pendentes.length"></span>
+            </button>
         </div>
 
         <div class="cards-list">
@@ -517,7 +741,7 @@ exigirAutenticacao();
                     </div>
                     <div class="script-card"
                         :style="`transform: translateX(${offsetX}px); cursor: pointer;`"
-                        @click="window.location.href = 'detalhes.php?id=' + script.id"
+                        @click.stop="$dispatch('abrir-roteiro', {id: script.id})"
                         @touchstart="touchStart($event)"
                         @touchmove="touchMove($event)"
                         @touchend="touchEnd()">
@@ -553,6 +777,79 @@ exigirAutenticacao();
                     </div>
                 </div>
             </template>
+        </div>
+    </div>
+
+    <!-- ── Reader Offline ──────────────────────────────────────────── -->
+    <div class="reader-overlay" x-show="viewMode === 'leitura'" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+
+        <!-- Header fixo -->
+        <div class="reader-header">
+            <button class="reader-close" @click="fecharLeitura()">×</button>
+            <div class="reader-progress" x-text="(readerIndex + 1) + ' / ' + pendentes.length"></div>
+            <div class="reader-nav-arrows">
+                <button class="reader-arrow" @click="anterior()" :disabled="readerIndex === 0" title="Anterior">‹</button>
+                <button class="reader-arrow" @click="proximo()" :disabled="readerIndex >= pendentes.length - 1" title="Próximo">›</button>
+            </div>
+        </div>
+
+        <!-- Conteúdo do roteiro -->
+        <template x-if="scriptAtual">
+            <div class="reader-body">
+                <div class="reader-num" x-text="String(scriptAtual.numero || 0).padStart(2, '0')"></div>
+                <div class="reader-title" x-text="scriptAtual.titulo"></div>
+                <div class="reader-meta" x-text="(scriptAtual.intencao || '') + (scriptAtual.tema ? ' · ' + scriptAtual.tema : '')"></div>
+
+                <!-- Gancho -->
+                <div class="reader-section" x-show="scriptAtual.gancho">
+                    <div class="reader-label">Gancho — 3 primeiros segundos</div>
+                    <div class="reader-gancho reader-text" x-text="scriptAtual.gancho"></div>
+                </div>
+
+                <!-- Quebra de Crença -->
+                <div class="reader-section" x-show="scriptAtual.quebra_crenca">
+                    <div class="reader-label">Quebra de Crença</div>
+                    <div class="reader-text" x-text="scriptAtual.quebra_crenca"></div>
+                </div>
+
+                <!-- Desenvolvimento -->
+                <div class="reader-section" x-show="scriptAtual.desenvolvimento">
+                    <div class="reader-label">Desenvolvimento</div>
+                    <div class="reader-text" x-text="scriptAtual.desenvolvimento"></div>
+                </div>
+
+                <!-- Conexão Emocional -->
+                <div class="reader-section" x-show="scriptAtual.conexao">
+                    <div class="reader-label">Conexão Emocional</div>
+                    <div class="reader-text" x-text="scriptAtual.conexao"></div>
+                </div>
+
+                <!-- Fechamento -->
+                <div class="reader-section" x-show="scriptAtual.fechamento">
+                    <div class="reader-label">Fechamento Impactante</div>
+                    <div class="reader-text" style="color: var(--accent); font-family: var(--serif); font-style: italic; font-size: 1.1rem;" x-text="scriptAtual.fechamento"></div>
+                </div>
+
+                <!-- CTA -->
+                <div class="reader-section" x-show="scriptAtual.cta">
+                    <div class="reader-label">CTA</div>
+                    <div class="reader-cta reader-text" x-text="scriptAtual.cta"></div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Estado vazio -->
+        <template x-if="!scriptAtual">
+            <div class="empty-offline">
+                <i class="fa-solid fa-file-circle-xmark"></i>
+                <p>Nenhum roteiro pendente disponível offline.<br>Conecte à internet e sincronize.</p>
+            </div>
+        </template>
+
+        <!-- Footer fixo -->
+        <div class="reader-footer">
+            <button class="reader-btn" @click="anterior()" :disabled="readerIndex === 0">← Anterior</button>
+            <button class="reader-btn accent" @click="proximo()" :disabled="readerIndex >= pendentes.length - 1">Próximo →</button>
         </div>
     </div>
 
@@ -596,11 +893,13 @@ exigirAutenticacao();
     <script>
         // Registrar Service Worker para PWA
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('../sw.js')
-                    .then(reg => console.log('SW registrado!', reg))
-                    .catch(err => console.log('Erro no SW', err));
-            });
+            navigator.serviceWorker.register('../sw.js')
+                .then(reg => {
+                    console.log('[SW] Registrado, scope:', reg.scope);
+                    // Força atualização do SW se houver uma versão nova
+                    reg.update();
+                })
+                .catch(err => console.log('[SW] Erro:', err));
         }
 
         function scriptManager() {
@@ -618,8 +917,22 @@ exigirAutenticacao();
                     onConfirm: null
                 },
 
+                // ── Offline ────────────────────────────────────────
+                pendentes: [],      // conteúdo completo dos pendentes (localStorage)
+                viewMode: 'lista',  // 'lista' | 'leitura'
+                readerIndex: 0,
+                isOffline: false,
+                lastSync: null,
+                syncing: false,
+
                 init() {
+                    this.isOffline = !navigator.onLine;
+                    this.loadLocalData();
                     this.fetchScripts();
+
+                    window.addEventListener('online',  () => { this.isOffline = false; this.syncOffline(); });
+                    window.addEventListener('offline', () => { this.isOffline = true;  });
+
                     window.addEventListener('open-confirm', (e) => {
                         this.customModal = {
                             show: true,
@@ -628,6 +941,11 @@ exigirAutenticacao();
                             confirmText: e.detail.confirmText || 'Confirmar',
                             onConfirm: e.detail.action
                         };
+                    });
+
+                    window.addEventListener('abrir-roteiro', (e) => {
+                        const script = this.scripts.find(s => s.id === e.detail.id);
+                        if (script) this.abrirRoteiro(script);
                     });
                 },
 
@@ -638,6 +956,91 @@ exigirAutenticacao();
                     this.customModal.show = false;
                 },
 
+                // ── Offline helpers ────────────────────────────────
+                loadLocalData() {
+                    try {
+                        const raw = localStorage.getItem('distinto_pendentes');
+                        if (raw) {
+                            const parsed = JSON.parse(raw);
+                            this.pendentes = parsed.data    || [];
+                            this.lastSync  = parsed.synced_at || null;
+                        }
+                    } catch(e) {}
+                },
+
+                syncOffline() {
+                    if (!navigator.onLine || this.syncing) return;
+                    this.syncing = true;
+                    fetch('<?= raizUrl('/api/roteiros/pendentes.php') ?>')
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.success) {
+                                this.pendentes = data.data;
+                                this.lastSync  = data.synced_at;
+                                localStorage.setItem('distinto_pendentes', JSON.stringify({
+                                    data:      data.data,
+                                    synced_at: data.synced_at
+                                }));
+                            }
+                        })
+                        .catch(() => {})
+                        .finally(() => { this.syncing = false; });
+                },
+
+                get scriptAtual() {
+                    return this.pendentes[this.readerIndex] || null;
+                },
+
+                abrirLeitura(index) {
+                    this.readerIndex = index || 0;
+                    this.viewMode = 'leitura';
+                    document.body.style.overflow = 'hidden';
+                },
+
+                fecharLeitura() {
+                    this.viewMode = 'lista';
+                    document.body.style.overflow = '';
+                },
+
+                proximo() {
+                    if (this.readerIndex < this.pendentes.length - 1) {
+                        this.readerIndex++;
+                        this.$nextTick(() => {
+                            document.querySelector('.reader-overlay')?.scrollTo({ top: 0, behavior: 'smooth' });
+                        });
+                    }
+                },
+
+                anterior() {
+                    if (this.readerIndex > 0) {
+                        this.readerIndex--;
+                        this.$nextTick(() => {
+                            document.querySelector('.reader-overlay')?.scrollTo({ top: 0, behavior: 'smooth' });
+                        });
+                    }
+                },
+
+                // Abre roteiro: modo leitura se offline OU se pendente local, detalhes se online
+                abrirRoteiro(script) {
+                    if (this.isOffline) {
+                        const idx = this.pendentes.findIndex(p => p.id === script.id);
+                        if (idx !== -1) {
+                            this.abrirLeitura(idx);
+                        } else {
+                            alert('Roteiro não disponível offline. Conecte-se e sincronize primeiro.');
+                        }
+                        return;
+                    }
+                    window.location.href = 'detalhes.php?id=' + script.id;
+                },
+
+                formatSync(dateStr) {
+                    if (!dateStr) return '';
+                    const d = new Date(dateStr.replace(' ', 'T'));
+                    return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                },
+
+                // ── Lista ──────────────────────────────────────────
                 fetchScripts() {
                     fetch('<?= raizUrl('/api/roteiros/listar.php') ?>')
                         .then(r => {
@@ -647,26 +1050,15 @@ exigirAutenticacao();
                         .then(data => {
                             if (data.success) {
                                 this.scripts = data.data;
-                                
-                                // Download em segundo plano dos roteiros pendentes para modo avião (offline)
-                                if ('caches' in window) {
-                                    caches.open('distinto-roteiros-v2').then(cache => {
-                                        const pendentesUrls = this.scripts
-                                            .filter(s => s.status === 'pendente')
-                                            .map(s => `detalhes.php?id=${s.id}`);
-                                        
-                                        if (pendentesUrls.length > 0) {
-                                            cache.addAll(pendentesUrls).catch(e => console.log('Erro cache offline:', e));
-                                        }
-                                    });
-                                }
+                                // Sincroniza conteúdo completo para uso offline
+                                this.syncOffline();
                             } else {
                                 alert('Erro na API: ' + data.error);
                             }
                         })
                         .catch(err => {
                             console.error(err);
-                            alert('Falha ao carregar roteiros: ' + err.message);
+                            if (!this.isOffline) alert('Falha ao carregar roteiros: ' + err.message);
                         });
                 },
 

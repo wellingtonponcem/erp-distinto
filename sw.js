@@ -1,50 +1,45 @@
-const CACHE_NAME = 'distinto-roteiros-v2';
-const ASSETS = [
-  '/roteiros/index.php',
-  'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap',
-  'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js'
-];
+const CACHE_NAME = 'distinto-v3';
 
-// Install: Cache base assets
+// Install: ativa imediatamente, sem bloquear em recursos externos
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
+      // Só cacheia a página principal (same-origin), ignora erros
+      return cache.add('/roteiros/index.php').catch(() => {});
     })
   );
 });
 
-// Activate: Clean old caches
+// Activate: remove caches antigos e assume controle imediatamente
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-      );
-    })
+    caches.keys()
+      .then((keys) => Promise.all(
+        keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))
+      ))
+      .then(() => self.clients.claim())
   );
 });
 
-// Fetch: Network First, Fallback to Cache
+// Fetch: Network First → Cache Fallback
 self.addEventListener('fetch', (event) => {
-  // Only cache GET requests
   if (event.request.method !== 'GET') return;
+  if (!event.request.url.startsWith('http')) return;
 
   event.respondWith(
     caches.open(CACHE_NAME).then(async (cache) => {
       try {
-        // Try network first
         const networkResponse = await fetch(event.request);
-        // Save clone to cache for offline use
-        cache.put(event.request, networkResponse.clone());
+        // Cacheia resposta bem-sucedida (same-origin ou CDN)
+        if (networkResponse.ok) {
+          cache.put(event.request, networkResponse.clone());
+        }
         return networkResponse;
       } catch (err) {
-        // If offline, try fetching from cache
-        const cachedResponse = await cache.match(event.request);
-        if (cachedResponse) {
-          return cachedResponse;
-        }
-        // If not in cache, let the browser show its offline page or fail
+        // Offline: serve do cache
+        const cached = await cache.match(event.request);
+        if (cached) return cached;
         throw err;
       }
     })
