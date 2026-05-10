@@ -221,7 +221,7 @@ try {
             padding: 1.5rem;
             font-family: var(--serif);
             font-style: italic;
-            font-size: 20px;
+            font-size: 1rem;
             color: var(--accent);
             line-height: 1.5;
             width: 100%;
@@ -335,7 +335,7 @@ try {
                 <div class="script-section">
                     <div class="section-label">CTA (Call to Action)</div>
                     <textarea class="form-control"
-                        style="background: var(--surface2); border-left: 3px solid var(--accent2); border-radius: 0 4px 4px 0; min-height: 80px;"
+                        style="background: var(--surface2); border-left: 3px solid var(--accent2); border-radius: 0 4px 4px 0; min-height: 80px; font-size: 1rem;"
                         x-model="data.cta"></textarea>
                 </div>
             </div>
