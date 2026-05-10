@@ -16,20 +16,8 @@ try {
     $status = $_GET['status'] ?? null;
     $tag = $_GET['tag'] ?? null;
 
-    $query = "SELECT * FROM roteiros WHERE 1=1";
+    $query = "SELECT id, titulo, status, formato, score, created_at FROM roteiros ORDER BY created_at DESC";
     $params = [];
-
-    if ($status) {
-        $query .= " AND status = ?";
-        $params[] = $status;
-    }
-
-    if ($tag) {
-        $query .= " AND tags LIKE ?";
-        $params[] = "%$tag%";
-    }
-
-    $query .= " ORDER BY created_at DESC";
 
     $stmt = $db->prepare($query);
     $stmt->execute($params);

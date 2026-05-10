@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/env.php';
 require_once __DIR__ . '/../config/auth.php';
+require_once __DIR__ . '/../includes/helpers.php';
 exigirAutenticacao();
 ?>
 <!DOCTYPE html>
@@ -267,6 +268,13 @@ exigirAutenticacao();
         </div>
 
         <div class="cards-list">
+            <template x-if="scripts.length === 0">
+                <div style="text-align: center; padding: 4rem; color: var(--muted); border: 1px dashed var(--border); border-radius: 8px;">
+                    Nenhum roteiro encontrado. <br>
+                    <small x-text="'Debug: ' + filter"></small>
+                </div>
+            </template>
+
             <template x-for="script in filteredScripts" :key="script.id">
                 <a :href="'detalhes.php?id=' + script.id" class="script-card">
                     <div class="card-info">
@@ -337,10 +345,21 @@ exigirAutenticacao();
                 },
 
                 fetchScripts() {
-                    fetch('../api/roteiros/listar.php')
-                        .then(r => r.json())
+                    fetch('<?= raizUrl('/api/roteiros/listar.php') ?>')
+                        .then(r => {
+                            if (!r.ok) throw new Error('Erro HTTP: ' + r.status);
+                            return r.json();
+                        })
                         .then(data => {
-                            if (data.success) this.scripts = data.data;
+                            if (data.success) {
+                                this.scripts = data.data;
+                            } else {
+                                alert('Erro na API: ' + data.error);
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            alert('Falha ao carregar roteiros: ' + err.message);
                         });
                 },
 
