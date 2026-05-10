@@ -13,7 +13,17 @@ if (!$id) {
 
 try {
     $db = Database::get();
-    $stmt = $db->prepare("SELECT id, titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, tags, formato, status, score, views, likes, shares, reposts FROM roteiros WHERE id = ?");
+    
+    // Migração: Adicionar colunas se não existirem
+    try {
+        $db->exec("ALTER TABLE roteiros ADD COLUMN IF NOT EXISTS intencao TEXT");
+        $db->exec("ALTER TABLE roteiros ADD COLUMN IF NOT EXISTS tema TEXT");
+        $db->exec("ALTER TABLE roteiros ADD COLUMN IF NOT EXISTS numero INTEGER");
+    } catch (Exception $e) {
+        // Ignora se já existirem
+    }
+
+    $stmt = $db->prepare("SELECT id, titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, tags, formato, status, score, views, likes, shares, reposts, intencao, tema, numero FROM roteiros WHERE id = ?");
     $stmt->execute([$id]);
     $roteiro = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -93,11 +103,43 @@ try {
             color: var(--accent);
         }
 
-        h1 {
-            font-family: var(--display);
-            font-size: clamp(32px, 5vw, 52px);
-            line-height: 1;
+        .header h1 {
+            font-family: var(--serif);
+            font-style: italic;
+            font-size: clamp(28px, 4vw, 42px);
+            line-height: 1.2;
             color: var(--text);
+            margin: 0.5rem 0;
+            font-weight: 400;
+        }
+
+        .header-id {
+            font-family: var(--display);
+            font-size: 80px;
+            color: var(--accent);
+            line-height: 0.8;
+            opacity: 0.9;
+        }
+
+        .header-intent {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .header-theme {
+            font-size: 14px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .header-main {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
         }
 
         .status-badge {
@@ -215,10 +257,10 @@ try {
         }
 
         .closing-block {
-            background: rgba(232, 255, 71, 0.05);
-            border: 1px solid rgba(232, 255, 71, 0.15);
-            border-radius: 4px;
-            padding: 1.5rem;
+            background: rgba(232, 255, 71, 0.03);
+            border: 1px solid rgba(232, 255, 71, 0.2) !important;
+            border-radius: 8px;
+            padding: 1.5rem 2rem !important;
             font-family: var(--serif);
             font-style: italic;
             font-size: 1rem;
@@ -293,10 +335,13 @@ try {
     <div class="page-wrap">
         <a href="index.php" class="back-link">← Voltar para todos</a>
 
-        <div class="header">
-            <div>
+        <div class="header-main">
+            <div class="header-id" x-text="data.numero || '01'"></div>
+            <div style="flex: 1;">
+                <div class="header-intent" x-text="data.intencao || 'INTENÇÃO NÃO DEFINIDA'"></div>
                 <h1 x-text="data.titulo"></h1>
-                <div :class="'status-badge status-' + data.status" x-text="data.status"></div>
+                <div class="header-theme" x-text="data.tema ? 'Tema: ' + data.tema : 'Sem tema definido'"></div>
+                <div :class="'status-badge status-' + data.status" x-text="data.status" style="margin-top: 1rem;"></div>
             </div>
             <div class="score-display">
                 <div class="score-val" x-text="Math.round(data.score)"></div>
@@ -344,7 +389,7 @@ try {
                 </div>
 
                 <div class="script-section">
-                    <div class="section-label">Fechamento Impactante</div>
+                    <div class="section-label">FECHAMENTO IMPACTANTE</div>
                     <textarea class="form-control closing-block"
                         :readonly="!editing"
                         x-init="resize($el)" @input="resize($el)"
@@ -365,6 +410,22 @@ try {
             <!-- Ações e Métricas (Agora abaixo do texto) -->
             <div class="metrics-area"
                 style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+                <div class="sidebar-card">
+                    <h3>Identificação & Intenção</h3>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Número / ID</label>
+                        <input type="number" class="form-control" x-model="data.numero" :readonly="!editing">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Intenção</label>
+                        <input type="text" class="form-control" x-model="data.intencao" :readonly="!editing" placeholder="Ex: CONSTRUIR AUTORIDADE">
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; color: var(--muted); display: block; margin-bottom: 5px;">Tema</label>
+                        <input type="text" class="form-control" x-model="data.tema" :readonly="!editing" placeholder="Ex: Exposição e medo de aparecer">
+                    </div>
+                </div>
+
                 <div class="sidebar-card">
                     <h3>Status & Classificação</h3>
                     <div style="margin-bottom: 1rem;">
