@@ -919,7 +919,8 @@ function lancamentos() {
                             vencimento: txn.data,
                             categoria: catFinal,
                             conta_id: this.ofxContaId,
-                            observacao: 'Importado via OFX'
+                            observacao: 'Importado via OFX',
+                            ofx_fitid: txn.fitid
                         })
                     });
                     // Opcionalmente poderíamos buscar o ID e dar baixa, ou o backend já assume.

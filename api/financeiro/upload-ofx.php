@@ -2,6 +2,9 @@
 require_once __DIR__ . '/../../config/env.php';
 require_once __DIR__ . '/../../config/auth.php';
 
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../includes/financeiro_custos.php';
+
 exigirAutenticacao();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -16,11 +19,19 @@ if (!isset($_FILES['arquivo']) || $_FILES['arquivo']['error'] !== UPLOAD_ERR_OK)
     exit;
 }
 
+$db = Database::get();
+try {
+    garantirEstruturaFinanceira($db);
+} catch (Throwable $e) {}
+
 $content = file_get_contents($_FILES['arquivo']['tmp_name']);
 
 $transactions = [];
 $parts = preg_split('/<STMTTRN>/i', $content);
 array_shift($parts); // Remove the header
+
+$fitids_to_check = [];
+$parsed_txns = [];
 
 foreach ($parts as $txn) {
     preg_match('/<TRNTYPE>\s*(.*?)(?:\r|\n|<)/i', $txn, $typeMatch);
@@ -45,20 +56,37 @@ foreach ($parts as $txn) {
         $memo = mb_convert_encoding($memo, 'UTF-8', 'ISO-8859-1');
     }
 
+    $fitid = trim($idMatch[1] ?? uniqid());
+
     if ($date && $amount > 0) {
-        $transactions[] = [
-            'fitid' => trim($idMatch[1] ?? uniqid()),
+        $parsed_txns[] = [
+            'fitid' => $fitid,
             'tipo' => $tipo,
             'data' => $date,
             'valor' => $amount,
             'descricao' => $memo,
         ];
+        if ($fitid) $fitids_to_check[] = $fitid;
+    }
+}
+
+$existing_fitids = [];
+if (!empty($fitids_to_check)) {
+    $in = str_repeat('?,', count($fitids_to_check) - 1) . '?';
+    $stmt = $db->prepare("SELECT ofx_fitid FROM lancamentos WHERE ofx_fitid IN ($in) AND ofx_fitid IS NOT NULL AND ofx_fitid != ''");
+    $stmt->execute($fitids_to_check);
+    $existing_fitids = $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
+
+foreach ($parsed_txns as $t) {
+    if (!in_array($t['fitid'], $existing_fitids, true)) {
+        $transactions[] = $t;
     }
 }
 
 if (empty($transactions)) {
     http_response_code(400);
-    echo json_encode(['erro' => 'Nenhuma transação encontrada no arquivo OFX.']);
+    echo json_encode(['erro' => empty($parsed_txns) ? 'Nenhuma transação encontrada no arquivo OFX.' : 'Todas as transações deste arquivo OFX já foram importadas anteriormente.']);
     exit;
 }
 

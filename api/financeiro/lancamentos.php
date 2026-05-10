@@ -198,6 +198,11 @@ function inserirLancamento(PDO $db, string $id, array $d, float $valor, string $
         $valores[] = '?';
         $params[] = $d['conta_id'] ?? null;
     }
+    if (tabelaTemColuna($db, 'lancamentos', 'ofx_fitid')) {
+        $colunas[] = 'ofx_fitid';
+        $valores[] = '?';
+        $params[] = $d['ofx_fitid'] ?? null;
+    }
 
     $stmt = $db->prepare('INSERT INTO lancamentos (' . implode(',', $colunas) . ') VALUES (' . implode(',', $valores) . ')');
     $stmt->execute($params);

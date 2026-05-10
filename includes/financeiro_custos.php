@@ -6,6 +6,7 @@ function garantirEstruturaFinanceira(PDO $db): void {
         garantirColuna($db, 'custos_fixos', 'forma_pagamento', "VARCHAR(50) NULL DEFAULT 'pix'");
         garantirColuna($db, 'lancamentos', 'forma_pagamento', "VARCHAR(50) NULL");
         garantirColuna($db, 'lancamentos', 'custo_fixo_id', "VARCHAR(32) NULL");
+        garantirColuna($db, 'lancamentos', 'ofx_fitid', "VARCHAR(100) NULL");
 
         $categoria = colunaInfo($db, 'custos_fixos', 'categoria');
         if ($categoria && substr(strtolower($categoria['Type']), 0, 5) === 'enum(') {
