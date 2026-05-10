@@ -20,7 +20,7 @@ try {
               CASE
                 WHEN valor_pago >= valor THEN 'pago'
                 WHEN valor_pago > 0 THEN 'pago_parcial'
-                WHEN vencimento < CURDATE() AND status NOT IN ('pago','cancelado') THEN 'atrasado'
+                WHEN vencimento < CURRENT_DATE AND status NOT IN ('pago','cancelado') THEN 'atrasado'
                 ELSE status
               END AS status
             FROM lancamentos
