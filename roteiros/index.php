@@ -203,52 +203,42 @@ exigirAutenticacao();
             font-family: var(--display);
             font-size: 32px;
             color: var(--accent);
-            opacity: 0.5;
-            min-width: 40px;
+            opacity: 0.3;
+            min-width: 45px;
+            flex-shrink: 0;
         }
 
-        .card-info { flex: 1; }
-        
-        .card-status {
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--accent);
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
-        .status-gravado { color: #47ff85; }
-        .status-gravado .status-dot { background: #47ff85; }
-        .status-postado { color: #47a3ff; }
-        .status-postado .status-dot { background: #47a3ff; }
-
-        .card-title {
-            font-family: var(--serif);
-            font-style: italic;
-            font-size: 22px;
-            line-height: 1.2;
-            margin-bottom: 5px;
-        }
-
-        .card-meta {
-            font-size: 12px;
-            color: var(--muted);
-            display: flex;
-            gap: 15px;
+        .card-info { 
+            flex: 1; 
+            min-width: 0; /* Permite que o texto quebre corretamente */
         }
 
         .score-badge {
-            background: rgba(232,255,71,0.1);
+            background: rgba(232,255,71,0.05);
+            border: 1px solid rgba(232,255,71,0.1);
             color: var(--accent);
-            padding: 4px 12px;
-            border-radius: 100px;
-            font-size: 14px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
             font-family: var(--display);
-            letter-spacing: 0.05em;
+            line-height: 1;
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            opacity: 0.7;
+        }
+
+        .score-val {
+            font-size: 20px;
         }
 
         /* Modal / New Page simulation */
@@ -430,7 +420,8 @@ exigirAutenticacao();
                             </div>
                         </div>
                         <div class="score-badge">
-                            Score: <span x-text="Math.round(script.score)"></span>
+                            <div class="score-label">Score</div>
+                            <div class="score-val" x-text="Math.round(script.score)"></div>
                         </div>
                     </a>
                 </div>
