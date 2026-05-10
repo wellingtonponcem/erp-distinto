@@ -32,6 +32,9 @@ include __DIR__ . '/../includes/layout/head.php';
                     <button class="btn-secondary" @click="alterarStatusSelecionados('pendente')" style="color:#f59e0b; border-color:rgba(245,158,11,0.3);">
                         <i data-lucide="clock" style="width:15px;height:15px;"></i> Pendente
                     </button>
+                    <button class="btn-secondary" @click="abrirEdicaoMassa()" style="color:#6366f1; border-color:rgba(99,102,241,0.3);">
+                        <i data-lucide="edit-3" style="width:15px;height:15px;"></i> Em Massa
+                    </button>
                     <button class="btn-secondary" @click="excluirSelecionados()" style="color:#ef4444; border-color:rgba(239,68,68,0.3);">
                         <i data-lucide="trash-2" style="width:15px;height:15px;"></i> Excluir (<span x-text="selecionados.length"></span>)
                     </button>
@@ -61,6 +64,12 @@ include __DIR__ . '/../includes/layout/head.php';
                     <button class="btn-secondary" @click="abrirGerenciarCategorias()" style="padding:6px 10px;" title="Gerenciar Categorias">
                         <i data-lucide="settings-2" style="width:15px;height:15px;color:#94a3b8;"></i>
                     </button>
+                    <select class="select" x-model="filtros.conta" style="width:auto; min-width:140px;">
+                        <option value="">Todas as contas</option>
+                        <template x-for="c in contas" :key="c.id">
+                            <option :value="c.id" x-text="c.nome"></option>
+                        </template>
+                    </select>
                 </div>
                 <select class="select" x-model="filtros.status" style="width:auto; min-width:140px;">
                     <option value="">Todos os status</option>
@@ -476,6 +485,47 @@ include __DIR__ . '/../includes/layout/head.php';
         </div>
     </div>
 
+    <!-- Modal Edição em Massa -->
+    <div class="modal-overlay" x-show="modalMassaAberto" x-cloak>
+        <div class="modal" style="max-width:400px; width:100%;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2 style="font-size:18px; font-weight:700; color:#f1f5f9;">Editar <span x-text="selecionados.length"></span> lançamentos</h2>
+                <button @click="modalMassaAberto=false" style="color:#6b7280; background:none; border:none; cursor:pointer;">
+                    <i data-lucide="x" style="width:20px;height:20px;"></i>
+                </button>
+            </div>
+            
+            <label class="label">Nova Categoria (Opcional)</label>
+            <select class="select" x-model="formMassa.categoria" style="margin-bottom:12px;">
+                <option value="">-- Não alterar --</option>
+                <template x-for="cat in categoriasDisponiveis" :key="cat">
+                    <option :value="cat" x-text="cat.charAt(0).toUpperCase() + cat.slice(1)"></option>
+                </template>
+            </select>
+
+            <label class="label">Nova Conta Bancária (Opcional)</label>
+            <select class="select" x-model="formMassa.conta_id" style="margin-bottom:12px;">
+                <option value="">-- Não alterar --</option>
+                <template x-for="c in contas" :key="c.id">
+                    <option :value="c.id" x-text="c.nome"></option>
+                </template>
+            </select>
+
+            <label class="label">Novo Status (Opcional)</label>
+            <select class="select" x-model="formMassa.status" style="margin-bottom:20px;">
+                <option value="">-- Não alterar --</option>
+                <option value="pago">Pago / Efetivado</option>
+                <option value="pendente">Pendente</option>
+                <option value="cancelado">Cancelado</option>
+            </select>
+
+            <div style="display:flex; justify-content:flex-end; gap:12px;">
+                <button class="btn-secondary" @click="modalMassaAberto=false">Cancelar</button>
+                <button class="btn-primary" @click="salvarEdicaoMassa()" :disabled="salvando" x-text="salvando ? 'Salvando...' : 'Aplicar'"></button>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
@@ -488,7 +538,7 @@ function lancamentos() {
         modalBaixaAberto: false,
         lancamentoBaixa: null,
         valorBaixa: '',
-        filtros: { tipo: '', status: '', data_inicio: '', data_fim: '', busca: '', categoria: '' },
+        filtros: { tipo: '', status: '', data_inicio: '', data_fim: '', busca: '', categoria: '', conta: '' },
         periodoAtivo: 'mes',
         referenciaData: new Date().toISOString().split('T')[0],
         selecionados: [],
@@ -497,6 +547,8 @@ function lancamentos() {
         mostrarCampoCustom: false,
         modalOfxAberto: false,
         modalCategoriasAberto: false,
+        modalMassaAberto: false,
+        formMassa: { categoria: '', conta_id: '', status: '' },
         categoriaEditando: null,
         novoNomeCategoria: '',
         categoriasDinamicas: [],
@@ -551,6 +603,7 @@ function lancamentos() {
                 if (this.filtros.tipo   && l.tipo !== this.filtros.tipo) return false;
                 if (this.filtros.status && l.status !== this.filtros.status) return false;
                 if (this.filtros.categoria && l.categoria !== this.filtros.categoria) return false;
+                if (this.filtros.conta && l.conta_id !== this.filtros.conta) return false;
                 if (this.filtros.data_inicio && l.vencimento < this.filtros.data_inicio) return false;
                 if (this.filtros.data_fim && l.vencimento > this.filtros.data_fim) return false;
                 if (this.filtros.busca) {
@@ -811,7 +864,54 @@ function lancamentos() {
                     const res = await r.json();
                     toast(res.erro || 'Erro ao excluir', 'erro');
                 }
+                }
             } catch(e) { toast('Erro de conexão', 'erro'); }
+        },
+
+        abrirEdicaoMassa() {
+            this.formMassa = { categoria: '', conta_id: '', status: '' };
+            this.modalMassaAberto = true;
+        },
+
+        async salvarEdicaoMassa() {
+            if (!this.formMassa.categoria && !this.formMassa.conta_id && !this.formMassa.status) {
+                toast('Selecione pelo menos um campo para alterar', 'erro');
+                return;
+            }
+            this.salvando = true;
+            try {
+                const requests = this.selecionados.map(id => {
+                    const l = this.lista.find(x => x.id === id);
+                    if (!l) return Promise.resolve();
+                    const payload = {
+                        id: l.id,
+                        tipo: l.tipo,
+                        descricao: l.descricao,
+                        valor: l.valor,
+                        vencimento: l.vencimento,
+                        modalidade: l.modalidade,
+                        forma_pagamento: l.forma_pagamento,
+                        observacao: l.observacao,
+                        status: this.formMassa.status || l.status,
+                        categoria: this.formMassa.categoria || l.categoria,
+                        conta_id: this.formMassa.conta_id || l.conta_id
+                    };
+                    return fetch('<?= raizUrl('/api/financeiro/lancamentos.php') ?>', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                });
+                
+                await Promise.all(requests);
+                toast(`${this.selecionados.length} lançamentos atualizados`, 'sucesso');
+                this.modalMassaAberto = false;
+                this.selecionados = [];
+                await this.carregarLancamentos();
+            } catch (e) {
+                toast('Erro ao atualizar em massa', 'erro');
+            }
+            this.salvando = false;
         },
 
         classeStatus(status) {
