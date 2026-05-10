@@ -324,8 +324,46 @@ try {
         }
 
         @media (max-width: 768px) {
+            .page-wrap {
+                padding: 1.5rem 1rem 5rem;
+            }
+
+            .header-main {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .header-id {
+                font-size: 60px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .score-display {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 1rem;
+            }
+
+            .score-val {
+                font-size: 32px;
+            }
+
+            .main-content {
+                padding: 2rem 1.5rem;
+            }
+
             .layout-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .metrics-area {
+                grid-template-columns: 1fr !important;
             }
         }
     </style>
