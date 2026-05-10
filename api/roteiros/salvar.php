@@ -19,20 +19,21 @@ $d = lerCorpo();
 try {
     $db = Database::get();
 
-    $views = (int)($d['views'] ?? 0);
     $likes = (int)($d['likes'] ?? 0);
+    $comentarios = (int)($d['comentarios'] ?? 0);
     $shares = (int)($d['shares'] ?? 0);
     $reposts = (int)($d['reposts'] ?? 0);
+    $salvamentos = (int)($d['salvamentos'] ?? 0);
 
-    // Cálculo do Score: Peso 1 para views, 2 para likes, 5 para shares, 10 para reposts
-    $score = ($views * 0.1) + ($likes * 2) + ($shares * 5) + ($reposts * 10);
+    // Novo Cálculo do Score: Pesos estratégicos para IG
+    $score = ($likes * 1) + ($comentarios * 5) + ($shares * 10) + ($reposts * 15) + ($salvamentos * 20);
 
     if (!empty($d['id'])) {
         // Update
         $stmt = $db->prepare("UPDATE roteiros SET 
             titulo = ?, gancho = ?, quebra_crenca = ?, desenvolvimento = ?, 
             conexao = ?, fechamento = ?, cta = ?, tags = ?, status = ?, 
-            views = ?, likes = ?, shares = ?, reposts = ?, score = ?,
+            likes = ?, comentarios = ?, shares = ?, reposts = ?, salvamentos = ?, score = ?,
             intencao = ?, tema = ?, numero = ?, updated_at = CURRENT_TIMESTAMP 
             WHERE id = ?");
         
@@ -40,7 +41,7 @@ try {
             $d['titulo'], $d['gancho'] ?? '', $d['quebra_crenca'] ?? '', 
             $d['desenvolvimento'] ?? '', $d['conexao'] ?? '', $d['fechamento'] ?? '',
             $d['cta'] ?? '', $d['tags'] ?? '', $d['status'] ?? 'pendente',
-            $views, $likes, $shares, $reposts, $score,
+            $likes, $comentarios, $shares, $reposts, $salvamentos, $score,
             $d['intencao'] ?? '', $d['tema'] ?? '', $d['numero'] ?? 0,
             $d['id']
         ]);
@@ -49,14 +50,15 @@ try {
     } else {
         // Insert
         $stmt = $db->prepare("INSERT INTO roteiros 
-            (titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, tags, formato, status, views, likes, shares, reposts, score) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            (titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, tags, formato, status, 
+            likes, comentarios, shares, reposts, salvamentos, score) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         
         $stmt->execute([
             $d['titulo'], $d['gancho'] ?? '', $d['quebra_crenca'] ?? '',
             $d['desenvolvimento'] ?? '', $d['conexao'] ?? '', $d['fechamento'] ?? '',
             $d['cta'] ?? '', $d['tags'] ?? '', $d['formato'] ?? '', $d['status'] ?? 'pendente',
-            $views, $likes, $shares, $reposts, $score
+            $likes, $comentarios, $shares, $reposts, $salvamentos, $score
         ]);
         
         responderJson(['success' => true, 'id' => $db->lastInsertId(), 'score' => $score]);

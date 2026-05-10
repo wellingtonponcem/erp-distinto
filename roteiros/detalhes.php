@@ -19,11 +19,13 @@ try {
         $db->exec("ALTER TABLE roteiros ADD COLUMN IF NOT EXISTS intencao TEXT");
         $db->exec("ALTER TABLE roteiros ADD COLUMN IF NOT EXISTS tema TEXT");
         $db->exec("ALTER TABLE roteiros ADD COLUMN IF NOT EXISTS numero INTEGER");
+        $db->exec("ALTER TABLE roteiros ADD COLUMN IF NOT EXISTS comentarios INTEGER DEFAULT 0");
+        $db->exec("ALTER TABLE roteiros ADD COLUMN IF NOT EXISTS salvamentos INTEGER DEFAULT 0");
     } catch (Exception $e) {
         // Ignora se já existirem
     }
 
-    $stmt = $db->prepare("SELECT id, titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, tags, formato, status, score, views, likes, shares, reposts, intencao, tema, numero FROM roteiros WHERE id = ?");
+    $stmt = $db->prepare("SELECT id, titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, tags, formato, status, score, views, likes, shares, reposts, comentarios, salvamentos, intencao, tema, numero FROM roteiros WHERE id = ?");
     $stmt->execute([$id]);
     $roteiro = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -42,10 +44,9 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $roteiro['titulo']; ?> — Detalhes</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap"
-        rel="stylesheet">
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <style>
         :root {
             --bg: #0a0a0a;
@@ -487,20 +488,24 @@ try {
                     <h3>Métricas de Performance</h3>
                     <div class="metrics-grid">
                         <div>
-                            <label style="font-size: 10px;">Views</label>
-                            <input type="number" class="form-control" x-model="data.views" @input="editing = true">
-                        </div>
-                        <div>
-                            <label style="font-size: 10px;">Likes</label>
+                            <label style="font-size: 10px;"><i class="fa-solid fa-heart" style="color: #ff4747; margin-right: 5px;"></i> Likes</label>
                             <input type="number" class="form-control" x-model="data.likes" @input="editing = true">
                         </div>
                         <div>
-                            <label style="font-size: 10px;">Shares</label>
+                            <label style="font-size: 10px;"><i class="fa-solid fa-comment" style="color: var(--accent); margin-right: 5px;"></i> Comentários</label>
+                            <input type="number" class="form-control" x-model="data.comentarios" @input="editing = true">
+                        </div>
+                        <div>
+                            <label style="font-size: 10px;"><i class="fa-solid fa-paper-plane" style="color: var(--accent); margin-right: 5px;"></i> Envios</label>
                             <input type="number" class="form-control" x-model="data.shares" @input="editing = true">
                         </div>
                         <div>
-                            <label style="font-size: 10px;">Reposts</label>
+                            <label style="font-size: 10px;"><i class="fa-solid fa-arrows-rotate" style="color: var(--accent); margin-right: 5px;"></i> Repost</label>
                             <input type="number" class="form-control" x-model="data.reposts" @input="editing = true">
+                        </div>
+                        <div>
+                            <label style="font-size: 10px;"><i class="fa-solid fa-bookmark" style="color: var(--accent); margin-right: 5px;"></i> Salvamento</label>
+                            <input type="number" class="form-control" x-model="data.salvamentos" @input="editing = true">
                         </div>
                     </div>
                 </div>
