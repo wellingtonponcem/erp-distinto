@@ -3,27 +3,10 @@ require_once __DIR__ . '/config/env.php';
 require_once __DIR__ . '/config/auth.php';
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/includes/helpers.php';
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 exigirAutenticacao();
 
 $tituloPagina = 'Configurações';
 $db = Database::get();
-
-try {
-    // Verificação compatível com PostgreSQL
-    $stmt = $db->prepare("SELECT column_name FROM information_schema.columns WHERE table_name = 'configuracao_empresa' AND column_name = 'groq_api_key'");
-    $stmt->execute();
-    if (!$stmt->fetch()) {
-        $db->exec("ALTER TABLE configuracao_empresa ADD COLUMN groq_api_key VARCHAR(255) NULL");
-    }
-    
-    $stmt = $db->prepare("SELECT column_name FROM information_schema.columns WHERE table_name = 'configuracao_empresa' AND column_name = 'gemini_api_key'");
-    $stmt->execute();
-    if (!$stmt->fetch()) {
-        $db->exec("ALTER TABLE configuracao_empresa ADD COLUMN gemini_api_key VARCHAR(255) NULL");
-    }
-} catch (Exception $e) {}
 
 $config = $db->query("SELECT * FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
 
