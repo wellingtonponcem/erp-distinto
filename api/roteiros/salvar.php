@@ -64,7 +64,7 @@ try {
         $stmt = $db->prepare("INSERT INTO roteiros 
             (titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, tags, formato, status, 
             likes, comentarios, shares, reposts, salvamentos, score, numero, intencao, tema) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id");
         
         $stmt->execute([
             $d['titulo'], $d['gancho'] ?? '', $d['quebra_crenca'] ?? '',
@@ -73,7 +73,7 @@ try {
             $likes, $comentarios, $shares, $reposts, $salvamentos, $score,
             $prox, $d['intencao'] ?? '', $d['tema'] ?? ''
         ]);
-        $script_id = $db->lastInsertId();
+        $script_id = $stmt->fetchColumn();
     }
 
     // --- LOOP DE APRENDIZAGEM (VOZ DO USUÁRIO) ---
