@@ -289,6 +289,53 @@ exigirAutenticacao();
             color: var(--muted);
         }
 
+        /* Custom Alert/Confirm Modal */
+        .custom-modal-card {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            padding: 2.5rem;
+            border-radius: 24px;
+            max-width: 450px;
+            width: 90vw;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        }
+        .custom-modal-title {
+            font-family: var(--display);
+            font-size: 28px;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+        .custom-modal-text {
+            color: var(--muted);
+            margin-bottom: 2rem;
+            font-size: 15px;
+        }
+        .custom-modal-footer {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-modal-cancel {
+            flex: 1;
+            padding: 14px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .btn-modal-danger {
+            background: var(--accent2);
+            color: #fff;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 1;
+        }
+
         /* Modal / New Page simulation */
         .modal-overlay {
             position: fixed;
@@ -436,22 +483,32 @@ exigirAutenticacao();
                             }
                         },
                         archive() {
-                            if(confirm('Arquivar este roteiro?')) {
-                                // Lógica de arquivamento aqui
-                                this.offsetX = 0;
-                                this.open = false;
-                            }
+                            $dispatch('open-confirm', {
+                                title: 'Arquivar Roteiro',
+                                text: 'Tem certeza que deseja arquivar este roteiro?',
+                                confirmText: 'Arquivar',
+                                action: () => {
+                                    // Lógica de arquivamento aqui
+                                    this.offsetX = 0;
+                                    this.open = false;
+                                }
+                            });
                         },
                         remove() {
-                            if(confirm('Apagar este roteiro permanentemente?')) {
-                                fetch('../api/roteiros/remover.php?id=' + script.id)
-                                    .then(r => r.json())
-                                    .then(data => {
-                                        if(data.success) {
-                                            $root.closest('.swipe-container').remove();
-                                        }
-                                    });
-                            }
+                            $dispatch('open-confirm', {
+                                title: 'Apagar Roteiro',
+                                text: 'Tem certeza que deseja apagar este roteiro permanentemente? Esta ação não pode ser desfeita.',
+                                confirmText: 'Apagar',
+                                action: () => {
+                                    fetch('../api/roteiros/remover.php?id=' + script.id)
+                                        .then(r => r.json())
+                                        .then(data => {
+                                            if(data.success) {
+                                                $root.closest('.swipe-container').remove();
+                                            }
+                                        });
+                                }
+                            });
                         }
                     }">
                     <div class="swipe-actions">
@@ -521,6 +578,21 @@ exigirAutenticacao();
         </div>
     </div>
 
+    <!-- Modal Customizado (Alert / Confirm) -->
+    <div class="modal-overlay" x-show="customModal.show" x-cloak x-transition style="z-index: 2000;">
+        <div class="custom-modal-card" @click.away="customModal.show = false">
+            <div class="custom-modal-title" x-text="customModal.title"></div>
+            <div class="custom-modal-text" x-text="customModal.text"></div>
+            
+            <div class="custom-modal-footer">
+                <button class="btn-modal-cancel" @click="customModal.show = false">Cancelar</button>
+                <button class="btn-modal-danger" @click="customModalAction()">
+                    <span x-text="customModal.confirmText"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Registrar Service Worker para PWA
         if ('serviceWorker' in navigator) {
@@ -538,9 +610,32 @@ exigirAutenticacao();
                 showModal: false,
                 loadingIA: false,
                 newScript: { tema: '', briefing: '' },
+                customModal: {
+                    show: false,
+                    title: '',
+                    text: '',
+                    confirmText: 'Confirmar',
+                    onConfirm: null
+                },
 
                 init() {
                     this.fetchScripts();
+                    window.addEventListener('open-confirm', (e) => {
+                        this.customModal = {
+                            show: true,
+                            title: e.detail.title,
+                            text: e.detail.text,
+                            confirmText: e.detail.confirmText || 'Confirmar',
+                            onConfirm: e.detail.action
+                        };
+                    });
+                },
+
+                customModalAction() {
+                    if (this.customModal.onConfirm) {
+                        this.customModal.onConfirm();
+                    }
+                    this.customModal.show = false;
                 },
 
                 fetchScripts() {
