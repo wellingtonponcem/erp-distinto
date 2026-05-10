@@ -79,7 +79,6 @@ class IARoteiros
 
         $resposta = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
 
         if ($httpCode !== 200) {
             return "Erro Groq (HTTP $httpCode): " . $resposta;
@@ -126,7 +125,6 @@ class IARoteiros
 
         $resposta = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
 
         if ($httpCode !== 200) {
             $err = json_decode($resposta, true);
