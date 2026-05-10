@@ -32,15 +32,10 @@ try {
     $texto = "";
 
     if ($type === 'text') {
-        // Tenta gerar um título curto via IA para o texto colado
-        $promptTitulo = "Dê um título de no máximo 4 palavras para este texto estratégico:\n\n" . substr($value, 0, 500);
-        $nome = IARoteiros::chamarGroq([['role' => 'user', 'content' => $promptTitulo]]);
-        
-        // Limpa possíveis aspas ou erros do título
-        $nome = trim(str_replace('"', '', $nome));
-        if (strpos($nome, 'Erro') === 0 || strlen($nome) > 60) {
-            $nome = "Texto Copiado (" . date('H:i') . ")";
-        }
+        // Pega as primeiras 40 letras para o título de forma instantânea
+        $tituloLimpo = strip_tags($value);
+        $nome = mb_substr($tituloLimpo, 0, 40) . (mb_strlen($tituloLimpo) > 40 ? '...' : '');
+        if (!$nome) $nome = "Texto Copiado (" . date('H:i') . ")";
         
         $texto = $value;
     } elseif ($type === 'url') {
