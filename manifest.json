@@ -1,0 +1,21 @@
+{
+  "name": "Distinto Roteiros",
+  "short_name": "Roteiros",
+  "description": "Gestão estratégica de roteiros para Instagram",
+  "start_url": "/roteiros/index.php",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/distinto-icone.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
