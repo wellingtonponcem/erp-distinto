@@ -140,222 +140,255 @@ include __DIR__ . '/includes/layout/head.php';
 <div id="app-wrapper">
     <?php include __DIR__ . '/includes/layout/sidebar.php'; ?>
 
-    <main id="main-content" class="content-sheet">
-        <div class="app-topbar">
-            <div class="top-nav">
-                <a href="<?= raizUrl('/dashboard.php') ?>">Visao geral</a>
-                <a href="<?= raizUrl('/financeiro/lancamentos.php') ?>">Lancamentos</a>
-                <a href="<?= raizUrl('/financeiro/configuracoes.php') ?>">Custos fixos</a>
-                <a href="<?= raizUrl('/precificacao/servicos.php') ?>">Servicos</a>
+    <main id="main-content" class="content-sheet !bg-[#e0e2eb] dark:!bg-black !p-4 md:!p-6">
+        <style>
+            /* BENTO UI OVERRIDES */
+            #main-content { min-height: 100vh; font-family: 'Outfit', sans-serif; }
+            .bento-header { background-color: #f7f3da; border-radius: 32px; padding: 24px 32px; }
+            .dark .bento-header { background-color: #111; border: 1px solid #222; }
+            
+            .bento-card { border-radius: 32px; padding: 28px; position: relative; overflow: hidden; }
+            
+            .bento-purple { background: linear-gradient(135deg, #b8abfb, #d4c4f9); color: #111; }
+            .dark .bento-purple { background: linear-gradient(135deg, #382c73, #4a3875); color: #fff; }
+            
+            .bento-dark { background-color: #2b3342; color: #fff; }
+            .dark .bento-dark { background-color: #111; border: 1px solid #222; }
+            
+            .bento-light { background-color: #f0f3f8; color: #111; }
+            .dark .bento-light { background-color: #111; border: 1px solid #222; color: #eee; }
+            
+            .bento-child-blue { background-color: #6a5ff6; color: #fff; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; }
+            .dark .bento-child-blue { background-color: #4a3fd6; }
+            
+            .bento-child-green { background-color: #a4c9b3; color: #1a2f22; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; }
+            .dark .bento-child-green { background-color: #243b2f; color: #a4c9b3; }
+
+            .bento-pill-white { background: #fff; border-radius: 999px; padding: 24px 32px; display: inline-flex; flex-direction: column; justify-content: center;}
+            .dark .bento-pill-white { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+            
+            .bento-pill-dark { background: #2b3342; color: #fff; border-radius: 999px; padding: 24px 32px; display: inline-flex; flex-direction: column; justify-content: center;}
+            .dark .bento-pill-dark { background: #000; border: 1px solid #222; }
+            
+            .bento-pill-chart { background: rgba(255,255,255,0.4); border-radius: 24px; padding: 24px; backdrop-filter: blur(10px); }
+            .dark .bento-pill-chart { background: rgba(0,0,0,0.3); }
+
+            .donut-chart {
+                width: 220px; height: 220px; border-radius: 50%;
+                background: conic-gradient(#10b981 0% 40%, #8b5cf6 40% 70%, #6366f1 70% 100%);
+                mask-image: radial-gradient(transparent 58%, black 59%);
+                -webkit-mask-image: radial-gradient(transparent 58%, black 59%);
+            }
+            .dark .donut-chart { background: conic-gradient(#10b981 0% 40%, #6d28d9 40% 70%, #4338ca 70% 100%); }
+            
+            .transaction-item { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+            .transaction-icon { width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+            
+            .top-nav-bento { background: #fff; border-radius: 999px; padding: 6px; display: inline-flex; gap: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+            .dark .top-nav-bento { background: #111; border: 1px solid #222; }
+            .top-nav-bento a { padding: 10px 18px; font-size: 13px; font-weight: 600; color: #555; border-radius: 999px; transition: 0.2s; }
+            .dark .top-nav-bento a { color: #aaa; }
+            .top-nav-bento a:hover { background: #f0f0f0; color: #111; }
+            .dark .top-nav-bento a:hover { background: #222; color: #fff; }
+            .top-nav-bento a.active { background: #e0f2fe; color: #0369a1; }
+            .dark .top-nav-bento a.active { background: #0c4a6e; color: #38bdf8; }
+        </style>
+
+        <!-- Top Navigation Area -->
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
+            <div class="top-nav-bento">
+                <a href="<?= raizUrl('/dashboard.php') ?>" class="active">Dashboard</a>
+                <a href="<?= raizUrl('/financeiro/lancamentos.php') ?>">Lançamentos</a>
+                <a href="<?= raizUrl('/financeiro/configuracoes.php') ?>">Custos</a>
                 <a href="<?= raizUrl('/precificacao/simulador.php') ?>">Simulador</a>
             </div>
-            <div style="display:flex; align-items:center; gap:10px; color:#777777; font-size:12px; font-weight:700;">
-                <span>PT-BR</span>
-                <span><?= sanitizar(usuarioAtual()['email']) ?></span>
+            <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-zinc-500 bg-white dark:bg-zinc-900 px-4 py-2 rounded-full shadow-sm">PT-BR</span>
+                <span class="text-xs font-bold text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-900 px-4 py-2 rounded-full shadow-sm"><?= sanitizar(usuarioAtual()['email']) ?></span>
             </div>
         </div>
 
-        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 mb-5">
+        <!-- Bento Header -->
+        <div class="bento-header flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-6">
             <div>
-                <h1 class="page-title">Dashboard</h1>
-                <p class="page-subtitle">Resumo financeiro da sua agencia com os dados atuais do sistema.</p>
+                <h1 class="text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white mb-1">Dashboard</h1>
+                <p class="text-sm font-medium text-zinc-600 dark:text-zinc-400">Resumo financeiro e operacional da sua agência</p>
             </div>
-            <div class="flex flex-wrap gap-2">
-                <a href="<?= raizUrl('/financeiro/lancamentos.php') ?>" class="btn-primary">
-                    <i data-lucide="receipt-text" class="w-4 h-4"></i>
-                    Ver lancamentos
-                </a>
-                <a href="<?= raizUrl('/financeiro/lancamentos.php') ?>" class="btn-secondary">
-                    <i data-lucide="plus" class="w-4 h-4"></i>
-                    Novo lancamento
+            <div class="flex items-center gap-3">
+                <a href="<?= raizUrl('/financeiro/lancamentos.php') ?>" class="bg-black text-white dark:bg-white dark:text-black hover:scale-105 transition-transform px-5 py-2.5 rounded-full text-sm font-bold shadow-lg">
+                    Novo Lançamento
                 </a>
             </div>
         </div>
 
-        <section class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mb-5">
-            <?php foreach ($kpis as $kpi): ?>
-                <article class="card p-6 min-h-[116px] flex flex-col justify-between">
-                    <div class="flex items-start justify-between gap-4">
-                        <div>
-                            <p class="text-[12px] font-bold text-zinc-500"><?= $kpi['label'] ?></p>
-                            <h2 class="mt-2 text-[28px] leading-none font-extrabold tracking-[-0.04em] text-zinc-950">
-                                <?= formatarMoeda((float) $kpi['value']) ?>
-                            </h2>
-                        </div>
-                        <span class="<?= $kpi['up'] ? 'trend-up' : 'trend-down' ?>">
-                            <i data-lucide="<?= $kpi['up'] ? 'trending-up' : 'trending-down' ?>" class="w-3 h-3"></i>
-                            <?= $kpi['trend'] ?>
-                        </span>
+        <!-- Bento Grid -->
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            
+            <!-- Left Column -->
+            <div class="flex flex-col gap-6">
+                <!-- Revenue Forecast Card -->
+                <div class="bento-card bento-purple">
+                    <div class="flex justify-between items-start mb-6">
+                        <h2 class="text-lg font-bold">Fluxo de Caixa Mensal</h2>
+                        <span class="bg-white/30 dark:bg-black/30 px-3 py-1 rounded-full text-xs font-bold">Resumo</span>
                     </div>
-                </article>
-            <?php endforeach; ?>
-        </section>
-
-        <section class="card p-5 lg:p-7 mb-5">
-            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-8">
-                <div>
-                    <p class="text-[12px] font-bold text-zinc-500">Fluxo de Caixa (Mês Atual)</p>
-                    <h2 class="mt-1 text-[24px] font-extrabold tracking-[-0.04em] text-zinc-950">
-                        <?= formatarMoeda((float) array_sum(array_column($bars, 'valor'))) ?>
-                    </h2>
-                    <p class="mt-1 text-xs font-medium text-zinc-400">Movimentações efetivadas e previstas do dia 1 ao fim do mês.</p>
+                    
+                    <div class="flex flex-col md:flex-row gap-4 mb-6">
+                        <div class="bento-pill-white flex-1 min-h-[140px]">
+                            <p class="text-xs font-bold text-zinc-500 mb-1">Receitas Realizadas</p>
+                            <h3 class="text-3xl font-extrabold tracking-tight"><?= formatarMoeda((float) $receitasMes) ?></h3>
+                        </div>
+                        <div class="bento-pill-dark flex-1 min-h-[140px]">
+                            <p class="text-xs font-bold text-zinc-400 mb-1">Saldo Atual</p>
+                            <h3 class="text-3xl font-extrabold tracking-tight"><?= formatarMoeda((float) $saldoAtual) ?></h3>
+                        </div>
+                    </div>
+                    
+                    <div class="bento-pill-chart">
+                        <div class="flex justify-between items-end mb-4">
+                            <div>
+                                <h3 class="text-3xl font-extrabold"><?= formatarMoeda((float) array_sum(array_column($bars, 'valor'))) ?></h3>
+                                <p class="text-xs font-bold opacity-70 mt-1">Movimentação Total do Mês</p>
+                            </div>
+                            <span class="bg-[#6a5ff6] text-white text-[10px] font-bold px-2 py-1 rounded">Live</span>
+                        </div>
+                        
+                        <?php if (array_sum(array_column($bars, 'valor')) > 0): ?>
+                        <div class="h-[120px] flex items-end gap-1.5 mt-4">
+                            <?php foreach ($bars as $data => $bar):
+                                $height = $bar['valor'] > 0 ? max(10, (int) round(($bar['valor'] / $maxBar) * 100)) : 5;
+                                $isToday = $data === $hoje;
+                            ?>
+                                <div class="flex-1 flex flex-col items-center justify-end gap-1 group relative">
+                                    <div class="w-full rounded-t-sm transition-all duration-300 <?= $isToday ? 'bg-[#6a5ff6]' : ($bar['valor'] > 0 ? 'bg-black/60 dark:bg-white/80' : 'bg-black/10 dark:bg-white/10') ?>" 
+                                         style="height:<?= $height ?>%; max-width: 12px;"></div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <div class="flex justify-between mt-2 px-1">
+                            <span class="text-[10px] font-bold opacity-50">Dia 1</span>
+                            <span class="text-[10px] font-bold opacity-50">Dia <?= date('t') ?></span>
+                        </div>
+                        <?php else: ?>
+                            <div class="h-[120px] flex items-center justify-center opacity-50 text-sm font-bold">Sem dados no período</div>
+                        <?php endif; ?>
+                    </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button class="btn-secondary" style="min-height:32px; padding:7px 10px;">
-                        <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
-                    </button>
-                    <button class="btn-primary" style="min-height:32px; padding:7px 13px;">30 dias</button>
-                    <button class="btn-secondary" style="min-height:32px; padding:7px 13px;">Mes</button>
+
+                <!-- Spending By Category -->
+                <div class="bento-card bento-dark">
+                    <div class="flex justify-between items-start mb-6">
+                        <h2 class="text-lg font-bold">Proporção Financeira</h2>
+                        <span class="bg-white/10 px-3 py-1 rounded-full text-xs font-bold text-zinc-300">Análise</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-center py-4 relative">
+                        <div class="donut-chart"></div>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <p class="text-[11px] font-bold text-zinc-400">Resultado Previsto</p>
+                            <h3 class="text-xl font-extrabold text-white mt-1"><?= formatarMoeda((float) $resultadoPrev) ?></h3>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between mt-6 px-4">
+                        <div class="text-center">
+                            <div class="w-3 h-3 rounded-full bg-[#10b981] mx-auto mb-2"></div>
+                            <p class="text-[10px] font-bold text-zinc-400 uppercase">Receber</p>
+                            <p class="text-sm font-extrabold mt-1"><?= formatarMoeda((float) $receberMes) ?></p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-3 h-3 rounded-full bg-[#8b5cf6] mx-auto mb-2"></div>
+                            <p class="text-[10px] font-bold text-zinc-400 uppercase">Pagar</p>
+                            <p class="text-sm font-extrabold mt-1"><?= formatarMoeda((float) $pagarMes) ?></p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-3 h-3 rounded-full bg-[#6366f1] mx-auto mb-2"></div>
+                            <p class="text-[10px] font-bold text-zinc-400 uppercase">Despesas</p>
+                            <p class="text-sm font-extrabold mt-1"><?= formatarMoeda((float) $despesasMes) ?></p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <?php if (array_sum(array_column($bars, 'valor')) <= 0): ?>
-                <div class="h-[220px] flex flex-col items-center justify-center text-zinc-400">
-                    <i data-lucide="bar-chart-3" class="w-11 h-11 mb-3 opacity-25"></i>
-                    <p class="text-sm font-bold">Nenhum lancamento previsto no periodo</p>
-                </div>
-            <?php else: ?>
-                <div class="h-[240px] flex items-end gap-2 border-b border-zinc-100 pb-4 overflow-x-auto">
-                    <?php foreach ($bars as $data => $bar):
-                        $height = $bar['valor'] > 0 ? max(18, (int) round(($bar['valor'] / $maxBar) * 128)) : 6;
-                        $isToday = $data === $hoje;
-                    ?>
-                        <div class="min-w-[24px] flex-1 flex flex-col items-center justify-end gap-2">
-                            <div
-                                title="<?= formatarData($data) ?> - <?= formatarMoeda((float) $bar['valor']) ?>"
-                                style="height:<?= $height ?>px;"
-                                class="w-full max-w-[28px] rounded-md <?= $isToday ? 'bg-white border-2 border-zinc-950 bg-[repeating-linear-gradient(135deg,#111_0,#111_2px,#fff_2px,#fff_5px)]' : ($bar['valor'] > 0 ? 'bg-zinc-950' : 'bg-zinc-200') ?>">
+            <!-- Right Column -->
+            <div class="flex flex-col gap-6">
+                <!-- Savings / Pendentes -->
+                <div class="bento-card bento-dark h-[300px]">
+                    <h2 class="text-lg font-bold mb-6">Painel de Pendências</h2>
+                    
+                    <div class="grid grid-cols-2 gap-4 h-full pb-8">
+                        <div class="bento-child-blue">
+                            <div>
+                                <h3 class="text-lg font-bold leading-tight">A Receber<br><span class="font-normal opacity-80 text-sm">Neste mês</span></h3>
                             </div>
-                            <span class="text-[10px] font-bold <?= $isToday ? 'text-zinc-950' : 'text-zinc-400' ?>"><?= $bar['dia'] ?></span>
+                            <div>
+                                <p class="text-4xl font-light tracking-tight"><?= $qtdReceber ?: '0' ?></p>
+                                <p class="text-sm font-bold mt-2 opacity-90"><?= formatarMoeda((float) $receberMes) ?></p>
+                            </div>
                         </div>
-                    <?php endforeach; ?>
+                        <div class="bento-child-green">
+                            <div>
+                                <h3 class="text-lg font-bold leading-tight">A Pagar<br><span class="font-normal opacity-80 text-sm">Neste mês</span></h3>
+                            </div>
+                            <div>
+                                <p class="text-4xl font-light tracking-tight"><?= $qtdPagar ?: '0' ?></p>
+                                <p class="text-sm font-bold mt-2 opacity-90"><?= formatarMoeda((float) $pagarMes) ?></p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            <?php endif; ?>
-        </section>
 
-        <section class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            <article class="card p-5">
-                <div class="flex items-start justify-between gap-3 mb-7">
+                <!-- Recent Transactions -->
+                <div class="bento-card bento-light flex-1">
+                    <div class="flex justify-between items-start mb-8">
+                        <h2 class="text-lg font-bold">Vencimentos Próximos</h2>
+                        <span class="bg-[#6a5ff6] text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase">Atenção</span>
+                    </div>
+
                     <div>
-                        <p class="text-[12px] font-bold text-zinc-500">Resultado previsto</p>
-                        <h3 class="mt-1 text-[22px] font-extrabold tracking-[-0.04em] text-zinc-950"><?= formatarMoeda((float) $resultadoPrev) ?></h3>
-                        <p class="text-xs text-zinc-400 mt-1">Recebimentos menos pagamentos em aberto.</p>
+                        <?php
+                        $todasProximas = array_merge($contasVencidas, $contasProximas);
+                        // Remover duplicados (caso as vencidas estejam nos proximos)
+                        $ids = [];
+                        $listaUnica = [];
+                        foreach ($todasProximas as $c) {
+                            if (!in_array($c['id'], $ids)) {
+                                $ids[] = $c['id'];
+                                $listaUnica[] = $c;
+                            }
+                        }
+                        usort($listaUnica, fn($a, $b) => strtotime($a['vencimento']) - strtotime($b['vencimento']));
+                        $listaUnica = array_slice($listaUnica, 0, 5);
+                        ?>
+                        
+                        <?php if(empty($listaUnica)): ?>
+                            <div class="py-10 text-center opacity-50 font-bold">Nenhum vencimento próximo.</div>
+                        <?php else: ?>
+                            <?php foreach ($listaUnica as $c): ?>
+                            <div class="transaction-item group">
+                                <div class="flex items-center gap-4 min-w-0">
+                                    <div class="transaction-icon <?= $c['tipo'] === 'receber' ? 'bg-[#a4c9b3]/20 text-[#243b2f] dark:text-[#a4c9b3]' : 'bg-red-500/10 text-red-600' ?>">
+                                        <i data-lucide="<?= $c['tipo'] === 'receber' ? 'arrow-down-to-line' : 'arrow-up-right' ?>" class="w-5 h-5"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="font-bold text-sm truncate"><?= sanitizar($c['descricao']) ?></p>
+                                        <p class="text-[11px] font-bold opacity-50 uppercase tracking-wide mt-0.5">
+                                            <?= $c['vencimento'] < $hoje ? '<span class="text-red-500">Vencido</span>' : formatarData($c['vencimento']) ?>
+                                        </p>
+                                    </div>
+                                </div>
+                                <p class="font-extrabold text-base whitespace-nowrap pl-4 <?= $c['tipo'] === 'receber' ? 'text-[#10b981]' : '' ?>">
+                                    <?= $c['tipo'] === 'receber' ? '+' : '-' ?><?= formatarMoeda((float) $c['valor']) ?>
+                                </p>
+                            </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
-                    <span class="<?= $resultadoPrev >= 0 ? 'trend-up' : 'trend-down' ?>"><?= $resultadoPrev >= 0 ? '+OK' : 'Risco' ?></span>
+                    
+                    <a href="<?= raizUrl('/financeiro/lancamentos.php') ?>" class="block w-full text-center py-4 mt-4 text-xs font-bold uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">Ver todos</a>
                 </div>
-                <div class="h-[98px] flex items-end gap-3">
-                    <?php
-                    $quarters = [$saldoAtual, $receberMes, $pagarMes, abs($resultadoPrev)];
-                    $maxQuarter = max(array_map('abs', $quarters)) ?: 1;
-                    foreach ($quarters as $idx => $value):
-                        $h = max(22, (int) round((abs($value) / $maxQuarter) * 84));
-                    ?>
-                        <div class="flex-1 rounded-lg <?= $idx === 3 ? 'bg-zinc-900' : 'bg-zinc-100' ?>" style="height:<?= $h ?>px;"></div>
-                    <?php endforeach; ?>
-                </div>
-            </article>
-
-            <article class="card p-5">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-extrabold text-zinc-950">Vencidos</h3>
-                    <i data-lucide="alert-circle" class="w-4 h-4 text-red-500"></i>
-                </div>
-                <div class="space-y-3">
-                    <?php if (empty($contasVencidas)): ?>
-                        <p class="py-8 text-center text-xs font-bold text-zinc-400">Tudo em dia.</p>
-                    <?php else: ?>
-                        <?php foreach (array_slice($contasVencidas, 0, 4) as $c): ?>
-                            <div class="flex items-center justify-between gap-3 rounded-xl border border-zinc-100 bg-zinc-50 px-3 py-3">
-                                <div class="min-w-0">
-                                    <p class="truncate text-xs font-extrabold text-zinc-900"><?= sanitizar($c['descricao']) ?></p>
-                                    <p class="text-[11px] font-medium text-zinc-400"><?= formatarData($c['vencimento']) ?></p>
-                                </div>
-                                <p class="text-xs font-extrabold <?= $c['tipo'] === 'receber' ? 'text-emerald-600' : 'text-red-600' ?>">
-                                    <?= formatarMoeda((float) $c['valor']) ?>
-                                </p>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
-            </article>
-
-            <article class="card p-5">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-extrabold text-zinc-950">Proximos 7 dias</h3>
-                    <i data-lucide="calendar-days" class="w-4 h-4 text-zinc-500"></i>
-                </div>
-                <div class="space-y-3">
-                    <?php if (empty($contasProximas)): ?>
-                        <p class="py-8 text-center text-xs font-bold text-zinc-400">Sem vencimentos proximos.</p>
-                    <?php else: ?>
-                        <?php foreach (array_slice($contasProximas, 0, 4) as $c): ?>
-                            <div class="flex items-center justify-between gap-3 rounded-xl border border-zinc-100 bg-zinc-50 px-3 py-3">
-                                <div class="min-w-0">
-                                    <p class="truncate text-xs font-extrabold text-zinc-900"><?= sanitizar($c['descricao']) ?></p>
-                                    <p class="text-[11px] font-medium text-zinc-400"><?= formatarData($c['vencimento']) ?></p>
-                                </div>
-                                <p class="text-xs font-extrabold <?= $c['tipo'] === 'receber' ? 'text-emerald-600' : 'text-red-600' ?>">
-                                    <?= formatarMoeda((float) $c['valor']) ?>
-                                </p>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
-            </article>
-        </section>
-
-        <!-- Card: Depoimentos -->
-        <section class="card p-5 mt-5">
-            <div class="flex items-center justify-between mb-5">
-                <div>
-                    <p class="text-[12px] font-bold text-zinc-500">Prova Social</p>
-                    <h3 class="mt-1 text-[20px] font-extrabold tracking-[-0.04em] text-zinc-950">Depoimentos</h3>
-                </div>
-                <a href="<?= raizUrl('/gerenciamento/depoimentos.php') ?>" class="btn-secondary" style="min-height:32px; padding:6px 14px; font-size:12px;">
-                    <i data-lucide="settings-2" class="w-3.5 h-3.5"></i>
-                    Gerenciar
-                </a>
             </div>
-
-            <?php if (empty($depoimentosResumo)): ?>
-                <div class="flex flex-col items-center justify-center py-8 text-zinc-400">
-                    <i data-lucide="message-square-quote" class="w-8 h-8 mb-2 opacity-30"></i>
-                    <p class="text-xs font-bold">Nenhum depoimento cadastrado</p>
-                    <a href="<?= raizUrl('/setup/migration_depoimentos.php') ?>" class="mt-3 text-xs font-bold text-zinc-500 underline">
-                        Rodar migration
-                    </a>
-                </div>
-            <?php else: ?>
-                <?php
-                $catLabels = [
-                    'casamento' => ['label' => 'Casamento',        'cor' => '#f59e0b'],
-                    'filmmaker' => ['label' => 'Filmmaker',         'cor' => '#8b5cf6'],
-                    '15anos'    => ['label' => '15 Anos',           'cor' => '#ec4899'],
-                    'marketing' => ['label' => 'Marketing Digital', 'cor' => '#10b981'],
-                ];
-                ?>
-                <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 mb-4">
-                    <?php foreach ($catLabels as $cat => $info): ?>
-                    <?php $d = $depoimentosResumo[$cat] ?? ['total' => 0, 'ativos' => 0]; ?>
-                    <a href="<?= raizUrl('/gerenciamento/depoimentos.php') ?>?cat=<?= $cat ?>"
-                        class="rounded-xl border border-zinc-100 bg-zinc-50 p-4 hover:bg-zinc-100 transition-all">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:<?= $info['cor'] ?>;"></span>
-                            <span class="text-[11px] font-bold text-zinc-500 uppercase tracking-wide"><?= $info['label'] ?></span>
-                        </div>
-                        <p class="text-2xl font-extrabold text-zinc-900 tracking-tight"><?= $d['total'] ?></p>
-                        <p class="text-[11px] text-zinc-400 mt-0.5">
-                            <?= $d['ativos'] ?> ativo<?= $d['ativos'] != 1 ? 's' : '' ?>
-                        </p>
-                    </a>
-                    <?php endforeach; ?>
-                </div>
-                <p class="text-xs text-zinc-400">
-                    Total: <strong class="text-zinc-700"><?= $totalDepoimentos ?></strong> depoimentos &mdash;
-                    <strong class="text-emerald-600"><?= $totalAtivos ?></strong> ativos no momento.
-                </p>
-            <?php endif; ?>
-        </section>
+        </div>
     </main>
 </div>
 
