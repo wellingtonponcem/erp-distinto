@@ -240,7 +240,25 @@ exigirAutenticacao();
 
         @media (max-width: 600px) {
             .page-wrap { padding: 2rem 1.25rem 4rem; }
-            .header { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+            .header { 
+                flex-direction: column; 
+                align-items: flex-start; 
+                gap: 1.5rem; 
+                text-align: left;
+            }
+            .header-actions {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .btn-secondary {
+                margin-right: 0;
+                text-align: center;
+            }
+            .btn-primary {
+                text-align: center;
+            }
             .modal-content { padding: 2rem 1.5rem; }
         }
     </style>

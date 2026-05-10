@@ -484,7 +484,7 @@ try {
                     </div>
                 </div>
 
-                <div class="sidebar-card">
+                <div class="sidebar-card" x-show="data.status === 'postado'" x-transition>
                     <h3>Métricas de Performance</h3>
                     <div class="metrics-grid">
                         <div>
