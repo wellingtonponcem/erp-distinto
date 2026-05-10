@@ -71,7 +71,7 @@ Responda apenas com o texto extraído e organizado.";
             ]
         ];
 
-        return self::chamarGroq($mensagens, 'llama-3.2-11b-vision-preview');
+        return self::chamarGroq($mensagens, 'llama-3.2-90b-vision-preview');
     }
 
     /**
