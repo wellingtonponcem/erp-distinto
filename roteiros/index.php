@@ -278,10 +278,10 @@ exigirAutenticacao();
 
         <div class="nav-bar">
             <div class="nav-pills">
-                <button class="nav-pill" :class="filter === 'todos' ? 'active' : ''" @click="setFilter('todos')">Todos</button>
                 <button class="nav-pill" :class="filter === 'pendente' ? 'active' : ''" @click="setFilter('pendente')">Pendentes</button>
                 <button class="nav-pill" :class="filter === 'gravado' ? 'active' : ''" @click="setFilter('gravado')">Gravados</button>
                 <button class="nav-pill" :class="filter === 'postado' ? 'active' : ''" @click="setFilter('postado')">Postados</button>
+                <button class="nav-pill" :class="filter === 'todos' ? 'active' : ''" @click="setFilter('todos')">Todos</button>
             </div>
         </div>
 
@@ -353,7 +353,7 @@ exigirAutenticacao();
         function scriptManager() {
             return {
                 scripts: [],
-                filter: 'todos',
+                filter: 'pendente',
                 showModal: false,
                 loadingIA: false,
                 newScript: { tema: '', briefing: '' },
