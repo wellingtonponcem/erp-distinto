@@ -42,7 +42,10 @@ class IARoteiros
         }
 
         $dados = json_decode($resposta, true);
-        return $dados['choices'][0]['message']['content'] ?? "Erro ao processar resposta da IA.";
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return "Erro: Resposta da IA não é um JSON válido. Body: " . substr($resposta, 0, 200);
+        }
+        return $dados['choices'][0]['message']['content'] ?? "Erro: Resposta da IA não contém conteúdo. Body: " . json_encode($dados);
     }
 
     /**

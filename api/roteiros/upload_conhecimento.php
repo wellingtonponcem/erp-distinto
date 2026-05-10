@@ -12,8 +12,8 @@ require_once __DIR__ . '/../../includes/ia_roteiros.php';
 exigirAutenticacao();
 
 // Aumentar tempo de execução para processamento da IA
-set_time_limit(180); 
-ini_set('memory_limit', '512M');
+set_time_limit(600); 
+ini_set('memory_limit', '1024M');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     responderJson(['erro' => 'Método não permitido'], 405);
