@@ -179,7 +179,7 @@ try {
         .hook-block {
             background: var(--surface2);
             border-left: 4px solid var(--accent) !important;
-            padding: 2rem !important;
+            padding: 1.25rem 1.5rem !important;
             border-radius: 4px;
             font-family: var(--serif);
             font-style: italic;
@@ -424,9 +424,22 @@ try {
                 saving: false,
                 editing: false,
 
+                init() {
+                    this.$nextTick(() => {
+                        this.resizeAll();
+                    });
+                    window.addEventListener('load', () => this.resizeAll());
+                },
+
                 resize(el) {
+                    if (!el) return;
                     el.style.height = 'auto';
                     el.style.height = el.scrollHeight + 'px';
+                },
+
+                resizeAll() {
+                    const textareas = document.querySelectorAll('textarea');
+                    textareas.forEach(ta => this.resize(ta));
                 },
 
                 handleActionButton() {
@@ -435,8 +448,7 @@ try {
                     } else {
                         this.editing = true;
                         this.$nextTick(() => {
-                            const textareas = document.querySelectorAll('textarea');
-                            textareas.forEach(ta => this.resize(ta));
+                            this.resizeAll();
                         });
                     }
                 },
