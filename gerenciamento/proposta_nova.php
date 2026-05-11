@@ -16,6 +16,10 @@ $clientesPorId = array_column($clientes, 'nome', 'id');
 $stmtOportunidades = $db->query("SELECT id, nome, cliente_id FROM oportunidades ORDER BY previsao ASC");
 $oportunidades = $stmtOportunidades->fetchAll();
 
+// Buscar fornecedores
+$stmtFornecedores = $db->query("SELECT id, nome, categoria FROM fornecedores ORDER BY nome ASC");
+$fornecedores = $stmtFornecedores->fetchAll();
+
 // Buscar serviços (apenas ativos, incluindo periodicidade e preço pontual)
 $stmtServicos = $db->query("SELECT id, nome, descricao, preco_venda, preco_venda_pontual, periodicidade, categoria, tipo, subtitulo, beneficios_json, condicoes_comerciais FROM servicos WHERE ativo = 1 ORDER BY nome ASC");
 $servicos = $stmtServicos->fetchAll();
@@ -601,6 +605,15 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         <div class="form-group">
                             <label class="label">Valor da Opção (R$/mês)</label>
                             <input type="number" step="0.01" name="adicional_valor" class="input" placeholder="0,00">
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Fornecedor Vinculado (Custo Externo)</label>
+                            <select name="adicional_fornecedor_id" class="input">
+                                <option value="">Nenhum fornecedor</option>
+                                <?php foreach ($fornecedores as $f): ?>
+                                    <option value="<?= $f['id'] ?>"><?= sanitizar($f['nome']) ?> (<?= sanitizar($f['categoria']) ?>)</option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group">

@@ -116,7 +116,8 @@ $dadosJson = json_encode([
     'adicional' => [
         'titulo' => $d['adicional_titulo'] ?? ($dadosAntigos['adicional']['titulo'] ?? ''),
         'valor' => $d['adicional_valor'] ?? ($dadosAntigos['adicional']['valor'] ?? 0),
-        'descricao' => $d['adicional_descricao'] ?? ($dadosAntigos['adicional']['descricao'] ?? '')
+        'descricao' => $d['adicional_descricao'] ?? ($dadosAntigos['adicional']['descricao'] ?? ''),
+        'fornecedor_id' => $d['adicional_fornecedor_id'] ?? ($dadosAntigos['adicional']['fornecedor_id'] ?? '')
     ],
     'responsavel' => $d['responsavel'] ?? ($dadosAntigos['responsavel'] ?? ''),
     'whatsapp' => $d['whatsapp'] ?? ($dadosAntigos['whatsapp'] ?? ''),

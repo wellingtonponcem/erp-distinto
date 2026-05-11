@@ -47,7 +47,12 @@ if (isset($_GET['deletar'])) {
     $statusMessage = 'Fornecedor excluído com sucesso.';
 }
 
-$fornecedores = $db->query("SELECT * FROM fornecedores ORDER BY nome ASC")->fetchAll();
+$fornecedores = $db->query("
+    SELECT f.*, 
+           (SELECT COUNT(*) FROM propostas p WHERE p.dados_json->'adicional'->>'fornecedor_id' = f.id) as total_vinculos
+    FROM fornecedores f 
+    ORDER BY f.nome ASC
+")->fetchAll();
 $tituloPagina = 'CRM • Fornecedores';
 require_once __DIR__ . '/../includes/layout/head.php';
 ?>
@@ -162,6 +167,13 @@ require_once __DIR__ . '/../includes/layout/head.php';
                             <div class="hidden md:block">
                                 <p class="text-[10px] font-black text-zinc-400 uppercase tracking-tighter">Telefone</p>
                                 <p class="text-xs font-bold text-zinc-600 dark:text-zinc-400 mt-0.5"><?= sanitizar($f['telefone'] ?: '—') ?></p>
+                            </div>
+
+                            <div class="flex items-center gap-4 border-l border-zinc-100 dark:border-zinc-800/50 pl-6">
+                                <div class="text-center">
+                                    <p class="text-[10px] font-black text-zinc-400 uppercase tracking-tighter">Propostas</p>
+                                    <p class="text-sm font-black text-zinc-900 dark:text-white"><?= $f['total_vinculos'] ?></p>
+                                </div>
                             </div>
                             
                             <div class="flex items-center gap-2">

@@ -32,6 +32,10 @@ $clientes = $stmtClientes->fetchAll();
 $stmtOportunidades = $db->query("SELECT id, nome, cliente_id FROM oportunidades ORDER BY previsao ASC");
 $oportunidades = $stmtOportunidades->fetchAll();
 
+// Buscar fornecedores
+$stmtFornecedores = $db->query("SELECT id, nome, categoria FROM fornecedores ORDER BY nome ASC");
+$fornecedores = $stmtFornecedores->fetchAll();
+
 // Buscar serviços (apenas ativos)
 $stmtServicos = $db->query("SELECT id, nome, descricao, preco_venda, preco_venda_pontual, periodicidade, categoria, tipo, subtitulo, beneficios_json, condicoes_comerciais FROM servicos WHERE ativo = 1 ORDER BY nome ASC");
 $servicos = $stmtServicos->fetchAll();
@@ -514,6 +518,33 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         </div>
                     </section>
 
+                    <section class="card p-6" x-show="tipoProposta !== 'casamento'">
+                        <h3 class="text-sm font-bold text-white mb-4">Opção Adicional (Upsell)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="form-group">
+                                <label class="label">Título da Opção</label>
+                                <input type="text" name="adicional_titulo" class="input" placeholder="Ex: VÍDEOS PARA REELS" x-model="adicional.titulo">
+                            </div>
+                            <div class="form-group">
+                                <label class="label">Valor da Opção (R$/mês)</label>
+                                <input type="number" step="0.01" name="adicional_valor" class="input" placeholder="0,00" x-model="adicional.valor">
+                            </div>
+                            <div class="form-group">
+                                <label class="label">Fornecedor Vinculado (Custo Externo)</label>
+                                <select name="adicional_fornecedor_id" class="input" x-model="adicional.fornecedor_id">
+                                    <option value="">Nenhum fornecedor</option>
+                                    <?php foreach ($fornecedores as $f): ?>
+                                        <option value="<?= $f['id'] ?>"><?= sanitizar($f['nome']) ?> (<?= sanitizar($f['categoria']) ?>)</option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Descrição da Opção</label>
+                            <textarea name="adicional_descricao" class="input min-h-[80px]" placeholder="Ex: Sessão mensal de até 3h de gravação..." x-model="adicional.descricao"></textarea>
+                        </div>
+                    </section>
+
                     <section class="card p-6 border-zinc-200">
                         <h3 class="text-sm font-bold text-zinc-900 mb-4">Conteúdo Gerado (IA)</h3>
                         <div class="space-y-6">
@@ -568,7 +599,7 @@ document.addEventListener('alpine:init', () => {
         dataInicio: '',
         responsavel: '',
         whatsapp: '',
-        adicional: { titulo: '', valor: 0, descricao: '' },
+        adicional: { titulo: '', valor: 0, descricao: '', fornecedor_id: '' },
         fasesCronograma: [],
         etapasDias: {},
         secoes: {},
@@ -608,6 +639,7 @@ document.addEventListener('alpine:init', () => {
             this.secoes = dados.secoes || {};
             this.responsavel = dados.responsavel || '';
             this.whatsapp = dados.whatsapp || '';
+            this.adicional = dados.adicional || { titulo: '', valor: 0, descricao: '', fornecedor_id: '' };
             
             // Mapeia os serviços
             this.servicosSelecionados = dados.servicos ? dados.servicos.map(s => {

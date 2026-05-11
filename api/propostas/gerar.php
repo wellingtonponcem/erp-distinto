@@ -56,7 +56,7 @@ if ($oportunidadeId) {
     }
 }
 
-// 1. Identificar Cliente / Lead
+// 1. Identificar ou Criar Cliente / Lead
 if ($modoCliente === 'cadastrado') {
     if (empty($d['cliente_id']) && empty($clienteId)) {
         responderJson(['erro' => 'Selecione um cliente ou oportunidade.'], 422);
@@ -70,9 +70,9 @@ if ($modoCliente === 'cadastrado') {
     $cliente = $stmtCliente->fetch();
     if (!$cliente) responderJson(['erro' => 'Cliente não encontrado.'], 404);
     $clienteNome = $cliente['nome'];
-    $responsavel = ''; // Para clientes cadastrados, o responsável é opcional ou fixo
+    $responsavel = ''; 
 } else {
-    // Para Casamento, empresa_nome e responsavel não são obrigatórios (usamos noivos)
+    // MODO NOVO LEAD: Criar pré-cadastro na tabela de clientes
     if ($d['tipo'] !== 'casamento') {
         if (empty($d['empresa_nome']) || empty($d['responsavel'])) {
             responderJson(['erro' => 'Nome da empresa e responsável são obrigatórios para novos leads.'], 422);
@@ -81,8 +81,16 @@ if ($modoCliente === 'cadastrado') {
         $responsavel = $d['responsavel'];
     } else {
         $clienteNome = ($d['nome_noivo'] && $d['nome_noiva']) ? ($d['nome_noivo'] . ' & ' . $d['nome_noiva']) : 'Novo Casamento';
-        $responsavel = $d['nome_noiva'] ?? ''; // Usamos a noiva como principal para comunicações
+        $responsavel = $d['nome_noiva'] ?? ''; 
     }
+
+    // Criar o cliente no banco para garantir a conexão total (CRM/Financeiro)
+    $clienteId = gerarId();
+    $whatsappLead = $d['whatsapp'] ?? '';
+    $segmentoLead = ($d['tipo'] === 'casamento' ? 'Casamento' : ($d['tipo'] === 'marketing' ? 'Marketing' : 'Filmmaker'));
+    
+    $stmtNovoCli = $db->prepare("INSERT INTO clientes (id, nome, contato, segmento, criado_em) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)");
+    $stmtNovoCli->execute([$clienteId, $clienteNome, $whatsappLead, $segmentoLead]);
 
     // Lógica de Pluralização Inteligente
     if (strpos($responsavel, ',') !== false || stripos($responsavel, ' e ') !== false || $d['tipo'] === 'casamento') {
@@ -167,7 +175,8 @@ $dadosJson = json_encode([
     'adicional' => [
         'titulo' => $d['adicional_titulo'] ?? '',
         'valor' => $d['adicional_valor'] ?? 0,
-        'descricao' => $d['adicional_descricao'] ?? ''
+        'descricao' => $d['adicional_descricao'] ?? '',
+        'fornecedor_id' => $d['adicional_fornecedor_id'] ?? ''
     ],
     'responsavel' => $responsavel,
     'whatsapp' => $d['whatsapp'] ?? '',

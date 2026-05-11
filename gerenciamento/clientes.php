@@ -45,7 +45,13 @@ if (isset($_GET['deletar'])) {
     $statusMessage = 'Cliente excluído com sucesso.';
 }
 
-$clientes = $db->query("SELECT * FROM clientes ORDER BY nome ASC")->fetchAll();
+$clientes = $db->query("
+    SELECT c.*, 
+           (SELECT COUNT(*) FROM oportunidades o WHERE o.cliente_id = c.id) as total_oportunidades,
+           (SELECT COUNT(*) FROM propostas p WHERE p.cliente_id = c.id) as total_propostas
+    FROM clientes c 
+    ORDER BY c.nome ASC
+")->fetchAll();
 $tituloPagina = 'CRM • Clientes';
 require_once __DIR__ . '/../includes/layout/head.php';
 ?>
@@ -148,6 +154,17 @@ require_once __DIR__ . '/../includes/layout/head.php';
                             <div class="hidden md:block">
                                 <p class="text-[10px] font-black text-zinc-400 uppercase tracking-tighter">Contato</p>
                                 <p class="text-xs font-bold text-zinc-600 dark:text-zinc-400 mt-0.5"><?= sanitizar($cliente['contato'] ?: '—') ?></p>
+                            </div>
+
+                            <div class="flex items-center gap-4 border-l border-zinc-100 dark:border-zinc-800/50 pl-6">
+                                <div class="text-center">
+                                    <p class="text-[10px] font-black text-zinc-400 uppercase tracking-tighter">Oportunidades</p>
+                                    <p class="text-sm font-black text-zinc-900 dark:text-white"><?= $cliente['total_oportunidades'] ?></p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-[10px] font-black text-zinc-400 uppercase tracking-tighter">Propostas</p>
+                                    <p class="text-sm font-black text-zinc-900 dark:text-white"><?= $cliente['total_propostas'] ?></p>
+                                </div>
                             </div>
                             
                             <div class="flex items-center gap-2">
