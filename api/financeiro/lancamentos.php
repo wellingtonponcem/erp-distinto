@@ -57,6 +57,15 @@ try {
             empty($d['observacao']) ? null : $d['observacao']
         ];
         
+        if (tabelaTemColuna($db, 'lancamentos', 'cliente_id')) {
+            $sets[] = 'cliente_id=?';
+            $params[] = empty($d['cliente_id']) ? null : $d['cliente_id'];
+        }
+        if (tabelaTemColuna($db, 'lancamentos', 'fornecedor_id')) {
+            $sets[] = 'fornecedor_id=?';
+            $params[] = empty($d['fornecedor_id']) ? null : $d['fornecedor_id'];
+        }
+        
         if (isset($d['status'])) {
             $sets[] = 'status=?';
             $params[] = $d['status'];
@@ -131,6 +140,19 @@ function criarCustoFixoFromLancamento(PDO $db, array $d): string {
     return $id;
 }
 
+function obterNomeClienteFornecedor(PDO $db, string $id, string $tipo): ?string {
+    if ($tipo === 'clientes') {
+        $stmt = $db->prepare('SELECT nome FROM clientes WHERE id = ?');
+    } elseif ($tipo === 'fornecedores') {
+        $stmt = $db->prepare('SELECT nome FROM fornecedores WHERE id = ?');
+    } else {
+        return null;
+    }
+    $stmt->execute([$id]);
+    $row = $stmt->fetch();
+    return $row ? $row['nome'] : null;
+}
+
 function criarLancamento(PDO $db, array $d): void {
     $modalidade = $d['modalidade'] ?? 'avista';
 
@@ -172,10 +194,17 @@ function inserirLancamento(PDO $db, string $id, array $d, float $valor, string $
     
     $status = $d['status'] ?? 'pendente';
     $valorPago = isset($d['valor_pago']) ? (float)$d['valor_pago'] : 0;
-    
+    $clienteFornecedorTexto = empty($d['cliente_fornecedor']) ? null : $d['cliente_fornecedor'];
+    if (empty($clienteFornecedorTexto) && !empty($d['cliente_id'])) {
+        $clienteFornecedorTexto = obterNomeClienteFornecedor($db, $d['cliente_id'], 'clientes');
+    }
+    if (empty($clienteFornecedorTexto) && !empty($d['fornecedor_id'])) {
+        $clienteFornecedorTexto = obterNomeClienteFornecedor($db, $d['fornecedor_id'], 'fornecedores');
+    }
+
     $params = [
         $id, $d['tipo'], $d['descricao'], $valor, $valorPago,
-        $d['categoria'] ?? 'outros', empty($d['cliente_fornecedor']) ? null : $d['cliente_fornecedor'],
+        $d['categoria'] ?? 'outros', $clienteFornecedorTexto,
         $venc, $status, $d['modalidade'] ?? 'avista',
         $totalParcelas, $parcelaAtual, $paiId,
         empty($d['frequencia']) ? null : $d['frequencia'], 
@@ -192,6 +221,16 @@ function inserirLancamento(PDO $db, string $id, array $d, float $valor, string $
         $colunas[] = 'custo_fixo_id';
         $valores[] = '?';
         $params[] = $d['custo_fixo_id'] ?? null;
+    }
+    if (tabelaTemColuna($db, 'lancamentos', 'cliente_id')) {
+        $colunas[] = 'cliente_id';
+        $valores[] = '?';
+        $params[] = $d['cliente_id'] ?? null;
+    }
+    if (tabelaTemColuna($db, 'lancamentos', 'fornecedor_id')) {
+        $colunas[] = 'fornecedor_id';
+        $valores[] = '?';
+        $params[] = $d['fornecedor_id'] ?? null;
     }
     if (tabelaTemColuna($db, 'lancamentos', 'conta_id')) {
         $colunas[] = 'conta_id';

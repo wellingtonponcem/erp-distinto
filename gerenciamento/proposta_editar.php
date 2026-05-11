@@ -28,6 +28,10 @@ $dadosJson = json_decode($proposta['dados_json'], true);
 $stmtClientes = $db->query("SELECT id, nome FROM clientes ORDER BY nome ASC");
 $clientes = $stmtClientes->fetchAll();
 
+// Buscar oportunidades
+$stmtOportunidades = $db->query("SELECT id, nome, cliente_id FROM oportunidades ORDER BY previsao ASC");
+$oportunidades = $stmtOportunidades->fetchAll();
+
 // Buscar serviços (apenas ativos)
 $stmtServicos = $db->query("SELECT id, nome, descricao, preco_venda, preco_venda_pontual, periodicidade, categoria, tipo, subtitulo, beneficios_json, condicoes_comerciais FROM servicos WHERE ativo = 1 ORDER BY nome ASC");
 $servicos = $stmtServicos->fetchAll();
@@ -172,6 +176,16 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         <div class="form-group">
                             <label class="label">Cliente</label>
                             <input type="text" class="input bg-zinc-800/30 text-zinc-400" value="<?= sanitizar($proposta['cliente_nome']) ?>" readonly disabled>
+                            <input type="hidden" name="cliente_id" value="<?= sanitizar($proposta['cliente_id'] ?? '') ?>">
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Oportunidade vinculada</label>
+                            <select name="oportunidade_id" class="input">
+                                <option value="">Nenhuma</option>
+                                <?php foreach ($oportunidades as $o): ?>
+                                    <option value="<?= $o['id'] ?>" <?= isset($proposta['oportunidade_id']) && $proposta['oportunidade_id'] === $o['id'] ? 'selected' : '' ?>><?= sanitizar($o['nome']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label class="label">Tipo de Serviço</label>

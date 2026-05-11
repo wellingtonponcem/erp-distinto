@@ -44,6 +44,20 @@ try {
         $db->exec("CREATE INDEX IF NOT EXISTS idx_lancamentos_fornecedor_id ON lancamentos (fornecedor_id);");
     }
 
+    $tablePropostas = $db->prepare("SELECT 1 FROM information_schema.tables WHERE table_name = 'propostas'");
+    $tablePropostas->execute();
+    if ($tablePropostas->fetch()) {
+        $columnsPropostas = $db->prepare("SELECT column_name FROM information_schema.columns WHERE table_name = 'propostas' AND column_name = 'oportunidade_id'");
+        $columnsPropostas->execute();
+        $existsPropostas = $columnsPropostas->fetch();
+        if (!$existsPropostas) {
+            $db->exec("ALTER TABLE propostas ADD COLUMN cliente_id VARCHAR(32) NULL;");
+            $db->exec("ALTER TABLE propostas ADD COLUMN oportunidade_id VARCHAR(32) NULL;");
+            $db->exec("CREATE INDEX IF NOT EXISTS idx_propostas_cliente_id ON propostas (cliente_id);");
+            $db->exec("CREATE INDEX IF NOT EXISTS idx_propostas_oportunidade_id ON propostas (oportunidade_id);");
+        }
+    }
+
     echo "Migração CRM concluída com sucesso.\n";
 } catch (Exception $e) {
     echo "ERRO na migração CRM: " . $e->getMessage() . "\n";

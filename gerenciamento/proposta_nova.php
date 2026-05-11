@@ -12,6 +12,9 @@ $db = Database::get();
 // Buscar clientes
 $stmtClientes = $db->query("SELECT id, nome FROM clientes ORDER BY nome ASC");
 $clientes = $stmtClientes->fetchAll();
+$clientesPorId = array_column($clientes, 'nome', 'id');
+$stmtOportunidades = $db->query("SELECT id, nome, cliente_id FROM oportunidades ORDER BY previsao ASC");
+$oportunidades = $stmtOportunidades->fetchAll();
 
 // Buscar serviços (apenas ativos, incluindo periodicidade e preço pontual)
 $stmtServicos = $db->query("SELECT id, nome, descricao, preco_venda, preco_venda_pontual, periodicidade, categoria, tipo, subtitulo, beneficios_json, condicoes_comerciais FROM servicos WHERE ativo = 1 ORDER BY nome ASC");
@@ -164,6 +167,15 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                                 <option value="">Selecione um cliente...</option>
                                 <?php foreach ($clientes as $c): ?>
                                     <option value="<?= $c['id'] ?>"><?= sanitizar($c['nome']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Vincular Oportunidade (opcional)</label>
+                            <select name="oportunidade_id" class="input">
+                                <option value="">Nenhuma oportunidade</option>
+                                <?php foreach ($oportunidades as $o): ?>
+                                    <option value="<?= $o['id'] ?>"><?= sanitizar($o['nome'] . ($o['cliente_id'] ? ' — ' . ($clientesPorId[$o['cliente_id']] ?? 'Cliente') : '')) ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>

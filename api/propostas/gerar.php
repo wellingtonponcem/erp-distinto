@@ -38,17 +38,35 @@ if (empty($d['tipo'])) {
 
 $db = Database::get();
 $modoCliente = $d['modo_cliente'] ?? 'cadastrado';
+$clienteId = null;
 $clienteNome = '';
 $responsavel = '';
 $isPlural = false;
+$oportunidadeId = !empty($d['oportunidade_id']) ? $d['oportunidade_id'] : null;
+
+if ($oportunidadeId) {
+    $stmtO = $db->prepare("SELECT id, cliente_id, etapa FROM oportunidades WHERE id = ?");
+    $stmtO->execute([$oportunidadeId]);
+    $oportunidade = $stmtO->fetch();
+    if (!$oportunidade) {
+        responderJson(['erro' => 'Oportunidade não encontrada.'], 404);
+    }
+    if (!empty($oportunidade['cliente_id'])) {
+        $clienteId = $oportunidade['cliente_id'];
+    }
+}
 
 // 1. Identificar Cliente / Lead
 if ($modoCliente === 'cadastrado') {
-    if (empty($d['cliente_id'])) {
-        responderJson(['erro' => 'Selecione um cliente.'], 422);
+    if (empty($d['cliente_id']) && empty($clienteId)) {
+        responderJson(['erro' => 'Selecione um cliente ou oportunidade.'], 422);
     }
+    if (!empty($d['cliente_id'])) {
+        $clienteId = $d['cliente_id'];
+    }
+
     $stmtCliente = $db->prepare("SELECT nome FROM clientes WHERE id = ?");
-    $stmtCliente->execute([$d['cliente_id']]);
+    $stmtCliente->execute([$clienteId]);
     $cliente = $stmtCliente->fetch();
     if (!$cliente) responderJson(['erro' => 'Cliente não encontrado.'], 404);
     $clienteNome = $cliente['nome'];
@@ -65,11 +83,16 @@ if ($modoCliente === 'cadastrado') {
         $clienteNome = ($d['nome_noivo'] && $d['nome_noiva']) ? ($d['nome_noivo'] . ' & ' . $d['nome_noiva']) : 'Novo Casamento';
         $responsavel = $d['nome_noiva'] ?? ''; // Usamos a noiva como principal para comunicações
     }
-    
+
     // Lógica de Pluralização Inteligente
     if (strpos($responsavel, ',') !== false || stripos($responsavel, ' e ') !== false || $d['tipo'] === 'casamento') {
         $isPlural = true;
     }
+}
+
+if ($oportunidadeId && in_array($oportunidade['etapa'], ['novo', 'qualificado'], true)) {
+    $stmtUpdate = $db->prepare("UPDATE oportunidades SET etapa = 'proposta', atualizado_em = CURRENT_TIMESTAMP WHERE id = ?");
+    $stmtUpdate->execute([$oportunidadeId]);
 }
 
 // 2. Buscar Serviços (se houver)
@@ -184,8 +207,8 @@ $dadosJson = json_encode([
     'upgrades' => $d['upgrades'] ?? ['heritage' => [], 'cinematic' => [], 'essencial' => []],
 ], JSON_UNESCAPED_UNICODE);
 
-$stmt = $db->prepare("INSERT INTO propostas (id, cliente_nome, tipo, slug, titulo, subtitulo, validade, dados_json, valor_total, status) 
-                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+$stmt = $db->prepare("INSERT INTO propostas (id, cliente_id, cliente_nome, tipo, slug, titulo, subtitulo, validade, dados_json, valor_total, status, oportunidade_id) 
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
 $validade = !empty($d['validade']) ? $d['validade'] : date('Y-m-d', strtotime('+15 days'));
 $tituloOriginal = !empty($d['titulo']) ? $d['titulo'] : ("Proposta Comercial - " . $clienteNome);
@@ -207,6 +230,7 @@ $valorTotal = !empty($d['valor_total']) ? (float)str_replace(['.', ','], ['', '.
 
 $stmt->execute([
     $id,
+    $clienteId,
     $clienteNome,
     $d['tipo'],
     $slug,
@@ -215,7 +239,8 @@ $stmt->execute([
     $validade,
     $dadosJson,
     $valorTotal,
-    'rascunho'
+    'rascunho',
+    $oportunidadeId
 ]);
 
 responderJson([

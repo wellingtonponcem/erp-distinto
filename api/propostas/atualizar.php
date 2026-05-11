@@ -89,6 +89,9 @@ if (!empty($d['fases']) && is_array($d['fases'])) {
     }
 }
 
+$clienteId = array_key_exists('cliente_id', $d) ? ($d['cliente_id'] ?: null) : $propostaAtual['cliente_id'];
+$oportunidadeId = array_key_exists('oportunidade_id', $d) ? ($d['oportunidade_id'] ?: null) : $propostaAtual['oportunidade_id'];
+
 $dadosJson = json_encode([
     'secoes' => $secoes,
     'servicos' => $servicosInclusos,
@@ -150,7 +153,9 @@ $stmt = $db->prepare("UPDATE propostas SET
                         validade = ?, 
                         dados_json = ?, 
                         valor_total = ?, 
-                        status = ?
+                        status = ?, 
+                        cliente_id = ?, 
+                        oportunidade_id = ?
                       WHERE id = ?");
 
 $valorTotal = !empty($d['valor_total']) ? (float)str_replace(['.', ','], ['', '.'], $d['valor_total']) : $propostaAtual['valor_total'];
@@ -163,6 +168,8 @@ $stmt->execute([
     $dadosJson,
     $valorTotal,
     $status,
+    $clienteId,
+    $oportunidadeId,
     $d['id']
 ]);
 

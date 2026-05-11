@@ -14,21 +14,20 @@ try {
         id VARCHAR(32) PRIMARY KEY,
         cliente_id VARCHAR(32) NULL,
         cliente_nome VARCHAR(255) NOT NULL,
-        tipo ENUM('marketing', 'casamento', '15anos') NOT NULL,
+        tipo VARCHAR(50) NOT NULL,
         slug VARCHAR(255) UNIQUE NOT NULL,
         titulo VARCHAR(255) NOT NULL,
         subtitulo VARCHAR(255) NULL,
+        oportunidade_id VARCHAR(32) NULL,
         data_evento DATE NULL,
         validade DATE NULL,
-        dados_json LONGTEXT NOT NULL, -- Armazena as seções e textos gerados
-        valor_total DECIMAL(15,2) DEFAULT 0.00,
-        status ENUM('rascunho', 'enviada', 'aceita', 'recusada') DEFAULT 'rascunho',
+        dados_json TEXT NOT NULL,
+        valor_total NUMERIC(15,2) DEFAULT 0.00,
+        status VARCHAR(50) DEFAULT 'rascunho',
         criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        KEY idx_slug (slug),
-        KEY idx_tipo (tipo),
-        KEY idx_status (status)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+        atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT idx_slug UNIQUE (slug)
+    )";
 
     $db->exec($sql);
     echo "Tabela 'propostas' criada/verificada com sucesso.\n";

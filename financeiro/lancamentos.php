@@ -5,6 +5,9 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/helpers.php';
 exigirAutenticacao();
 $tituloPagina = 'Lançamentos';
+$db = Database::get();
+$clientes = $db->query("SELECT id, nome FROM clientes ORDER BY nome ASC")->fetchAll();
+$fornecedores = $db->query("SELECT id, nome FROM fornecedores ORDER BY nome ASC")->fetchAll();
 include __DIR__ . '/../includes/layout/head.php';
 ?>
 
@@ -153,7 +156,7 @@ include __DIR__ . '/../includes/layout/head.php';
                                               :style="'border-color:' + (contas.find(c=>c.id===l.conta_id)?.cor || '#333')"
                                               x-text="contas.find(c=>c.id===l.conta_id)?.nome"></span>
                                     </template>
-                                    <div style="color:#6b7280; font-size:12px;" x-text="l.cliente_fornecedor || l.categoria"></div>
+                                    <div style="color:#6b7280; font-size:12px;" x-text="clientes.find(c => c.id === l.cliente_id)?.nome || fornecedores.find(f => f.id === l.fornecedor_id)?.nome || l.cliente_fornecedor || l.categoria"></div>
                                 </div>
                             </div>
                         </div>
@@ -250,8 +253,28 @@ include __DIR__ . '/../includes/layout/head.php';
                         </div>
                     </div>
                     <div>
-                        <label class="label">Cliente / Fornecedor</label>
-                        <input class="input" x-model="form.cliente_fornecedor" placeholder="Nome">
+                        <label class="label">Cliente</label>
+                        <select class="select" x-model="form.cliente_id">
+                            <option value="">— Selecione um cliente —</option>
+                            <template x-for="c in clientes" :key="c.id">
+                                <option :value="c.id" x-text="c.nome"></option>
+                            </template>
+                        </select>
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+                    <div>
+                        <label class="label">Fornecedor</label>
+                        <select class="select" x-model="form.fornecedor_id">
+                            <option value="">— Selecione um fornecedor —</option>
+                            <template x-for="f in fornecedores" :key="f.id">
+                                <option :value="f.id" x-text="f.nome"></option>
+                            </template>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="label">Cliente / Fornecedor (Texto)</label>
+                        <input class="input" x-model="form.cliente_fornecedor" placeholder="Nome ou descrição">
                     </div>
                 </div>
 
@@ -558,6 +581,8 @@ function lancamentos() {
         ofxTransacoes: [],
         ofxContaId: '',
         contas: [],
+        clientes: <?= json_encode($clientes, JSON_UNESCAPED_UNICODE) ?>,
+        fornecedores: <?= json_encode($fornecedores, JSON_UNESCAPED_UNICODE) ?>,
 
         get categoriasDisponiveis() {
             const padrao = ['serviços', 'produtos', 'aluguel', 'impostos', 'folha', 'marketing', 'outros'];
@@ -738,6 +763,7 @@ function lancamentos() {
             this.form = lancamento ? { ...lancamento } : {
                 tipo: 'receber', modalidade: 'avista', descricao: '', valor: '',
                 vencimento: '', categoria: 'servicos', cliente_fornecedor: '',
+                cliente_id: '', fornecedor_id: '',
                 forma_pagamento: '', conta_id: this.contas[0]?.id || '', total_parcelas: '', frequencia: 'mensal',
                 data_termino: '', observacao: '', e_custo_fixo: false
             };

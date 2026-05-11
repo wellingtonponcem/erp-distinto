@@ -9,18 +9,20 @@ try {
     $db = Database::get();
     
     $sql = "CREATE TABLE IF NOT EXISTS propostas (
-        id CHAR(36) PRIMARY KEY,
+        id VARCHAR(32) PRIMARY KEY,
+        cliente_id VARCHAR(32) NULL,
         cliente_nome VARCHAR(255) NOT NULL,
         tipo VARCHAR(100) NOT NULL,
         slug VARCHAR(255) UNIQUE NOT NULL,
         titulo VARCHAR(255),
         subtitulo VARCHAR(255),
+        oportunidade_id VARCHAR(32) NULL,
         validade DATE,
-        dados_json LONGTEXT,
-        valor_total DECIMAL(10, 2),
+        dados_json TEXT,
+        valor_total NUMERIC(10,2),
         status VARCHAR(50) DEFAULT 'pendente',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+    )";
 
     $db->exec($sql);
     

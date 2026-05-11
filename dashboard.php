@@ -13,6 +13,23 @@ $hoje = date('Y-m-d');
 $mesInicio = date('Y-m-01');
 $mesFim = date('Y-m-t');
 
+$crmResumo = [
+    'total_clientes' => 0,
+    'total_fornecedores' => 0,
+    'oportunidades_abertas' => 0,
+    'propostas_com_oportunidade' => 0,
+];
+try {
+    $crmResumo = $db->query("SELECT 
+        (SELECT COUNT(*) FROM clientes) as total_clientes,
+        (SELECT COUNT(*) FROM fornecedores) as total_fornecedores,
+        (SELECT COUNT(*) FROM oportunidades WHERE etapa NOT IN ('ganha', 'perdida')) as oportunidades_abertas,
+        (SELECT COUNT(*) FROM propostas WHERE oportunidade_id IS NOT NULL) as propostas_com_oportunidade
+    ")->fetch();
+} catch (Exception $e) {
+    // Se o CRM ainda não estiver configurado, exibimos valores zerados.
+}
+
 $queryResumo = $db->prepare("
     SELECT
         SUM(CASE WHEN tipo='receber' AND status='pago' THEN valor_pago ELSE 0 END) as total_recebido,
@@ -338,6 +355,25 @@ include __DIR__ . '/includes/layout/head.php';
                     class="bg-black text-white dark:bg-white dark:text-black hover:scale-105 transition-transform px-5 py-2.5 rounded-full text-sm font-bold shadow-lg">
                     Novo Lançamento
                 </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm">
+                <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Clientes cadastrados</p>
+                <p class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white"><?= $crmResumo['total_clientes'] ?? 0 ?></p>
+            </div>
+            <div class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm">
+                <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Fornecedores cadastrados</p>
+                <p class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white"><?= $crmResumo['total_fornecedores'] ?? 0 ?></p>
+            </div>
+            <div class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm">
+                <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Oportunidades abertas</p>
+                <p class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white"><?= $crmResumo['oportunidades_abertas'] ?? 0 ?></p>
+            </div>
+            <div class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm">
+                <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Propostas ligadas a oportunidades</p>
+                <p class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white"><?= $crmResumo['propostas_com_oportunidade'] ?? 0 ?></p>
             </div>
         </div>
 
