@@ -35,17 +35,17 @@ $debug_str = "";
 $saldoAtual = 0;
 
 foreach ($contas as $c) {
-    $saldoInicialTotal += (float)$c['saldo_inicial'];
+    $saldoInicialTotal += (float) $c['saldo_inicial'];
     $calc = $db->prepare("
         SELECT SUM(CASE WHEN tipo='receber' THEN valor_pago ELSE -valor_pago END) as fluxo
         FROM lancamentos 
         WHERE conta_id = ? AND status IN ('pago', 'efetivado')
     ");
     $calc->execute([$c['id']]);
-    $fluxo = (float)$calc->fetchColumn();
-    $saldo_conta = (float)$c['saldo_inicial'] + $fluxo;
+    $fluxo = (float) $calc->fetchColumn();
+    $saldo_conta = (float) $c['saldo_inicial'] + $fluxo;
     $saldoAtual += $saldo_conta;
-    
+
     $debug_str .= $c['nome'] . " (Inic: " . $c['saldo_inicial'] . " + Fluxo: " . $fluxo . " = " . $saldo_conta . ") | ";
 }
 
@@ -129,7 +129,8 @@ while ($dInicio <= $dFim) {
 }
 
 foreach ($dadosFluxo as $row) {
-    if (!isset($bars[$row['data']])) continue;
+    if (!isset($bars[$row['data']]))
+        continue;
     $valor = (float) $row['entradas'] + (float) $row['saidas'];
     $bars[$row['data']]['valor'] = $valor;
     $bars[$row['data']]['entradas'] = (float) $row['entradas'];
@@ -158,7 +159,8 @@ $stmtCat = $db->prepare("
 $stmtCat->execute([$mesInicio, $mesFim]);
 $gastosPorCategoria = $stmtCat->fetchAll();
 $totalGastosChart = array_sum(array_column($gastosPorCategoria, 'total'));
-if ($totalGastosChart == 0) $totalGastosChart = 1; // Evitar divisão por zero
+if ($totalGastosChart == 0)
+    $totalGastosChart = 1; // Evitar divisão por zero
 
 include __DIR__ . '/includes/layout/head.php';
 ?>
@@ -169,55 +171,205 @@ include __DIR__ . '/includes/layout/head.php';
     <main id="main-content" class="content-sheet !bg-[#e0e2eb] dark:!bg-black !p-4 md:!p-6">
         <style>
             /* BENTO UI OVERRIDES */
-            #main-content { min-height: 100vh; font-family: 'Outfit', sans-serif; }
-            .bento-header { background-color: #f7f3da; border-radius: 32px; padding: 24px 32px; }
-            .dark .bento-header { background-color: #111; border: 1px solid #222; }
-            
-            .bento-card { border-radius: 32px; padding: 28px; position: relative; overflow: hidden; }
-            
-            .bento-purple { background: linear-gradient(135deg, #b8abfb, #d4c4f9); color: #111; }
-            .dark .bento-purple { background: linear-gradient(135deg, #382c73, #4a3875); color: #fff; }
-            
-            .bento-dark { background-color: #2b3342; color: #fff; }
-            .dark .bento-dark { background-color: #111; border: 1px solid #222; }
-            
-            .bento-light { background-color: #f0f3f8; color: #111; }
-            .dark .bento-light { background-color: #111; border: 1px solid #222; color: #eee; }
-            
-            .bento-child-blue { background-color: #6a5ff6; color: #fff; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; }
-            .dark .bento-child-blue { background-color: #4a3fd6; }
-            
-            .bento-child-green { background-color: #a4c9b3; color: #1a2f22; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between; }
-            .dark .bento-child-green { background-color: #243b2f; color: #a4c9b3; }
+            #main-content {
+                min-height: 100vh;
+                font-family: 'Outfit', sans-serif;
+            }
 
-            .bento-pill-white { background: #fff; border-radius: 999px; padding: 24px 32px; display: inline-flex; flex-direction: column; justify-content: center;}
-            .dark .bento-pill-white { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
-            
-            .bento-pill-dark { background: #2b3342; color: #fff; border-radius: 999px; padding: 24px 32px; display: inline-flex; flex-direction: column; justify-content: center;}
-            .dark .bento-pill-dark { background: #000; border: 1px solid #222; }
-            
-            .bento-pill-chart { background: rgba(255,255,255,0.4); border-radius: 24px; padding: 24px; backdrop-filter: blur(10px); }
-            .dark .bento-pill-chart { background: rgba(0,0,0,0.3); }
+            .bento-header {
+                background-color: #f7f3da;
+                border-radius: 32px;
+                padding: 24px 32px;
+            }
+
+            .dark .bento-header {
+                background-color: #111;
+                border: 1px solid #222;
+            }
+
+            .bento-card {
+                border-radius: 32px;
+                padding: 28px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .bento-purple {
+                background: linear-gradient(135deg, #b8abfb, #d4c4f9);
+                color: #111;
+            }
+
+            .dark .bento-purple {
+                background: linear-gradient(135deg, #382c73, #4a3875);
+                color: #fff;
+            }
+
+            .bento-dark {
+                background-color: #2b3342;
+                color: #fff;
+            }
+
+            .dark .bento-dark {
+                background-color: #111;
+                border: 1px solid #222;
+            }
+
+            .bento-light {
+                background-color: #f0f3f8;
+                color: #111;
+            }
+
+            .dark .bento-light {
+                background-color: #111;
+                border: 1px solid #222;
+                color: #eee;
+            }
+
+            .bento-child-blue {
+                background-color: #6a5ff6;
+                color: #fff;
+                border-radius: 24px;
+                padding: 24px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+
+            .dark .bento-child-blue {
+                background-color: #4a3fd6;
+            }
+
+            .bento-child-green {
+                background-color: #a4c9b3;
+                color: #1a2f22;
+                border-radius: 24px;
+                padding: 24px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+
+            .dark .bento-child-green {
+                background-color: #243b2f;
+                color: #a4c9b3;
+            }
+
+            .bento-pill-white {
+                background: #fff;
+                border-radius: 999px;
+                padding: 24px 32px;
+                display: inline-flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+
+            .dark .bento-pill-white {
+                background: rgba(255, 255, 255, 0.05);
+                color: #fff;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .bento-pill-dark {
+                background: #2b3342;
+                color: #fff;
+                border-radius: 999px;
+                padding: 24px 32px;
+                display: inline-flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+
+            .dark .bento-pill-dark {
+                background: #000;
+                border: 1px solid #222;
+            }
+
+            .bento-pill-chart {
+                background: rgba(255, 255, 255, 0.4);
+                border-radius: 24px;
+                padding: 24px;
+                backdrop-filter: blur(10px);
+            }
+
+            .dark .bento-pill-chart {
+                background: rgba(0, 0, 0, 0.3);
+            }
 
             .donut-chart {
-                width: 220px; height: 220px; border-radius: 50%;
+                width: 220px;
+                height: 220px;
+                border-radius: 50%;
                 background: conic-gradient(#10b981 0% 40%, #8b5cf6 40% 70%, #6366f1 70% 100%);
                 mask-image: radial-gradient(transparent 58%, black 59%);
                 -webkit-mask-image: radial-gradient(transparent 58%, black 59%);
             }
-            .dark .donut-chart { background: conic-gradient(#10b981 0% 40%, #6d28d9 40% 70%, #4338ca 70% 100%); }
-            
-            .transaction-item { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-            .transaction-icon { width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
-            
-            .top-nav-bento { background: #fff; border-radius: 999px; padding: 6px; display: inline-flex; gap: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-            .dark .top-nav-bento { background: #111; border: 1px solid #222; }
-            .top-nav-bento a { padding: 10px 18px; font-size: 13px; font-weight: 600; color: #555; border-radius: 999px; transition: 0.2s; }
-            .dark .top-nav-bento a { color: #aaa; }
-            .top-nav-bento a:hover { background: #f0f0f0; color: #111; }
-            .dark .top-nav-bento a:hover { background: #222; color: #fff; }
-            .top-nav-bento a.active { background: #e0f2fe; color: #0369a1; }
-            .dark .top-nav-bento a.active { background: #0c4a6e; color: #38bdf8; }
+
+            .dark .donut-chart {
+                background: conic-gradient(#10b981 0% 40%, #6d28d9 40% 70%, #4338ca 70% 100%);
+            }
+
+            .transaction-item {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 16px;
+            }
+
+            .transaction-icon {
+                width: 44px;
+                height: 44px;
+                border-radius: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .top-nav-bento {
+                background: #fff;
+                border-radius: 999px;
+                padding: 6px;
+                display: inline-flex;
+                gap: 4px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            }
+
+            .dark .top-nav-bento {
+                background: #111;
+                border: 1px solid #222;
+            }
+
+            .top-nav-bento a {
+                padding: 10px 18px;
+                font-size: 13px;
+                font-weight: 600;
+                color: #555;
+                border-radius: 999px;
+                transition: 0.2s;
+            }
+
+            .dark .top-nav-bento a {
+                color: #aaa;
+            }
+
+            .top-nav-bento a:hover {
+                background: #f0f0f0;
+                color: #111;
+            }
+
+            .dark .top-nav-bento a:hover {
+                background: #222;
+                color: #fff;
+            }
+
+            .top-nav-bento a.active {
+                background: #e0f2fe;
+                color: #0369a1;
+            }
+
+            .dark .top-nav-bento a.active {
+                background: #0c4a6e;
+                color: #38bdf8;
+            }
         </style>
 
         <!-- Top Navigation Area -->
@@ -229,8 +381,10 @@ include __DIR__ . '/includes/layout/head.php';
                 <a href="<?= raizUrl('/precificacao/simulador.php') ?>">Simulador</a>
             </div>
             <div class="flex items-center gap-3">
-                <span class="text-xs font-bold text-zinc-500 bg-white dark:bg-zinc-900 px-4 py-2 rounded-full shadow-sm">PT-BR</span>
-                <span class="text-xs font-bold text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-900 px-4 py-2 rounded-full shadow-sm"><?= sanitizar(usuarioAtual()['email']) ?></span>
+                <span
+                    class="text-xs font-bold text-zinc-500 bg-white dark:bg-zinc-900 px-4 py-2 rounded-full shadow-sm">PT-BR</span>
+                <span
+                    class="text-xs font-bold text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-900 px-4 py-2 rounded-full shadow-sm"><?= sanitizar(usuarioAtual()['email']) ?></span>
             </div>
         </div>
 
@@ -238,10 +392,12 @@ include __DIR__ . '/includes/layout/head.php';
         <div class="bento-header flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-6">
             <div>
                 <h1 class="text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white mb-1">Dashboard</h1>
-                <p class="text-sm font-medium text-zinc-600 dark:text-zinc-400">Resumo financeiro e operacional da sua agência</p>
+                <p class="text-sm font-medium text-zinc-600 dark:text-zinc-400">Resumo financeiro e operacional da sua
+                    agência</p>
             </div>
             <div class="flex items-center gap-3">
-                <a href="<?= raizUrl('/financeiro/lancamentos.php') ?>" class="bg-black text-white dark:bg-white dark:text-black hover:scale-105 transition-transform px-5 py-2.5 rounded-full text-sm font-bold shadow-lg">
+                <a href="<?= raizUrl('/financeiro/lancamentos.php') ?>"
+                    class="bg-black text-white dark:bg-white dark:text-black hover:scale-105 transition-transform px-5 py-2.5 rounded-full text-sm font-bold shadow-lg">
                     Novo Lançamento
                 </a>
             </div>
@@ -249,66 +405,76 @@ include __DIR__ . '/includes/layout/head.php';
 
         <!-- Bento Grid -->
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            
+
             <!-- Left Column -->
             <div class="flex flex-col gap-6">
                 <!-- Revenue Forecast Card -->
                 <div class="bento-card bento-purple">
                     <div class="flex justify-between items-start mb-6">
                         <h2 class="text-xl font-medium tracking-tight text-[#1a1f36]">Fluxo de Caixa Mensal</h2>
-                        <span class="bg-black/5 hover:bg-black/10 cursor-pointer transition-colors text-black/60 px-4 py-1.5 rounded-full text-xs font-medium flex items-center gap-1">Filtro <i data-lucide="chevron-down" style="width:12px;height:12px;"></i></span>
+                        <span
+                            class="bg-black/5 hover:bg-black/10 cursor-pointer transition-colors text-black/60 px-4 py-1.5 rounded-full text-xs font-medium flex items-center gap-1">Filtro
+                            <i data-lucide="chevron-down" style="width:12px;height:12px;"></i></span>
                     </div>
-                    
+
                     <div class="flex flex-col md:flex-row gap-4">
                         <!-- Left Column: Stacked Pills -->
                         <div class="flex flex-col gap-4 w-full md:w-[40%]">
                             <div class="bg-[#f2f4f7] rounded-[32px] p-6 min-h-[160px] flex flex-col justify-center">
                                 <p class="text-sm font-medium text-zinc-500 mb-2">Receitas Mês</p>
-                                <h3 class="text-4xl font-light tracking-tight text-[#1a1f36]"><?= formatarMoeda((float) $receitasMes) ?></h3>
+                                <h3 class="text-4xl font-light tracking-tight text-[#1a1f36]">
+                                    <?= formatarMoeda((float) $receitasMes) ?></h3>
                             </div>
-                            
+
                             <div class="bg-[#2b3342] rounded-[32px] p-6 min-h-[160px] flex flex-col justify-center">
                                 <p class="text-sm font-medium text-zinc-400 mb-2">Saldo Atual</p>
-                                <h3 class="text-4xl font-light tracking-tight text-white"><?= formatarMoeda((float) $saldoAtual) ?></h3>
-                                <?php if($resumo['debug_contas']): ?>
-                                    <p class="text-[10px] text-zinc-500 mt-2 truncate opacity-50 hover:opacity-100 transition-opacity cursor-help" title="<?= htmlspecialchars($resumo['debug_contas']) ?>">Ver contas</p>
+                                <h3 class="text-4xl font-light tracking-tight text-white">
+                                    <?= formatarMoeda((float) $saldoAtual) ?></h3>
+                                <?php if ($resumo['debug_contas']): ?>
+                                    <p class="text-[10px] text-zinc-500 mt-2 truncate opacity-50 hover:opacity-100 transition-opacity cursor-help"
+                                        title="<?= htmlspecialchars($resumo['debug_contas']) ?>">Ver contas</p>
                                 <?php endif; ?>
                             </div>
                         </div>
-                        
+
                         <!-- Right Column: Chart -->
                         <div class="bg-[#f2f4f7] rounded-[32px] p-6 flex-1 flex flex-col justify-between min-h-[336px]">
                             <div class="flex justify-between items-start mb-6">
-                                <span class="bg-[#7c5dfa] text-white text-[11px] font-medium px-3 py-1 rounded-lg">Live</span>
+                                <span
+                                    class="bg-[#7c5dfa] text-white text-[11px] font-medium px-3 py-1 rounded-lg">Live</span>
                                 <div class="text-right">
-                                    <h3 class="text-4xl font-light text-[#1a1f36]"><?= formatarMoeda((float) array_sum(array_column($bars, 'valor'))) ?></h3>
+                                    <h3 class="text-4xl font-light text-[#1a1f36]">
+                                        <?= formatarMoeda((float) array_sum(array_column($bars, 'valor'))) ?></h3>
                                     <p class="text-[11px] font-medium text-zinc-500 mt-1">Movimentação Total</p>
                                 </div>
                             </div>
-                            
+
                             <?php if (array_sum(array_column($bars, 'valor')) > 0): ?>
-                            <div class="h-[140px] flex items-end gap-2 mt-auto">
-                                <?php foreach ($bars as $data => $bar):
-                                    // Simulated 2-part bar for aesthetic match
-                                    $heightTop = $bar['valor'] > 0 ? max(10, (int) round(($bar['valor'] / $maxBar) * 60)) : 0;
-                                    $heightBottom = $bar['valor'] > 0 ? max(5, (int) round(($bar['valor'] / $maxBar) * 40)) : 5;
-                                ?>
-                                    <div class="flex-1 flex flex-col items-center justify-end gap-0.5 group relative h-full">
-                                        <!-- Top part (Purple) -->
-                                        <div class="w-full rounded-t-full transition-all duration-300 <?= $bar['valor'] > 0 ? 'bg-[#7c5dfa]' : 'bg-transparent' ?>" 
-                                             style="height:<?= $heightTop ?>%; max-width: 14px;"></div>
-                                        <!-- Bottom part (Greenish) -->
-                                        <div class="w-full rounded-b-full transition-all duration-300 <?= $bar['valor'] > 0 ? 'bg-[#98b8a8]' : 'bg-zinc-300 dark:bg-zinc-700 rounded-full' ?>" 
-                                             style="height:<?= $heightBottom ?>%; max-width: 14px;"></div>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                            <div class="flex justify-between mt-4 px-2">
-                                <span class="text-xs font-medium text-zinc-400">Dia 1</span>
-                                <span class="text-xs font-medium text-zinc-400">Dia <?= date('t') ?></span>
-                            </div>
+                                <div class="h-[140px] flex items-end gap-2 mt-auto">
+                                    <?php foreach ($bars as $data => $bar):
+                                        // Simulated 2-part bar for aesthetic match
+                                        $heightTop = $bar['valor'] > 0 ? max(10, (int) round(($bar['valor'] / $maxBar) * 60)) : 0;
+                                        $heightBottom = $bar['valor'] > 0 ? max(5, (int) round(($bar['valor'] / $maxBar) * 40)) : 5;
+                                        ?>
+                                        <div
+                                            class="flex-1 flex flex-col items-center justify-end gap-0.5 group relative h-full">
+                                            <!-- Top part (Purple) -->
+                                            <div class="w-full rounded-t-full transition-all duration-300 <?= $bar['valor'] > 0 ? 'bg-[#7c5dfa]' : 'bg-transparent' ?>"
+                                                style="height:<?= $heightTop ?>%; max-width: 14px;"></div>
+                                            <!-- Bottom part (Greenish) -->
+                                            <div class="w-full rounded-b-full transition-all duration-300 <?= $bar['valor'] > 0 ? 'bg-[#98b8a8]' : 'bg-zinc-300 dark:bg-zinc-700 rounded-full' ?>"
+                                                style="height:<?= $heightBottom ?>%; max-width: 14px;"></div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                                <div class="flex justify-between mt-4 px-2">
+                                    <span class="text-xs font-medium text-zinc-400">Dia 1</span>
+                                    <span class="text-xs font-medium text-zinc-400">Dia <?= date('t') ?></span>
+                                </div>
                             <?php else: ?>
-                                <div class="h-full flex items-center justify-center opacity-50 text-sm font-bold text-zinc-500">Sem dados no período</div>
+                                <div
+                                    class="h-full flex items-center justify-center opacity-50 text-sm font-bold text-zinc-500">
+                                    Sem dados no período</div>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -317,10 +483,12 @@ include __DIR__ . '/includes/layout/head.php';
                 <!-- Spending By Category -->
                 <div class="bg-[#212936] rounded-[32px] p-6 relative overflow-hidden">
                     <div class="flex justify-between items-start mb-6">
-                        <h2 class="text-xl font-medium tracking-tight text-white/90">Spending by Category</h2>
-                        <span class="bg-white/10 hover:bg-white/20 cursor-pointer transition-colors text-white/60 px-4 py-1.5 rounded-full text-xs font-medium flex items-center gap-1">Filtro <i data-lucide="chevron-down" style="width:12px;height:12px;"></i></span>
+                        <h2 class="text-xl font-medium tracking-tight text-white/90">Despesa por Categoria</h2>
+                        <span
+                            class="bg-white/10 hover:bg-white/20 cursor-pointer transition-colors text-white/60 px-4 py-1.5 rounded-full text-xs font-medium flex items-center gap-1">Filtro
+                            <i data-lucide="chevron-down" style="width:12px;height:12px;"></i></span>
                     </div>
-                    
+
                     <div class="flex items-center justify-center py-6">
                         <?php
                         $radius = 70;
@@ -330,10 +498,10 @@ include __DIR__ . '/includes/layout/head.php';
                         $gap = 12; // Gap between segments
                         ?>
                         <svg width="240" height="240" viewBox="0 0 200 200" style="transform: rotate(-90deg);">
-                            <?php 
+                            <?php
                             if (count($gastosPorCategoria) > 0) {
                                 $i = 0;
-                                foreach($gastosPorCategoria as $gasto): 
+                                foreach ($gastosPorCategoria as $gasto):
                                     $pct = ($gasto['total'] / $totalGastosChart);
                                     $dash = $pct * $circumference;
                                     $color = $colors[$i % count($colors)];
@@ -341,15 +509,20 @@ include __DIR__ . '/includes/layout/head.php';
                                         $visibleDash = $dash - $gap;
                                         // Draw segment
                                         ?>
-                                        <circle cx="100" cy="100" r="<?= $radius ?>" fill="none" stroke="<?= $color ?>" stroke-width="26" stroke-linecap="round" stroke-dasharray="<?= $visibleDash ?> <?= $circumference ?>" stroke-dashoffset="<?= -$offset ?>" class="transition-all duration-700 ease-out" />
+                                        <circle cx="100" cy="100" r="<?= $radius ?>" fill="none" stroke="<?= $color ?>"
+                                            stroke-width="26" stroke-linecap="round"
+                                            stroke-dasharray="<?= $visibleDash ?> <?= $circumference ?>"
+                                            stroke-dashoffset="<?= -$offset ?>" class="transition-all duration-700 ease-out" />
                                         <?php
-                                        
+
                                         // Text positioning
                                         $midAngle = (($offset + ($visibleDash / 2)) / $circumference) * 2 * pi();
                                         $textX = 100 + ($radius * cos($midAngle));
                                         $textY = 100 + ($radius * sin($midAngle));
                                         ?>
-                                        <text x="<?= $textX ?>" y="<?= $textY ?>" fill="rgba(0,0,0,0.4)" font-size="9" font-weight="700" text-anchor="middle" dominant-baseline="middle" transform="rotate(90, <?= $textX ?>, <?= $textY ?>)">
+                                        <text x="<?= $textX ?>" y="<?= $textY ?>" fill="rgba(0,0,0,0.4)" font-size="9"
+                                            font-weight="700" text-anchor="middle" dominant-baseline="middle"
+                                            transform="rotate(90, <?= $textX ?>, <?= $textY ?>)">
                                             <?= round($pct * 100) ?>%
                                         </text>
                                         <?php
@@ -359,20 +532,24 @@ include __DIR__ . '/includes/layout/head.php';
                                 endforeach;
                             } else {
                                 ?>
-                                <circle cx="100" cy="100" r="<?= $radius ?>" fill="none" stroke="#ffffff10" stroke-width="26" stroke-linecap="round" />
+                                <circle cx="100" cy="100" r="<?= $radius ?>" fill="none" stroke="#ffffff10"
+                                    stroke-width="26" stroke-linecap="round" />
                                 <?php
                             }
                             ?>
                         </svg>
                     </div>
-                    
+
                     <div class="flex flex-wrap justify-center gap-4 mt-2 px-2 pb-2">
-                        <?php $i=0; foreach($gastosPorCategoria as $gasto): $color = $colors[$i % count($colors)]; ?>
-                        <div class="flex items-center gap-1.5">
-                            <div class="w-3 h-3 rounded-full" style="background: <?= $color ?>"></div>
-                            <p class="text-[11px] font-medium text-white/70 capitalize"><?= htmlspecialchars($gasto['categoria']) ?></p>
-                        </div>
-                        <?php $i++; endforeach; ?>
+                        <?php $i = 0;
+                        foreach ($gastosPorCategoria as $gasto):
+                            $color = $colors[$i % count($colors)]; ?>
+                            <div class="flex items-center gap-1.5">
+                                <div class="w-3 h-3 rounded-full" style="background: <?= $color ?>"></div>
+                                <p class="text-[11px] font-medium text-white/70 capitalize">
+                                    <?= htmlspecialchars($gasto['categoria']) ?></p>
+                            </div>
+                            <?php $i++; endforeach; ?>
                     </div>
                 </div>
             </div>
@@ -382,20 +559,23 @@ include __DIR__ . '/includes/layout/head.php';
                 <!-- Savings / Pendentes -->
                 <div class="bento-card bento-dark h-[300px]">
                     <h2 class="text-lg font-bold mb-6">Painel de Pendências</h2>
-                    
+
                     <div class="grid grid-cols-2 gap-4 h-full pb-8">
                         <div class="bento-child-blue">
                             <div>
-                                <h3 class="text-lg font-bold leading-tight">A Receber<br><span class="font-normal opacity-80 text-sm">Neste mês</span></h3>
+                                <h3 class="text-lg font-bold leading-tight">A Receber<br><span
+                                        class="font-normal opacity-80 text-sm">Neste mês</span></h3>
                             </div>
                             <div>
                                 <p class="text-4xl font-light tracking-tight"><?= $qtdReceber ?: '0' ?></p>
-                                <p class="text-sm font-bold mt-2 opacity-90"><?= formatarMoeda((float) $receberMes) ?></p>
+                                <p class="text-sm font-bold mt-2 opacity-90"><?= formatarMoeda((float) $receberMes) ?>
+                                </p>
                             </div>
                         </div>
                         <div class="bento-child-green">
                             <div>
-                                <h3 class="text-lg font-bold leading-tight">A Pagar<br><span class="font-normal opacity-80 text-sm">Neste mês</span></h3>
+                                <h3 class="text-lg font-bold leading-tight">A Pagar<br><span
+                                        class="font-normal opacity-80 text-sm">Neste mês</span></h3>
                             </div>
                             <div>
                                 <p class="text-4xl font-light tracking-tight"><?= $qtdPagar ?: '0' ?></p>
@@ -409,7 +589,8 @@ include __DIR__ . '/includes/layout/head.php';
                 <div class="bento-card bento-light flex-1">
                     <div class="flex justify-between items-start mb-8">
                         <h2 class="text-lg font-bold">Vencimentos Próximos</h2>
-                        <span class="bg-[#6a5ff6] text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase">Atenção</span>
+                        <span
+                            class="bg-[#6a5ff6] text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase">Atenção</span>
                     </div>
 
                     <div>
@@ -427,32 +608,37 @@ include __DIR__ . '/includes/layout/head.php';
                         usort($listaUnica, fn($a, $b) => strtotime($a['vencimento']) - strtotime($b['vencimento']));
                         $listaUnica = array_slice($listaUnica, 0, 5);
                         ?>
-                        
-                        <?php if(empty($listaUnica)): ?>
+
+                        <?php if (empty($listaUnica)): ?>
                             <div class="py-10 text-center opacity-50 font-bold">Nenhum vencimento próximo.</div>
                         <?php else: ?>
                             <?php foreach ($listaUnica as $c): ?>
-                            <div class="transaction-item group">
-                                <div class="flex items-center gap-4 min-w-0">
-                                    <div class="transaction-icon <?= $c['tipo'] === 'receber' ? 'bg-[#a4c9b3]/20 text-[#243b2f] dark:text-[#a4c9b3]' : 'bg-red-500/10 text-red-600' ?>">
-                                        <i data-lucide="<?= $c['tipo'] === 'receber' ? 'arrow-down-to-line' : 'arrow-up-right' ?>" class="w-5 h-5"></i>
+                                <div class="transaction-item group">
+                                    <div class="flex items-center gap-4 min-w-0">
+                                        <div
+                                            class="transaction-icon <?= $c['tipo'] === 'receber' ? 'bg-[#a4c9b3]/20 text-[#243b2f] dark:text-[#a4c9b3]' : 'bg-red-500/10 text-red-600' ?>">
+                                            <i data-lucide="<?= $c['tipo'] === 'receber' ? 'arrow-down-to-line' : 'arrow-up-right' ?>"
+                                                class="w-5 h-5"></i>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="font-bold text-sm truncate"><?= sanitizar($c['descricao']) ?></p>
+                                            <p class="text-[11px] font-bold opacity-50 uppercase tracking-wide mt-0.5">
+                                                <?= $c['vencimento'] < $hoje ? '<span class="text-red-500">Vencido</span>' : formatarData($c['vencimento']) ?>
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div class="min-w-0">
-                                        <p class="font-bold text-sm truncate"><?= sanitizar($c['descricao']) ?></p>
-                                        <p class="text-[11px] font-bold opacity-50 uppercase tracking-wide mt-0.5">
-                                            <?= $c['vencimento'] < $hoje ? '<span class="text-red-500">Vencido</span>' : formatarData($c['vencimento']) ?>
-                                        </p>
-                                    </div>
+                                    <p
+                                        class="font-extrabold text-base whitespace-nowrap pl-4 <?= $c['tipo'] === 'receber' ? 'text-[#10b981]' : '' ?>">
+                                        <?= $c['tipo'] === 'receber' ? '+' : '-' ?>        <?= formatarMoeda((float) $c['valor']) ?>
+                                    </p>
                                 </div>
-                                <p class="font-extrabold text-base whitespace-nowrap pl-4 <?= $c['tipo'] === 'receber' ? 'text-[#10b981]' : '' ?>">
-                                    <?= $c['tipo'] === 'receber' ? '+' : '-' ?><?= formatarMoeda((float) $c['valor']) ?>
-                                </p>
-                            </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
-                    
-                    <a href="<?= raizUrl('/financeiro/lancamentos.php') ?>" class="block w-full text-center py-4 mt-4 text-xs font-bold uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">Ver todos</a>
+
+                    <a href="<?= raizUrl('/financeiro/lancamentos.php') ?>"
+                        class="block w-full text-center py-4 mt-4 text-xs font-bold uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">Ver
+                        todos</a>
                 </div>
             </div>
         </div>
