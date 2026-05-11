@@ -368,6 +368,7 @@ include __DIR__ . '/includes/layout/head.php';
                 align-items: center;
                 justify-content: center;
             }
+        </style>
 
         <?php include __DIR__ . '/includes/layout/top_nav.php'; ?>
 
