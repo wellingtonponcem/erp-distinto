@@ -388,21 +388,21 @@ include __DIR__ . '/includes/layout/head.php';
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <a href="<?= raizUrl('/gerenciamento/clientes.php') ?>" class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm group hover:bg-zinc-900 dark:hover:bg-white transition-all">
-                <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-400 transition-colors">Clientes cadastrados</p>
-                <p class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors"><?= $crmResumo['total_clientes'] ?? 0 ?></p>
+            <a href="<?= raizUrl('/gerenciamento/clientes.php') ?>" class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] p-5 shadow-sm group hover:bg-zinc-900 dark:hover:bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/20">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400 transition-colors">Clientes cadastrados</p>
+                <p class="mt-4 text-3xl font-black text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors"><?= $crmResumo['total_clientes'] ?? 0 ?></p>
             </a>
-            <a href="<?= raizUrl('/gerenciamento/fornecedores.php') ?>" class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm group hover:bg-zinc-900 dark:hover:bg-white transition-all">
-                <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-400 transition-colors">Fornecedores cadastrados</p>
-                <p class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors"><?= $crmResumo['total_fornecedores'] ?? 0 ?></p>
+            <a href="<?= raizUrl('/gerenciamento/fornecedores.php') ?>" class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] p-5 shadow-sm group hover:bg-zinc-900 dark:hover:bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/20">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400 transition-colors">Fornecedores cadastrados</p>
+                <p class="mt-4 text-3xl font-black text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors"><?= $crmResumo['total_fornecedores'] ?? 0 ?></p>
             </a>
-            <a href="<?= raizUrl('/gerenciamento/oportunidades.php') ?>" class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm group hover:bg-zinc-900 dark:hover:bg-white transition-all">
-                <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-400 transition-colors">Oportunidades abertas</p>
-                <p class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors"><?= $crmResumo['oportunidades_abertas'] ?? 0 ?></p>
+            <a href="<?= raizUrl('/gerenciamento/oportunidades.php') ?>" class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] p-5 shadow-sm group hover:bg-zinc-900 dark:hover:bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/20">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400 transition-colors">Oportunidades abertas</p>
+                <p class="mt-4 text-3xl font-black text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors"><?= $crmResumo['oportunidades_abertas'] ?? 0 ?></p>
             </a>
-            <a href="<?= raizUrl('/gerenciamento/propostas.php') ?>" class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm group hover:bg-zinc-900 dark:hover:bg-white transition-all">
-                <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-400 transition-colors">Total de Propostas</p>
-                <p class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors"><?= $crmResumo['total_propostas'] ?? 0 ?></p>
+            <a href="<?= raizUrl('/gerenciamento/propostas.php') ?>" class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] p-5 shadow-sm group hover:bg-zinc-900 dark:hover:bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/20">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400 transition-colors">Total de Propostas</p>
+                <p class="mt-4 text-3xl font-black text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors"><?= $crmResumo['total_propostas'] ?? 0 ?></p>
             </a>
         </div>
 
@@ -415,30 +415,27 @@ include __DIR__ . '/includes/layout/head.php';
                 <span class="text-xs uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">CRM</span>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-                <a href="<?= raizUrl('/gerenciamento/oportunidades.php?etapa=novo') ?>" class="bg-zinc-50 dark:bg-zinc-950/80 rounded-3xl p-4 group hover:bg-zinc-900 dark:hover:bg-white transition-all">
-                    <p class="text-[11px] uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400">Novo</p>
-                    <p class="mt-3 text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black"><?= $crmPipeline['novo'] ?? 0 ?></p>
+                <?php 
+                $etapas = [
+                    'novo' => ['label' => 'Novo', 'color' => 'zinc'],
+                    'qualificado' => ['label' => 'Qualificado', 'color' => 'zinc'],
+                    'proposta' => ['label' => 'Proposta', 'color' => 'zinc'],
+                    'negociacao' => ['label' => 'Negociação', 'color' => 'zinc'],
+                    'ganha' => ['label' => 'Ganha', 'color' => 'zinc'],
+                    'perdida' => ['label' => 'Perdida', 'color' => 'zinc'],
+                ];
+                foreach ($etapas as $key => $info):
+                ?>
+                <a href="<?= raizUrl('/gerenciamento/oportunidades.php?etapa=' . $key) ?>" 
+                   class="relative bg-zinc-50 dark:bg-zinc-950/40 border border-transparent dark:border-white/5 rounded-[2rem] p-5 group hover:bg-zinc-900 dark:hover:bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/20 overflow-hidden">
+                    
+                    <p class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400 transition-colors relative z-10"><?= $info['label'] ?></p>
+                    <p class="mt-4 text-3xl font-black text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black transition-all relative z-10"><?= $crmPipeline[$key] ?? 0 ?></p>
+                    
+                    <!-- Efeito de brilho sutil no hover -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 </a>
-                <a href="<?= raizUrl('/gerenciamento/oportunidades.php?etapa=qualificado') ?>" class="bg-zinc-50 dark:bg-zinc-950/80 rounded-3xl p-4 group hover:bg-zinc-900 dark:hover:bg-white transition-all">
-                    <p class="text-[11px] uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400">Qualificado</p>
-                    <p class="mt-3 text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black"><?= $crmPipeline['qualificado'] ?? 0 ?></p>
-                </a>
-                <a href="<?= raizUrl('/gerenciamento/oportunidades.php?etapa=proposta') ?>" class="bg-zinc-50 dark:bg-zinc-950/80 rounded-3xl p-4 group hover:bg-zinc-900 dark:hover:bg-white transition-all">
-                    <p class="text-[11px] uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400">Proposta</p>
-                    <p class="mt-3 text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black"><?= $crmPipeline['proposta'] ?? 0 ?></p>
-                </a>
-                <a href="<?= raizUrl('/gerenciamento/oportunidades.php?etapa=negociacao') ?>" class="bg-zinc-50 dark:bg-zinc-950/80 rounded-3xl p-4 group hover:bg-zinc-900 dark:hover:bg-white transition-all">
-                    <p class="text-[11px] uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400">Negociação</p>
-                    <p class="mt-3 text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black"><?= $crmPipeline['negociacao'] ?? 0 ?></p>
-                </a>
-                <a href="<?= raizUrl('/gerenciamento/oportunidades.php?etapa=ganha') ?>" class="bg-zinc-50 dark:bg-zinc-950/80 rounded-3xl p-4 group hover:bg-zinc-900 dark:hover:bg-white transition-all">
-                    <p class="text-[11px] uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400">Ganha</p>
-                    <p class="mt-3 text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black"><?= $crmPipeline['ganha'] ?? 0 ?></p>
-                </a>
-                <a href="<?= raizUrl('/gerenciamento/oportunidades.php?etapa=perdida') ?>" class="bg-zinc-50 dark:bg-zinc-950/80 rounded-3xl p-4 group hover:bg-zinc-900 dark:hover:bg-white transition-all">
-                    <p class="text-[11px] uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400">Perdida</p>
-                    <p class="mt-3 text-2xl font-bold text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black"><?= $crmPipeline['perdida'] ?? 0 ?></p>
-                </a>
+                <?php endforeach; ?>
             </div>
         </div>
 
