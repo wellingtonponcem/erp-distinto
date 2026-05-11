@@ -25,6 +25,10 @@ $tituloPagina = "Gestão de Usuários";
 require_once __DIR__ . '/../includes/layout/head.php';
 ?>
 
+<style>
+[x-cloak] { display: none !important; }
+</style>
+
 <div id="app-wrapper" x-data="usuariosApp()">
     <?php require_once __DIR__ . '/../includes/layout/sidebar.php'; ?>
 
@@ -101,26 +105,27 @@ require_once __DIR__ . '/../includes/layout/head.php';
         </div>
 
         <!-- Modal -->
-        <template x-if="modal.aberto">
-            <div class="fixed inset-0 z-[1000] flex items-center justify-center p-6 bg-black/90 backdrop-blur-md"
+        <div x-show="modalAberto" 
+             class="fixed inset-0 z-[1000] flex items-center justify-center p-6 bg-black/90 backdrop-blur-md"
+             x-cloak
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100">
+            
+            <div class="bg-[#0c0c0c] border border-white/5 rounded-[2.5rem] w-full max-w-lg overflow-hidden shadow-2xl"
+                 @click.away="modalAberto = false"
                  x-transition:enter="ease-out duration-300"
-                 x-transition:enter-start="opacity-0"
-                 x-transition:enter-end="opacity-100">
+                 x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                 x-transition:enter-end="opacity-100 scale-100 translate-y-0">
                 
-                <div class="bg-[#0c0c0c] border border-white/5 rounded-[2.5rem] w-full max-w-lg overflow-hidden shadow-2xl"
-                     @click.away="modal.aberto = false"
-                     x-transition:enter="ease-out duration-300"
-                     x-transition:enter-start="opacity-0 scale-95 translate-y-4"
-                     x-transition:enter-end="opacity-100 scale-100 translate-y-0">
-                    
-                    <div class="px-8 py-6 border-b border-white/5 flex items-center justify-between">
-                        <h2 class="text-lg font-bold text-white" x-text="form.id ? 'Editar Usuário' : 'Novo Integrante'"></h2>
-                        <button @click="modal.aberto = false" class="text-zinc-500 hover:text-white transition-colors">
-                            <i data-lucide="x" class="w-6 h-6"></i>
-                        </button>
-                    </div>
+                <div class="px-8 py-6 border-b border-white/5 flex items-center justify-between">
+                    <h2 class="text-lg font-bold text-white" x-text="form.id ? 'Editar Usuário' : 'Novo Integrante'"></h2>
+                    <button @click="modalAberto = false" class="text-zinc-500 hover:text-white transition-colors">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
 
-                    <form @submit.prevent="salvar()" class="p-8 space-y-6">
+                <form @submit.prevent="salvar()" class="p-8 space-y-6">
                         <div class="space-y-2">
                             <label class="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Nome Completo</label>
                             <input class="w-full bg-zinc-900 border border-white/5 rounded-2xl px-5 py-4 text-sm text-white focus:border-zinc-500 outline-none transition-all" 
@@ -149,7 +154,7 @@ require_once __DIR__ . '/../includes/layout/head.php';
                         </div>
 
                         <div class="pt-4 flex gap-4">
-                            <button type="button" @click="modal.aberto = false" class="flex-1 h-14 rounded-2xl font-bold text-zinc-500 hover:bg-white/5 transition-all">
+                            <button type="button" @click="modalAberto = false" class="flex-1 h-14 rounded-2xl font-bold text-zinc-500 hover:bg-white/5 transition-all">
                                 Cancelar
                             </button>
                             <button type="submit" :disabled="salvando" 
@@ -163,7 +168,7 @@ require_once __DIR__ . '/../includes/layout/head.php';
                     </form>
                 </div>
             </div>
-        </template>
+        </div>
     </main>
 </div>
 
@@ -172,7 +177,7 @@ function usuariosApp() {
     return {
         lista: [],
         salvando: false,
-        modal: { aberto: false },
+        modalAberto: false,
         form: { id: null, nome: '', email: '', senha: '', nivel: 0 },
 
         async init() {
@@ -192,7 +197,7 @@ function usuariosApp() {
 
         abrirModal(u = null) {
             this.form = u ? { ...u, senha: '' } : { id: null, nome: '', email: '', senha: '', nivel: 0 };
-            this.modal.aberto = true;
+            this.modalAberto = true;
             this.$nextTick(() => lucide.createIcons());
         },
 
@@ -209,7 +214,7 @@ function usuariosApp() {
                 const res = await r.json();
                 if (r.ok) {
                     await this.carregar();
-                    this.modal.aberto = false;
+                    this.modalAberto = false;
                     // Opcional: mostrar toast
                 } else {
                     alert(res.erro || 'Erro ao salvar');
