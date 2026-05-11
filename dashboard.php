@@ -32,12 +32,26 @@ try {
         (SELECT COUNT(*) FROM clientes) as total_clientes,
         (SELECT COUNT(*) FROM fornecedores) as total_fornecedores,
         (SELECT COUNT(*) FROM oportunidades WHERE etapa NOT IN ('ganha', 'perdida')) as oportunidades_abertas,
-        (SELECT COUNT(*) FROM propostas WHERE oportunidade_id IS NOT NULL) as propostas_com_oportunidade
+        (SELECT COUNT(*) FROM propostas) as total_propostas,
+        (SELECT COUNT(*) FROM propostas WHERE status = 'rascunho') as propostas_rascunho,
+        (SELECT COUNT(*) FROM propostas WHERE status = 'pendente') as propostas_pendentes
     ")->fetch();
 
     foreach ($db->query("SELECT etapa, COUNT(*) as total FROM oportunidades GROUP BY etapa")->fetchAll() as $row) {
         if (isset($crmPipeline[$row['etapa']])) {
             $crmPipeline[$row['etapa']] = $row['total'];
+        }
+    }
+    
+    // Adicionar propostas pendentes que não estão no CRM (opcional, mas ajuda a ver volume)
+    // Se o usuário quer ver no pipeline, 'rascunho' e 'proposta' são os estágios ideais
+    $stmtOrfas = $db->query("SELECT status, COUNT(*) as total FROM propostas WHERE oportunidade_id IS NULL OR oportunidade_id = '' GROUP BY status");
+    foreach ($stmtOrfas->fetchAll() as $row) {
+        if ($row['status'] === 'pendente') {
+            $crmPipeline['proposta'] += $row['total'];
+        }
+        if ($row['status'] === 'rascunho') {
+            $crmPipeline['novo'] += $row['total'];
         }
     }
 } catch (Exception $e) {
@@ -386,8 +400,8 @@ include __DIR__ . '/includes/layout/head.php';
                 <p class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white"><?= $crmResumo['oportunidades_abertas'] ?? 0 ?></p>
             </div>
             <div class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm">
-                <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Propostas ligadas a oportunidades</p>
-                <p class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white"><?= $crmResumo['propostas_com_oportunidade'] ?? 0 ?></p>
+                <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Total de Propostas</p>
+                <p class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white"><?= $crmResumo['total_propostas'] ?? 0 ?></p>
             </div>
         </div>
 
