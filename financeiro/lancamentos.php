@@ -66,6 +66,7 @@ include __DIR__ . '/../includes/layout/head.php';
                     </button>
                     <select class="select" x-model="filtros.conta" style="width:auto; min-width:140px;">
                         <option value="">Todas as contas</option>
+                        <option value="__null__">Sem conta informada</option>
                         <template x-for="c in contas" :key="c.id">
                             <option :value="c.id" x-text="c.nome"></option>
                         </template>
@@ -603,7 +604,13 @@ function lancamentos() {
                 if (this.filtros.tipo   && l.tipo !== this.filtros.tipo) return false;
                 if (this.filtros.status && l.status !== this.filtros.status) return false;
                 if (this.filtros.categoria && l.categoria !== this.filtros.categoria) return false;
-                if (this.filtros.conta && l.conta_id !== this.filtros.conta) return false;
+                if (this.filtros.conta) {
+                    if (this.filtros.conta === '__null__') {
+                        if (l.conta_id && l.conta_id !== '') return false;
+                    } else {
+                        if (l.conta_id !== this.filtros.conta) return false;
+                    }
+                }
                 if (this.filtros.data_inicio && l.vencimento < this.filtros.data_inicio) return false;
                 if (this.filtros.data_fim && l.vencimento > this.filtros.data_fim) return false;
                 if (this.filtros.busca) {
