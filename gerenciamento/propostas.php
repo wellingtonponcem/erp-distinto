@@ -811,11 +811,19 @@ function propostasApp() {
             this.carregandoHistorico = true;
             try {
                 const response = await fetch(`../api/gerenciamento/proposta_historico.php?id=${id}`);
-                this.historico = await response.json();
+                const data = await response.json();
+                if (Array.isArray(data)) {
+                    this.historico = data;
+                } else {
+                    console.error('Erro na API de histórico:', data.erro || 'Resposta inválida');
+                    this.historico = [];
+                }
             } catch (e) {
                 console.error('Erro ao carregar histórico:', e);
+                this.historico = [];
             } finally {
                 this.carregandoHistorico = false;
+                this.$nextTick(() => lucide.createIcons());
             }
         },
 

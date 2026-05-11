@@ -17,9 +17,9 @@ if ($metodo === 'GET') {
     }
 
     $stmt = $db->prepare("
-        SELECT h.*, u.nome as usuario_nome 
+        SELECT h.*, COALESCE(u.nome, 'Sistema/Outro') as usuario_nome 
         FROM propostas_historico h
-        JOIN users u ON h.user_id = u.id
+        LEFT JOIN users u ON h.user_id = u.id
         WHERE h.proposta_id = ?
         ORDER BY h.created_at DESC
     ");
