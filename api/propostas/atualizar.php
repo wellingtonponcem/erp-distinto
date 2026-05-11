@@ -119,9 +119,13 @@ $dadosJson = json_encode([
         'descricao' => $d['adicional_descricao'] ?? ($dadosAntigos['adicional']['descricao'] ?? ''),
         'fornecedor_id' => $d['adicional_fornecedor_id'] ?? ($dadosAntigos['adicional']['fornecedor_id'] ?? '')
     ],
-    'responsavel' => ($d['tipo'] === 'casamento') 
-        ? (($d['contato_tipo'] ?? 'noiva') === 'noivo' ? ($d['nome_noivo'] ?? '') : ($d['nome_noiva'] ?? ''))
-        : ($d['responsavel'] ?? ($dadosAntigos['responsavel'] ?? '')),
+    'responsavel' => contatoResponsavel([
+        'tipo' => $d['tipo'] ?? $propostaAtual['tipo'] ?? '',
+        'contato_tipo' => $d['contato_tipo'] ?? ($dadosAntigos['contato_tipo'] ?? 'noiva'),
+        'nome_noivo' => $d['nome_noivo'] ?? ($dadosAntigos['nome_noivo'] ?? ''),
+        'nome_noiva' => $d['nome_noiva'] ?? ($dadosAntigos['nome_noiva'] ?? ''),
+        'responsavel' => $d['responsavel'] ?? ($dadosAntigos['responsavel'] ?? ''),
+    ]),
     'whatsapp' => $d['whatsapp'] ?? ($dadosAntigos['whatsapp'] ?? ''),
     'is_plural' => $dadosAntigos['is_plural'] ?? false,
     'etapas_ativas' => $d['etapas_ativas'] ?? ($dadosAntigos['etapas_ativas'] ?? []),

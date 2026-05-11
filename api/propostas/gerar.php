@@ -169,6 +169,14 @@ try {
 }
 
 // 5. Salvar no Banco
+$responsavel = contatoResponsavel([
+    'tipo' => $d['tipo'],
+    'contato_tipo' => $d['contato_tipo'] ?? 'noiva',
+    'nome_noivo' => $d['nome_noivo'] ?? '',
+    'nome_noiva' => $d['nome_noiva'] ?? '',
+    'responsavel' => $responsavel,
+]);
+
 $id = gerarId();
 $dadosJson = json_encode([
     'secoes' => $secoes,

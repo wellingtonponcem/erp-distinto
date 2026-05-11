@@ -41,6 +41,22 @@ function classeStatus(string $status): string {
     };
 }
 
+function contatoResponsavel(array $dados): string {
+    $contatoTipo = $dados['contato_tipo'] ?? '';
+    $nomeNoivo = trim($dados['nome_noivo'] ?? '');
+    $nomeNoiva = trim($dados['nome_noiva'] ?? '');
+
+    if ($contatoTipo === 'noivo' && $nomeNoivo !== '') {
+        return $nomeNoivo;
+    }
+
+    if ($contatoTipo === 'noiva' && $nomeNoiva !== '') {
+        return $nomeNoiva;
+    }
+
+    return trim($dados['responsavel'] ?? '');
+}
+
 function labelStatus(string $status): string {
     return match($status) {
         'pago'         => 'Pago',

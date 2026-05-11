@@ -424,7 +424,7 @@ include __DIR__ . '/../includes/layout/head.php';
                                                  <i data-lucide="user" class="w-4 h-4"></i>
                                              </div>
                                              <div class="flex flex-col">
-                                                 <span class="text-sm font-bold text-zinc-300" x-text="getResumoDados().responsavel || selectedProposta.cliente_nome"></span>
+                                                 <span class="text-sm font-bold text-zinc-300" x-text="getResponsavel()"></span>
                                                  <template x-if="getResumoDados().contato_tipo">
                                                      <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full mt-1 inline-block w-fit"
                                                          :class="{
@@ -802,6 +802,20 @@ function propostasApp() {
             }
         },
 
+        getResponsavel() {
+            const dados = this.getResumoDados();
+            if (dados.contato_tipo === 'noivo' && dados.nome_noivo) return dados.nome_noivo;
+            if (dados.contato_tipo === 'noiva' && dados.nome_noiva) return dados.nome_noiva;
+            return dados.responsavel || this.selectedProposta.cliente_nome;
+        },
+
+        getResponsavelFromDados(dados, proposta) {
+            if (!dados) return proposta ? proposta.cliente_nome : '';
+            if (dados.contato_tipo === 'noivo' && dados.nome_noivo) return dados.nome_noivo;
+            if (dados.contato_tipo === 'noiva' && dados.nome_noiva) return dados.nome_noiva;
+            return dados.responsavel || (proposta ? proposta.cliente_nome : '');
+        },
+
         // Histórico / CRM
         historico: [],
         novaNota: '',
@@ -1029,7 +1043,7 @@ function propostasApp() {
             } catch (e) {
                 // Fallback direto se a IA falhar
                 const dadosF = JSON.parse(proposta.dados_json || '{}');
-                const nomeF = dadosF.responsavel || proposta.cliente_nome;
+                const nomeF = this.getResponsavelFromDados(dadosF, proposta);
                 const primeiroNome = nomeF.split(' ')[0];
                 const link = `<?= APP_URL ?>/p/${proposta.slug}`;
                 const fallback = `Oi, ${primeiroNome}! Tudo bem?\n\nAcabei de subir o material do ${proposta.titulo} aqui no sistema. Deixei tudo bem visual pra você conseguir enxergar o projeto ganhando forma, exatamente como a gente conversou.\n\nDá uma olhada aqui:\n👉 ${link}`;
