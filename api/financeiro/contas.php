@@ -66,6 +66,34 @@ switch ($metodo) {
     case 'PUT':
         $d = lerCorpo();
         if (empty($d['id'])) responderJson(['erro' => 'ID obrigatório'], 422);
+
+        $ajuste_saldo = isset($d['ajuste_saldo']) ? (float)$d['ajuste_saldo'] : 0;
+        $tipo_ajuste = $d['tipo_ajuste'] ?? 'lancamento';
+
+        if ($ajuste_saldo != 0) {
+            if ($tipo_ajuste === 'inicial') {
+                $d['saldo_inicial'] = (float)($d['saldo_inicial'] ?? 0) + $ajuste_saldo;
+            } else if ($tipo_ajuste === 'lancamento') {
+                $idLanc = gerarId();
+                $tipoLanc = $ajuste_saldo > 0 ? 'receber' : 'pagar';
+                $valorAbs = abs($ajuste_saldo);
+                $hoje = date('Y-m-d');
+                $stmtLanc = $db->prepare("
+                    INSERT INTO lancamentos 
+                    (id, tipo, descricao, valor, valor_pago, vencimento, status, categoria, conta_id)
+                    VALUES (?, ?, ?, ?, ?, ?, 'pago', 'outros', ?)
+                ");
+                $stmtLanc->execute([
+                    $idLanc,
+                    $tipoLanc,
+                    'Ajuste de Saldo',
+                    $valorAbs,
+                    $valorAbs,
+                    $hoje,
+                    $d['id']
+                ]);
+            }
+        }
         
         $stmt = $db->prepare("UPDATE contas_bancarias SET nome=?, saldo_inicial=?, cor=? WHERE id=?");
         $stmt->execute([

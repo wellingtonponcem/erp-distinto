@@ -68,10 +68,26 @@ require_once __DIR__ . '/../includes/layout/head.php';
                         <input class="input" x-model="form.nome" required placeholder="Ex: C6 Bank, Itaú PJ...">
                     </div>
                     
-                    <div class="mb-4">
-                        <label class="label">Saldo Inicial (Ajuste)</label>
-                        <input class="input" type="number" step="0.01" x-model="form.saldo_inicial" placeholder="0.00">
-                        <p class="text-[10px] text-gray-500 mt-1">O saldo atual será calculado somando este valor aos lançamentos efetivados.</p>
+                    <div x-show="form.id" class="mb-6 p-4 rounded-xl border border-blue-500/20 bg-blue-500/5">
+                        <label class="label text-blue-400">Ajustar Saldo Atual</label>
+                        <div class="flex gap-2 items-center mb-3">
+                            <input class="input" type="number" step="0.01" x-model.number="novoSaldoAtual" placeholder="Ex: 39.98">
+                        </div>
+                        
+                        <div x-show="diferencaAjuste() !== 0" class="space-y-3 mt-3 p-3 bg-black/20 rounded-lg border border-white/5">
+                            <p class="text-xs text-gray-400">
+                                O saldo atual é <b>R$ <span x-text="form.saldo_atual"></span></b> e o novo será <b>R$ <span x-text="novoSaldoAtual"></span></b>.
+                                A diferença é de <b :class="diferencaAjuste() > 0 ? 'text-green-400' : 'text-red-400'">R$ <span x-text="Math.abs(diferencaAjuste()).toFixed(2)"></span></b>.
+                            </p>
+                            <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                                <input type="radio" x-model="tipoAjuste" value="lancamento" class="accent-blue-500">
+                                <span x-text="diferencaAjuste() > 0 ? 'Lançar como nova Receita (Ajuste)' : 'Lançar como nova Despesa (Ajuste)'"></span>
+                            </label>
+                            <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                                <input type="radio" x-model="tipoAjuste" value="inicial" class="accent-blue-500">
+                                <span>Alterar Saldo Inicial (Retroativo)</span>
+                            </label>
+                        </div>
                     </div>
 
                     <div class="mb-6">
@@ -103,6 +119,8 @@ document.addEventListener('alpine:init', () => {
         modalAberto: false,
         salvando: false,
         form: {},
+        novoSaldoAtual: 0,
+        tipoAjuste: 'lancamento',
         cores: ['#2a2a2a', '#2563eb', '#16a34a', '#d97706', '#dc2626', '#7c3aed', '#db2777'],
 
         async init() {
@@ -118,7 +136,9 @@ document.addEventListener('alpine:init', () => {
         },
 
         abrirModal(conta = null) {
-            this.form = conta ? { ...conta } : { nome: '', saldo_inicial: 0, cor: '#2a2a2a' };
+            this.form = conta ? { ...conta } : { nome: '', saldo_inicial: 0, cor: '#2a2a2a', saldo_atual: 0 };
+            this.novoSaldoAtual = conta ? conta.saldo_atual : 0;
+            this.tipoAjuste = 'lancamento';
             this.modalAberto = true;
             this.$nextTick(() => lucide.createIcons());
         },
@@ -127,10 +147,16 @@ document.addEventListener('alpine:init', () => {
             this.salvando = true;
             try {
                 const metodo = this.form.id ? 'PUT' : 'POST';
+                const payload = { ...this.form };
+                if (this.form.id && this.diferencaAjuste() !== 0) {
+                    payload.ajuste_saldo = this.diferencaAjuste();
+                    payload.tipo_ajuste = this.tipoAjuste;
+                }
+
                 const r = await fetch('<?= raizUrl('/api/financeiro/contas.php') ?>', {
                     method: metodo,
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(this.form)
+                    body: JSON.stringify(payload)
                 });
                 if (r.ok) {
                     await this.carregar();
@@ -157,6 +183,13 @@ document.addEventListener('alpine:init', () => {
 
         formatarMoeda(v) {
             return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v || 0);
+        },
+
+        diferencaAjuste() {
+            if (!this.form.id) return 0;
+            const atual = parseFloat(this.form.saldo_atual) || 0;
+            const novo = parseFloat(this.novoSaldoAtual) || 0;
+            return novo - atual;
         }
     }));
 });
