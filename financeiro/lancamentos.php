@@ -17,226 +17,243 @@ include __DIR__ . '/../includes/layout/head.php';
     <main id="main-content" style="flex:1; padding:28px 32px; overflow-y:auto; max-width:calc(100vw - 240px);">
         <?php include __DIR__ . '/../includes/layout/top_nav.php'; ?>
 
-        <!-- Header -->
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:28px;">
+        <!-- Executive Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-zinc-900/50 border border-white/5 rounded-[2rem] p-6 hover:bg-zinc-900 transition-all group">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+                        <i data-lucide="trending-up" class="w-5 h-5"></i>
+                    </div>
+                    <span class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400">Total a Receber</span>
+                </div>
+                <div class="text-3xl font-black text-white tracking-tight" x-text="formatarMoeda(totalReceber)"></div>
+                <p class="text-[10px] text-zinc-600 mt-2 font-bold uppercase tracking-widest">Saldo previsto em caixa</p>
+            </div>
+
+            <div class="bg-zinc-900/50 border border-white/5 rounded-[2rem] p-6 hover:bg-zinc-900 transition-all group">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center">
+                        <i data-lucide="trending-down" class="w-5 h-5"></i>
+                    </div>
+                    <span class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400">Total a Pagar</span>
+                </div>
+                <div class="text-3xl font-black text-white tracking-tight" x-text="formatarMoeda(totalPagar)"></div>
+                <p class="text-[10px] text-zinc-600 mt-2 font-bold uppercase tracking-widest">Compromissos pendentes</p>
+            </div>
+
+            <div class="bg-white text-black rounded-[2rem] p-6 shadow-xl shadow-white/5 group hover:scale-[1.02] transition-all cursor-pointer" @click="abrirModal()">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-10 h-10 rounded-xl bg-black/5 text-black flex items-center justify-center">
+                        <i data-lucide="plus" class="w-6 h-6"></i>
+                    </div>
+                    <i data-lucide="arrow-up-right" class="w-4 h-4 text-black/40"></i>
+                </div>
+                <div class="text-xl font-black tracking-tight leading-tight">Novo<br>Lançamento</div>
+                <p class="text-[10px] text-black/60 mt-2 font-bold uppercase tracking-widest">Registrar entrada ou saída</p>
+            </div>
+        </div>
+
+        <!-- Header Actions -->
+        <div class="flex items-center justify-between mb-8">
             <div>
-                <h1 style="font-size:22px; font-weight:700; color:#f1f5f9;">Lançamentos</h1>
+                <h1 class="text-2xl font-black text-white tracking-tight">Fluxo de Caixa</h1>
+                <p class="text-zinc-500 text-sm font-medium">Gestão completa de lançamentos e conciliação</p>
             </div>
             <div class="flex items-center gap-3">
                 <input type="file" x-ref="ofxInput" @change="uploadOfx($event)" style="opacity:0; position:absolute; width:1px; height:1px; z-index:-1;" accept=".ofx,.OFX">
                 <input type="file" x-ref="iaInput" @change="lerComprovante($event)" style="opacity:0; position:absolute; width:1px; height:1px; z-index:-1;" accept="image/*">
                 
-                <!-- Botão IA -->
-                <button @click="modalIaAberto = true" 
-                        class="flex items-center gap-2 px-4 py-2.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all text-xs font-bold group"
-                        :disabled="processandoIA">
-                    <template x-if="!processandoIA">
-                        <div class="flex items-center gap-2">
-                            <i data-lucide="sparkles" class="w-4 h-4 group-hover:animate-pulse"></i>
-                            <span>Ler Comprovante (IA)</span>
-                        </div>
-                    </template>
-                    <template x-if="processandoIA">
-                        <div class="flex items-center gap-2">
-                            <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                            <span>Analisando...</span>
-                        </div>
-                    </template>
-                </button>
-
-                <!-- Botão OFX -->
-                <button @click="$refs.ofxInput.click()" 
-                        class="flex items-center gap-2 px-4 py-2.5 rounded-full border border-blue-500/20 bg-blue-500/5 text-blue-500 hover:bg-blue-500 hover:text-white transition-all text-xs font-bold group"
-                        :disabled="uploadingOfx">
-                    <template x-if="!uploadingOfx">
-                        <div class="flex items-center gap-2">
-                            <i data-lucide="file-up" class="w-4 h-4"></i>
-                            <span>Importar OFX</span>
-                        </div>
-                    </template>
-                    <template x-if="uploadingOfx">
-                        <div class="flex items-center gap-2">
-                            <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                            <span>Lendo arquivo...</span>
-                        </div>
-                    </template>
-                </button>
-
-                <!-- Ações em Massa (Aparecem quando selecionado) -->
-                <div x-show="selecionados.length > 0" class="flex items-center gap-2 p-1.5 bg-zinc-900/50 border border-white/5 rounded-full" x-cloak x-transition>
-                    <button @click="alterarStatusSelecionados('pago')" 
-                            class="flex items-center gap-2 px-4 py-2 rounded-full text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest">
-                        <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
-                        Efetivar
+                <div class="flex items-center gap-1 p-1 bg-zinc-900/80 border border-white/5 rounded-full">
+                    <button @click="modalIaAberto = true" 
+                            class="flex items-center gap-2 px-5 py-2 rounded-full text-emerald-500 hover:bg-emerald-500/10 transition-all text-[11px] font-black uppercase tracking-widest group"
+                            :disabled="processandoIA">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5 group-hover:rotate-12 transition-transform"></i>
+                        <span x-show="!processandoIA">Scanner IA</span>
+                        <span x-show="processandoIA">Analisando...</span>
                     </button>
-                    <button @click="alterarStatusSelecionados('pendente')" 
-                            class="flex items-center gap-2 px-4 py-2 rounded-full text-amber-500 hover:bg-amber-500 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest">
-                        <i data-lucide="clock" class="w-3.5 h-3.5"></i>
-                        Pendente
-                    </button>
-                    <button @click="abrirEdicaoMassa()" 
-                            class="flex items-center gap-2 px-4 py-2 rounded-full text-blue-500 hover:bg-blue-500 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest">
-                        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-                        Em Massa
-                    </button>
-                    <button @click="excluirSelecionados()" 
-                            class="flex items-center gap-2 px-4 py-2 rounded-full text-red-500 hover:bg-red-500 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest">
-                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                        Excluir (<span x-text="selecionados.length"></span>)
+                    <div class="w-px h-4 bg-white/5"></div>
+                    <button @click="$refs.ofxInput.click()" 
+                            class="flex items-center gap-2 px-5 py-2 rounded-full text-blue-500 hover:bg-blue-500/10 transition-all text-[11px] font-black uppercase tracking-widest"
+                            :disabled="uploadingOfx">
+                        <i data-lucide="file-up" class="w-3.5 h-3.5"></i>
+                        <span x-show="!uploadingOfx">Importar OFX</span>
+                        <span x-show="uploadingOfx">Lendo...</span>
                     </button>
                 </div>
 
-                <!-- Botão Novo Lançamento -->
-                <button @click="abrirModal()" 
-                        class="flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-full text-xs font-black hover:bg-zinc-200 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-white/5">
-                    <i data-lucide="plus" class="w-4 h-4"></i>
-                    Novo Lançamento
-                </button>
+                <!-- Ações em Massa (Aparecem quando selecionado) -->
+                <div x-show="selecionados.length > 0" class="flex items-center gap-2 p-1 bg-zinc-900 border border-white/10 rounded-full" x-cloak x-transition>
+                    <button @click="alterarStatusSelecionados('pago')" class="px-4 py-2 text-emerald-500 hover:bg-emerald-500/10 rounded-full text-[10px] font-black uppercase tracking-widest">Efetivar</button>
+                    <button @click="excluirSelecionados()" class="px-4 py-2 text-red-500 hover:bg-red-500/10 rounded-full text-[10px] font-black uppercase tracking-widest">Excluir</button>
+                </div>
             </div>
         </div>
 
-        <!-- Filtros -->
-        <div class="card" style="padding:16px 20px; margin-bottom:20px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-            <div style="display:flex; gap:6px;">
-                <button @click="filtros.tipo=''" :class="filtros.tipo==='' ? 'btn-primary' : 'btn-secondary'" style="padding:6px 14px; font-size:13px;">Todos</button>
-                <button @click="filtros.tipo='receber'" :class="filtros.tipo==='receber' ? 'btn-primary' : 'btn-secondary'" style="padding:6px 14px; font-size:13px;">A Receber</button>
-                <button @click="filtros.tipo='pagar'" :class="filtros.tipo==='pagar' ? 'btn-primary' : 'btn-secondary'" style="padding:6px 14px; font-size:13px;">A Pagar</button>
-            </div>
-            <div style="display:flex; gap:6px; flex-wrap:wrap; width:100%;">
-                <input class="input" type="text" x-model="filtros.busca" placeholder="Buscar por descrição ou cliente..." style="flex:1; min-width:200px;">
-                <div style="display:flex; gap:6px;">
-                    <select class="select" x-model="filtros.categoria" style="width:auto; min-width:140px;">
-                        <option value="">Todas as categorias</option>
-                        <template x-for="cat in categoriasDisponiveis" :key="cat">
-                            <option :value="cat" x-text="cat.charAt(0).toUpperCase() + cat.slice(1)"></option>
-                        </template>
-                    </select>
-                    <button class="btn-secondary" @click="abrirGerenciarCategorias()" style="padding:6px 10px;" title="Gerenciar Categorias">
-                        <i data-lucide="settings-2" style="width:15px;height:15px;color:#94a3b8;"></i>
-                    </button>
-                    <select class="select" x-model="filtros.conta" style="width:auto; min-width:140px;">
-                        <option value="">Todas as contas</option>
-                        <option value="__null__">Sem conta informada</option>
-                        <template x-for="c in contas" :key="c.id">
-                            <option :value="c.id" x-text="c.nome"></option>
-                        </template>
-                    </select>
+        <!-- Filters -->
+        <div class="bg-zinc-900/30 border border-white/5 rounded-[2rem] p-4 mb-8 flex flex-col gap-4">
+            <div class="flex items-center justify-between gap-6">
+                <!-- Segmented Control para Tipo -->
+                <div class="flex p-1 bg-black/40 rounded-full border border-white/5">
+                    <button @click="filtros.tipo=''" 
+                            :class="filtros.tipo==='' ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-500 hover:text-zinc-300'"
+                            class="px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">Todos</button>
+                    <button @click="filtros.tipo='receber'" 
+                            :class="filtros.tipo==='receber' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-zinc-500 hover:text-zinc-300'"
+                            class="px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">A Receber</button>
+                    <button @click="filtros.tipo='pagar'" 
+                            :class="filtros.tipo==='pagar' ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'text-zinc-500 hover:text-zinc-300'"
+                            class="px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">A Pagar</button>
                 </div>
-                <select class="select" x-model="filtros.status" style="width:auto; min-width:140px;">
-                    <option value="">Todos os status</option>
-                    <option value="pendente">Pendente</option>
-                    <option value="pago_parcial">Pago Parcial</option>
-                    <option value="pago">Pago</option>
-                    <option value="atrasado">Atrasado</option>
-                    <option value="cancelado">Cancelado</option>
-                </select>
+
+                <!-- Search Bar -->
+                <div class="flex-1 relative group">
+                    <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600 group-focus-within:text-white transition-colors"></i>
+                    <input type="text" x-model="filtros.busca" placeholder="Buscar por descrição, cliente ou categoria..." 
+                           class="w-full bg-black/40 border border-white/5 rounded-full py-3 pl-12 pr-6 text-sm text-white placeholder-zinc-600 outline-none focus:border-white/20 focus:bg-black/60 transition-all">
+                </div>
             </div>
-            <div class="bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800/50" style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; width:100%; padding:10px; border-radius:8px;">
-                <span class="text-slate-500 dark:text-zinc-400" style="font-size:13px; font-weight:600; margin-right:4px;">
-                    <i data-lucide="calendar" style="width:14px;height:14px; display:inline-block; vertical-align:middle; margin-top:-2px;"></i> Período:
-                </span>
+
+            <div class="flex items-center gap-3">
+                <select class="bg-black/40 border border-white/5 rounded-full py-2 px-6 text-[10px] font-black uppercase tracking-widest text-zinc-400 outline-none focus:border-white/20 transition-all appearance-none cursor-pointer" x-model="filtros.categoria">
+                    <option value="">Todas as categorias</option>
+                    <template x-for="cat in categoriasDisponiveis" :key="cat">
+                        <option :value="cat" x-text="cat.toUpperCase()"></option>
+                    </template>
+                </select>
                 
-                <select class="select" x-model="periodoAtivo" @change="mudarModoPeriodo()" style="width:auto; min-width:130px; font-size:13px; padding:6px 10px;">
-                    <option value="mes">Mês</option>
-                    <option value="dia">Dia</option>
-                    <option value="semana">Semana / Específico</option>
-                    <option value="ano">Ano</option>
-                    <option value="tudo">Todo o histórico</option>
+                <select class="bg-black/40 border border-white/5 rounded-full py-2 px-6 text-[10px] font-black uppercase tracking-widest text-zinc-400 outline-none focus:border-white/20 transition-all appearance-none cursor-pointer" x-model="filtros.conta">
+                    <option value="">Todas as contas</option>
+                    <template x-for="c in contas" :key="c.id">
+                        <option :value="c.id" x-text="c.nome.toUpperCase()"></option>
+                    </template>
                 </select>
 
-                <template x-if="['dia', 'mes', 'ano'].includes(periodoAtivo)">
-                    <div class="bg-white dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700" style="display:flex; align-items:center; gap:4px; border-radius:6px; padding:2px;">
-                        <button class="text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200" @click="deslocarPeriodo(-1)" style="padding:4px 8px; border:none; background:transparent; box-shadow:none;">
-                            <i data-lucide="chevron-left" style="width:16px;height:16px;"></i>
-                        </button>
-                        <span class="text-slate-900 dark:text-zinc-100" style="min-width:130px; text-align:center; font-weight:600; font-size:13px;" x-text="labelPeriodo()"></span>
-                        <button class="text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200" @click="deslocarPeriodo(1)" style="padding:4px 8px; border:none; background:transparent; box-shadow:none;">
-                            <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
-                        </button>
-                    </div>
-                </template>
+                <select class="bg-black/40 border border-white/5 rounded-full py-2 px-6 text-[10px] font-black uppercase tracking-widest text-zinc-400 outline-none focus:border-white/20 transition-all appearance-none cursor-pointer" x-model="filtros.status">
+                    <option value="">Todos os status</option>
+                    <option value="pendente">PENDENTE</option>
+                    <option value="pago">PAGO</option>
+                    <option value="atrasado">ATRASADO</option>
+                </select>
 
-                <template x-if="periodoAtivo === 'semana'">
-                    <div style="display:flex; align-items:center; gap:6px;">
-                        <input class="input js-datepicker" type="text" x-model="filtros.data_inicio" style="width:auto; padding:6px 10px; font-size:13px;" placeholder="Início" x-init="flatpickr($el, { locale: 'pt', dateFormat: 'Y-m-d', altInput: true, altFormat: 'd/m/Y' })">
-                        <span style="color:#6b7280; font-size:13px;">até</span>
-                        <input class="input js-datepicker" type="text" x-model="filtros.data_fim" style="width:auto; padding:6px 10px; font-size:13px;" placeholder="Fim" x-init="flatpickr($el, { locale: 'pt', dateFormat: 'Y-m-d', altInput: true, altFormat: 'd/m/Y' })">
-                    </div>
-                </template>
+                <div class="h-4 w-px bg-white/5 mx-2"></div>
+
+                <!-- Seletor de Período Moderno -->
+                <div class="flex items-center gap-1 p-1 bg-black/40 rounded-full border border-white/5">
+                    <button @click="deslocarPeriodo(-1)" class="p-1.5 hover:bg-white/5 rounded-full text-zinc-500 transition-colors"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                    <span class="px-3 text-[10px] font-black uppercase tracking-widest text-white min-w-[120px] text-center" x-text="labelPeriodo()"></span>
+                    <button @click="deslocarPeriodo(1)" class="p-1.5 hover:bg-white/5 rounded-full text-zinc-500 transition-colors"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                </div>
             </div>
         </div>
 
         <!-- Tabela -->
-        <div class="card" style="overflow:hidden;">
-            <div class="table-header" style="display:grid; grid-template-columns:30px 2fr 1fr 1fr 1fr 1fr 100px; align-items:center;">
-                <input type="checkbox" style="accent-color:#111" :checked="todosSelecionados" @change="toggleTodos()">
-                <span>Descrição</span><span>Vencimento</span><span>Valor</span><span>Pago</span><span>Status</span><span style="text-align:right;">Ações</span>
+        <div class="bg-zinc-900/30 border border-white/5 rounded-[2rem] overflow-hidden">
+            <div class="grid grid-cols-[40px_2.5fr_1fr_1fr_1fr_1fr_120px] items-center px-8 py-4 bg-white/5 border-b border-white/5">
+                <input type="checkbox" style="accent-color:#fff" :checked="todosSelecionados" @change="toggleTodos()">
+                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500">Descrição / Cliente</span>
+                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-center">Vencimento</span>
+                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-right">Valor</span>
+                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-right">Valor Pago</span>
+                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-center">Status</span>
+                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-right">Ações</span>
             </div>
 
-            <template x-if="carregando">
-                <div style="padding:40px; text-align:center; color:#4b5563;">Carregando...</div>
-            </template>
-
-            <template x-if="!carregando && lancamentosFiltrados.length === 0">
-                <div style="padding:40px; text-align:center; color:#4b5563;">
-                    <i data-lucide="inbox" style="width:36px;height:36px;margin:0 auto 12px;display:block;opacity:0.4;"></i>
-                    Nenhum lançamento encontrado
-                </div>
-            </template>
-
-            <template x-for="l in lancamentosFiltrados" :key="l.id">
-                <div class="table-row" style="display:grid; grid-template-columns:30px 2fr 1fr 1fr 1fr 1fr 100px; align-items:center;">
-                    <div class="table-cell">
-                        <input type="checkbox" :value="l.id" x-model="selecionados" style="accent-color:#111">
+            <div class="divide-y divide-white/5">
+                <template x-if="carregando">
+                    <div class="divide-y divide-white/5">
+                        <template x-for="i in 6" :key="i">
+                            <div class="grid grid-cols-[40px_2.5fr_1fr_1fr_1fr_1fr_120px] items-center px-8 py-5 animate-pulse">
+                                <div class="w-4 h-4 bg-white/5 rounded"></div>
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-xl bg-white/5"></div>
+                                    <div class="flex-1 space-y-2">
+                                        <div class="h-3 bg-white/5 rounded w-3/4"></div>
+                                        <div class="h-2 bg-white/5 rounded w-1/2"></div>
+                                    </div>
+                                </div>
+                                <div class="h-3 bg-white/5 rounded w-16 mx-auto"></div>
+                                <div class="h-3 bg-white/5 rounded w-20 ml-auto"></div>
+                                <div class="h-3 bg-white/5 rounded w-20 ml-auto"></div>
+                                <div class="h-6 bg-white/5 rounded-full w-24 mx-auto"></div>
+                                <div class="flex justify-end gap-2">
+                                    <div class="w-8 h-8 bg-white/5 rounded-lg"></div>
+                                    <div class="w-8 h-8 bg-white/5 rounded-lg"></div>
+                                </div>
+                            </div>
+                        </template>
                     </div>
-                    <div class="table-cell">
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <span :style="l.tipo==='receber' ? 'color:#10b981' : 'color:#ef4444'">
-                                <i :data-lucide="l.tipo==='receber' ? 'arrow-down-left' : 'arrow-up-right'" style="width:14px;height:14px;"></i>
-                            </span>
-                            <div>
-                                <div style="color:#e2e8f0; font-weight:500; cursor:pointer;" @click="abrirModal(l)" x-text="l.descricao" class="hover-underline"></div>
-                                <div style="display:flex; align-items:center; gap:6px;">
+                </template>
+
+                <template x-if="!carregando && lancamentosFiltrados.length === 0">
+                    <div class="py-24 text-center">
+                        <div class="w-24 h-24 bg-zinc-900/50 rounded-[2rem] flex items-center justify-center mx-auto mb-6 text-zinc-700 border border-white/5">
+                            <i data-lucide="search-x" class="w-12 h-12"></i>
+                        </div>
+                        <h3 class="text-white font-black text-xl tracking-tight mb-2">Sem resultados</h3>
+                        <p class="text-zinc-500 text-sm mb-8 max-w-xs mx-auto font-medium">Não encontramos nada com os filtros aplicados. Tente ajustar sua busca ou limpe os filtros para ver tudo.</p>
+                        <button @click="limparFiltros()" class="inline-flex items-center gap-3 px-8 py-3.5 bg-white text-black rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-zinc-200 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-white/5">
+                            <i data-lucide="filter-x" class="w-4 h-4"></i>
+                            Limpar Filtros
+                        </button>
+                    </div>
+                </template>
+
+                <template x-for="l in lancamentosFiltrados" :key="l.id">
+                    <div class="grid grid-cols-[40px_2.5fr_1fr_1fr_1fr_1fr_120px] items-center px-8 py-5 hover:bg-white/[0.02] transition-colors group">
+                        <div>
+                            <input type="checkbox" :value="l.id" x-model="selecionados" style="accent-color:#fff">
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+                                 :class="l.tipo==='receber' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'">
+                                <i :data-lucide="l.tipo==='receber' ? 'arrow-down-left' : 'arrow-up-right'" class="w-5 h-5"></i>
+                            </div>
+                            <div class="flex-1 overflow-hidden">
+                                <div class="text-sm font-bold text-white truncate cursor-pointer hover:text-emerald-400 transition-colors" @click="abrirModal(l)" x-text="l.descricao"></div>
+                                <div class="flex items-center gap-2 mt-0.5">
                                     <template x-if="l.conta_id">
-                                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-bold border border-gray-700" 
-                                              :style="'border-color:' + (contas.find(c=>c.id===l.conta_id)?.cor || '#333')"
+                                        <span class="text-[8px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 font-black uppercase tracking-widest border border-white/5" 
                                               x-text="contas.find(c=>c.id===l.conta_id)?.nome"></span>
                                     </template>
-                                    <div style="color:#6b7280; font-size:12px;" x-text="clientes.find(c => c.id === l.cliente_id)?.nome || fornecedores.find(f => f.id === l.fornecedor_id)?.nome || l.cliente_fornecedor || l.categoria"></div>
+                                    <span class="text-[10px] text-zinc-500 font-medium truncate" x-text="clientes.find(c => c.id === l.cliente_id)?.nome || fornecedores.find(f => f.id === l.fornecedor_id)?.nome || l.cliente_fornecedor || l.categoria"></span>
                                 </div>
                             </div>
                         </div>
+                        <div class="text-center">
+                            <span class="text-[11px] font-black text-zinc-400 uppercase tracking-tighter" x-text="formatarData(l.vencimento)"></span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-sm font-black tracking-tight" :class="l.tipo==='receber' ? 'text-emerald-500' : 'text-red-500'" x-text="formatarMoeda(l.valor)"></span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-sm font-bold text-zinc-500 tracking-tight" x-text="formatarMoeda(l.valor_pago)"></span>
+                        </div>
+                        <div class="flex justify-center">
+                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border" 
+                                  :class="{
+                                      'bg-emerald-500/10 text-emerald-500 border-emerald-500/20': l.status === 'pago',
+                                      'bg-amber-500/10 text-amber-500 border-amber-500/20': l.status === 'pendente',
+                                      'bg-red-500/10 text-red-500 border-red-500/20': l.status === 'atrasado',
+                                      'bg-zinc-800 text-zinc-400 border-white/5': !['pago', 'pendente', 'atrasado'].includes(l.status)
+                                  }" x-text="labelStatus(l.status)"></span>
+                        </div>
+                        <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button @click="abrirBaixa(l)" class="p-2 hover:bg-emerald-500/10 text-emerald-500 rounded-lg transition-colors" title="Baixar">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                            </button>
+                            <button @click="abrirModal(l)" class="p-2 hover:bg-white/10 text-zinc-400 hover:text-white rounded-lg transition-colors" title="Editar">
+                                <i data-lucide="edit-3" class="w-4 h-4"></i>
+                            </button>
+                            <button @click="excluir(l.id)" class="p-2 hover:bg-red-500/10 text-red-500 rounded-lg transition-colors" title="Excluir">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="table-cell" style="color:#94a3b8;" x-text="formatarData(l.vencimento)"></div>
-                    <div class="table-cell" style="font-weight:600;" :style="l.tipo==='receber' ? 'color:#10b981' : 'color:#ef4444'" x-text="formatarMoeda(l.valor)"></div>
-                    <div class="table-cell" style="color:#94a3b8;" x-text="formatarMoeda(l.valor_pago)"></div>
-                    <div class="table-cell">
-                        <span class="badge" :class="classeStatus(l.status)" x-text="labelStatus(l.status)"></span>
-                    </div>
-                    <div class="table-cell" style="display:flex; gap:6px; justify-content:flex-end;">
-                        <button @click="abrirBaixa(l)" title="Registrar pagamento" style="color:#a78bfa; background:none; border:none; cursor:pointer; padding:4px;">
-                            <i data-lucide="check-circle" style="width:16px;height:16px;"></i>
-                        </button>
-                        <button @click="abrirModal(l)" title="Editar" style="color:#6b7280; background:none; border:none; cursor:pointer; padding:4px;">
-                            <i data-lucide="pencil" style="width:16px;height:16px;"></i>
-                        </button>
-                        <button @click="excluir(l.id)" title="Excluir" style="color:#6b7280; background:none; border:none; cursor:pointer; padding:4px;">
-                            <i data-lucide="trash-2" style="width:16px;height:16px;"></i>
-                        </button>
-                    </div>
-                </div>
-            </template>
+                </template>
+            </div>
         </div>
 
-        <!-- Resumo rodapé -->
-        <div style="display:flex; gap:16px; margin-top:16px; flex-wrap:wrap;">
-            <div style="font-size:13px; color:#6b7280;">
-                Total a receber: <strong style="color:#10b981;" x-text="formatarMoeda(totalReceber)"></strong>
-            </div>
-            <div style="font-size:13px; color:#6b7280;">
-                Total a pagar: <strong style="color:#ef4444;" x-text="formatarMoeda(totalPagar)"></strong>
-            </div>
-        </div>
+        <!-- Resumo rodapé (Removido pois agora está no topo) -->
     </main>
 
     <!-- Modal Novo/Editar Lançamento -->
@@ -1398,6 +1415,22 @@ function lancamentos() {
             this.modalOfxAberto = false;
             toast(`Conciliação concluída! ${sucesso} processados.`, 'sucesso');
             await this.carregarLancamentos();
+        },
+
+        limparFiltros() {
+            this.filtros = {
+                tipo: '',
+                busca: '',
+                categoria: '',
+                conta: '',
+                status: '',
+                data_inicio: '',
+                data_fim: ''
+            };
+            this.periodoAtivo = 'mes';
+            this.referenciaData = new Date().toISOString().split('T')[0];
+            this.aplicarPeriodo();
+            toast('Filtros limpos', 'info');
         },
 
         formatarData(str) { return window.formatarData(str); },
