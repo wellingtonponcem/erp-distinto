@@ -177,7 +177,11 @@ include __DIR__ . '/../includes/layout/head.php';
             <!-- PASTAS (Categorias) - Apenas na raiz ou se não estiver filtrando pasta específica -->
             <template x-if="!currentFolder">
                 <template x-for="f in pastas" :key="f.id">
-                    <div class="item-folder group" 
+                    <div class="item-folder group transition-all duration-500" 
+                         :class="{
+                            'opacity-40 grayscale': countItemsInFolder(f.id) === 0,
+                            'border-white/10 bg-zinc-900/50': countItemsInFolder(f.id) > 5
+                         }"
                          @click="currentFolder = f.id"
                          @contextmenu.stop.prevent="showContextMenu($event, 'folder', f)"
                          @dragover.prevent="dragOver($event)"
@@ -185,12 +189,30 @@ include __DIR__ . '/../includes/layout/head.php';
                          @drop="dropOnFolder($event, f.id)">
                         
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-zinc-300" x-text="f.nome"></span>
-                            <span class="text-[10px] text-zinc-600" x-text="countItemsInFolder(f.id) + ' itens'"></span>
+                            <span class="text-xs font-bold transition-colors" 
+                                  :class="countItemsInFolder(f.id) === 0 ? 'text-zinc-600' : 'text-zinc-300'"
+                                  x-text="f.nome"></span>
+                            <span class="text-[9px] font-black tracking-widest uppercase" 
+                                  :class="countItemsInFolder(f.id) === 0 ? 'text-zinc-700' : 'text-zinc-500'"
+                                  x-text="countItemsInFolder(f.id) + ' ITENS'"></span>
                         </div>
                         
-                        <div class="folder-icon-wrapper">
-                            <i data-lucide="folder" class="w-16 h-16 text-zinc-800 group-hover:text-zinc-700 transition-colors"></i>
+                        <div class="folder-icon-wrapper relative">
+                            <!-- Ícone Dinâmico -->
+                            <i :data-lucide="countItemsInFolder(f.id) === 0 ? 'folder' : (countItemsInFolder(f.id) > 5 ? 'folders' : 'folder-open')" 
+                               class="w-16 h-16 transition-all duration-500"
+                               :class="{
+                                   'text-zinc-900': countItemsInFolder(f.id) === 0,
+                                   'text-zinc-700 group-hover:text-zinc-500': countItemsInFolder(f.id) > 0 && countItemsInFolder(f.id) <= 5,
+                                   'text-white scale-110 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]': countItemsInFolder(f.id) > 5
+                               }"></i>
+                            
+                            <!-- Indicador de Volume p/ pastas cheias -->
+                            <template x-if="countItemsInFolder(f.id) > 5">
+                                <div class="absolute -top-2 -right-2 w-5 h-5 bg-white text-black text-[10px] font-black rounded-full flex items-center justify-center shadow-lg border-2 border-[#050505] animate-bounce">
+                                    <i data-lucide="zap" class="w-2.5 h-2.5"></i>
+                                </div>
+                            </template>
                         </div>
                     </div>
                 </template>
@@ -539,6 +561,10 @@ function propostasApp() {
                 }
                 window.history.pushState({}, '', url);
             });
+
+            this.$watch('propostas', () => {
+                this.$nextTick(() => lucide.createIcons());
+            }, { deep: true });
         },
 
         get filteredItems() {
