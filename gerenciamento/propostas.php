@@ -203,7 +203,10 @@ include __DIR__ . '/../includes/layout/head.php';
                      @dragstart="dragStart($event, p)"
                      @click="window.open(`<?= APP_URL ?>/p/${p.slug}`, '_blank')"
                      @contextmenu.stop.prevent="showContextMenu($event, 'proposal', p)">
-                    
+                    <div class="doc-visual">
+                        <i :data-lucide="p.tipo === 'marketing' ? 'megaphone' : (p.tipo === 'filmmaker' ? 'video' : 'file-text')" 
+                           class="w-10 h-10 opacity-30"></i>
+
                         <!-- Pipeline Progress Bar -->
                         <div class="absolute bottom-2 left-2 right-2 flex flex-col gap-1.5">
                             <div class="flex items-center justify-between px-1">
