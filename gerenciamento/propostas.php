@@ -223,7 +223,7 @@ include __DIR__ . '/../includes/layout/head.php';
                 <div class="item-doc group" 
                      draggable="true" 
                      @dragstart="dragStart($event, p)"
-                     @click="abrirResumo(p)"
+                     @click.stop="abrirResumo(p)"
                      @contextmenu.stop.prevent="showContextMenu($event, 'proposal', p)">
                     <div class="doc-visual">
                         <i :data-lucide="p.tipo === 'marketing' ? 'megaphone' : (p.tipo === 'filmmaker' ? 'video' : 'file-text')" 
@@ -377,13 +377,15 @@ include __DIR__ . '/../includes/layout/head.php';
 
         <!-- Modal Resumo da Proposta -->
         <template x-teleport="body">
-            <template x-if="modalResumoAberto && selectedProposta">
-                <div class="fixed inset-0 z-[2000] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md"
-                    x-transition:enter="ease-out duration-300"
-                    x-transition:enter-start="opacity-0"
-                    x-transition:enter-end="opacity-100"
-                    x-init="$nextTick(() => lucide.createIcons())">
-                    
+            <div x-show="modalResumoAberto" 
+                 class="fixed inset-0 z-[2000] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-cloak
+                 x-init="$watch('modalResumoAberto', v => { if(v) $nextTick(() => lucide.createIcons()) })">
+                
+                <template x-if="selectedProposta">
                     <div class="bg-[#0c0c0c] border border-white/10 rounded-[2.5rem] w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col"
                         @click.away="modalResumoAberto = false"
                         x-transition:enter="ease-out duration-300"
@@ -495,8 +497,8 @@ include __DIR__ . '/../includes/layout/head.php';
                             </button>
                         </div>
                     </div>
-                </div>
-            </template>
+                </template>
+            </div>
         </template>
         <template x-if="showModalNova">
             <div class="fixed inset-0 z-[3000] flex items-center justify-center p-6 bg-black/90 backdrop-blur-md"
