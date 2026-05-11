@@ -49,7 +49,7 @@ if (isset($_GET['deletar'])) {
 }
 
 $clientes = $db->query("SELECT id, nome FROM clientes ORDER BY nome ASC")->fetchAll();
-$oportunidades = $db->query("SELECT o.*, c.nome AS cliente_nome FROM oportunidades o LEFT JOIN clientes c ON c.id = o.cliente_id ORDER BY FIELD(o.etapa, 'novo','qualificado','proposta','negociacao','ganha','perdida'), o.previsao ASC")->fetchAll();
+$oportunidades = $db->query("SELECT o.*, c.nome AS cliente_nome FROM oportunidades o LEFT JOIN clientes c ON c.id = o.cliente_id ORDER BY CASE o.etapa WHEN 'novo' THEN 1 WHEN 'qualificado' THEN 2 WHEN 'proposta' THEN 3 WHEN 'negociacao' THEN 4 WHEN 'ganha' THEN 5 WHEN 'perdida' THEN 6 ELSE 7 END, o.previsao ASC")->fetchAll();
 $tituloPagina = 'CRM • Oportunidades';
 require_once __DIR__ . '/../includes/layout/head.php';
 ?>
