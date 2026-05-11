@@ -21,39 +21,55 @@ include __DIR__ . '/../includes/layout/head.php';
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:28px;">
             <div>
                 <h1 style="font-size:22px; font-weight:700; color:#f1f5f9;">Lançamentos</h1>
-                <p style="font-size:14px; color:#6b7280; margin-top:2px;">Contas a pagar e a receber</p>
             </div>
-            <div style="display:flex; gap:10px;">
+            <div class="flex items-center gap-3">
                 <input type="file" x-ref="ofxInput" @change="uploadOfx($event)" style="opacity:0; position:absolute; width:1px; height:1px; z-index:-1;" accept=".ofx,.OFX">
                 <input type="file" x-ref="iaInput" @change="lerComprovante($event)" style="opacity:0; position:absolute; width:1px; height:1px; z-index:-1;" accept="image/*">
                 
-                <button class="btn-secondary" @click="modalIaAberto = true" style="color:#10b981; border-color:rgba(16,185,129,0.3);" :disabled="processandoIA">
-                    <span x-show="!processandoIA"><i data-lucide="scan-text" style="width:15px;height:15px;"></i> Ler Comprovante (IA)</span>
-                    <span x-show="processandoIA">⏳ Analisando...</span>
+                <!-- Botão IA -->
+                <button @click="modalIaAberto = true" 
+                        class="flex items-center gap-2 px-4 py-2.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all text-xs font-bold group"
+                        :disabled="processandoIA">
+                    <template x-if="!processandoIA">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="sparkles" class="w-4 h-4 group-hover:animate-pulse"></i>
+                            <span>Ler Comprovante (IA)</span>
+                        </div>
+                    </template>
+                    <template x-if="processandoIA">
+                        <div class="flex items-center gap-2">
+                            <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            <span>Analisando...</span>
+                        </div>
+                    </template>
                 </button>
 
-                <button class="btn-secondary" @click="$refs.ofxInput.click()" style="color:#6366f1; border-color:rgba(99,102,241,0.3);" :disabled="uploadingOfx">
-                    <span x-show="!uploadingOfx"><i data-lucide="file-up" style="width:15px;height:15px;"></i> Importar OFX</span>
-                    <span x-show="uploadingOfx">⏳ Lendo arquivo...</span>
+                <!-- Botão OFX -->
+                <button @click="$refs.ofxInput.click()" 
+                        class="flex items-center gap-2 px-4 py-2.5 rounded-full border border-blue-500/20 bg-blue-500/5 text-blue-500 hover:bg-blue-500 hover:text-white transition-all text-xs font-bold group"
+                        :disabled="uploadingOfx">
+                    <template x-if="!uploadingOfx">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="file-up" class="w-4 h-4"></i>
+                            <span>Importar OFX</span>
+                        </div>
+                    </template>
+                    <template x-if="uploadingOfx">
+                        <div class="flex items-center gap-2">
+                            <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            <span>Lendo arquivo...</span>
+                        </div>
+                    </template>
                 </button>
-                <div x-show="selecionados.length > 0" style="display:flex; gap:6px;" x-cloak>
-                    <button class="btn-secondary" @click="alterarStatusSelecionados('pago')" style="color:#10b981; border-color:rgba(16,185,129,0.3);">
-                        <i data-lucide="check-circle" style="width:15px;height:15px;"></i> Efetivar
-                    </button>
-                    <button class="btn-secondary" @click="alterarStatusSelecionados('pendente')" style="color:#f59e0b; border-color:rgba(245,158,11,0.3);">
-                        <i data-lucide="clock" style="width:15px;height:15px;"></i> Pendente
-                    </button>
-                    <button class="btn-secondary" @click="abrirEdicaoMassa()" style="color:#6366f1; border-color:rgba(99,102,241,0.3);">
-                        <i data-lucide="edit-3" style="width:15px;height:15px;"></i> Em Massa
-                    </button>
-                    <button class="btn-secondary" @click="excluirSelecionados()" style="color:#ef4444; border-color:rgba(239,68,68,0.3);">
-                        <i data-lucide="trash-2" style="width:15px;height:15px;"></i> Excluir (<span x-text="selecionados.length"></span>)
-                    </button>
-                </div>
-                <button class="btn-primary" @click="abrirModal()">
-                    <i data-lucide="plus" style="width:15px;height:15px;"></i> Novo Lançamento
+
+                <!-- Botão Novo Lançamento -->
+                <button @click="abrirModal()" 
+                        class="flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-full text-xs font-black hover:bg-zinc-200 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-white/5">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    Novo Lançamento
                 </button>
             </div>
+        </div>
         </div>
 
         <!-- Filtros -->
