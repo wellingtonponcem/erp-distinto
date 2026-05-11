@@ -285,6 +285,23 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                             <label class="label-premium">WhatsApp do Cliente</label>
                             <input type="text" name="whatsapp" class="input" x-model="whatsapp" placeholder="Ex: 27999998888" :disabled="tipoProposta !== 'casamento'">
                         </div>
+                        <div class="form-group">
+                            <label class="label-premium">Vínculo do Contato</label>
+                            <div class="flex gap-4 mt-2">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="contato_tipo" value="noiva" checked class="w-4 h-4 border-zinc-700 text-rose-500 focus:ring-rose-500">
+                                    <span class="text-[10px] font-bold text-zinc-400 uppercase">Noiva</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="contato_tipo" value="noivo" class="w-4 h-4 border-zinc-300 text-blue-500 focus:ring-blue-500">
+                                    <span class="text-[10px] font-bold text-zinc-400 uppercase">Noivo</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="contato_tipo" value="outro" class="w-4 h-4 border-zinc-300 text-zinc-500 focus:ring-zinc-500">
+                                    <span class="text-[10px] font-bold text-zinc-400 uppercase">Outro</span>
+                                </label>
+                            </div>
+                        </div>
                         <div class="form-group" x-show="tipoProposta !== 'casamento'">
                             <label class="label-premium">Forma de Pagamento</label>
                             <select name="forma_pagamento" class="input" :disabled="tipoProposta !== 'casamento'">

@@ -233,6 +233,23 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                                 <input type="text" name="whatsapp_casamento" class="input" x-model="whatsapp" placeholder="Ex: 27999998888">
                                 <input type="hidden" name="whatsapp" :value="whatsapp">
                             </div>
+                            <div class="form-group">
+                                <label class="label-premium">Vínculo do Contato</label>
+                                <div class="flex gap-4 mt-2">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="contato_tipo" value="noiva" x-model="contatoTipo" class="w-4 h-4 border-zinc-700 text-rose-500 focus:ring-rose-500">
+                                        <span class="text-[10px] font-bold text-zinc-400 uppercase">Noiva</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="contato_tipo" value="noivo" x-model="contatoTipo" class="w-4 h-4 border-zinc-300 text-blue-500 focus:ring-blue-500">
+                                        <span class="text-[10px] font-bold text-zinc-400 uppercase">Noivo</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="contato_tipo" value="outro" x-model="contatoTipo" class="w-4 h-4 border-zinc-300 text-zinc-500 focus:ring-zinc-500">
+                                        <span class="text-[10px] font-bold text-zinc-400 uppercase">Outro</span>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -632,6 +649,7 @@ document.addEventListener('alpine:init', () => {
         instagramHandle: '',
         emailContato: '',
         whatsappNumero: '',
+        contatoTipo: 'noiva',
 
         initEdit() {
             // Carregar dados existentes
@@ -639,6 +657,7 @@ document.addEventListener('alpine:init', () => {
             this.secoes = dados.secoes || {};
             this.responsavel = dados.responsavel || '';
             this.whatsapp = dados.whatsapp || '';
+            this.contatoTipo = dados.contato_tipo || 'noiva';
             this.adicional = dados.adicional || { titulo: '', valor: 0, descricao: '', fornecedor_id: '' };
             
             // Mapeia os serviços

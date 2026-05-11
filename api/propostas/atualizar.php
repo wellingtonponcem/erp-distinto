@@ -156,6 +156,7 @@ $dadosJson = json_encode([
     'condicoes_reserva' => $d['condicoes_reserva'] ?? ($dadosAntigos['condicoes_reserva'] ?? ''),
     'condicoes_heritage_cinematic' => $d['condicoes_heritage_cinematic'] ?? ($dadosAntigos['condicoes_heritage_cinematic'] ?? ''),
     'condicoes_essencial' => $d['condicoes_essencial'] ?? ($dadosAntigos['condicoes_essencial'] ?? ''),
+    'contato_tipo' => $d['contato_tipo'] ?? ($dadosAntigos['contato_tipo'] ?? 'noiva'),
     'upgrades' => $d['upgrades'] ?? ($dadosAntigos['upgrades'] ?? ['heritage' => [], 'cinematic' => [], 'essencial' => []]),
 ], JSON_UNESCAPED_UNICODE);
 

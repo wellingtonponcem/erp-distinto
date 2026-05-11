@@ -419,60 +419,123 @@ include __DIR__ . '/../includes/layout/head.php';
                                 <div>
                                     <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4">Dados do Cliente</h3>
                                     <div class="space-y-3">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-8 h-8 rounded-lg bg-zinc-900 flex items-center justify-center text-zinc-500">
-                                                <i data-lucide="user" class="w-4 h-4"></i>
-                                            </div>
-                                            <span class="text-sm font-bold text-zinc-300" x-text="getResumoDados().responsavel || selectedProposta.cliente_nome"></span>
-                                        </div>
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-8 h-8 rounded-lg bg-zinc-900 flex items-center justify-center text-zinc-500">
-                                                <i data-lucide="phone" class="w-4 h-4"></i>
-                                            </div>
-                                            <span class="text-sm font-bold text-zinc-300" x-text="getResumoDados().whatsapp || 'Não informado'"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4">Andamento</h3>
-                                    <div class="bg-zinc-900/50 rounded-2xl p-4 border border-white/5">
-                                        <div class="flex items-center justify-between mb-3">
-                                            <span class="text-xs font-bold text-zinc-400">Progresso</span>
-                                            <span class="text-xs font-black text-white" x-text="selectedProposta.status === 'rascunho' ? '10%' : (selectedProposta.status === 'pendente' ? '50%' : '100%')"></span>
-                                        </div>
-                                        <div class="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
-                                            <div class="h-full bg-emerald-500 transition-all duration-1000"
-                                                :style="`width: ${selectedProposta.status === 'rascunho' ? '10%' : (selectedProposta.status === 'pendente' ? '50%' : '100%')}`"></div>
-                                        </div>
-                                        <p class="text-[10px] text-zinc-500 mt-3 italic" x-text="selectedProposta.status === 'aceita' ? 'Proposta fechada e aprovada pelo cliente.' : 'Aguardando interação do cliente.'"></p>
-                                    </div>
-                                </div>
-                            </div>
+                                         <div class="flex items-center gap-3">
+                                             <div class="w-8 h-8 rounded-lg bg-zinc-900 flex items-center justify-center text-zinc-500">
+                                                 <i data-lucide="user" class="w-4 h-4"></i>
+                                             </div>
+                                             <div class="flex flex-col">
+                                                 <span class="text-sm font-bold text-zinc-300" x-text="getResumoDados().responsavel || selectedProposta.cliente_nome"></span>
+                                                 <template x-if="getResumoDados().contato_tipo">
+                                                     <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full mt-1 inline-block w-fit"
+                                                         :class="{
+                                                             'bg-rose-500/10 text-rose-500': getResumoDados().contato_tipo === 'noiva',
+                                                             'bg-blue-500/10 text-blue-500': getResumoDados().contato_tipo === 'noivo',
+                                                             'bg-zinc-800 text-zinc-500': getResumoDados().contato_tipo === 'outro'
+                                                         }" x-text="getResumoDados().contato_tipo"></span>
+                                                 </template>
+                                             </div>
+                                         </div>
+                                         <div class="flex items-center gap-3">
+                                             <div class="w-8 h-8 rounded-lg bg-zinc-900 flex items-center justify-center text-zinc-500">
+                                                 <i data-lucide="phone" class="w-4 h-4"></i>
+                                             </div>
+                                             <span class="text-sm font-bold text-zinc-300" x-text="getResumoDados().whatsapp || 'Não informado'"></span>
+                                         </div>
+                                     </div>
+                                 </div>
+                                 <div>
+                                     <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4">Andamento</h3>
+                                     <div class="bg-zinc-900/50 rounded-2xl p-4 border border-white/5">
+                                         <div class="flex items-center justify-between mb-3">
+                                             <span class="text-xs font-bold text-zinc-400">Progresso</span>
+                                             <span class="text-xs font-black text-white" x-text="selectedProposta.status === 'rascunho' ? '10%' : (selectedProposta.status === 'pendente' ? '50%' : '100%')"></span>
+                                         </div>
+                                         <div class="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                                             <div class="h-full bg-emerald-500 transition-all duration-1000"
+                                                 :style="`width: ${selectedProposta.status === 'rascunho' ? '10%' : (selectedProposta.status === 'pendente' ? '50%' : '100%')}`"></div>
+                                         </div>
+                                         <p class="text-[10px] text-zinc-500 mt-3 italic" x-text="selectedProposta.status === 'aceita' ? 'Proposta fechada e aprovada pelo cliente.' : 'Aguardando interação do cliente.'"></p>
+                                     </div>
+                                 </div>
+                             </div>
 
-                            <!-- Resumo do que foi proposto -->
-                            <div class="bg-white/5 rounded-3xl p-6 border border-white/5">
-                                <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-6">O que foi proposto</h3>
-                                
-                                <div class="space-y-4">
-                                    <template x-if="getResumoDados().pacotes && getResumoDados().pacotes.length > 0">
-                                        <template x-for="pacote in getResumoDados().pacotes">
-                                            <div class="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
-                                                <div class="flex items-center gap-4">
-                                                    <div class="w-10 h-10 rounded-xl bg-white text-black flex items-center justify-center font-black text-xs" x-text="pacote.nome.charAt(0)"></div>
-                                                    <div>
-                                                        <p class="text-sm font-bold text-white" x-text="pacote.nome"></p>
-                                                        <p class="text-[10px] text-zinc-500" x-text="pacote.itens ? pacote.itens.length + ' itens inclusos' : ''"></p>
-                                                    </div>
-                                                </div>
-                                                <p class="text-sm font-black text-white" x-text="'R$ ' + (parseFloat(pacote.valor) || 0).toLocaleString('pt-BR')"></p>
-                                            </div>
-                                        </template>
-                                    </template>
-                                    <template x-if="!getResumoDados().pacotes || getResumoDados().pacotes.length === 0">
-                                        <p class="text-sm text-zinc-500 italic py-4 text-center">Nenhum pacote detalhado no resumo.</p>
-                                    </template>
-                                </div>
-                            </div>
+                             <!-- Histórico / Timeline -->
+                             <div class="mb-8">
+                                 <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4">Histórico de Interações</h3>
+                                 
+                                 <!-- Input de Nota -->
+                                 <div class="bg-zinc-900/30 border border-white/5 rounded-2xl p-4 mb-4">
+                                     <textarea x-model="novaNota" 
+                                               placeholder="O que aconteceu nesta conversa? (ex: cliente vai pensar, objeção de preço...)"
+                                               class="w-full bg-transparent border-0 focus:ring-0 text-sm text-zinc-300 placeholder:text-zinc-600 resize-none"
+                                               rows="2"></textarea>
+                                     <div class="flex justify-end mt-2">
+                                         <button @click="adicionarHistorico()" 
+                                                 :disabled="!novaNota.trim()"
+                                                 class="px-4 py-1.5 bg-white text-black rounded-lg text-[10px] font-black uppercase tracking-widest disabled:opacity-50 hover:scale-105 transition-all">
+                                             Salvar Registro
+                                         </button>
+                                     </div>
+                                 </div>
+
+                                 <!-- Lista de Eventos -->
+                                 <div class="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                                     <template x-if="carregandoHistorico">
+                                         <div class="flex justify-center py-4">
+                                             <div class="w-6 h-6 border-2 border-white/10 border-t-white rounded-full animate-spin"></div>
+                                         </div>
+                                     </template>
+                                     
+                                     <template x-for="event in historico" :key="event.id">
+                                         <div class="flex gap-4 group">
+                                             <div class="flex flex-col items-center">
+                                                 <div class="w-8 h-8 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center text-zinc-500 group-first:bg-white group-first:text-black transition-colors">
+                                                     <i :data-lucide="event.tipo === 'nota' ? 'file-text' : (event.tipo === 'ligacao' ? 'phone' : 'message-circle')" class="w-3.5 h-3.5"></i>
+                                                 </div>
+                                                 <div class="w-px flex-1 bg-white/5 mt-2 group-last:hidden"></div>
+                                             </div>
+                                             <div class="flex-1 pb-6">
+                                                 <div class="flex items-center justify-between mb-1">
+                                                     <span class="text-[10px] font-bold text-zinc-400" x-text="event.usuario_nome"></span>
+                                                     <span class="text-[9px] text-zinc-600" x-text="new Date(event.created_at).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })"></span>
+                                                 </div>
+                                                 <p class="text-xs text-zinc-300 leading-relaxed" x-text="event.conteudo"></p>
+                                             </div>
+                                         </div>
+                                     </template>
+
+                                     <template x-if="!carregandoHistorico && historico.length === 0">
+                                         <div class="text-center py-6 border border-dashed border-white/5 rounded-3xl">
+                                             <p class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Nenhuma interação registrada ainda.</p>
+                                         </div>
+                                     </template>
+                                 </div>
+                             </div>
+
+                             <!-- Resumo do que foi proposto -->
+                             <div class="bg-white/5 rounded-3xl p-6 border border-white/5">
+                                 <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-6">O que foi proposto</h3>
+                                 
+                                 <div class="space-y-4">
+                                     <template x-if="getResumoDados().pacotes && getResumoDados().pacotes.length > 0">
+                                         <template x-for="pacote in getResumoDados().pacotes">
+                                             <div class="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
+                                                 <div class="flex items-center gap-4">
+                                                     <div class="w-10 h-10 rounded-xl bg-white text-black flex items-center justify-center font-black text-xs" x-text="pacote.nome.charAt(0)"></div>
+                                                     <div>
+                                                         <p class="text-sm font-bold text-white" x-text="pacote.nome"></p>
+                                                         <p class="text-[10px] text-zinc-500" x-text="pacote.itens ? pacote.itens.length + ' itens inclusos' : ''"></p>
+                                                     </div>
+                                                 </div>
+                                                 <p class="text-sm font-black text-white" x-text="'R$ ' + (parseFloat(pacote.valor) || 0).toLocaleString('pt-BR')"></p>
+                                             </div>
+                                         </template>
+                                     </template>
+                                     <template x-if="!getResumoDados().pacotes || getResumoDados().pacotes.length === 0">
+                                         <p class="text-sm text-zinc-500 italic py-4 text-center">Nenhum pacote detalhado no resumo.</p>
+                                     </template>
+                                 </div>
+                             </div>
                         </div>
 
                         <!-- Footer Actions -->
@@ -730,12 +793,6 @@ function propostasApp() {
             this.$nextTick(() => lucide.createIcons());
         },
 
-        abrirResumo(p) {
-            this.selectedProposta = p;
-            this.modalResumoAberto = true;
-            this.$nextTick(() => lucide.createIcons());
-        },
-
         getResumoDados() {
             if (!this.selectedProposta) return {};
             try {
@@ -743,6 +800,55 @@ function propostasApp() {
             } catch (e) {
                 return {};
             }
+        },
+
+        // Histórico / CRM
+        historico: [],
+        novaNota: '',
+        carregandoHistorico: false,
+
+        async fetchHistorico(id) {
+            this.carregandoHistorico = true;
+            try {
+                const response = await fetch(`../api/gerenciamento/proposta_historico.php?id=${id}`);
+                this.historico = await response.json();
+            } catch (e) {
+                console.error('Erro ao carregar histórico:', e);
+            } finally {
+                this.carregandoHistorico = false;
+            }
+        },
+
+        async adicionarHistorico() {
+            if (!this.novaNota.trim()) return;
+            const payload = {
+                proposta_id: this.selectedProposta.id,
+                tipo: 'nota',
+                conteudo: this.novaNota
+            };
+
+            try {
+                const response = await fetch('../api/gerenciamento/proposta_historico.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const res = await response.json();
+                if (res.sucesso) {
+                    this.novaNota = '';
+                    await this.fetchHistorico(this.selectedProposta.id);
+                }
+            } catch (e) {
+                console.error('Erro ao adicionar histórico:', e);
+            }
+        },
+
+        abrirResumo(p) {
+            this.selectedProposta = p;
+            this.modalResumoAberto = true;
+            this.historico = [];
+            this.fetchHistorico(p.id);
+            this.$nextTick(() => lucide.createIcons());
         },
 
         // Drag & Drop
