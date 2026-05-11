@@ -452,18 +452,36 @@ include __DIR__ . '/includes/layout/head.php';
                             <?php if (array_sum(array_column($bars, 'valor')) > 0): ?>
                                 <div class="h-[140px] flex items-end gap-2 mt-auto">
                                     <?php foreach ($bars as $data => $bar):
-                                        // Simulated 2-part bar for aesthetic match
-                                        $heightTop = $bar['valor'] > 0 ? max(10, (int) round(($bar['valor'] / $maxBar) * 60)) : 0;
-                                        $heightBottom = $bar['valor'] > 0 ? max(5, (int) round(($bar['valor'] / $maxBar) * 40)) : 5;
+                                        // Real data calculation
+                                        $heightTop = $maxBar > 0 && $bar['entradas'] > 0 ? max(4, (int) round(($bar['entradas'] / $maxBar) * 100)) : 0;
+                                        $heightBottom = $maxBar > 0 && $bar['saidas'] > 0 ? max(4, (int) round(($bar['saidas'] / $maxBar) * 100)) : 0;
+                                        $isEmpty = $heightTop == 0 && $heightBottom == 0;
+                                        $hasBoth = $heightTop > 0 && $heightBottom > 0;
                                         ?>
                                         <div
-                                            class="flex-1 flex flex-col items-center justify-end gap-0.5 group relative h-full">
-                                            <!-- Top part (Purple) -->
-                                            <div class="w-full rounded-t-full transition-all duration-300 <?= $bar['valor'] > 0 ? 'bg-[#7c5dfa]' : 'bg-transparent' ?>"
-                                                style="height:<?= $heightTop ?>%; max-width: 14px;"></div>
-                                            <!-- Bottom part (Greenish) -->
-                                            <div class="w-full rounded-b-full transition-all duration-300 <?= $bar['valor'] > 0 ? 'bg-[#98b8a8]' : 'bg-zinc-300 dark:bg-zinc-700 rounded-full' ?>"
-                                                style="height:<?= $heightBottom ?>%; max-width: 14px;"></div>
+                                            class="flex-1 flex flex-col items-center justify-end gap-[1px] group relative h-full">
+                                            
+                                            <!-- Tooltip -->
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-[#1a1f36] text-white text-[10px] py-2 px-3 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-10 shadow-lg scale-95 group-hover:scale-100">
+                                                <p class="font-bold border-b border-white/10 pb-1 mb-1">Dia <?= $bar['dia'] ?></p>
+                                                <p class="text-[#a4c9b3] font-medium">+ <?= formatarMoeda($bar['entradas']) ?></p>
+                                                <p class="text-[#b8abfb] font-medium">- <?= formatarMoeda($bar['saidas']) ?></p>
+                                            </div>
+
+                                            <?php if ($isEmpty): ?>
+                                                <div class="w-full rounded-full bg-zinc-300/50 dark:bg-zinc-700/50" style="height: 4px; max-width: 14px;"></div>
+                                            <?php else: ?>
+                                                <!-- Top part (Receitas - Green) -->
+                                                <?php if ($heightTop > 0): ?>
+                                                    <div class="w-full transition-all duration-300 bg-[#98b8a8] <?= $hasBoth ? 'rounded-t-full' : 'rounded-full' ?>"
+                                                        style="height:<?= $heightTop ?>%; max-width: 14px;"></div>
+                                                <?php endif; ?>
+                                                <!-- Bottom part (Despesas - Purple) -->
+                                                <?php if ($heightBottom > 0): ?>
+                                                    <div class="w-full transition-all duration-300 bg-[#7c5dfa] <?= $hasBoth ? 'rounded-b-full' : 'rounded-full' ?>"
+                                                        style="height:<?= $heightBottom ?>%; max-width: 14px;"></div>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
                                         </div>
                                     <?php endforeach; ?>
                                 </div>
