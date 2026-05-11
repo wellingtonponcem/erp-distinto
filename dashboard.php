@@ -388,22 +388,22 @@ include __DIR__ . '/includes/layout/head.php';
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm">
-                <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Clientes cadastrados</p>
-                <p class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white"><?= $crmResumo['total_clientes'] ?? 0 ?></p>
-            </div>
-            <div class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm">
-                <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Fornecedores cadastrados</p>
-                <p class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white"><?= $crmResumo['total_fornecedores'] ?? 0 ?></p>
-            </div>
-            <div class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm">
-                <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Oportunidades abertas</p>
-                <p class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white"><?= $crmResumo['oportunidades_abertas'] ?? 0 ?></p>
-            </div>
-            <div class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm">
-                <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Total de Propostas</p>
-                <p class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white"><?= $crmResumo['total_propostas'] ?? 0 ?></p>
-            </div>
+            <a href="<?= raizUrl('/gerenciamento/clientes.php') ?>" class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm group hover:bg-zinc-900 dark:hover:bg-white transition-all">
+                <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-400 transition-colors">Clientes cadastrados</p>
+                <p class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors"><?= $crmResumo['total_clientes'] ?? 0 ?></p>
+            </a>
+            <a href="<?= raizUrl('/gerenciamento/fornecedores.php') ?>" class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm group hover:bg-zinc-900 dark:hover:bg-white transition-all">
+                <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-400 transition-colors">Fornecedores cadastrados</p>
+                <p class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors"><?= $crmResumo['total_fornecedores'] ?? 0 ?></p>
+            </a>
+            <a href="<?= raizUrl('/gerenciamento/oportunidades.php') ?>" class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm group hover:bg-zinc-900 dark:hover:bg-white transition-all">
+                <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-400 transition-colors">Oportunidades abertas</p>
+                <p class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors"><?= $crmResumo['oportunidades_abertas'] ?? 0 ?></p>
+            </a>
+            <a href="<?= raizUrl('/gerenciamento/propostas.php') ?>" class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm group hover:bg-zinc-900 dark:hover:bg-white transition-all">
+                <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-400 transition-colors">Total de Propostas</p>
+                <p class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors"><?= $crmResumo['total_propostas'] ?? 0 ?></p>
+            </a>
         </div>
 
         <div class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm mb-6">
