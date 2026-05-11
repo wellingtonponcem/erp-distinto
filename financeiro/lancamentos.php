@@ -25,6 +25,13 @@ include __DIR__ . '/../includes/layout/head.php';
             </div>
             <div style="display:flex; gap:10px;">
                 <input type="file" x-ref="ofxInput" @change="uploadOfx($event)" style="opacity:0; position:absolute; width:1px; height:1px; z-index:-1;" accept=".ofx,.OFX">
+                <input type="file" x-ref="iaInput" @change="lerComprovante($event)" style="opacity:0; position:absolute; width:1px; height:1px; z-index:-1;" accept="image/*">
+                
+                <button class="btn-secondary" @click="$refs.iaInput.click()" style="color:#10b981; border-color:rgba(16,185,129,0.3);" :disabled="processandoIA">
+                    <span x-show="!processandoIA"><i data-lucide="scan-text" style="width:15px;height:15px;"></i> Ler Comprovante (IA)</span>
+                    <span x-show="processandoIA">⏳ Analisando...</span>
+                </button>
+
                 <button class="btn-secondary" @click="$refs.ofxInput.click()" style="color:#6366f1; border-color:rgba(99,102,241,0.3);" :disabled="uploadingOfx">
                     <span x-show="!uploadingOfx"><i data-lucide="file-up" style="width:15px;height:15px;"></i> Importar OFX</span>
                     <span x-show="uploadingOfx">⏳ Lendo arquivo...</span>
@@ -273,8 +280,16 @@ include __DIR__ . '/../includes/layout/head.php';
                         </select>
                     </div>
                     <div>
-                        <label class="label">Cliente / Fornecedor (Texto)</label>
+                        <label class="label" x-text="form.tipo === 'receber' ? 'Cliente (Texto/Novo)' : 'Fornecedor (Texto/Novo)'"></label>
                         <input class="input" x-model="form.cliente_fornecedor" placeholder="Nome ou descrição">
+                    </div>
+                </div>
+
+                <div style="margin-bottom:16px;" x-show="!form.cliente_id && !form.fornecedor_id && form.entidade_documento">
+                    <label class="label">CPF/CNPJ Identificado (Será cadastrado)</label>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <input class="input" x-model="form.entidade_documento" placeholder="00.000.000/0001-00" style="flex:1;">
+                        <div x-show="form.entidade_endereco" class="text-[11px] text-zinc-500 italic">Endereço capturado ✅</div>
                     </div>
                 </div>
 
@@ -578,6 +593,7 @@ function lancamentos() {
         novoNomeCategoria: '',
         categoriasDinamicas: [],
         uploadingOfx: false,
+        processandoIA: false,
         ofxTransacoes: [],
         ofxContaId: '',
         contas: [],
@@ -665,10 +681,97 @@ function lancamentos() {
             const params = new URLSearchParams(window.location.search);
             if (params.get('filtro')) this.filtros.status = params.get('filtro');
             this.aplicarPeriodo();
+            
+            // Listener de colagem (Paste)
+            window.addEventListener('paste', (e) => this.handlePaste(e));
+
             await Promise.all([
                 this.carregarLancamentos(),
                 this.carregarContas()
             ]);
+        },
+
+        async handlePaste(e) {
+            const items = e.clipboardData.items;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    const blob = items[i].getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = async (event) => {
+                        await this.processarIA(event.target.result);
+                    };
+                    reader.readAsDataURL(blob);
+                }
+            }
+        },
+
+        async lerComprovante(e) {
+            const file = e.target?.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                await this.processarIA(event.target.result);
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        },
+
+        async processarIA(base64) {
+            this.processandoIA = true;
+            toast('IA analisando comprovante...', 'info');
+            try {
+                const r = await fetch('<?= raizUrl('/api/financeiro/ia-processar.php') ?>', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imagem: base64 })
+                });
+                const res = await r.json();
+                if (r.ok) {
+                    this.abrirModalComIA(res);
+                } else {
+                    toast(res.erro || 'Erro na análise da IA', 'erro');
+                }
+            } catch(e) { toast('Erro de conexão com a IA', 'erro'); }
+            this.processandoIA = false;
+        },
+
+        abrirModalComIA(dados) {
+            this.abrirModal(); // Reseta form
+            this.form.tipo = dados.tipo || 'pagar';
+            this.form.descricao = dados.descricao || '';
+            this.form.valor = dados.valor || '';
+            this.form.vencimento = dados.vencimento || '';
+            this.form.categoria = dados.categoria || 'outros';
+            this.form.cliente_fornecedor = dados.entidade_nome || '';
+            this.form.entidade_documento = dados.entidade_documento || '';
+            
+            // Dados da Receita Federal
+            if (dados.receita_federal) {
+                this.form.entidade_nome = dados.receita_federal.razao_social || dados.entidade_nome;
+                this.form.cliente_fornecedor = this.form.entidade_nome;
+                this.form.entidade_endereco = `${dados.receita_federal.logradouro}, ${dados.receita_federal.numero} - ${dados.receita_federal.bairro}, ${dados.receita_federal.municipio}/${dados.receita_federal.uf}`;
+            }
+
+            // Tenta encontrar entidade existente
+            const docLimpo = (dados.entidade_documento || '').replace(/\D/g, '');
+            if (docLimpo) {
+                if (this.form.tipo === 'receber') {
+                    const cli = this.clientes.find(c => (c.cpf_cnpj || '').replace(/\D/g, '') === docLimpo);
+                    if (cli) {
+                        this.form.cliente_id = cli.id;
+                        this.form.entidade_documento = ''; // Já existe, não precisa cadastrar
+                    }
+                } else {
+                    const forn = this.fornecedores.find(f => (f.cpf_cnpj || f.documento || '').replace(/\D/g, '') === docLimpo);
+                    if (forn) {
+                        this.form.fornecedor_id = forn.id;
+                        this.form.entidade_documento = ''; // Já existe, não precisa cadastrar
+                    }
+                }
+            }
+            
+            toast('Comprovante lido com sucesso!', 'sucesso');
+            this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
         },
 
         async carregarContas() {

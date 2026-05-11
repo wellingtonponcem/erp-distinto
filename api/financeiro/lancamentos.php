@@ -37,6 +37,11 @@ try {
             $d['custo_fixo_id'] = criarCustoFixoFromLancamento($db, $d);
         }
 
+        // Auto-cadastro de cliente/fornecedor se vier documento
+        if (!empty($d['entidade_documento'])) {
+            $d = autoCadastrarEntidade($db, $d);
+        }
+
         criarLancamento($db, $d);
         responderJson(['ok' => true], 201);
 
@@ -245,4 +250,36 @@ function inserirLancamento(PDO $db, string $id, array $d, float $valor, string $
 
     $stmt = $db->prepare('INSERT INTO lancamentos (' . implode(',', $colunas) . ') VALUES (' . implode(',', $valores) . ')');
     $stmt->execute($params);
+}
+
+function autoCadastrarEntidade(PDO $db, array $d): array {
+    $tipo = $d['tipo'] === 'receber' ? 'clientes' : 'fornecedores';
+    $doc = preg_replace('/\D/', '', $d['entidade_documento']);
+    $nome = $d['cliente_fornecedor'] ?: 'Nova Entidade';
+    
+    // Busca por documento
+    $colDoc = $tipo === 'clientes' ? 'cpf_cnpj' : 'cpf_cnpj'; // Agora ambos têm cpf_cnpj
+    $stmt = $db->prepare("SELECT id FROM $tipo WHERE $colDoc = ? LIMIT 1");
+    $stmt->execute([$doc]);
+    $id = $stmt->fetchColumn();
+
+    if (!$id) {
+        $id = gerarId();
+        if ($tipo === 'clientes') {
+            $stmt = $db->prepare("INSERT INTO clientes (id, nome, cpf_cnpj) VALUES (?, ?, ?)");
+            $stmt->execute([$id, $nome, $doc]);
+        } else {
+            // Fornecedores podem ter campos diferentes, mas garantimos cpf_cnpj
+            $stmt = $db->prepare("INSERT INTO fornecedores (id, nome, cpf_cnpj) VALUES (?, ?, ?)");
+            $stmt->execute([$id, $nome, $doc]);
+        }
+    }
+
+    if ($d['tipo'] === 'receber') {
+        $d['cliente_id'] = $id;
+    } else {
+        $d['fornecedor_id'] = $id;
+    }
+
+    return $d;
 }
