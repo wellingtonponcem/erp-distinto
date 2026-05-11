@@ -809,17 +809,29 @@ function propostasApp() {
 
         async fetchHistorico(id) {
             this.carregandoHistorico = true;
+            const apiBase = '<?= raizUrl('/api/gerenciamento/proposta_historico.php') ?>';
+            const url = apiBase + '?id=' + encodeURIComponent(id);
+            console.log('[Histórico] GET:', url);
             try {
-                const response = await fetch(`../api/gerenciamento/proposta_historico.php?id=${id}`);
-                const data = await response.json();
+                const response = await fetch(url);
+                console.log('[Histórico] GET status:', response.status);
+                const text = await response.text();
+                console.log('[Histórico] GET raw response:', text);
+                let data;
+                try { data = JSON.parse(text); } catch(pe) {
+                    console.error('[Histórico] JSON parse failed:', pe, text.substring(0, 200));
+                    this.historico = [];
+                    return;
+                }
                 if (Array.isArray(data)) {
                     this.historico = data;
+                    console.log('[Histórico] Loaded', data.length, 'records');
                 } else {
-                    console.error('Erro na API de histórico:', data.erro || 'Resposta inválida');
+                    console.error('[Histórico] Resposta não é array:', data);
                     this.historico = [];
                 }
             } catch (e) {
-                console.error('Erro ao carregar histórico:', e);
+                console.error('[Histórico] Fetch error:', e);
                 this.historico = [];
             } finally {
                 this.carregandoHistorico = false;
@@ -829,28 +841,40 @@ function propostasApp() {
 
         async adicionarHistorico() {
             if (!this.novaNota.trim()) return;
+            const apiBase = '<?= raizUrl('/api/gerenciamento/proposta_historico.php') ?>';
             const payload = {
                 proposta_id: this.selectedProposta.id,
                 tipo: 'nota',
                 conteudo: this.novaNota
             };
+            console.log('[Histórico] POST:', apiBase, payload);
 
             try {
-                const response = await fetch('../api/gerenciamento/proposta_historico.php', {
+                const response = await fetch(apiBase, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                const res = await response.json();
+                console.log('[Histórico] POST status:', response.status);
+                const text = await response.text();
+                console.log('[Histórico] POST raw response:', text);
+                let res;
+                try { res = JSON.parse(text); } catch(pe) {
+                    console.error('[Histórico] POST JSON parse failed:', pe, text.substring(0, 200));
+                    alert('Erro: Servidor retornou resposta inválida. Veja o console (F12).');
+                    return;
+                }
                 if (res.sucesso) {
+                    console.log('[Histórico] Salvo com sucesso!', res.debug);
                     this.novaNota = '';
                     await this.fetchHistorico(this.selectedProposta.id);
                 } else {
-                    alert('Erro ao salvar: ' + (res.erro || 'Desconhecido'));
+                    console.error('[Histórico] Erro do servidor:', res);
+                    alert('Erro ao salvar: ' + (res.erro || JSON.stringify(res)));
                 }
             } catch (e) {
-                console.error('Erro ao adicionar histórico:', e);
-                alert('Erro de conexão ao salvar histórico.');
+                console.error('[Histórico] POST fetch error:', e);
+                alert('Erro de conexão: ' + e.message);
             }
         },
 
