@@ -566,7 +566,81 @@ include __DIR__ . '/../includes/layout/head.php';
         </div>
     </div>
 
-    <!-- Modal de Captura IA -->
+    <!-- Modal Resultados IA (Conciliação) -->
+    <div class="modal-overlay" x-show="modalIaResultadosAberto" x-cloak>
+        <div class="modal" style="max-width:1000px; width:95%; height:90vh; display:flex; flex-direction:column;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <div>
+                    <h2 style="font-size:18px; font-weight:700; color:#f1f5f9; display:flex; align-items:center; gap:10px;">
+                        <i data-lucide="sparkles" style="width:20px;height:20px;color:#10b981;"></i>
+                        Revisar Lançamentos da IA
+                    </h2>
+                    <p style="font-size:12px; color:#6b7280; margin-top:4px;">Confirme os dados extraídos antes de salvar no sistema.</p>
+                </div>
+                <button @click="modalIaResultadosAberto=false" style="color:#6b7280; background:none; border:none; cursor:pointer;">
+                    <i data-lucide="x" style="width:20px;height:20px;"></i>
+                </button>
+            </div>
+
+            <div style="flex:1; overflow-y:auto; margin-bottom:20px; padding-right:10px;">
+                <table style="width:100%; border-collapse:collapse;">
+                    <thead style="position:sticky; top:0; background:#18181b; z-index:10;">
+                        <tr style="border-bottom:1px solid #27272a;">
+                            <th style="padding:12px; text-align:left; width:40px;"></th>
+                            <th style="padding:12px; text-align:left; font-size:12px; color:#a1a1aa; font-weight:600;">TIPO</th>
+                            <th style="padding:12px; text-align:left; font-size:12px; color:#a1a1aa; font-weight:600;">DESCRIÇÃO / ENTIDADE</th>
+                            <th style="padding:12px; text-align:left; font-size:12px; color:#a1a1aa; font-weight:600;">VALOR</th>
+                            <th style="padding:12px; text-align:left; font-size:12px; color:#a1a1aa; font-weight:600;">VENCIMENTO</th>
+                            <th style="padding:12px; text-align:left; font-size:12px; color:#a1a1aa; font-weight:600;">CATEGORIA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="(item, index) in iaResultados" :key="index">
+                            <tr style="border-bottom:1px solid #27272a;" :style="item.processar ? '' : 'opacity:0.5'">
+                                <td style="padding:12px;">
+                                    <input type="checkbox" x-model="item.processar" class="rounded border-zinc-700 bg-zinc-800 text-green-500 focus:ring-green-500">
+                                </td>
+                                <td style="padding:12px;">
+                                    <select x-model="item.tipo" class="select" style="padding:4px 8px; font-size:12px; min-height:30px;">
+                                        <option value="receber">Entrada</option>
+                                        <option value="pagar">Saída</option>
+                                    </select>
+                                </td>
+                                <td style="padding:12px;">
+                                    <input type="text" x-model="item.descricao" class="input" style="padding:4px 8px; font-size:12px; min-height:30px; margin-bottom:4px;" placeholder="Descrição">
+                                    <div style="display:flex; gap:6px; align-items:center;">
+                                        <input type="text" x-model="item.entidade_nome" class="input" style="padding:2px 6px; font-size:11px; min-height:24px; flex:1;" placeholder="Cliente/Fornecedor">
+                                        <span x-show="item.entidade_id" class="badge bg-green-500/10 text-green-500 border-green-500/20" style="font-size:9px;">✓ Existe</span>
+                                    </div>
+                                </td>
+                                <td style="padding:12px;">
+                                    <input type="number" x-model="item.valor" class="input" style="padding:4px 8px; font-size:12px; min-height:30px; width:100px;" step="0.01">
+                                </td>
+                                <td style="padding:12px;">
+                                    <input type="date" x-model="item.vencimento" class="input" style="padding:4px 8px; font-size:12px; min-height:30px; width:130px;">
+                                </td>
+                                <td style="padding:12px;">
+                                    <select x-model="item.categoria" class="select" style="padding:4px 8px; font-size:12px; min-height:30px;">
+                                        <template x-for="cat in categoriasDisponiveis" :key="cat">
+                                            <option :value="cat" x-text="cat.charAt(0).toUpperCase() + cat.slice(1)"></option>
+                                        </template>
+                                    </select>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:12px; padding-top:20px; border-top:1px solid #27272a;">
+                <button class="btn-secondary" @click="modalIaResultadosAberto=false">Cancelar</button>
+                <button class="btn-primary" @click="processarLoteIA()" :disabled="salvando || iaResultados.filter(i => i.processar).length === 0">
+                    <span x-show="!salvando">Salvar <span x-text="iaResultados.filter(i => i.processar).length"></span> Lançamento(s)</span>
+                    <span x-show="salvando">Processando...</span>
+                </button>
+            </div>
+        </div>
+    </div>
     <div class="modal-overlay" x-show="modalIaAberto" x-cloak>
         <div class="modal" style="max-width:450px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -634,6 +708,8 @@ function lancamentos() {
         uploadingOfx: false,
         processandoIA: false,
         modalIaAberto: false,
+        modalIaResultadosAberto: false,
+        iaResultados: [],
         ofxTransacoes: [],
         ofxContaId: '',
         contas: [],
@@ -776,43 +852,79 @@ function lancamentos() {
             this.processandoIA = false;
         },
 
-        abrirModalComIA(dados) {
-            this.abrirModal(); // Reseta form
-            this.form.tipo = dados.tipo || 'pagar';
-            this.form.descricao = dados.descricao || '';
-            this.form.valor = dados.valor || '';
-            this.form.vencimento = dados.vencimento || '';
-            this.form.categoria = dados.categoria || 'outros';
-            this.form.cliente_fornecedor = dados.entidade_nome || '';
-            this.form.entidade_documento = dados.entidade_documento || '';
-            
-            // Dados da Receita Federal
-            if (dados.receita_federal) {
-                this.form.entidade_nome = dados.receita_federal.razao_social || dados.entidade_nome;
-                this.form.cliente_fornecedor = this.form.entidade_nome;
-                this.form.entidade_endereco = `${dados.receita_federal.logradouro}, ${dados.receita_federal.numero} - ${dados.receita_federal.bairro}, ${dados.receita_federal.municipio}/${dados.receita_federal.uf}`;
-            }
-
-            // Tenta encontrar entidade existente
-            const docLimpo = (dados.entidade_documento || '').replace(/\D/g, '');
-            if (docLimpo) {
-                if (this.form.tipo === 'receber') {
-                    const cli = this.clientes.find(c => (c.cpf_cnpj || '').replace(/\D/g, '') === docLimpo);
-                    if (cli) {
-                        this.form.cliente_id = cli.id;
-                        this.form.entidade_documento = ''; // Já existe, não precisa cadastrar
-                    }
-                } else {
-                    const forn = this.fornecedores.find(f => (f.cpf_cnpj || f.documento || '').replace(/\D/g, '') === docLimpo);
-                    if (forn) {
-                        this.form.fornecedor_id = forn.id;
-                        this.form.entidade_documento = ''; // Já existe, não precisa cadastrar
+        abrirModalComIA(lista) {
+            this.iaResultados = lista.map(item => {
+                // Tenta encontrar entidade existente
+                let entidade_id = null;
+                const docLimpo = (item.entidade_documento || '').replace(/\D/g, '');
+                
+                if (docLimpo) {
+                    if (item.tipo === 'receber') {
+                        const cli = this.clientes.find(c => (c.cpf_cnpj || '').replace(/\D/g, '') === docLimpo);
+                        if (cli) entidade_id = cli.id;
+                    } else {
+                        const forn = this.fornecedores.find(f => (f.cpf_cnpj || f.documento || '').replace(/\D/g, '') === docLimpo);
+                        if (forn) entidade_id = forn.id;
                     }
                 }
-            }
+
+                if (item.receita_federal) {
+                    item.entidade_nome = item.receita_federal.razao_social || item.entidade_nome;
+                }
+
+                return {
+                    ...item,
+                    entidade_id: entidade_id,
+                    processar: true,
+                    categoria: item.categoria || 'outros'
+                };
+            });
             
-            toast('Comprovante lido com sucesso!', 'sucesso');
+            this.modalIaResultadosAberto = true;
+            toast('IA identificou ' + lista.length + ' item(ns)!', 'sucesso');
             this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
+        },
+
+        async processarLoteIA() {
+            const itensParaProcessar = this.iaResultados.filter(i => i.processar);
+            if (itensParaProcessar.length === 0) return;
+
+            this.salvando = true;
+            toast('Salvando lançamentos...', 'info');
+            
+            let sucesso = 0;
+            try {
+                for (const item of itensParaProcessar) {
+                    const payload = {
+                        tipo: item.tipo,
+                        descricao: item.descricao,
+                        valor: item.valor,
+                        vencimento: item.vencimento,
+                        categoria: item.categoria,
+                        cliente_fornecedor: item.entidade_nome,
+                        entidade_documento: item.entidade_documento,
+                        status: 'pendente'
+                    };
+
+                    if (item.tipo === 'receber') payload.cliente_id = item.entidade_id;
+                    else payload.fornecedor_id = item.entidade_id;
+
+                    const r = await fetch('<?= raizUrl('/api/financeiro/lancamentos.php') ?>', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (r.ok) sucesso++;
+                }
+
+                toast(`${sucesso} lançamentos criados com sucesso!`, 'sucesso');
+                this.modalIaResultadosAberto = false;
+                await this.carregarLancamentos();
+            } catch (e) {
+                toast('Erro ao processar lote', 'erro');
+            }
+            this.salvando = false;
         },
 
         async carregarContas() {

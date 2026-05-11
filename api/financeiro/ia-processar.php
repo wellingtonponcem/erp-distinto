@@ -28,15 +28,15 @@ if (preg_match('/^data:(image\/[a-z]+);base64,(.*)$/', $imagemBase64, $matches))
     $base64Data = $imagemBase64;
 }
 
-$prompt = "Analise este documento financeiro (pode ser um boleto, nota fiscal, fatura, comprovante de pix, recibo ou print de extrato) e extraia os dados para um lançamento no sistema de gestão.
+$prompt = "Analise este documento financeiro e extraia TODAS as transações ou lançamentos identificados (pode haver um ou vários).
 
 REGRAS DE OURO:
-1. TIPO: Identifique se é 'receber' (quando o documento indica um crédito, venda ou cobrança emitida pelo usuário) ou 'pagar' (quando é uma conta, boleto de consumo, nota de compra ou dívida).
-2. ENTIDADE: Identifique o nome da outra parte (ex: se for um boleto a receber, extraia o nome do Pagador/Sacado. Se for uma nota de compra, o nome do Vendedor/Prestador).
-3. DOCUMENTO: Extraia o CPF ou CNPJ da outra parte (apenas números).
-4. DESCRIÇÃO: Crie uma descrição curta e profissional (ex: 'Prestação de Serviços', 'Venda de Mercadoria', 'Aluguel Mensal').
+1. TIPO: Identifique se é 'receber' ou 'pagar' para cada item.
+2. ENTIDADE: Extraia o nome da outra parte e o CPF/CNPJ (apenas números).
+3. MULTIPLOS: Se houver uma lista de boletos ou linhas de extrato, extraia cada um como um item separado.
 
-Responda APENAS um objeto JSON válido, sem markdown, com os campos:
+Responda APENAS um ARRAY JSON de objetos, sem markdown. 
+Cada objeto deve ter:
 - tipo: 'receber' ou 'pagar'
 - descricao: string
 - valor: float
@@ -45,7 +45,7 @@ Responda APENAS um objeto JSON válido, sem markdown, com os campos:
 - entidade_documento: string (apenas números)
 - categoria: uma das seguintes ['serviços', 'produtos', 'aluguel', 'impostos', 'folha', 'marketing', 'outros']
 
-Se não encontrar algum dado, deixe null.";
+Se não encontrar algum dado em um item, deixe null.";
 
 try {
     $respostaIa = IARoteiros::chamarGemini([
@@ -66,11 +66,18 @@ try {
         responderJson(['erro' => 'Não foi possível interpretar a resposta da IA. Verifique se o comprovante está legível.', 'raw' => $respostaIa], 500);
     }
 
-    // Processar CNPJ se encontrado
-    if (!empty($dadosExtraidos['entidade_documento'])) {
-        $doc = preg_replace('/\D/', '', $dadosExtraidos['entidade_documento']);
-        if (strlen($doc) === 14) {
-            $dadosExtraidos['receita_federal'] = consultarCnpj($doc);
+    // Garantir que seja um array
+    if (isset($dadosExtraidos['tipo'])) {
+        $dadosExtraidos = [$dadosExtraidos];
+    }
+
+    foreach ($dadosExtraidos as &$item) {
+        // Processar CNPJ se encontrado
+        if (!empty($item['entidade_documento'])) {
+            $doc = preg_replace('/\D/', '', $item['entidade_documento']);
+            if (strlen($doc) === 14) {
+                $item['receita_federal'] = consultarCnpj($doc);
+            }
         }
     }
 
