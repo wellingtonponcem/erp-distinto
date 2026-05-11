@@ -65,6 +65,32 @@ $stmtOp = $db->prepare($sqlOportunidades);
 $stmtOp->execute($params);
 $oportunidades = $stmtOp->fetchAll();
 
+// --- NOVIDADE: Incorporar Propostas Órfãs se o filtro bater ---
+if ($filtroEtapa === 'novo' || $filtroEtapa === 'proposta' || !$filtroEtapa) {
+    $statusAlvo = ($filtroEtapa === 'novo') ? 'rascunho' : (($filtroEtapa === 'proposta') ? 'pendente' : null);
+    
+    $sqlOrfas = "SELECT id, cliente_id, cliente_nome as nome, '0' as valor_estimado, 
+                CASE status WHEN 'rascunho' THEN 'novo' WHEN 'pendente' THEN 'proposta' ELSE 'outros' END as etapa,
+                created_at as previsao, 'Sistema' as responsavel, 'Proposta Web sem Oportunidade vinculada' as descricao, 
+                created_at, TRUE as is_proposta, slug
+                FROM propostas 
+                WHERE (oportunidade_id IS NULL OR oportunidade_id = '')";
+    
+    if ($statusAlvo) {
+        $sqlOrfas .= " AND status = ?";
+        $stmtOrfas = $db->prepare($sqlOrfas);
+        $stmtOrfas->execute([$statusAlvo]);
+    } else {
+        $stmtOrfas = $db->query($sqlOrfas);
+    }
+    
+    $propostasOrfas = $stmtOrfas->fetchAll();
+    foreach ($propostasOrfas as $po) {
+        $po['cliente_nome'] = $po['nome']; // Mock para o layout
+        $oportunidades[] = $po;
+    }
+}
+
 $tituloPagina = 'CRM • Oportunidades';
 require_once __DIR__ . '/../includes/layout/head.php';
 ?>
@@ -190,11 +216,16 @@ require_once __DIR__ . '/../includes/layout/head.php';
                     <div class="bg-white/50 dark:bg-zinc-900/30 border border-zinc-200/60 dark:border-zinc-800/60 rounded-3xl p-5 flex flex-wrap items-center justify-between gap-4 group hover:border-zinc-400 dark:hover:border-zinc-600 transition-all">
                         <div class="flex items-center gap-5">
                             <div class="w-12 h-12 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors relative">
-                                <i data-lucide="briefcase" class="w-6 h-6"></i>
+                                <i data-lucide="<?= isset($o['is_proposta']) ? 'file-text' : 'briefcase' ?>" class="w-6 h-6"></i>
                                 <div class="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white dark:border-zinc-900 <?= $corEtapa ?>"></div>
                             </div>
                             <div>
-                                <h3 class="font-bold text-zinc-900 dark:text-white"><?= sanitizar($o['nome']) ?></h3>
+                                <h3 class="font-bold text-zinc-900 dark:text-white">
+                                    <?= sanitizar($o['nome']) ?>
+                                    <?php if (isset($o['is_proposta'])): ?>
+                                        <span class="ml-2 text-[9px] bg-blue-500/10 text-blue-500 px-2 py-0.5 rounded-full border border-blue-500/20 uppercase font-black">Proposta Web</span>
+                                    <?php endif; ?>
+                                </h3>
                                 <p class="text-[11px] font-medium text-zinc-500 uppercase tracking-widest mt-0.5"><?= sanitizar($o['cliente_nome'] ?: 'Sem cliente vinculado') ?></p>
                             </div>
                         </div>
@@ -228,17 +259,30 @@ require_once __DIR__ . '/../includes/layout/head.php';
                             </div>
                             
                             <div class="flex items-center gap-2">
-                                <a href="<?= raizUrl('/gerenciamento/oportunidades.php?editar=' . $o['id']) ?>" 
-                                   class="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-900 dark:hover:bg-white hover:text-white dark:hover:text-black transition-all"
-                                   title="Editar">
-                                    <i data-lucide="edit-2" class="w-4 h-4"></i>
-                                </a>
-                                <a href="<?= raizUrl('/gerenciamento/oportunidades.php?deletar=' . $o['id']) ?>" 
-                                   onclick="return confirm('Excluir esta oportunidade?');"
-                                   class="p-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all"
-                                   title="Excluir">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </a>
+                                <?php if (isset($o['is_proposta'])): ?>
+                                    <a href="<?= APP_URL ?>/p/<?= $o['slug'] ?>" target="_blank"
+                                       class="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-900 dark:hover:bg-white hover:text-white dark:hover:text-black transition-all"
+                                       title="Ver Proposta">
+                                        <i data-lucide="external-link" class="w-4 h-4"></i>
+                                    </a>
+                                    <a href="<?= raizUrl('/gerenciamento/proposta_editar.php?id=' . $o['id']) ?>" 
+                                       class="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-900 dark:hover:bg-white hover:text-white dark:hover:text-black transition-all"
+                                       title="Editar Proposta">
+                                        <i data-lucide="edit-2" class="w-4 h-4"></i>
+                                    </a>
+                                <?php else: ?>
+                                    <a href="<?= raizUrl('/gerenciamento/oportunidades.php?editar=' . $o['id']) ?>" 
+                                       class="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-900 dark:hover:bg-white hover:text-white dark:hover:text-black transition-all"
+                                       title="Editar">
+                                        <i data-lucide="edit-2" class="w-4 h-4"></i>
+                                    </a>
+                                    <a href="<?= raizUrl('/gerenciamento/oportunidades.php?deletar=' . $o['id']) ?>" 
+                                       onclick="return confirm('Excluir esta oportunidade?');"
+                                       class="p-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all"
+                                       title="Excluir">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
