@@ -81,7 +81,13 @@ if ($modoCliente === 'cadastrado') {
         $responsavel = $d['responsavel'];
     } else {
         $clienteNome = ($d['nome_noivo'] && $d['nome_noiva']) ? ($d['nome_noivo'] . ' & ' . $d['nome_noiva']) : 'Novo Casamento';
-        $responsavel = $d['nome_noiva'] ?? ''; 
+        
+        $contatoTipo = $d['contato_tipo'] ?? 'noiva';
+        if ($contatoTipo === 'noivo') {
+            $responsavel = $d['nome_noivo'] ?? '';
+        } else {
+            $responsavel = $d['nome_noiva'] ?? '';
+        }
     }
 
     // Criar o cliente no banco para garantir a conexão total (CRM/Financeiro)
