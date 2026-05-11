@@ -152,15 +152,15 @@ function menuAtivo(string $path): string {
             <span class="nav-label hide-on-collapse transition-opacity">Roteiros</span>
         </a>
 
-        <div class="nav-section hide-on-collapse">Sistema</div>
+        <div class="nav-section hide-on-collapse">Configurações</div>
         <a href="<?= raizUrl('/configuracoes.php') ?>" class="nav-link <?= menuAtivo('/configuracoes') ?>">
             <i data-lucide="settings" style="width:20px;height:20px; flex-shrink:0;"></i>
-            <span class="nav-label hide-on-collapse transition-opacity">Ajustes</span>
+            <span class="nav-label hide-on-collapse transition-opacity">Ajustes Gerais</span>
         </a>
         <?php if ($usuario['nivel'] == 1): ?>
         <a href="<?= raizUrl('/gerenciamento/usuarios.php') ?>" class="nav-link <?= menuAtivo('/gerenciamento/usuarios') ?>">
-            <i data-lucide="users" style="width:20px;height:20px; flex-shrink:0;"></i>
-            <span class="nav-label hide-on-collapse transition-opacity">Usuários</span>
+            <i data-lucide="shield-check" style="width:20px;height:20px; flex-shrink:0;"></i>
+            <span class="nav-label hide-on-collapse transition-opacity">Gestão de Equipe</span>
         </a>
         <?php endif; ?>
     </nav>

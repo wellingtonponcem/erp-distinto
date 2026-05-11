@@ -10,12 +10,12 @@ try {
     $db = Database::get();
     $metodo = $_SERVER['REQUEST_METHOD'];
 
-    // Migração Automática (Opcional, caso não tenha rodado)
+    // Migração Automática para PostgreSQL
     try {
-        $stmt = $db->query("SHOW COLUMNS FROM users LIKE 'nivel'");
-        if (!$stmt->fetch()) {
-            $db->exec("ALTER TABLE users ADD COLUMN nivel INT NOT NULL DEFAULT 0");
-            $db->exec("UPDATE users SET nivel = 1 LIMIT 1");
+        $stmt = $db->query("SELECT COUNT(*) FROM information_schema.columns WHERE table_name='users' AND column_name='nivel'");
+        if ($stmt->fetchColumn() == 0) {
+            $db->exec("ALTER TABLE users ADD COLUMN nivel INTEGER DEFAULT 0");
+            $db->exec("UPDATE users SET nivel = 1 WHERE id = (SELECT id FROM users ORDER BY criado_em ASC LIMIT 1)");
         }
     } catch (Exception $e) {
         // Log ou ignorar se já existir
