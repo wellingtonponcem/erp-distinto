@@ -3,6 +3,7 @@ require_once __DIR__ . '/../../config/env.php';
 require_once __DIR__ . '/../../config/auth.php';
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../includes/helpers.php';
+require_once __DIR__ . '/../../includes/ia_propostas.php';
 
 header('Content-Type: application/json');
 exigirAutenticacao();
@@ -47,7 +48,20 @@ if ($metodo === 'GET') {
         ");
         $stmt->execute([$proposta_id]);
         $rows = $stmt->fetchAll();
-        echo json_encode($rows);
+
+        $recomendacao = '';
+        try {
+            $stmtProp = $db->prepare("SELECT id, cliente_nome, tipo, status, dados_json, titulo FROM propostas WHERE id = ?");
+            $stmtProp->execute([$proposta_id]);
+            $propostaDados = $stmtProp->fetch();
+            if ($propostaDados) {
+                $recomendacao = IAPropostas::recomendarProximoPasso($propostaDados, array_slice($rows, 0, 3));
+            }
+        } catch (Exception $e) {
+            $recomendacao = '';
+        }
+
+        echo json_encode(['historico' => $rows, 'recomendacao' => $recomendacao]);
     } catch (Exception $e) {
         echo json_encode(['erro' => 'Erro GET: ' . $e->getMessage()]);
     }
@@ -91,7 +105,28 @@ if ($metodo === 'POST') {
         ");
         $stmt->execute([$proposta_id, $user_id, $tipo, $conteudo]);
 
-        echo json_encode(['sucesso' => true, 'debug' => ['proposta_id' => $proposta_id, 'user_id' => $user_id, 'tipo' => $tipo]]);
+        $rows = [];
+        try {
+            $stmtHist = $db->prepare("SELECT tipo, conteudo, created_at FROM propostas_historico WHERE proposta_id = ? ORDER BY created_at DESC LIMIT 3");
+            $stmtHist->execute([$proposta_id]);
+            $rows = $stmtHist->fetchAll();
+        } catch (Exception $e) {
+            // tabela pode não existir ou não ter histórico ainda
+        }
+
+        $recomendacao = '';
+        try {
+            $stmtProp = $db->prepare("SELECT id, cliente_nome, tipo, status, dados_json, titulo FROM propostas WHERE id = ?");
+            $stmtProp->execute([$proposta_id]);
+            $propostaDados = $stmtProp->fetch();
+            if ($propostaDados) {
+                $recomendacao = IAPropostas::recomendarProximoPasso($propostaDados, $rows);
+            }
+        } catch (Exception $e) {
+            $recomendacao = '';
+        }
+
+        echo json_encode(['sucesso' => true, 'debug' => ['proposta_id' => $proposta_id, 'user_id' => $user_id, 'tipo' => $tipo], 'recomendacao' => $recomendacao]);
     } catch (Exception $e) {
         echo json_encode(['erro' => 'Erro POST: ' . $e->getMessage()]);
     }

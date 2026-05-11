@@ -592,7 +592,8 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
 
                 <div id="statusSalvar" class="hidden animate-fade-in">
                     <div class="p-4 bg-emerald-500/10 border border-emerald-500 text-emerald-500 rounded-xl text-center text-sm font-bold">
-                        Alterações salvas com sucesso!
+                        <div id="statusMessage">Alterações salvas com sucesso!</div>
+                        <div id="statusRecomendacao" class="text-left text-sm font-medium mt-2 hidden"></div>
                     </div>
                 </div>
             </div>
@@ -842,8 +843,18 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             const result = await response.json();
             if (result.success) {
+                const statusMessage = document.getElementById('statusMessage');
+                const statusRecomendacao = document.getElementById('statusRecomendacao');
+                statusMessage.textContent = 'Alterações salvas com sucesso!';
+                if (result.recomendacao) {
+                    statusRecomendacao.textContent = 'Próximo passo sugerido: ' + result.recomendacao;
+                    statusRecomendacao.classList.remove('hidden');
+                } else {
+                    statusRecomendacao.textContent = '';
+                    statusRecomendacao.classList.add('hidden');
+                }
                 statusDiv.classList.remove('hidden');
-                setTimeout(() => statusDiv.classList.add('hidden'), 3000);
+                setTimeout(() => statusDiv.classList.add('hidden'), 6000);
             } else {
                 alert('Erro: ' + (result.erro || 'Falha ao salvar.'));
             }

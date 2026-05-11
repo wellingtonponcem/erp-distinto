@@ -457,6 +457,14 @@ include __DIR__ . '/../includes/layout/head.php';
                                          <p class="text-[10px] text-zinc-500 mt-3 italic" x-text="selectedProposta.status === 'aceita' ? 'Proposta fechada e aprovada pelo cliente.' : 'Aguardando interação do cliente.'"></p>
                                      </div>
                                  </div>
+                                 <template x-if="recomendacao">
+                                     <div>
+                                         <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4">Próximo passo recomendado</h3>
+                                         <div class="bg-emerald-500/10 border border-emerald-500/15 rounded-2xl p-4 text-sm text-zinc-100">
+                                             <p x-text="recomendacao"></p>
+                                         </div>
+                                     </div>
+                                 </template>
                              </div>
 
                              <!-- Histórico / Timeline -->
@@ -738,6 +746,7 @@ function propostasApp() {
         folderModal: { show: false, id: null, nome: '', mode: 'create' },
         modalResumoAberto: false,
         selectedProposta: null,
+        recomendacao: '',
         novaUrl: 'proposta_nova.php?layout=modal',
         
         init() {
@@ -839,10 +848,16 @@ function propostasApp() {
                 }
                 if (Array.isArray(data)) {
                     this.historico = data;
+                    this.recomendacao = '';
                     console.log('[Histórico] Loaded', data.length, 'records');
+                } else if (data && typeof data === 'object') {
+                    this.historico = Array.isArray(data.historico) ? data.historico : [];
+                    this.recomendacao = data.recomendacao || '';
+                    console.log('[Histórico] Loaded', this.historico.length, 'records');
                 } else {
-                    console.error('[Histórico] Resposta não é array:', data);
+                    console.error('[Histórico] Resposta não é array nem objeto:', data);
                     this.historico = [];
+                    this.recomendacao = '';
                 }
             } catch (e) {
                 console.error('[Histórico] Fetch error:', e);
@@ -881,6 +896,7 @@ function propostasApp() {
                 if (res.sucesso) {
                     console.log('[Histórico] Salvo com sucesso!', res.debug);
                     this.novaNota = '';
+                    this.recomendacao = res.recomendacao || this.recomendacao || '';
                     await this.fetchHistorico(this.selectedProposta.id);
                 } else {
                     console.error('[Histórico] Erro do servidor:', res);

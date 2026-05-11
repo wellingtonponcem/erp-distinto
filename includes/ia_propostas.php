@@ -111,6 +111,54 @@ class IAPropostas {
         return $msg;
     }
 
+    public static function recomendarProximoPasso(array $proposta, array $historico = []): string {
+        $cliente = $proposta['cliente_nome'] ?? '';
+        if (empty($cliente) && !empty($proposta['nome_noivo']) && !empty($proposta['nome_noiva'])) {
+            $cliente = trim($proposta['nome_noivo'] . ' & ' . $proposta['nome_noiva']);
+        }
+        $tipo = $proposta['tipo'] ?? 'proposta';
+        $status = $proposta['status'] ?? '';
+        $responsavel = $proposta['responsavel'] ?? '';
+        $titulo = $proposta['titulo'] ?? '';
+        $servicos = '';
+
+        $dadosJson = $proposta['dados_json'] ?? [];
+        if (is_string($dadosJson)) {
+            $dadosJson = json_decode($dadosJson, true) ?: [];
+        }
+
+        if (!empty($dadosJson['servicos']) && is_array($dadosJson['servicos'])) {
+            $servicos = implode(', ', array_map(fn($s) => trim($s['nome'] ?? $s), $dadosJson['servicos']));
+        }
+
+        if (empty($servicos) && !empty($proposta['servicos']) && is_array($proposta['servicos'])) {
+            $servicos = implode(', ', array_map(fn($s) => trim($s['nome'] ?? $s), $proposta['servicos']));
+        }
+
+        $ultimas = [];
+        foreach (array_slice($historico, 0, 3) as $item) {
+            $tipoEvento = trim($item['tipo'] ?? '');
+            $conteudo = trim($item['conteudo'] ?? '');
+            if (!$conteudo) continue;
+            $ultimas[] = ($tipoEvento ? ucfirst($tipoEvento) . ': ' : '') . $conteudo;
+        }
+        $ultimasTexto = $ultimas ? implode(' | ', $ultimas) : 'Nenhuma interação recente registrada.';
+
+        $promptSistema = "Você é um assistente CRM inteligente para vendas e relacionamento. Analise os dados da proposta e o histórico recente para sugerir o próximo passo mais eficaz. Responda com uma recomendação prática, curta e diretamente acionável. Use Português do Brasil. Sem emojis.";
+        $promptUsuario = "Proposta: {$titulo}. Cliente: {$cliente}. Tipo: {$tipo}. Status: {$status}. Contato principal: {$responsavel}. Serviços: {$servicos}. Histórico recente: {$ultimasTexto}. Sugira apenas o próximo passo comercial mais relevante para avançar essa negociação. Seja objetivo e claro.";
+
+        $recomendacao = self::chamarGroq([
+            ['role' => 'system', 'content' => $promptSistema],
+            ['role' => 'user', 'content' => $promptUsuario]
+        ]);
+
+        if (str_starts_with($recomendacao, 'Erro')) {
+            return 'Faça um follow-up personalizado com o cliente, reforçando prazos e próximos passos e buscando validar detalhes pendentes.';
+        }
+
+        return trim($recomendacao);
+    }
+
     public static function melhorarObjetivo(string $objetivoOriginal, array $contexto) {
         $cliente = $contexto['cliente'] ?? 'o cliente';
         $servicos = $contexto['servicos'] ?? '';

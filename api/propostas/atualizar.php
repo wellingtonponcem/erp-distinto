@@ -8,6 +8,7 @@ require_once __DIR__ . '/../../config/env.php';
 require_once __DIR__ . '/../../config/auth.php';
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../includes/helpers.php';
+require_once __DIR__ . '/../../includes/ia_propostas.php';
 
 // Ativar captura de erros para retornar JSON sempre
 set_error_handler(function($severity, $message, $file, $line) {
@@ -231,8 +232,39 @@ if ($status === 'aceita' && !empty($clienteId)) {
 }
 // ----------------------------------------
 
+$recomendacao = '';
+try {
+    $historico = [];
+    $stmtHist = $db->prepare("SELECT tipo, conteudo, created_at FROM propostas_historico WHERE proposta_id = ? ORDER BY created_at DESC LIMIT 3");
+    $stmtHist->execute([$d['id']]);
+    $historico = $stmtHist->fetchAll();
+} catch (Exception $e) {
+    // tabela pode não existir ainda
+}
+
+$propostaParaIA = [
+    'cliente_nome' => $propostaAtual['cliente_nome'],
+    'tipo' => $propostaAtual['tipo'],
+    'status' => $status,
+    'responsavel' => ($d['tipo'] === 'casamento') ? contatoResponsavel([
+        'contato_tipo' => $d['contato_tipo'] ?? ($dadosAntigos['contato_tipo'] ?? 'noiva'),
+        'nome_noivo' => $d['nome_noivo'] ?? ($dadosAntigos['nome_noivo'] ?? ''),
+        'nome_noiva' => $d['nome_noiva'] ?? ($dadosAntigos['nome_noiva'] ?? ''),
+        'responsavel' => $d['responsavel'] ?? ($dadosAntigos['responsavel'] ?? ''),
+    ]) : ($d['responsavel'] ?? ($dadosAntigos['responsavel'] ?? '')),
+    'titulo' => $d['titulo'] ?? $propostaAtual['titulo'],
+    'dados_json' => $dadosJson,
+];
+
+try {
+    $recomendacao = IAPropostas::recomendarProximoPasso($propostaParaIA, $historico);
+} catch (Exception $e) {
+    $recomendacao = '';
+}
+
 responderJson([
     'success' => true,
     'id' => $d['id'],
-    'slug' => $propostaAtual['slug']
+    'slug' => $propostaAtual['slug'],
+    'recomendacao' => $recomendacao
 ]);
