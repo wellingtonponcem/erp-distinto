@@ -51,6 +51,8 @@ CREATE TABLE IF NOT EXISTS `lancamentos` (
   `valor_pago` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   `categoria` VARCHAR(100) NOT NULL DEFAULT 'outros',
   `cliente_fornecedor` VARCHAR(255),
+  `cliente_id` VARCHAR(32) NULL,
+  `fornecedor_id` VARCHAR(32) NULL,
   `vencimento` DATE NOT NULL,
   `status` ENUM('pendente','pago_parcial','pago','cancelado','atrasado') NOT NULL DEFAULT 'pendente',
   `modalidade` ENUM('avista','parcelado','recorrente') NOT NULL DEFAULT 'avista',
@@ -67,6 +69,8 @@ CREATE TABLE IF NOT EXISTS `lancamentos` (
   KEY `idx_tipo` (`tipo`),
   KEY `idx_status` (`status`),
   KEY `idx_vencimento` (`vencimento`),
+  KEY `idx_cliente_id` (`cliente_id`),
+  KEY `idx_fornecedor_id` (`fornecedor_id`),
   KEY `idx_custo_fixo` (`custo_fixo_id`),
   CONSTRAINT `fk_lancamento_pai` FOREIGN KEY (`lancamento_pai_id`) REFERENCES `lancamentos` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -94,6 +98,34 @@ CREATE TABLE IF NOT EXISTS `clientes` (
   `segmento` VARCHAR(100),
   `criado_em` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `fornecedores` (
+  `id` VARCHAR(32) NOT NULL,
+  `nome` VARCHAR(255) NOT NULL,
+  `contato` VARCHAR(255),
+  `telefone` VARCHAR(50),
+  `email` VARCHAR(255),
+  `categoria` VARCHAR(100),
+  `observacao` TEXT,
+  `criado_em` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `oportunidades` (
+  `id` VARCHAR(32) NOT NULL,
+  `cliente_id` VARCHAR(32) NULL,
+  `nome` VARCHAR(255) NOT NULL,
+  `valor_estimado` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+  `etapa` ENUM('novo','qualificado','proposta','negociacao','ganha','perdida') NOT NULL DEFAULT 'novo',
+  `previsao` DATE NULL,
+  `responsavel` VARCHAR(255),
+  `descricao` TEXT,
+  `criado_em` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `atualizado_em` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_cliente_id` (`cliente_id`),
+  KEY `idx_etapa` (`etapa`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `contratos` (

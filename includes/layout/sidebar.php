@@ -128,6 +128,18 @@ function menuAtivo(string $path): string {
             <i data-lucide="file-text" style="width:20px;height:20px; flex-shrink:0;"></i>
             <span class="nav-label hide-on-collapse transition-opacity">Propostas Web</span>
         </a>
+        <a href="<?= raizUrl('/gerenciamento/clientes.php') ?>" class="nav-link <?= menuAtivo('/gerenciamento/clientes') ?>">
+            <i data-lucide="users" style="width:20px;height:20px; flex-shrink:0;"></i>
+            <span class="nav-label hide-on-collapse transition-opacity">Clientes</span>
+        </a>
+        <a href="<?= raizUrl('/gerenciamento/fornecedores.php') ?>" class="nav-link <?= menuAtivo('/gerenciamento/fornecedores') ?>">
+            <i data-lucide="shopping-bag" style="width:20px;height:20px; flex-shrink:0;"></i>
+            <span class="nav-label hide-on-collapse transition-opacity">Fornecedores</span>
+        </a>
+        <a href="<?= raizUrl('/gerenciamento/oportunidades.php') ?>" class="nav-link <?= menuAtivo('/gerenciamento/oportunidades') ?>">
+            <i data-lucide="trending-up" style="width:20px;height:20px; flex-shrink:0;"></i>
+            <span class="nav-label hide-on-collapse transition-opacity">Oportunidades</span>
+        </a>
         <a href="<?= raizUrl('/gerenciamento/depoimentos.php') ?>" class="nav-link <?= menuAtivo('/gerenciamento/depoimentos') ?>">
             <i data-lucide="message-square-quote" style="width:20px;height:20px; flex-shrink:0;"></i>
             <span class="nav-label hide-on-collapse transition-opacity">Depoimentos</span>
