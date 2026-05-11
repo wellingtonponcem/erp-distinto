@@ -20,15 +20,18 @@ function menuAtivo(string $path): string {
     return str_contains($paginaAtual, $path) ? 'ativo' : '';
 }
 ?>
-<aside x-data="{ collapsed: true }" :class="{ 'collapsed': collapsed }" class="sidebar flex flex-col transition-all duration-300 relative group">
+<aside x-data="{ collapsed: false }" :class="{ 'collapsed': collapsed }" class="sidebar flex flex-col transition-all duration-300 relative group">
     <div style="padding:24px 20px 18px;">
         <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
             <div class="hide-on-collapse transition-opacity">
-                <div class="dark:text-white" style="color:#111; font-size:18px; font-weight:800; letter-spacing:-0.04em;">DISTINTO</div>
-                <div class="sidebar-copy" style="margin-top:3px; color:#888; font-size:10px; font-weight:800; letter-spacing:0.08em;">AGENCY ERP</div>
+                <div class="dark:text-white uppercase tracking-tighter" style="color:#111; font-size:22px; font-weight:900; line-height: 1;">DISTINTO</div>
+                <div class="sidebar-copy" style="margin-top:2px; color:#888; font-size:9px; font-weight:800; letter-spacing:0.1em;">AGENCY ERP</div>
             </div>
-            <button @click="collapsed = !collapsed" style="width:36px; height:36px; display:grid; place-items:center; border-radius:999px; background:rgba(0,0,0,0.05); color:#111; border:none; cursor:pointer;" class="dark:bg-white/10 dark:text-white hover:bg-black/10 dark:hover:bg-white/20 transition-colors mx-auto">
-                <i data-lucide="menu" style="width:18px;height:18px;"></i>
+            <button @click="collapsed = !collapsed" 
+                    title="Alternar Menu"
+                    class="w-10 h-10 flex flex-shrink-0 items-center justify-center rounded-xl bg-zinc-100 dark:bg-white/5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-900 dark:hover:bg-white hover:text-white dark:hover:text-black transition-all shadow-sm mx-auto">
+                <i x-show="collapsed" data-lucide="chevron-right" class="w-5 h-5"></i>
+                <i x-show="!collapsed" data-lucide="chevron-left" class="w-5 h-5"></i>
             </button>
         </div>
     </div>
