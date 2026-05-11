@@ -80,8 +80,8 @@ include __DIR__ . '/../includes/layout/head.php';
                     <option value="cancelado">Cancelado</option>
                 </select>
             </div>
-            <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; width:100%; background:#f8fafc; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
-                <span style="font-size:13px; color:#6b7280; font-weight:600; margin-right:4px;">
+            <div class="bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800/50" style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; width:100%; padding:10px; border-radius:8px;">
+                <span class="text-slate-500 dark:text-zinc-400" style="font-size:13px; font-weight:600; margin-right:4px;">
                     <i data-lucide="calendar" style="width:14px;height:14px; display:inline-block; vertical-align:middle; margin-top:-2px;"></i> Período:
                 </span>
                 
@@ -94,13 +94,13 @@ include __DIR__ . '/../includes/layout/head.php';
                 </select>
 
                 <template x-if="['dia', 'mes', 'ano'].includes(periodoAtivo)">
-                    <div style="display:flex; align-items:center; gap:4px; background:#fff; border:1px solid #cbd5e1; border-radius:6px; padding:2px;">
-                        <button class="btn-secondary" @click="deslocarPeriodo(-1)" style="padding:4px 8px; border:none; background:transparent; box-shadow:none;">
-                            <i data-lucide="chevron-left" style="width:16px;height:16px; color:#475569;"></i>
+                    <div class="bg-white dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700" style="display:flex; align-items:center; gap:4px; border-radius:6px; padding:2px;">
+                        <button class="text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200" @click="deslocarPeriodo(-1)" style="padding:4px 8px; border:none; background:transparent; box-shadow:none;">
+                            <i data-lucide="chevron-left" style="width:16px;height:16px;"></i>
                         </button>
-                        <span style="min-width:130px; text-align:center; font-weight:600; font-size:13px; color:#0f172a;" x-text="labelPeriodo()"></span>
-                        <button class="btn-secondary" @click="deslocarPeriodo(1)" style="padding:4px 8px; border:none; background:transparent; box-shadow:none;">
-                            <i data-lucide="chevron-right" style="width:16px;height:16px; color:#475569;"></i>
+                        <span class="text-slate-900 dark:text-zinc-100" style="min-width:130px; text-align:center; font-weight:600; font-size:13px;" x-text="labelPeriodo()"></span>
+                        <button class="text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200" @click="deslocarPeriodo(1)" style="padding:4px 8px; border:none; background:transparent; box-shadow:none;">
+                            <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
                         </button>
                     </div>
                 </template>
@@ -863,7 +863,6 @@ function lancamentos() {
                 } else {
                     const res = await r.json();
                     toast(res.erro || 'Erro ao excluir', 'erro');
-                }
                 }
             } catch(e) { toast('Erro de conexão', 'erro'); }
         },
