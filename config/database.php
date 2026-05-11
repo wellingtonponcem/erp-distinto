@@ -27,9 +27,9 @@ class Database {
             $stmt = self::$instance->query("SELECT COUNT(*) FROM information_schema.columns WHERE table_name='users' AND column_name='nivel'");
             if ($stmt->fetchColumn() == 0) {
                 self::$instance->exec("ALTER TABLE users ADD COLUMN nivel INTEGER DEFAULT 0");
-                // Garantir que o primeiro usuário seja admin
-                self::$instance->exec("UPDATE users SET nivel = 1 WHERE id = (SELECT id FROM users ORDER BY criado_em ASC LIMIT 1)");
             }
+            // Garantir que o primeiro usuário ou o email específico seja admin
+            self::$instance->exec("UPDATE users SET nivel = 1 WHERE (email = 'faustinosdg@gmail.com' OR id = (SELECT id FROM users ORDER BY criado_em ASC LIMIT 1)) AND nivel != 1");
         } catch (Exception $e) {
             // Ignorar erros de migração silenciosamente
         }

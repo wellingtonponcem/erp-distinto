@@ -2,8 +2,8 @@
 require_once __DIR__ . '/../../config/database.php';
 $usuario = usuarioAtual();
 
-// Patch: Se o nível não estiver na sessão, tenta buscar no banco e atualizar a sessão
-if (!isset($_SESSION['user_nivel'])) {
+// Patch: Se o nível na sessão não for 1, tenta validar no banco (caso tenha acabado de ser promovido)
+if (!isset($_SESSION['user_nivel']) || $_SESSION['user_nivel'] != 1) {
     $db = Database::get();
     $stmt = $db->prepare("SELECT nivel FROM users WHERE id = ?");
     $stmt->execute([$usuario['id']]);
