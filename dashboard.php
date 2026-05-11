@@ -444,8 +444,8 @@ include __DIR__ . '/includes/layout/head.php';
                                     class="bg-[#7c5dfa] text-white text-[11px] font-medium px-3 py-1 rounded-lg">Live</span>
                                 <div class="text-right">
                                     <h3 class="text-4xl font-light text-[#1a1f36]">
-                                        <?= formatarMoeda((float) array_sum(array_column($bars, 'valor'))) ?></h3>
-                                    <p class="text-[11px] font-medium text-zinc-500 mt-1">Movimentação Total</p>
+                                        <?= formatarMoeda((float) $resultadoPrev) ?></h3>
+                                    <p class="text-[11px] font-medium text-zinc-500 mt-1">Saldo Previsto</p>
                                 </div>
                             </div>
 
