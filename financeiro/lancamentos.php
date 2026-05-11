@@ -70,7 +70,6 @@ include __DIR__ . '/../includes/layout/head.php';
                 </button>
             </div>
         </div>
-        </div>
 
         <!-- Filtros -->
         <div class="card" style="padding:16px 20px; margin-bottom:20px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
