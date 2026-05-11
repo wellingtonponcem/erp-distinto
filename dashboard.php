@@ -146,6 +146,20 @@ $kpis = [
     ['label' => 'Resultado Previsto', 'value' => $resultadoPrev, 'trend' => 'Final do Mês', 'up' => $resultadoPrev >= 0],
 ];
 
+// Gastos por categoria para o gráfico
+$stmtCat = $db->prepare("
+    SELECT categoria, SUM(valor_pago) as total
+    FROM lancamentos
+    WHERE tipo='pagar' AND status IN ('pago', 'efetivado', 'pago_parcial') AND vencimento BETWEEN ? AND ?
+    GROUP BY categoria
+    ORDER BY total DESC
+    LIMIT 4
+");
+$stmtCat->execute([$mesInicio, $mesFim]);
+$gastosPorCategoria = $stmtCat->fetchAll();
+$totalGastosChart = array_sum(array_column($gastosPorCategoria, 'total'));
+if ($totalGastosChart == 0) $totalGastosChart = 1; // Evitar divisão por zero
+
 include __DIR__ . '/includes/layout/head.php';
 ?>
 
@@ -301,36 +315,64 @@ include __DIR__ . '/includes/layout/head.php';
                 </div>
 
                 <!-- Spending By Category -->
-                <div class="bento-card bento-dark">
+                <div class="bg-[#212936] rounded-[32px] p-6 relative overflow-hidden">
                     <div class="flex justify-between items-start mb-6">
-                        <h2 class="text-lg font-bold">Proporção Financeira</h2>
-                        <span class="bg-white/10 px-3 py-1 rounded-full text-xs font-bold text-zinc-300">Análise</span>
+                        <h2 class="text-xl font-medium tracking-tight text-white/90">Spending by Category</h2>
+                        <span class="bg-white/10 hover:bg-white/20 cursor-pointer transition-colors text-white/60 px-4 py-1.5 rounded-full text-xs font-medium flex items-center gap-1">Filtro <i data-lucide="chevron-down" style="width:12px;height:12px;"></i></span>
                     </div>
                     
-                    <div class="flex items-center justify-center py-4 relative">
-                        <div class="donut-chart"></div>
-                        <div class="absolute inset-0 flex flex-col items-center justify-center">
-                            <p class="text-[11px] font-bold text-zinc-400">Resultado Previsto</p>
-                            <h3 class="text-xl font-extrabold text-white mt-1"><?= formatarMoeda((float) $resultadoPrev) ?></h3>
-                        </div>
+                    <div class="flex items-center justify-center py-6">
+                        <?php
+                        $radius = 70;
+                        $circumference = 2 * pi() * $radius;
+                        $colors = ['#98b8a8', '#c4b5fd', '#38bdf8', '#7c5dfa', '#10b981'];
+                        $offset = 0;
+                        $gap = 12; // Gap between segments
+                        ?>
+                        <svg width="240" height="240" viewBox="0 0 200 200" style="transform: rotate(-90deg);">
+                            <?php 
+                            if (count($gastosPorCategoria) > 0) {
+                                $i = 0;
+                                foreach($gastosPorCategoria as $gasto): 
+                                    $pct = ($gasto['total'] / $totalGastosChart);
+                                    $dash = $pct * $circumference;
+                                    $color = $colors[$i % count($colors)];
+                                    if ($dash > $gap) {
+                                        $visibleDash = $dash - $gap;
+                                        // Draw segment
+                                        ?>
+                                        <circle cx="100" cy="100" r="<?= $radius ?>" fill="none" stroke="<?= $color ?>" stroke-width="26" stroke-linecap="round" stroke-dasharray="<?= $visibleDash ?> <?= $circumference ?>" stroke-dashoffset="<?= -$offset ?>" class="transition-all duration-700 ease-out" />
+                                        <?php
+                                        
+                                        // Text positioning
+                                        $midAngle = (($offset + ($visibleDash / 2)) / $circumference) * 2 * pi();
+                                        $textX = 100 + ($radius * cos($midAngle));
+                                        $textY = 100 + ($radius * sin($midAngle));
+                                        ?>
+                                        <text x="<?= $textX ?>" y="<?= $textY ?>" fill="rgba(0,0,0,0.4)" font-size="9" font-weight="700" text-anchor="middle" dominant-baseline="middle" transform="rotate(90, <?= $textX ?>, <?= $textY ?>)">
+                                            <?= round($pct * 100) ?>%
+                                        </text>
+                                        <?php
+                                    }
+                                    $offset += $dash;
+                                    $i++;
+                                endforeach;
+                            } else {
+                                ?>
+                                <circle cx="100" cy="100" r="<?= $radius ?>" fill="none" stroke="#ffffff10" stroke-width="26" stroke-linecap="round" />
+                                <?php
+                            }
+                            ?>
+                        </svg>
                     </div>
                     
-                    <div class="flex justify-between mt-6 px-4">
-                        <div class="text-center">
-                            <div class="w-3 h-3 rounded-full bg-[#10b981] mx-auto mb-2"></div>
-                            <p class="text-[10px] font-bold text-zinc-400 uppercase">Receber</p>
-                            <p class="text-sm font-extrabold mt-1"><?= formatarMoeda((float) $receberMes) ?></p>
+                    <div class="flex flex-wrap justify-center gap-4 mt-2 px-2 pb-2">
+                        <?php $i=0; foreach($gastosPorCategoria as $gasto): $color = $colors[$i % count($colors)]; ?>
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-3 h-3 rounded-full" style="background: <?= $color ?>"></div>
+                            <p class="text-[11px] font-medium text-white/70 capitalize"><?= htmlspecialchars($gasto['categoria']) ?></p>
                         </div>
-                        <div class="text-center">
-                            <div class="w-3 h-3 rounded-full bg-[#8b5cf6] mx-auto mb-2"></div>
-                            <p class="text-[10px] font-bold text-zinc-400 uppercase">Pagar</p>
-                            <p class="text-sm font-extrabold mt-1"><?= formatarMoeda((float) $pagarMes) ?></p>
-                        </div>
-                        <div class="text-center">
-                            <div class="w-3 h-3 rounded-full bg-[#6366f1] mx-auto mb-2"></div>
-                            <p class="text-[10px] font-bold text-zinc-400 uppercase">Despesas</p>
-                            <p class="text-sm font-extrabold mt-1"><?= formatarMoeda((float) $despesasMes) ?></p>
-                        </div>
+                        <?php $i++; endforeach; ?>
                     </div>
                 </div>
             </div>
