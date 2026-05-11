@@ -92,6 +92,18 @@ if (!empty($d['fases']) && is_array($d['fases'])) {
 $clienteId = array_key_exists('cliente_id', $d) ? ($d['cliente_id'] ?: null) : $propostaAtual['cliente_id'];
 $oportunidadeId = array_key_exists('oportunidade_id', $d) ? ($d['oportunidade_id'] ?: null) : $propostaAtual['oportunidade_id'];
 
+if (!empty($oportunidadeId)) {
+    $stmtO = $db->prepare("SELECT cliente_id FROM oportunidades WHERE id = ?");
+    $stmtO->execute([$oportunidadeId]);
+    $oportunidade = $stmtO->fetch();
+    if (!$oportunidade) {
+        responderJson(['erro' => 'Oportunidade não encontrada.'], 404);
+    }
+    if (!empty($oportunidade['cliente_id'])) {
+        $clienteId = $oportunidade['cliente_id'];
+    }
+}
+
 $dadosJson = json_encode([
     'secoes' => $secoes,
     'servicos' => $servicosInclusos,
@@ -172,6 +184,44 @@ $stmt->execute([
     $oportunidadeId,
     $d['id']
 ]);
+
+// --- ASSOCIAÇÃO AUTOMÁTICA FINANCEIRA ---
+if ($status === 'aceita' && !empty($clienteId)) {
+    // 1. Verificar se já existe um lançamento para esta proposta
+    $checkObs = "Ref. Proposta: " . $d['id'];
+    $stmtCheck = $db->prepare("SELECT id FROM lancamentos WHERE observacao LIKE ?");
+    $stmtCheck->execute(["%$checkObs%"]);
+    
+    if (!$stmtCheck->fetch()) {
+        // 2. Criar novo lançamento
+        $idLancamento = gerarId();
+        $desc = "Fechamento: " . ($d['titulo'] ?? $propostaAtual['titulo']);
+        $venc = date('Y-m-d'); // Vencimento hoje por padrão
+        
+        // Buscar nome do cliente para a descrição/cliente_fornecedor
+        $stmtCli = $db->prepare("SELECT nome FROM clientes WHERE id = ?");
+        $stmtCli->execute([$clienteId]);
+        $cliente = $stmtCli->fetch();
+        $clienteNome = $cliente ? $cliente['nome'] : $propostaAtual['cliente_nome'];
+
+        $stmtIns = $db->prepare("INSERT INTO lancamentos (
+            id, tipo, descricao, valor, valor_pago, categoria, 
+            cliente_fornecedor, cliente_id, vencimento, status, 
+            modalidade, observacao, created_at
+        ) VALUES (?, 'receber', ?, ?, 0, 'serviços', ?, ?, ?, 'pendente', 'avista', ?, NOW())");
+        
+        $stmtIns->execute([
+            $idLancamento,
+            $desc,
+            $valorTotal,
+            $clienteNome,
+            $clienteId,
+            $venc,
+            "Gerado automaticamente. " . $checkObs
+        ]);
+    }
+}
+// ----------------------------------------
 
 responderJson([
     'success' => true,

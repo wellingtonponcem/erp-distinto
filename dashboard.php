@@ -19,6 +19,14 @@ $crmResumo = [
     'oportunidades_abertas' => 0,
     'propostas_com_oportunidade' => 0,
 ];
+$crmPipeline = [
+    'novo' => 0,
+    'qualificado' => 0,
+    'proposta' => 0,
+    'negociacao' => 0,
+    'ganha' => 0,
+    'perdida' => 0,
+];
 try {
     $crmResumo = $db->query("SELECT 
         (SELECT COUNT(*) FROM clientes) as total_clientes,
@@ -26,6 +34,12 @@ try {
         (SELECT COUNT(*) FROM oportunidades WHERE etapa NOT IN ('ganha', 'perdida')) as oportunidades_abertas,
         (SELECT COUNT(*) FROM propostas WHERE oportunidade_id IS NOT NULL) as propostas_com_oportunidade
     ")->fetch();
+
+    foreach ($db->query("SELECT etapa, COUNT(*) as total FROM oportunidades GROUP BY etapa")->fetchAll() as $row) {
+        if (isset($crmPipeline[$row['etapa']])) {
+            $crmPipeline[$row['etapa']] = $row['total'];
+        }
+    }
 } catch (Exception $e) {
     // Se o CRM ainda não estiver configurado, exibimos valores zerados.
 }
@@ -374,6 +388,42 @@ include __DIR__ . '/includes/layout/head.php';
             <div class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm">
                 <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Propostas ligadas a oportunidades</p>
                 <p class="mt-3 text-3xl font-bold text-zinc-900 dark:text-white"><?= $crmResumo['propostas_com_oportunidade'] ?? 0 ?></p>
+            </div>
+        </div>
+
+        <div class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Pipeline de Oportunidades</p>
+                    <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Visão por estágio</h2>
+                </div>
+                <span class="text-xs uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">CRM</span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+                <div class="bg-zinc-50 dark:bg-zinc-950/80 rounded-3xl p-4">
+                    <p class="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Novo</p>
+                    <p class="mt-3 text-2xl font-bold text-zinc-900 dark:text-white"><?= $crmPipeline['novo'] ?? 0 ?></p>
+                </div>
+                <div class="bg-zinc-50 dark:bg-zinc-950/80 rounded-3xl p-4">
+                    <p class="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Qualificado</p>
+                    <p class="mt-3 text-2xl font-bold text-zinc-900 dark:text-white"><?= $crmPipeline['qualificado'] ?? 0 ?></p>
+                </div>
+                <div class="bg-zinc-50 dark:bg-zinc-950/80 rounded-3xl p-4">
+                    <p class="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Proposta</p>
+                    <p class="mt-3 text-2xl font-bold text-zinc-900 dark:text-white"><?= $crmPipeline['proposta'] ?? 0 ?></p>
+                </div>
+                <div class="bg-zinc-50 dark:bg-zinc-950/80 rounded-3xl p-4">
+                    <p class="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Negociação</p>
+                    <p class="mt-3 text-2xl font-bold text-zinc-900 dark:text-white"><?= $crmPipeline['negociacao'] ?? 0 ?></p>
+                </div>
+                <div class="bg-zinc-50 dark:bg-zinc-950/80 rounded-3xl p-4">
+                    <p class="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Ganha</p>
+                    <p class="mt-3 text-2xl font-bold text-zinc-900 dark:text-white"><?= $crmPipeline['ganha'] ?? 0 ?></p>
+                </div>
+                <div class="bg-zinc-50 dark:bg-zinc-950/80 rounded-3xl p-4">
+                    <p class="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Perdida</p>
+                    <p class="mt-3 text-2xl font-bold text-zinc-900 dark:text-white"><?= $crmPipeline['perdida'] ?? 0 ?></p>
+                </div>
             </div>
         </div>
 

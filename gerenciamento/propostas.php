@@ -204,22 +204,28 @@ include __DIR__ . '/../includes/layout/head.php';
                      @click="window.open(`<?= APP_URL ?>/p/${p.slug}`, '_blank')"
                      @contextmenu.stop.prevent="showContextMenu($event, 'proposal', p)">
                     
-                    <div class="doc-visual">
-                        <i :data-lucide="p.tipo === 'marketing' ? 'megaphone' : (p.tipo === 'filmmaker' ? 'video' : 'file-text')" 
-                           class="w-10 h-10 opacity-30"></i>
-                        
-                        <!-- Status Dot -->
-                        <div class="absolute top-2 right-2">
-                             <div class="w-2 h-2 rounded-full" 
-                                  :class="{
-                                      'bg-blue-500': p.status === 'pendente',
-                                      'bg-emerald-500': p.status === 'aceita',
-                                      'bg-red-500': p.status === 'recusada'
-                                  }"></div>
+                        <!-- Pipeline Progress Bar -->
+                        <div class="absolute bottom-2 left-2 right-2 flex flex-col gap-1.5">
+                            <div class="flex items-center justify-between px-1">
+                                <span class="text-[8px] font-black uppercase tracking-widest text-zinc-500" 
+                                      x-text="p.status === 'rascunho' ? 'Rascunho' : (p.status === 'pendente' ? 'Aguardando' : (p.status === 'aceita' ? 'Fechado' : 'Recusado'))"></span>
+                                <span class="text-[8px] font-bold text-zinc-600" 
+                                      x-text="p.status === 'rascunho' ? '10%' : (p.status === 'pendente' ? '50%' : '100%')"></span>
+                            </div>
+                            <div class="h-1 w-full bg-zinc-800 rounded-full overflow-hidden flex">
+                                <div class="h-full transition-all duration-1000 ease-out"
+                                     :style="`width: ${p.status === 'rascunho' ? '10%' : (p.status === 'pendente' ? '50%' : '100%')};`"
+                                     :class="{
+                                         'bg-zinc-600': p.status === 'rascunho',
+                                         'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]': p.status === 'pendente',
+                                         'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]': p.status === 'aceita',
+                                         'bg-red-500': p.status === 'recusada'
+                                     }"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="px-1">
+                    <div class="px-1 mt-2">
                         <div class="text-[11px] font-bold text-white truncate" x-text="p.cliente_nome"></div>
                         <div class="text-[9px] text-zinc-500 truncate" x-text="p.titulo"></div>
                     </div>

@@ -175,9 +175,10 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                             <select name="oportunidade_id" class="input">
                                 <option value="">Nenhuma oportunidade</option>
                                 <?php foreach ($oportunidades as $o): ?>
-                                    <option value="<?= $o['id'] ?>"><?= sanitizar($o['nome'] . ($o['cliente_id'] ? ' — ' . ($clientesPorId[$o['cliente_id']] ?? 'Cliente') : '')) ?></option>
+                                    <option value="<?= $o['id'] ?>" data-cliente-id="<?= sanitizar($o['cliente_id'] ?? '') ?>"><?= sanitizar($o['nome'] . ($o['cliente_id'] ? ' — ' . ($clientesPorId[$o['cliente_id']] ?? 'Cliente') : '')) ?></option>
                                 <?php endforeach; ?>
                             </select>
+                            <p class="text-xs text-zinc-500 mt-2">Se um cliente for selecionado, a lista de oportunidades será filtrada para combinar com ele.</p>
                         </div>
 
                         <!-- Modo Novo Lead -->
@@ -840,12 +841,43 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Reavaliar quando mudar o tipo
     const selectTipo = document.getElementById('tipoPropostaSelect');
+    const selectCliente = document.getElementById('cliente_id');
+    const selectClienteCasamento = document.getElementById('cliente_id_casamento');
+    const selectOportunidade = document.querySelector('select[name="oportunidade_id"]');
+
+    function filterOportunidadesPorCliente(clienteId) {
+        if (!selectOportunidade) return;
+        selectOportunidade.querySelectorAll('option[data-cliente-id]').forEach(opt => {
+            const optClient = opt.dataset.clienteId || '';
+            if (!clienteId || clienteId === '' || opt.value === '' || optClient === '' || optClient === clienteId) {
+                opt.hidden = false;
+                opt.disabled = false;
+            } else {
+                opt.hidden = true;
+                opt.disabled = true;
+            }
+        });
+        if (selectOportunidade.value && selectOportunidade.selectedOptions[0].disabled) {
+            selectOportunidade.value = '';
+        }
+    }
+
+    if (selectCliente) {
+        selectCliente.addEventListener('change', () => filterOportunidadesPorCliente(selectCliente.value));
+    }
+    if (selectClienteCasamento) {
+        selectClienteCasamento.addEventListener('change', () => filterOportunidadesPorCliente(selectClienteCasamento.value));
+    }
+
     if (selectTipo) {
         selectTipo.addEventListener('change', () => {
             const checked = document.querySelector('input[name="modo_cliente"]:checked');
             if (checked) checked.dispatchEvent(new Event('change'));
+            filterOportunidadesPorCliente((selectCliente && selectCliente.value) || (selectClienteCasamento && selectClienteCasamento.value) || '');
         });
     }
+
+    filterOportunidadesPorCliente((selectCliente && selectCliente.value) || (selectClienteCasamento && selectClienteCasamento.value) || '');
 
     form.addEventListener('submit', async function(e) {
         e.preventDefault();

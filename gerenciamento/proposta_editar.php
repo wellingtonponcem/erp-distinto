@@ -175,17 +175,22 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="form-group">
                             <label class="label">Cliente</label>
-                            <input type="text" class="input bg-zinc-800/30 text-zinc-400" value="<?= sanitizar($proposta['cliente_nome']) ?>" readonly disabled>
-                            <input type="hidden" name="cliente_id" value="<?= sanitizar($proposta['cliente_id'] ?? '') ?>">
+                            <select name="cliente_id" id="cliente_id" class="input">
+                                <option value="">Selecione um cliente...</option>
+                                <?php foreach ($clientes as $c): ?>
+                                    <option value="<?= $c['id'] ?>" <?= isset($proposta['cliente_id']) && $proposta['cliente_id'] === $c['id'] ? 'selected' : '' ?>><?= sanitizar($c['nome']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label class="label">Oportunidade vinculada</label>
-                            <select name="oportunidade_id" class="input">
+                            <select name="oportunidade_id" class="input" id="oportunidade_id">
                                 <option value="">Nenhuma</option>
                                 <?php foreach ($oportunidades as $o): ?>
-                                    <option value="<?= $o['id'] ?>" <?= isset($proposta['oportunidade_id']) && $proposta['oportunidade_id'] === $o['id'] ? 'selected' : '' ?>><?= sanitizar($o['nome']) ?></option>
+                                    <option value="<?= $o['id'] ?>" data-cliente-id="<?= sanitizar($o['cliente_id'] ?? '') ?>" <?= isset($proposta['oportunidade_id']) && $proposta['oportunidade_id'] === $o['id'] ? 'selected' : '' ?>><?= sanitizar($o['nome']) ?></option>
                                 <?php endforeach; ?>
                             </select>
+                            <p class="text-xs text-zinc-500 mt-2">A lista de oportunidades é filtrada pelo cliente selecionado.</p>
                         </div>
                         <div class="form-group">
                             <label class="label">Tipo de Serviço</label>
@@ -749,6 +754,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('formAtualizarProposta');
     const btnSalvar = document.getElementById('btnSalvar');
     const statusDiv = document.getElementById('statusSalvar');
+    const selectCliente = document.getElementById('cliente_id');
+    const selectOportunidade = document.getElementById('oportunidade_id');
+
+    function filterOportunidadesPorCliente(clienteId) {
+        if (!selectOportunidade) return;
+        selectOportunidade.querySelectorAll('option[data-cliente-id]').forEach(opt => {
+            const optClient = opt.dataset.clienteId || '';
+            if (!clienteId || clienteId === '' || opt.value === '' || optClient === '' || optClient === clienteId) {
+                opt.hidden = false;
+                opt.disabled = false;
+            } else {
+                opt.hidden = true;
+                opt.disabled = true;
+            }
+        });
+        if (selectOportunidade.value && selectOportunidade.selectedOptions[0].disabled) {
+            selectOportunidade.value = '';
+        }
+    }
+
+    if (selectCliente) {
+        selectCliente.addEventListener('change', () => filterOportunidadesPorCliente(selectCliente.value));
+        filterOportunidadesPorCliente(selectCliente.value);
+    }
 
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
