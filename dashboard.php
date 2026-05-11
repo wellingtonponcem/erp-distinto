@@ -349,7 +349,7 @@ include __DIR__ . '/includes/layout/head.php';
                 <!-- Revenue Forecast Card -->
                 <div class="bento-card bento-purple">
                     <div class="flex justify-between items-start mb-6">
-                        <h2 class="text-xl font-medium tracking-tight text-[#1a1f36]">Fluxo de Caixa Mensal</h2>
+                        <h2 class="text-xl font-medium tracking-tight text-[#ffffff]">Fluxo de Caixa Mensal</h2>
                         <span
                             class="bg-black/5 hover:bg-black/10 cursor-pointer transition-colors text-black/60 px-4 py-1.5 rounded-full text-xs font-medium flex items-center gap-1">Filtro
                             <i data-lucide="chevron-down" style="width:12px;height:12px;"></i></span>
@@ -360,7 +360,7 @@ include __DIR__ . '/includes/layout/head.php';
                         <div class="flex flex-col gap-4 w-full md:w-[40%]">
                             <div class="bg-[#f2f4f7] rounded-[32px] p-6 min-h-[160px] flex flex-col justify-center">
                                 <p class="text-sm font-medium text-zinc-500 mb-2">Receitas Mês</p>
-                                <h3 class="text-4xl font-light tracking-tight text-[#1a1f36]">
+                                <h3 class="text-4xl font-light tracking-tight text-[#ffffff]">
                                     <?= formatarMoeda((float) $receitasMes) ?></h3>
                             </div>
 
@@ -381,7 +381,7 @@ include __DIR__ . '/includes/layout/head.php';
                                 <span
                                     class="bg-[#7c5dfa] text-white text-[11px] font-medium px-3 py-1 rounded-lg">Live</span>
                                 <div class="text-right">
-                                    <h3 class="text-4xl font-light text-[#1a1f36]">
+                                    <h3 class="text-4xl font-light text-[#ffffff]">
                                         <?= formatarMoeda((float) $resultadoPrev) ?></h3>
                                     <p class="text-[11px] font-medium text-zinc-500 mt-1">Saldo Previsto</p>
                                 </div>
