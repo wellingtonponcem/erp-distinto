@@ -837,9 +837,12 @@ function propostasApp() {
                 if (res.sucesso) {
                     this.novaNota = '';
                     await this.fetchHistorico(this.selectedProposta.id);
+                } else {
+                    alert('Erro ao salvar: ' + (res.erro || 'Desconhecido'));
                 }
             } catch (e) {
                 console.error('Erro ao adicionar histórico:', e);
+                alert('Erro de conexão ao salvar histórico.');
             }
         },
 

@@ -30,6 +30,18 @@ class Database {
             }
             // Garantir que o primeiro usuário ou o email específico seja admin
             self::$instance->exec("UPDATE users SET nivel = 1 WHERE (email = 'faustinosdg@gmail.com' OR id = (SELECT id FROM users ORDER BY criado_em ASC LIMIT 1)) AND nivel != 1");
+            // Auto-migration para Histórico de Propostas
+            $stmtH = self::$instance->query("SELECT COUNT(*) FROM information_schema.tables WHERE table_name='propostas_historico'");
+            if ($stmtH->fetchColumn() == 0) {
+                self::$instance->exec("CREATE TABLE propostas_historico (
+                    id SERIAL PRIMARY KEY,
+                    proposta_id TEXT NOT NULL,
+                    user_id TEXT NOT NULL,
+                    tipo TEXT DEFAULT 'nota',
+                    conteudo TEXT NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )");
+            }
         } catch (Exception $e) {
             // Ignorar erros de migração silenciosamente
         }
