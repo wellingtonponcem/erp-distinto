@@ -31,10 +31,9 @@ $stmtSaldoInicial = $db->query("SELECT SUM(saldo_inicial) FROM contas_bancarias 
 $saldoInicialTotal = (float)$stmtSaldoInicial->fetchColumn() ?: 0;
 
 $stmtFluxoBancos = $db->query("
-    SELECT SUM(CASE WHEN l.tipo='receber' THEN l.valor_pago ELSE -l.valor_pago END) 
-    FROM lancamentos l
-    INNER JOIN contas_bancarias c ON l.conta_id = c.id
-    WHERE l.status IN ('pago', 'efetivado') AND c.ativo = 1
+    SELECT SUM(CASE WHEN tipo='receber' THEN valor_pago ELSE -valor_pago END) 
+    FROM lancamentos
+    WHERE status IN ('pago', 'efetivado', 'pago_parcial')
 ");
 $fluxoBancos = (float)$stmtFluxoBancos->fetchColumn() ?: 0;
 
