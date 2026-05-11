@@ -27,17 +27,30 @@ $queryResumo->execute([$mesInicio, $mesFim, $mesInicio, $mesFim, $mesInicio, $me
 $resumo = $queryResumo->fetch();
 
 // Cálculo do Saldo Atual baseado na soma real dos bancos
-$stmtSaldoInicial = $db->query("SELECT SUM(saldo_inicial) FROM contas_bancarias WHERE ativo=1");
-$saldoInicialTotal = (float)$stmtSaldoInicial->fetchColumn() ?: 0;
+$stmtSaldoInicial = $db->query("SELECT id, nome, saldo_inicial FROM contas_bancarias WHERE ativo=1");
+$contas = $stmtSaldoInicial->fetchAll();
+$saldoInicialTotal = 0;
+$debug_str = "";
 
-$stmtFluxoBancos = $db->query("
-    SELECT SUM(CASE WHEN tipo='receber' THEN valor_pago ELSE -valor_pago END) 
-    FROM lancamentos
-    WHERE status IN ('pago', 'efetivado', 'pago_parcial')
-");
-$fluxoBancos = (float)$stmtFluxoBancos->fetchColumn() ?: 0;
+$saldoAtual = 0;
 
-$saldoAtual = $saldoInicialTotal + $fluxoBancos;
+foreach ($contas as $c) {
+    $saldoInicialTotal += (float)$c['saldo_inicial'];
+    $calc = $db->prepare("
+        SELECT SUM(CASE WHEN tipo='receber' THEN valor_pago ELSE -valor_pago END) as fluxo
+        FROM lancamentos 
+        WHERE conta_id = ? AND status IN ('pago', 'efetivado')
+    ");
+    $calc->execute([$c['id']]);
+    $fluxo = (float)$calc->fetchColumn();
+    $saldo_conta = (float)$c['saldo_inicial'] + $fluxo;
+    $saldoAtual += $saldo_conta;
+    
+    $debug_str .= $c['nome'] . " (Inic: " . $c['saldo_inicial'] . " + Fluxo: " . $fluxo . " = " . $saldo_conta . ") | ";
+}
+
+// Para debugar na tela temporariamente, injetaremos o $debug_str no resumo
+$resumo['debug_contas'] = $debug_str;
 
 $receitasMes = $resumo['receitas_mes'] ?? 0;
 $despesasMes = $resumo['despesas_mes'] ?? 0;
@@ -240,6 +253,7 @@ include __DIR__ . '/includes/layout/head.php';
                         <div class="bento-pill-dark flex-1 min-h-[140px]">
                             <p class="text-xs font-bold text-zinc-400 mb-1">Saldo Atual</p>
                             <h3 class="text-3xl font-extrabold tracking-tight"><?= formatarMoeda((float) $saldoAtual) ?></h3>
+                            <p class="text-[10px] text-zinc-500 mt-2"><?= $resumo['debug_contas'] ?></p>
                         </div>
                     </div>
                     
