@@ -12,6 +12,7 @@ include __DIR__ . '/../includes/layout/head.php';
     <?php include __DIR__ . '/../includes/layout/sidebar.php'; ?>
 
     <main id="main-content" style="flex:1; padding:28px 32px; overflow-y:auto; max-width:calc(100vw - 240px);">
+        <?php include __DIR__ . '/../includes/layout/top_nav.php'; ?>
 
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:28px;">
             <div>

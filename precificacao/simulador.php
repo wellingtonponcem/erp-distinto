@@ -17,6 +17,7 @@ $servicosJson = json_encode($servicos, JSON_UNESCAPED_UNICODE);
     <?php include __DIR__ . '/../includes/layout/sidebar.php'; ?>
 
     <main id="main-content" style="flex:1; padding:28px 32px; overflow-y:auto; max-width:calc(100vw - 240px);">
+        <?php include __DIR__ . '/../includes/layout/top_nav.php'; ?>
 
         <div style="margin-bottom:28px;">
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
