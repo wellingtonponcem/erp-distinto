@@ -19,30 +19,29 @@ try {
         categoria VARCHAR(100),
         observacao TEXT,
         criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+    );");
 
     $db->exec("CREATE TABLE IF NOT EXISTS oportunidades (
         id VARCHAR(32) NOT NULL PRIMARY KEY,
         cliente_id VARCHAR(32) NULL,
         nome VARCHAR(255) NOT NULL,
         valor_estimado DECIMAL(15,2) NOT NULL DEFAULT 0.00,
-        etapa ENUM('novo','qualificado','proposta','negociacao','ganha','perdida') NOT NULL DEFAULT 'novo',
+        etapa VARCHAR(50) NOT NULL DEFAULT 'novo',
         previsao DATE NULL,
         responsavel VARCHAR(255),
         descricao TEXT,
         criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        KEY idx_cliente_id (cliente_id),
-        KEY idx_etapa (etapa)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+        atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );");
 
-    $columnsLancamentos = $db->query("SHOW COLUMNS FROM lancamentos LIKE 'cliente_id'")->fetch();
-    if (!$columnsLancamentos) {
-        $db->exec("ALTER TABLE lancamentos 
-            ADD COLUMN cliente_id VARCHAR(32) NULL AFTER cliente_fornecedor,
-            ADD COLUMN fornecedor_id VARCHAR(32) NULL AFTER cliente_id,
-            ADD KEY idx_cliente_id (cliente_id),
-            ADD KEY idx_fornecedor_id (fornecedor_id);");
+    $columnsLancamentos = $db->prepare("SELECT column_name FROM information_schema.columns WHERE table_name = 'lancamentos' AND column_name = 'cliente_id'");
+    $columnsLancamentos->execute();
+    $exists = $columnsLancamentos->fetch();
+    if (!$exists) {
+        $db->exec("ALTER TABLE lancamentos ADD COLUMN cliente_id VARCHAR(32) NULL;");
+        $db->exec("ALTER TABLE lancamentos ADD COLUMN fornecedor_id VARCHAR(32) NULL;");
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_lancamentos_cliente_id ON lancamentos (cliente_id);");
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_lancamentos_fornecedor_id ON lancamentos (fornecedor_id);");
     }
 
     echo "Migração CRM concluída com sucesso.\n";
