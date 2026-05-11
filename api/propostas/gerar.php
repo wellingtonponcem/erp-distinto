@@ -243,6 +243,30 @@ $stmt->execute([
     $oportunidadeId
 ]);
 
+// --- CRIAÇÃO AUTOMÁTICA DE OPORTUNIDADE (CRM) ---
+if (!$oportunidadeId) {
+    $novaOportunidadeId = gerarId();
+    $stmtCRM = $db->prepare("INSERT INTO oportunidades (id, cliente_id, nome, valor_estimado, etapa, previsao, responsavel, descricao, criado_em, atualizado_em) 
+                             VALUES (?, ?, ?, ?, 'proposta', ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)");
+    
+    // Previsão para 30 dias se for casamento, ou 15 para outros
+    $previsao = date('Y-m-d', strtotime($d['tipo'] === 'casamento' ? '+30 days' : '+15 days'));
+    
+    $stmtCRM->execute([
+        $novaOportunidadeId,
+        $clienteId,
+        $titulo,
+        $valorTotal,
+        $previsao,
+        $responsavel ?: $clienteNome,
+        "Oportunidade criada automaticamente a partir da proposta " . $id
+    ]);
+
+    // Vincular a proposta à nova oportunidade recém-criada
+    $db->prepare("UPDATE propostas SET oportunidade_id = ? WHERE id = ?")->execute([$novaOportunidadeId, $id]);
+}
+// ------------------------------------------------
+
 responderJson([
     'success' => true,
     'id' => $id,

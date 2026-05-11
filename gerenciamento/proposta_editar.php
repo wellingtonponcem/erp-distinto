@@ -202,6 +202,15 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                             </select>
                             <p class="text-[10px] text-zinc-500 mt-1">Alterar o tipo mudará os campos disponíveis abaixo.</p>
                         </div>
+                        <div class="form-group">
+                            <label class="label">Status da Proposta</label>
+                            <select name="status" class="input" x-model="statusProposta">
+                                <option value="rascunho">Rascunho</option>
+                                <option value="pendente">Pendente</option>
+                                <option value="aceita">Aceita</option>
+                                <option value="recusada">Recusada</option>
+                            </select>
+                        </div>
                     </div>
                 </section>
 
@@ -219,15 +228,6 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                                 <label class="label-premium">WhatsApp do Cliente</label>
                                 <input type="text" name="whatsapp_casamento" class="input" x-model="whatsapp" placeholder="Ex: 27999998888">
                                 <input type="hidden" name="whatsapp" :value="whatsapp">
-                            </div>
-                            <div class="form-group">
-                                <label class="label-premium">Status da Proposta</label>
-                                <select name="status" class="input" x-model="statusProposta">
-                                    <option value="rascunho">Rascunho</option>
-                                    <option value="pendente">Pendente</option>
-                                    <option value="aceita">Aceita</option>
-                                    <option value="recusada">Recusada</option>
-                                </select>
                             </div>
                         </div>
 
