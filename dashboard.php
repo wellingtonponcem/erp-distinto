@@ -241,50 +241,62 @@ include __DIR__ . '/includes/layout/head.php';
                 <!-- Revenue Forecast Card -->
                 <div class="bento-card bento-purple">
                     <div class="flex justify-between items-start mb-6">
-                        <h2 class="text-lg font-bold">Fluxo de Caixa Mensal</h2>
-                        <span class="bg-white/30 dark:bg-black/30 px-3 py-1 rounded-full text-xs font-bold">Resumo</span>
+                        <h2 class="text-xl font-medium tracking-tight text-[#1a1f36]">Fluxo de Caixa Mensal</h2>
+                        <span class="bg-black/5 hover:bg-black/10 cursor-pointer transition-colors text-black/60 px-4 py-1.5 rounded-full text-xs font-medium flex items-center gap-1">Filtro <i data-lucide="chevron-down" style="width:12px;height:12px;"></i></span>
                     </div>
                     
-                    <div class="flex flex-col md:flex-row gap-4 mb-6">
-                        <div class="bento-pill-white flex-1 min-h-[140px]">
-                            <p class="text-xs font-bold text-zinc-500 mb-1">Receitas Realizadas</p>
-                            <h3 class="text-3xl font-extrabold tracking-tight"><?= formatarMoeda((float) $receitasMes) ?></h3>
-                        </div>
-                        <div class="bento-pill-dark flex-1 min-h-[140px]">
-                            <p class="text-xs font-bold text-zinc-400 mb-1">Saldo Atual</p>
-                            <h3 class="text-3xl font-extrabold tracking-tight"><?= formatarMoeda((float) $saldoAtual) ?></h3>
-                            <p class="text-[10px] text-zinc-500 mt-2"><?= $resumo['debug_contas'] ?></p>
-                        </div>
-                    </div>
-                    
-                    <div class="bento-pill-chart">
-                        <div class="flex justify-between items-end mb-4">
-                            <div>
-                                <h3 class="text-3xl font-extrabold"><?= formatarMoeda((float) array_sum(array_column($bars, 'valor'))) ?></h3>
-                                <p class="text-xs font-bold opacity-70 mt-1">Movimentação Total do Mês</p>
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <!-- Left Column: Stacked Pills -->
+                        <div class="flex flex-col gap-4 w-full md:w-[40%]">
+                            <div class="bg-[#f2f4f7] rounded-[32px] p-6 min-h-[160px] flex flex-col justify-center">
+                                <p class="text-sm font-medium text-zinc-500 mb-2">Receitas Mês</p>
+                                <h3 class="text-4xl font-light tracking-tight text-[#1a1f36]"><?= formatarMoeda((float) $receitasMes) ?></h3>
                             </div>
-                            <span class="bg-[#6a5ff6] text-white text-[10px] font-bold px-2 py-1 rounded">Live</span>
+                            
+                            <div class="bg-[#2b3342] rounded-[32px] p-6 min-h-[160px] flex flex-col justify-center">
+                                <p class="text-sm font-medium text-zinc-400 mb-2">Saldo Atual</p>
+                                <h3 class="text-4xl font-light tracking-tight text-white"><?= formatarMoeda((float) $saldoAtual) ?></h3>
+                                <?php if($resumo['debug_contas']): ?>
+                                    <p class="text-[10px] text-zinc-500 mt-2 truncate opacity-50 hover:opacity-100 transition-opacity cursor-help" title="<?= htmlspecialchars($resumo['debug_contas']) ?>">Ver contas</p>
+                                <?php endif; ?>
+                            </div>
                         </div>
                         
-                        <?php if (array_sum(array_column($bars, 'valor')) > 0): ?>
-                        <div class="h-[120px] flex items-end gap-1.5 mt-4">
-                            <?php foreach ($bars as $data => $bar):
-                                $height = $bar['valor'] > 0 ? max(10, (int) round(($bar['valor'] / $maxBar) * 100)) : 5;
-                                $isToday = $data === $hoje;
-                            ?>
-                                <div class="flex-1 flex flex-col items-center justify-end gap-1 group relative">
-                                    <div class="w-full rounded-t-sm transition-all duration-300 <?= $isToday ? 'bg-[#6a5ff6]' : ($bar['valor'] > 0 ? 'bg-black/60 dark:bg-white/80' : 'bg-black/10 dark:bg-white/10') ?>" 
-                                         style="height:<?= $height ?>%; max-width: 12px;"></div>
+                        <!-- Right Column: Chart -->
+                        <div class="bg-[#f2f4f7] rounded-[32px] p-6 flex-1 flex flex-col justify-between min-h-[336px]">
+                            <div class="flex justify-between items-start mb-6">
+                                <span class="bg-[#7c5dfa] text-white text-[11px] font-medium px-3 py-1 rounded-lg">Live</span>
+                                <div class="text-right">
+                                    <h3 class="text-4xl font-light text-[#1a1f36]"><?= formatarMoeda((float) array_sum(array_column($bars, 'valor'))) ?></h3>
+                                    <p class="text-[11px] font-medium text-zinc-500 mt-1">Movimentação Total</p>
                                 </div>
-                            <?php endforeach; ?>
+                            </div>
+                            
+                            <?php if (array_sum(array_column($bars, 'valor')) > 0): ?>
+                            <div class="h-[140px] flex items-end gap-2 mt-auto">
+                                <?php foreach ($bars as $data => $bar):
+                                    // Simulated 2-part bar for aesthetic match
+                                    $heightTop = $bar['valor'] > 0 ? max(10, (int) round(($bar['valor'] / $maxBar) * 60)) : 0;
+                                    $heightBottom = $bar['valor'] > 0 ? max(5, (int) round(($bar['valor'] / $maxBar) * 40)) : 5;
+                                ?>
+                                    <div class="flex-1 flex flex-col items-center justify-end gap-0.5 group relative h-full">
+                                        <!-- Top part (Purple) -->
+                                        <div class="w-full rounded-t-full transition-all duration-300 <?= $bar['valor'] > 0 ? 'bg-[#7c5dfa]' : 'bg-transparent' ?>" 
+                                             style="height:<?= $heightTop ?>%; max-width: 14px;"></div>
+                                        <!-- Bottom part (Greenish) -->
+                                        <div class="w-full rounded-b-full transition-all duration-300 <?= $bar['valor'] > 0 ? 'bg-[#98b8a8]' : 'bg-zinc-300 dark:bg-zinc-700 rounded-full' ?>" 
+                                             style="height:<?= $heightBottom ?>%; max-width: 14px;"></div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <div class="flex justify-between mt-4 px-2">
+                                <span class="text-xs font-medium text-zinc-400">Dia 1</span>
+                                <span class="text-xs font-medium text-zinc-400">Dia <?= date('t') ?></span>
+                            </div>
+                            <?php else: ?>
+                                <div class="h-full flex items-center justify-center opacity-50 text-sm font-bold text-zinc-500">Sem dados no período</div>
+                            <?php endif; ?>
                         </div>
-                        <div class="flex justify-between mt-2 px-1">
-                            <span class="text-[10px] font-bold opacity-50">Dia 1</span>
-                            <span class="text-[10px] font-bold opacity-50">Dia <?= date('t') ?></span>
-                        </div>
-                        <?php else: ?>
-                            <div class="h-[120px] flex items-center justify-center opacity-50 text-sm font-bold">Sem dados no período</div>
-                        <?php endif; ?>
                     </div>
                 </div>
 
