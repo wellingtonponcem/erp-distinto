@@ -36,8 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config = { darkMode: 'class' }</script>
+    <link href="<?= raizUrl('/assets/css/tailwind.css') ?>" rel="stylesheet">
     <style>
         body { background-color: #0c0c18; font-family: system-ui, sans-serif; }
         .input { background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#f1f5f9; border-radius:8px; padding:11px 16px; font-size:15px; width:100%; outline:none; transition:border-color 0.15s; }

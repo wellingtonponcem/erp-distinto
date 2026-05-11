@@ -17,7 +17,8 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS (Compiled for Production) -->
+    <link href="<?= raizUrl('/assets/css/tailwind.css') ?>" rel="stylesheet">
     <script>
         // Inicializar modo escuro antes de renderizar para evitar flash
         if (localStorage.getItem('dark-mode') === 'true' || (!localStorage.getItem('dark-mode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -25,23 +26,6 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
         } else {
             document.documentElement.classList.remove('dark');
         }
-
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
-                    colors: {
-                        distinto: {
-                            ink: '#111111',
-                            paper: '#ffffff',
-                            line: '#ececec',
-                            muted: '#777777'
-                        }
-                    }
-                }
-            }
-        };
     </script>
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
