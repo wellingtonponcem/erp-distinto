@@ -20,7 +20,7 @@ function menuAtivo(string $path): string {
     return str_contains($paginaAtual, $path) ? 'ativo' : '';
 }
 ?>
-<aside x-data="{ collapsed: false }" :class="{ 'collapsed': collapsed }" class="sidebar flex flex-col transition-all duration-300 relative group">
+<aside x-data="{ collapsed: true }" :class="{ 'collapsed': collapsed }" class="sidebar flex flex-col transition-all duration-300 relative group">
     <div style="padding:24px 20px 18px;">
         <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
             <div class="hide-on-collapse transition-opacity">
