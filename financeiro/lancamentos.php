@@ -27,7 +27,7 @@ include __DIR__ . '/../includes/layout/head.php';
                 <input type="file" x-ref="ofxInput" @change="uploadOfx($event)" style="opacity:0; position:absolute; width:1px; height:1px; z-index:-1;" accept=".ofx,.OFX">
                 <input type="file" x-ref="iaInput" @change="lerComprovante($event)" style="opacity:0; position:absolute; width:1px; height:1px; z-index:-1;" accept="image/*">
                 
-                <button class="btn-secondary" @click="$refs.iaInput.click()" style="color:#10b981; border-color:rgba(16,185,129,0.3);" :disabled="processandoIA">
+                <button class="btn-secondary" @click="modalIaAberto = true" style="color:#10b981; border-color:rgba(16,185,129,0.3);" :disabled="processandoIA">
                     <span x-show="!processandoIA"><i data-lucide="scan-text" style="width:15px;height:15px;"></i> Ler Comprovante (IA)</span>
                     <span x-show="processandoIA">⏳ Analisando...</span>
                 </button>
@@ -566,6 +566,45 @@ include __DIR__ . '/../includes/layout/head.php';
         </div>
     </div>
 
+    <!-- Modal de Captura IA -->
+    <div class="modal-overlay" x-show="modalIaAberto" x-cloak>
+        <div class="modal" style="max-width:450px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2 style="font-size:17px; font-weight:700; color:#f1f5f9; display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="sparkles" style="width:18px;height:18px;color:#10b981;"></i>
+                    Leitura Inteligente
+                </h2>
+                <button @click="modalIaAberto=false" style="color:#6b7280; background:none; border:none; cursor:pointer;">
+                    <i data-lucide="x" style="width:18px;height:18px;"></i>
+                </button>
+            </div>
+            
+            <div 
+                @click="$refs.iaInput.click()"
+                class="ia-capture-zone"
+                :class="processandoIA ? 'is-processing' : ''"
+            >
+                <div x-show="!processandoIA" style="text-align:center;">
+                    <div class="ia-icon-circle">
+                        <i data-lucide="image-plus" style="width:32px; height:32px;"></i>
+                    </div>
+                    <p style="font-weight:700; color:#e2e8f0; margin-bottom:6px; font-size:15px;">Cole (Ctrl+V) ou clique aqui</p>
+                    <p style="font-size:12px; color:#6b7280; line-height:1.5;">O Gemini identificará valores, datas e fornecedores automaticamente.</p>
+                </div>
+
+                <div x-show="processandoIA" style="text-align:center;">
+                    <div class="ia-loading-animation"></div>
+                    <p style="font-weight:700; color:#10b981; margin-bottom:6px; font-size:15px;">Analisando comprovante...</p>
+                    <p style="font-size:12px; color:#6b7280;">Aguarde enquanto extraímos os dados.</p>
+                </div>
+            </div>
+
+            <div style="margin-top:20px; display:flex; justify-content:flex-end;">
+                <button class="btn-secondary" @click="modalIaAberto=false">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
@@ -594,6 +633,7 @@ function lancamentos() {
         categoriasDinamicas: [],
         uploadingOfx: false,
         processandoIA: false,
+        modalIaAberto: false,
         ofxTransacoes: [],
         ofxContaId: '',
         contas: [],
@@ -727,6 +767,7 @@ function lancamentos() {
                 });
                 const res = await r.json();
                 if (r.ok) {
+                    this.modalIaAberto = false;
                     this.abrirModalComIA(res);
                 } else {
                     toast(res.erro || 'Erro na análise da IA', 'erro');
@@ -1216,6 +1257,50 @@ function lancamentos() {
 
 <style>
 .hover-underline:hover { text-decoration: underline; }
+
+.ia-capture-zone {
+    border: 2px dashed #334155;
+    border-radius: 24px;
+    padding: 48px 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(15, 23, 42, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+.ia-capture-zone:hover {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.05);
+    transform: translateY(-2px);
+}
+.ia-capture-zone.is-processing {
+    border-color: #10b981;
+    cursor: default;
+    pointer-events: none;
+}
+.ia-icon-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+.ia-loading-animation {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(16, 185, 129, 0.1);
+    border-top-color: #10b981;
+    border-radius: 50%;
+    animation: ia-spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+@keyframes ia-spin {
+    to { transform: rotate(360deg); }
+}
 </style>
 
 <?php include __DIR__ . '/../includes/layout/footer.php'; ?>
