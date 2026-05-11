@@ -51,7 +51,7 @@ try {
     $respostaIa = IARoteiros::chamarGemini([
         ['text' => $prompt],
         ['inline_data' => ['mime_type' => $mimeType, 'data' => $base64Data]]
-    ], 'gemini-1.5-flash');
+    ]);
 
     // Se retornar erro da classe IARoteiros
     if (strpos($respostaIa, 'Erro') === 0) {
