@@ -223,7 +223,7 @@ include __DIR__ . '/../includes/layout/head.php';
                 <div class="item-doc group" 
                      draggable="true" 
                      @dragstart="dragStart($event, p)"
-                     @click="window.open(`<?= APP_URL ?>/p/${p.slug}`, '_blank')"
+                     @click="abrirResumo(p)"
                      @contextmenu.stop.prevent="showContextMenu($event, 'proposal', p)">
                     <div class="doc-visual">
                         <i :data-lucide="p.tipo === 'marketing' ? 'megaphone' : (p.tipo === 'filmmaker' ? 'video' : 'file-text')" 
@@ -375,7 +375,126 @@ include __DIR__ . '/../includes/layout/head.php';
         </div>
 
 
-        <!-- Modal Nova Proposta (Desktop Only) -->
+        <!-- Modal Resumo da Proposta -->
+        <template x-if="modalResumoAberto && selectedProposta">
+            <div class="fixed inset-0 z-[2000] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100">
+                
+                <div class="bg-[#0c0c0c] border border-white/10 rounded-[2.5rem] w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col"
+                     @click.away="modalResumoAberto = false"
+                     x-transition:enter="ease-out duration-300"
+                     x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                     x-transition:enter-end="opacity-100 scale-100 translate-y-0">
+                    
+                    <!-- Header -->
+                    <div class="p-8 border-b border-white/5 flex items-start justify-between">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest"
+                                      :class="{
+                                          'bg-zinc-800 text-zinc-400': selectedProposta.status === 'rascunho',
+                                          'bg-blue-500/10 text-blue-500': selectedProposta.status === 'pendente',
+                                          'bg-emerald-500/10 text-emerald-500': selectedProposta.status === 'aceita',
+                                          'bg-red-500/10 text-red-500': selectedProposta.status === 'recusada'
+                                      }" x-text="selectedProposta.status.toUpperCase()"></span>
+                                <span class="text-zinc-600 text-[10px] font-bold uppercase tracking-widest" x-text="'Criada em ' + new Date(selectedProposta.created_at).toLocaleDateString()"></span>
+                            </div>
+                            <h2 class="text-3xl font-black text-white tracking-tight" x-text="selectedProposta.cliente_nome"></h2>
+                            <p class="text-zinc-500 font-medium" x-text="selectedProposta.titulo"></p>
+                        </div>
+                        <button @click="modalResumoAberto = false" class="text-zinc-500 hover:text-white transition-colors">
+                            <i data-lucide="x" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-8 overflow-y-auto max-h-[60vh] custom-scrollbar">
+                        <div class="grid grid-cols-2 gap-8 mb-8">
+                            <div>
+                                <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4">Dados do Cliente</h3>
+                                <div class="space-y-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-lg bg-zinc-900 flex items-center justify-center text-zinc-500">
+                                            <i data-lucide="user" class="w-4 h-4"></i>
+                                        </div>
+                                        <span class="text-sm font-bold text-zinc-300" x-text="getResumoDados().responsavel || selectedProposta.cliente_nome"></span>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-lg bg-zinc-900 flex items-center justify-center text-zinc-500">
+                                            <i data-lucide="phone" class="w-4 h-4"></i>
+                                        </div>
+                                        <span class="text-sm font-bold text-zinc-300" x-text="getResumoDados().whatsapp || 'Não informado'"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4">Andamento</h3>
+                                <div class="bg-zinc-900/50 rounded-2xl p-4 border border-white/5">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="text-xs font-bold text-zinc-400">Progresso</span>
+                                        <span class="text-xs font-black text-white" x-text="selectedProposta.status === 'rascunho' ? '10%' : (selectedProposta.status === 'pendente' ? '50%' : '100%')"></span>
+                                    </div>
+                                    <div class="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-emerald-500 transition-all duration-1000"
+                                             :style="`width: ${selectedProposta.status === 'rascunho' ? '10%' : (selectedProposta.status === 'pendente' ? '50%' : '100%')}`"></div>
+                                    </div>
+                                    <p class="text-[10px] text-zinc-500 mt-3 italic" x-text="selectedProposta.status === 'aceita' ? 'Proposta fechada e aprovada pelo cliente.' : 'Aguardando interação do cliente.'"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Resumo do que foi proposto -->
+                        <div class="bg-white/5 rounded-3xl p-6 border border-white/5">
+                            <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-6">O que foi proposto</h3>
+                            
+                            <div class="space-y-4">
+                                <template x-if="getResumoDados().pacotes && getResumoDados().pacotes.length > 0">
+                                    <template x-for="pacote in getResumoDados().pacotes">
+                                        <div class="flex items-center justify-between py-3 border-b border-white/5 last:border-0">
+                                            <div class="flex items-center gap-4">
+                                                <div class="w-10 h-10 rounded-xl bg-white text-black flex items-center justify-center font-black text-xs" x-text="pacote.nome.charAt(0)"></div>
+                                                <div>
+                                                    <p class="text-sm font-bold text-white" x-text="pacote.nome"></p>
+                                                    <p class="text-[10px] text-zinc-500" x-text="pacote.itens ? pacote.itens.length + ' itens inclusos' : ''"></p>
+                                                </div>
+                                            </div>
+                                            <p class="text-sm font-black text-white" x-text="'R$ ' + (parseFloat(pacote.valor) || 0).toLocaleString('pt-BR')"></p>
+                                        </div>
+                                    </template>
+                                </template>
+                                <template x-if="!getResumoDados().pacotes || getResumoDados().pacotes.length === 0">
+                                    <p class="text-sm text-zinc-500 italic py-4 text-center">Nenhum pacote detalhado no resumo.</p>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer Actions -->
+                    <div class="p-8 bg-zinc-900/50 border-t border-white/5 flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <button @click="deletarProposta(selectedProposta.id); modalResumoAberto = false" class="w-12 h-12 rounded-2xl bg-red-500/10 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all">
+                                <i data-lucide="trash-2" class="w-5 h-5"></i>
+                            </button>
+                            <button @click="enviarWhatsApp(selectedProposta)" class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all">
+                                <i data-lucide="message-circle" class="w-5 h-5"></i>
+                            </button>
+                            <button @click="if(window.innerWidth > 1024) { showModalEditar = true; editUrl = 'proposta_editar.php?id=' + selectedProposta.id + '&layout=modal'; modalResumoAberto = false } else { location.href = 'proposta_editar.php?id=' + selectedProposta.id }"
+                                    class="w-12 h-12 rounded-2xl bg-zinc-800 text-zinc-400 flex items-center justify-center hover:bg-white hover:text-black transition-all">
+                                <i data-lucide="edit-3" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        
+                        <button @click="window.open(`<?= APP_URL ?>/p/${selectedProposta.slug}`, '_blank')" 
+                                class="flex-1 bg-white text-black h-12 rounded-2xl font-black text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-xl flex items-center justify-center gap-2">
+                            <i data-lucide="external-link" class="w-4 h-4"></i>
+                            Abrir Proposta Completa
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </template>
         <template x-if="showModalNova">
             <div class="fixed inset-0 z-[3000] flex items-center justify-center p-6 bg-black/90 backdrop-blur-md"
                  x-transition:enter="ease-out duration-300"
@@ -549,6 +668,8 @@ function propostasApp() {
         deleteModal: { show: false, id: null, type: '', message: '' },
         draggedItem: null,
         folderModal: { show: false, id: null, nome: '', mode: 'create' },
+        modalResumoAberto: false,
+        selectedProposta: null,
         novaUrl: 'proposta_nova.php?layout=modal',
         
         init() {
@@ -603,6 +724,21 @@ function propostasApp() {
                 item: item
             };
             this.$nextTick(() => lucide.createIcons());
+        },
+
+        abrirResumo(p) {
+            this.selectedProposta = p;
+            this.modalResumoAberto = true;
+            this.$nextTick(() => lucide.createIcons());
+        },
+
+        getResumoDados() {
+            if (!this.selectedProposta) return {};
+            try {
+                return JSON.parse(this.selectedProposta.dados_json || '{}');
+            } catch (e) {
+                return {};
+            }
         },
 
         // Drag & Drop

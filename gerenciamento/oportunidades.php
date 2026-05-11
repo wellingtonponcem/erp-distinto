@@ -49,7 +49,22 @@ if (isset($_GET['deletar'])) {
 }
 
 $clientes = $db->query("SELECT id, nome FROM clientes ORDER BY nome ASC")->fetchAll();
-$oportunidades = $db->query("SELECT o.*, c.nome AS cliente_nome FROM oportunidades o LEFT JOIN clientes c ON c.id = o.cliente_id ORDER BY CASE o.etapa WHEN 'novo' THEN 1 WHEN 'qualificado' THEN 2 WHEN 'proposta' THEN 3 WHEN 'negociacao' THEN 4 WHEN 'ganha' THEN 5 WHEN 'perdida' THEN 6 ELSE 7 END, o.previsao ASC")->fetchAll();
+
+$filtroEtapa = sanitizar($_GET['etapa'] ?? '');
+$sqlOportunidades = "SELECT o.*, c.nome AS cliente_nome FROM oportunidades o LEFT JOIN clientes c ON c.id = o.cliente_id";
+$params = [];
+
+if ($filtroEtapa) {
+    $sqlOportunidades .= " WHERE o.etapa = ?";
+    $params[] = $filtroEtapa;
+}
+
+$sqlOportunidades .= " ORDER BY CASE o.etapa WHEN 'novo' THEN 1 WHEN 'qualificado' THEN 2 WHEN 'proposta' THEN 3 WHEN 'negociacao' THEN 4 WHEN 'ganha' THEN 5 WHEN 'perdida' THEN 6 ELSE 7 END, o.previsao ASC";
+
+$stmtOp = $db->prepare($sqlOportunidades);
+$stmtOp->execute($params);
+$oportunidades = $stmtOp->fetchAll();
+
 $tituloPagina = 'CRM • Oportunidades';
 require_once __DIR__ . '/../includes/layout/head.php';
 ?>
@@ -63,6 +78,16 @@ require_once __DIR__ . '/../includes/layout/head.php';
                     Oportunidades (CRM)
                 </h1>
                 <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mt-1">Acompanhe o pipeline comercial e saiba quais negociações estão mais próximas de fechar.</p>
+                <?php if ($filtroEtapa): ?>
+                    <div class="mt-4 flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-black text-[10px] font-black uppercase tracking-widest">
+                            Filtrando: <?= ucfirst($filtroEtapa) ?>
+                        </span>
+                        <a href="<?= raizUrl('/gerenciamento/oportunidades.php') ?>" class="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors flex items-center gap-1">
+                            <i data-lucide="x-circle" class="w-3 h-3"></i> Ver todas
+                        </a>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
 
