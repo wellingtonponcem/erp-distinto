@@ -62,6 +62,30 @@ include __DIR__ . '/../includes/layout/head.php';
                     </template>
                 </button>
 
+                <!-- Ações em Massa (Aparecem quando selecionado) -->
+                <div x-show="selecionados.length > 0" class="flex items-center gap-2 p-1.5 bg-zinc-900/50 border border-white/5 rounded-full" x-cloak x-transition>
+                    <button @click="alterarStatusSelecionados('pago')" 
+                            class="flex items-center gap-2 px-4 py-2 rounded-full text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest">
+                        <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+                        Efetivar
+                    </button>
+                    <button @click="alterarStatusSelecionados('pendente')" 
+                            class="flex items-center gap-2 px-4 py-2 rounded-full text-amber-500 hover:bg-amber-500 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest">
+                        <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                        Pendente
+                    </button>
+                    <button @click="abrirEdicaoMassa()" 
+                            class="flex items-center gap-2 px-4 py-2 rounded-full text-blue-500 hover:bg-blue-500 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest">
+                        <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                        Em Massa
+                    </button>
+                    <button @click="excluirSelecionados()" 
+                            class="flex items-center gap-2 px-4 py-2 rounded-full text-red-500 hover:bg-red-500 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        Excluir (<span x-text="selecionados.length"></span>)
+                    </button>
+                </div>
+
                 <!-- Botão Novo Lançamento -->
                 <button @click="abrirModal()" 
                         class="flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-full text-xs font-black hover:bg-zinc-200 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-white/5">
