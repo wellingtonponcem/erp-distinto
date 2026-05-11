@@ -90,6 +90,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
         </div>
 
         <form id="formGerarProposta" x-cloak class="grid grid-cols-1 lg:grid-cols-3 gap-6 <?= $isModal ? 'px-8 pb-12' : '' ?>">
+            <input type="hidden" name="pasta_id" value="<?= $_GET['folder'] ?? '' ?>">
             
             <!-- PASSO 1: ESCOLHA DO TIPO -->
             <div x-show="passo === 1" class="lg:col-span-3 space-y-8 animate-fade-in py-10">

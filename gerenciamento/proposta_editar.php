@@ -154,7 +154,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
         <div class="app-topbar">
             <div class="top-nav">
                 <a href="<?= raizUrl('/dashboard.php') ?>">Visão Geral</a>
-                <a href="<?= raizUrl('/gerenciamento/propostas.php') ?>">Propostas</a>
+                <a href="<?= raizUrl('/gerenciamento/propostas.php' . (!empty($proposta['pasta_id']) ? '?folder=' . $proposta['pasta_id'] : '')) ?>">Propostas</a>
                 <a href="#" class="active">Editar Proposta</a>
             </div>
         </div>

@@ -155,8 +155,8 @@ include __DIR__ . '/../includes/layout/head.php';
                         <i data-lucide="search" class="w-5 h-5"></i>
                     </button>
                     
-                    <a href="<?= raizUrl('/gerenciamento/proposta_nova.php') ?>" 
-                       @click.prevent="if(window.innerWidth > 1024) { showModalNova = true } else { window.location.href = $el.href }"
+                    <a :href="'<?= raizUrl('/gerenciamento/proposta_nova.php') ?>' + (currentFolder ? '?folder=' + currentFolder : '')" 
+                       @click.prevent="if(window.innerWidth > 1024) { showModalNova = true; novaUrl = 'proposta_nova.php?layout=modal' + (currentFolder ? '&folder=' + currentFolder : '') } else { window.location.href = $el.href }"
                        class="flex items-center gap-2 bg-white text-black px-4 py-2 rounded-full text-xs font-bold hover:bg-zinc-200 transition-all">
                         <i data-lucide="plus" class="w-4 h-4"></i>
                         Nova Proposta
@@ -382,7 +382,7 @@ include __DIR__ . '/../includes/layout/head.php';
 
                     <!-- Content Iframe -->
                     <div class="flex-1 bg-[#fcfcfc] overflow-hidden">
-                        <iframe src="<?= raizUrl('/gerenciamento/proposta_nova.php?layout=modal') ?>" 
+                        <iframe :src="currentFolder ? novaUrl + '&folder=' + currentFolder : novaUrl" 
                                 class="w-full h-full border-0"></iframe>
                     </div>
                 </div>
@@ -515,7 +515,7 @@ include __DIR__ . '/../includes/layout/head.php';
 <script>
 function propostasApp() {
     return {
-        currentFolder: null,
+        currentFolder: new URLSearchParams(window.location.search).get('folder') || null,
         showSearch: false,
         searchQuery: '',
         showModalNova: false,
@@ -527,6 +527,19 @@ function propostasApp() {
         deleteModal: { show: false, id: null, type: '', message: '' },
         draggedItem: null,
         folderModal: { show: false, id: null, nome: '', mode: 'create' },
+        novaUrl: 'proposta_nova.php?layout=modal',
+        
+        init() {
+            this.$watch('currentFolder', (val) => {
+                const url = new URL(window.location);
+                if (val) {
+                    url.searchParams.set('folder', val);
+                } else {
+                    url.searchParams.delete('folder');
+                }
+                window.history.pushState({}, '', url);
+            });
+        },
 
         get filteredItems() {
             let list = this.propostas;

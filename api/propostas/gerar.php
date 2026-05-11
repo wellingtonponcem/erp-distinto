@@ -216,8 +216,8 @@ $dadosJson = json_encode([
     'upgrades' => $d['upgrades'] ?? ['heritage' => [], 'cinematic' => [], 'essencial' => []],
 ], JSON_UNESCAPED_UNICODE);
 
-$stmt = $db->prepare("INSERT INTO propostas (id, cliente_id, cliente_nome, tipo, slug, titulo, subtitulo, validade, dados_json, valor_total, status, oportunidade_id) 
-                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+$stmt = $db->prepare("INSERT INTO propostas (id, cliente_id, cliente_nome, tipo, slug, titulo, subtitulo, validade, dados_json, valor_total, status, oportunidade_id, pasta_id) 
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
 $validade = !empty($d['validade']) ? $d['validade'] : date('Y-m-d', strtotime('+15 days'));
 $tituloOriginal = !empty($d['titulo']) ? $d['titulo'] : ("Proposta Comercial - " . $clienteNome);
@@ -249,7 +249,8 @@ $stmt->execute([
     $dadosJson,
     $valorTotal,
     'rascunho',
-    $oportunidadeId
+    $oportunidadeId,
+    !empty($d['pasta_id']) ? $d['pasta_id'] : null
 ]);
 
 // --- CRIAÇÃO AUTOMÁTICA DE OPORTUNIDADE (CRM) ---
