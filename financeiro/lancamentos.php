@@ -18,38 +18,44 @@ include __DIR__ . '/../includes/layout/head.php';
         <?php include __DIR__ . '/../includes/layout/top_nav.php'; ?>
 
         <!-- Executive Summary Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-zinc-900/50 border border-white/5 rounded-[2rem] p-6 hover:bg-zinc-900 transition-all group">
-                <div class="flex items-center gap-3 mb-3">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
-                        <i data-lucide="trending-up" class="w-5 h-5"></i>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 items-stretch">
+            <div class="bg-zinc-900/50 border border-white/5 rounded-[2rem] p-6 hover:bg-zinc-900 transition-all group flex flex-col justify-between h-full">
+                <div>
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+                            <i data-lucide="trending-up" class="w-5 h-5"></i>
+                        </div>
+                        <span class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400">Total a Receber</span>
                     </div>
-                    <span class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400">Total a Receber</span>
+                    <div class="text-3xl font-black text-white tracking-tight" x-text="formatarMoeda(totalReceber)"></div>
                 </div>
-                <div class="text-3xl font-black text-white tracking-tight" x-text="formatarMoeda(totalReceber)"></div>
-                <p class="text-[10px] text-zinc-600 mt-2 font-bold uppercase tracking-widest">Saldo previsto em caixa</p>
+                <p class="text-[10px] text-zinc-600 mt-4 font-bold uppercase tracking-widest">Saldo previsto em caixa</p>
             </div>
 
-            <div class="bg-zinc-900/50 border border-white/5 rounded-[2rem] p-6 hover:bg-zinc-900 transition-all group">
-                <div class="flex items-center gap-3 mb-3">
-                    <div class="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center">
-                        <i data-lucide="trending-down" class="w-5 h-5"></i>
+            <div class="bg-zinc-900/50 border border-white/5 rounded-[2rem] p-6 hover:bg-zinc-900 transition-all group flex flex-col justify-between h-full">
+                <div>
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center">
+                            <i data-lucide="trending-down" class="w-5 h-5"></i>
+                        </div>
+                        <span class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400">Total a Pagar</span>
                     </div>
-                    <span class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400">Total a Pagar</span>
+                    <div class="text-3xl font-black text-white tracking-tight" x-text="formatarMoeda(totalPagar)"></div>
                 </div>
-                <div class="text-3xl font-black text-white tracking-tight" x-text="formatarMoeda(totalPagar)"></div>
-                <p class="text-[10px] text-zinc-600 mt-2 font-bold uppercase tracking-widest">Compromissos pendentes</p>
+                <p class="text-[10px] text-zinc-600 mt-4 font-bold uppercase tracking-widest">Compromissos pendentes</p>
             </div>
 
-            <div class="bg-white text-black rounded-[2rem] p-6 shadow-xl shadow-white/5 group hover:scale-[1.02] transition-all cursor-pointer" @click="abrirModal()">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="w-10 h-10 rounded-xl bg-black/5 text-black flex items-center justify-center">
-                        <i data-lucide="plus" class="w-6 h-6"></i>
+            <div class="bg-white text-black rounded-[2rem] p-6 shadow-xl shadow-white/5 group hover:scale-[1.02] transition-all cursor-pointer flex flex-col justify-between h-full" @click="abrirModal()">
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-black/5 text-black flex items-center justify-center">
+                            <i data-lucide="plus" class="w-6 h-6"></i>
+                        </div>
+                        <i data-lucide="arrow-up-right" class="w-4 h-4 text-black/40"></i>
                     </div>
-                    <i data-lucide="arrow-up-right" class="w-4 h-4 text-black/40"></i>
+                    <div class="text-xl font-black tracking-tight leading-tight">Novo<br>Lançamento</div>
                 </div>
-                <div class="text-xl font-black tracking-tight leading-tight">Novo<br>Lançamento</div>
-                <p class="text-[10px] text-black/60 mt-2 font-bold uppercase tracking-widest">Registrar entrada ou saída</p>
+                <p class="text-[10px] text-black/60 mt-4 font-bold uppercase tracking-widest">Registrar entrada ou saída</p>
             </div>
         </div>
 
@@ -81,9 +87,13 @@ include __DIR__ . '/../includes/layout/head.php';
                     </button>
                 </div>
 
-                <!-- Ações em Massa (Aparecem quando selecionado) -->
-                <div x-show="selecionados.length > 0" class="flex items-center gap-2 p-1 bg-zinc-900 border border-white/10 rounded-full" x-cloak x-transition>
+                <!-- Ações em Massa -->
+                <div x-show="selecionados.length > 0" class="flex items-center gap-1 p-1 bg-zinc-900 border border-white/10 rounded-full" x-cloak x-transition>
                     <button @click="alterarStatusSelecionados('pago')" class="px-4 py-2 text-emerald-500 hover:bg-emerald-500/10 rounded-full text-[10px] font-black uppercase tracking-widest">Efetivar</button>
+                    <button @click="alterarStatusSelecionados('pendente')" class="px-4 py-2 text-amber-500 hover:bg-amber-500/10 rounded-full text-[10px] font-black uppercase tracking-widest">Pendente</button>
+                    <div class="w-px h-4 bg-white/5"></div>
+                    <button @click="abrirEdicaoMassa()" class="px-4 py-2 text-blue-500 hover:bg-blue-500/10 rounded-full text-[10px] font-black uppercase tracking-widest">Alterar Conta/Cat</button>
+                    <div class="w-px h-4 bg-white/5"></div>
                     <button @click="excluirSelecionados()" class="px-4 py-2 text-red-500 hover:bg-red-500/10 rounded-full text-[10px] font-black uppercase tracking-widest">Excluir</button>
                 </div>
             </div>
@@ -148,12 +158,12 @@ include __DIR__ . '/../includes/layout/head.php';
 
         <!-- Tabela -->
         <div class="bg-zinc-900/30 border border-white/5 rounded-[2rem] overflow-hidden">
-            <div class="grid grid-cols-[40px_2.5fr_1fr_1fr_1fr_1fr_120px] items-center px-8 py-4 bg-white/5 border-b border-white/5">
+            <div class="grid grid-cols-[40px_2.5fr_1fr_1fr_1fr_1fr_120px] items-center px-8 py-5 bg-white/5 border-b border-white/5 mb-2">
                 <input type="checkbox" style="accent-color:#fff" :checked="todosSelecionados" @change="toggleTodos()">
                 <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500">Descrição / Cliente</span>
                 <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-center">Vencimento</span>
-                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-right">Valor</span>
-                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-right">Valor Pago</span>
+                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-right pr-4">Valor</span>
+                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-right pr-4">Valor Pago</span>
                 <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-center">Status</span>
                 <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-right">Ações</span>
             </div>
@@ -222,11 +232,11 @@ include __DIR__ . '/../includes/layout/head.php';
                         <div class="text-center">
                             <span class="text-[11px] font-black text-zinc-400 uppercase tracking-tighter" x-text="formatarData(l.vencimento)"></span>
                         </div>
-                        <div class="text-right">
-                            <span class="text-sm font-black tracking-tight" :class="l.tipo==='receber' ? 'text-emerald-500' : 'text-red-500'" x-text="formatarMoeda(l.valor)"></span>
+                        <div class="text-right pr-4">
+                            <span class="text-sm font-black tracking-tight" :class="l.tipo==='receber' ? 'text-emerald-500' : 'text-red-400 drop-shadow-[0_0_8px_rgba(248,113,113,0.2)]'" x-text="formatarMoeda(l.valor)"></span>
                         </div>
-                        <div class="text-right">
-                            <span class="text-sm font-bold text-zinc-500 tracking-tight" x-text="formatarMoeda(l.valor_pago)"></span>
+                        <div class="text-right pr-4">
+                            <span class="text-sm font-bold text-zinc-400 tracking-tight" x-text="formatarMoeda(l.valor_pago)"></span>
                         </div>
                         <div class="flex justify-center">
                             <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border" 
