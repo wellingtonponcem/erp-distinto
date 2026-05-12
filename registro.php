@@ -155,6 +155,53 @@ if (estaAutenticado()) {
         }
         .beneficio span:first-child { color: var(--accent); font-size: 14px; }
     </style>
+    <script>
+        function registroApp() {
+            return {
+                form: { nome: '', email: '', senha: '', confirmar_senha: '' },
+                loading: false,
+                erro: '',
+
+                registrar() {
+                    this.erro = '';
+
+                    if (!this.form.nome || !this.form.email || !this.form.senha) {
+                        this.erro = 'Preencha todos os campos obrigatórios.';
+                        return;
+                    }
+                    if (this.form.senha.length < 8) {
+                        this.erro = 'A senha deve ter pelo menos 8 caracteres.';
+                        return;
+                    }
+                    if (this.form.confirmar_senha && this.form.confirmar_senha !== this.form.senha) {
+                        this.erro = 'As senhas não coincidem.';
+                        return;
+                    }
+
+                    this.loading = true;
+
+                    fetch('<?= raizUrl('/api/auth/registro.php') ?>', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(this.form)
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.ok) {
+                            window.location.href = data.redirect || '<?= raizUrl('/roteiros/index.php') ?>';
+                        } else {
+                            this.erro = data.erro || 'Erro ao criar conta. Tente novamente.';
+                            this.loading = false;
+                        }
+                    })
+                    .catch(() => {
+                        this.erro = 'Erro de conexão. Verifique sua internet.';
+                        this.loading = false;
+                    });
+                }
+            };
+        }
+    </script>
 </head>
 <body x-data="registroApp()">
 
