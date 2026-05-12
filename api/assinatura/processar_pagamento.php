@@ -107,17 +107,27 @@ if (!$result) {
     exit;
 }
 
+// Se a API retornou um erro estrutural (ex: 400 Bad Request, erro de CPF, etc)
+if (isset($result['error']) && is_string($result['error']) || (isset($result['status']) && is_int($result['status']))) {
+    $msg = $result['message'] ?? 'Erro na validação do pagamento.';
+    error_log('[MP] Erro da API: ' . $mpResponse);
+    http_response_code(400);
+    echo json_encode(['error' => 'Erro recusado pelo banco: ' . $msg]);
+    exit;
+}
+
 error_log('[MP] status=' . ($result['status'] ?? '-') . ' detail=' . ($result['status_detail'] ?? '-') . ' id=' . ($result['id'] ?? '-'));
 
 // Ativar assinatura imediatamente para pagamentos aprovados
 if (($result['status'] ?? '') === 'approved') {
     ativarAssinatura(
-        userId:     $userId,
-        gateway:    'mercadopago',
-        externalId: (string)($result['id'] ?? uniqid()),
-        plan:       $plano,
-        amount:     $preco,
-        rawPayload: $mpResponse
+        $userId,
+        'mercadopago',
+        (string)($result['id'] ?? uniqid()),
+        $plano,
+        $preco,
+        null,
+        $mpResponse
     );
 }
 
