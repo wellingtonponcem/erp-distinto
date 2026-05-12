@@ -39,9 +39,9 @@ function menuAtivoRoteiros(string $path): string {
             <span class="nav-label hide-on-collapse transition-opacity">Base de Conhecimento</span>
         </a>
 
-        <a href="<?= raizUrl('/roteiros/configuracoes.php') ?>" class="nav-link <?= menuAtivoRoteiros('/roteiros/configuracoes.php') ?>">
-            <i data-lucide="sparkles" style="width:20px;height:20px; flex-shrink:0;"></i>
-            <span class="nav-label hide-on-collapse transition-opacity">Configurações IA</span>
+        <a href="<?= raizUrl('/roteiros/voz.php') ?>" class="nav-link <?= menuAtivoRoteiros('/roteiros/voz.php') ?>">
+            <i data-lucide="mic-2" style="width:20px;height:20px; flex-shrink:0;"></i>
+            <span class="nav-label hide-on-collapse transition-opacity">Voz & Estilo</span>
         </a>
 
         <div class="nav-section hide-on-collapse">Assinatura</div>

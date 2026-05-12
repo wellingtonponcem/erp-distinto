@@ -371,11 +371,29 @@ REGRAS CRÍTICAS:
     {
         $conhecimento = self::getBaseConhecimento($userId);
         $exemplos     = self::getMelhoresRoteiros($userId);
+        
+        // Buscar Voz & Estilo do usuário
+        $vozEstilo = "";
+        if ($userId) {
+            try {
+                $db = Database::get();
+                $stmt = $db->prepare("SELECT persona, estilo, tom_voz FROM roteiros_config_usuario WHERE user_id = ?");
+                $stmt->execute([$userId]);
+                $v = $stmt->fetch();
+                if ($v) {
+                    $vozEstilo = "### IDENTIDADE DO AUTOR (OBRIGATÓRIO SEGUIR):\n";
+                    if ($v['persona']) $vozEstilo .= "Persona: {$v['persona']}\n";
+                    if ($v['estilo'])  $vozEstilo .= "Estilo de Escrita: {$v['estilo']}\n";
+                    if ($v['tom_voz']) $vozEstilo .= "Tom de Voz: {$v['tom_voz']}\n";
+                }
+            } catch (Exception $e) {}
+        }
 
         $respostaRaw = self::chamarGroq([
             ['role' => 'system', 'content' => "Você é um Estrategista de Social Media e Roteirista de Elite.
 Crie roteiros de alto impacto baseados no contexto abaixo.
 
+$vozEstilo
 ### BASE DE CONHECIMENTO:
 " . ($conhecimento ?: "Nenhuma base cadastrada. Use seu conhecimento geral de marketing de alto nível.") . "
 
@@ -385,7 +403,7 @@ Crie roteiros de alto impacto baseados no contexto abaixo.
 ### REGRAS:
 1. Responda APENAS em JSON válido.
 2. Campos obrigatórios: titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta.
-3. NUNCA use emojis. Português do Brasil. Tom direto e focado em autoridade."],
+3. NUNCA use emojis. Português do Brasil. " . ($vozEstilo ? "Siga rigorosamente a identidade do autor acima." : "Tom direto e focado em autoridade.")],
             ['role' => 'user', 'content' => $briefing
                 ? "Gere um roteiro completo. Briefing: $briefing"
                 : "Gere um roteiro inédito seguindo o padrão dos exemplos de sucesso."]
