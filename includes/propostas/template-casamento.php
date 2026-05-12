@@ -1324,38 +1324,37 @@ if (!function_exists('fmt')) {
     $condE_slide = $dados['condicoes_essencial'] ?? 'Entrada de 25% + Saldo parcelado em até 5x (dependendo do pacote selecionado)';
     $clausula_slide = $dados['condicoes_reserva'] ?? 'A reserva da data é oficializada mediante a assinatura do contrato e o pagamento do sinal (entrada), que pode ser de 20% ou 25% do valor do pacote escolhido.';
     ?>
-    <section class="slide"
+    <section class="slide slide-investimento"
         style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; overflow: hidden; height: 100vh; width: 100%;">
 
         <!-- Topo: Imagem com Overlay -->
-        <div style="height: 30%; width: 100%; position: relative; overflow: hidden;">
+        <div class="investimento-img" style="height: 30%; width: 100%; position: relative; overflow: hidden; flex-shrink: 0;">
             <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-10.png') ?>"
-                style="width: 100%; height: 100%; object-fit: cover; object-position: center 40%;">
+                style="width: 100%; height: 100%; object-fit: cover; object-position: center 40%; display: block;">
             <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 40%, #f4f4f4 100%);"></div>
         </div>
 
         <!-- Conteúdo -->
-        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 8vw; text-align: center;">
-            <h2 class="reveal-item"
+        <div class="investimento-content" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 8vw; text-align: center;">
+            <h2 class="reveal-item investimento-title"
                 style="font-family: var(--wedding-montserrat); font-size: 3rem; font-weight: 300; letter-spacing: 0.08em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 5px;">
                 INVESTIMENTO E PLANEJAMENTO
             </h2>
-            <p class="reveal-item"
+            <p class="reveal-item investimento-subtitle"
                 style="font-family: var(--wedding-montserrat); font-size: 1rem; font-weight: 400; letter-spacing: 0.25em; color: #888; text-transform: uppercase; margin-bottom: 40px;">
                 FORMAS DE RESERVA E PAGAMENTO
             </p>
 
             <!-- Cláusula de Reserva -->
             <div class="reveal-item"
-                style="max-width: 800px; background: #fff; border-left: 3px solid var(--wedding-gold); padding: 25px 30px; margin-bottom: 30px; text-align: left;">
+                style="max-width: 800px; width: 100%; background: #fff; border-left: 3px solid var(--wedding-gold); padding: 25px 30px; margin-bottom: 30px; text-align: left;">
                 <p style="font-family: var(--wedding-montserrat); font-size: 0.9rem; line-height: 1.8; color: #444; margin: 0;">
                     <?= htmlspecialchars($clausula_slide) ?>
-                    <br>Opções de Parcelamento: Oferecemos flexibilidade para que o saldo seja quitado de forma equilibrada até a data do evento:
                 </p>
             </div>
 
             <!-- Cards de Condições -->
-            <div class="reveal-item" style="display: flex; gap: 20px; width: 100%; max-width: 800px;">
+            <div class="reveal-item investimento-cards" style="display: flex; gap: 20px; width: 100%; max-width: 800px;">
                 <!-- Heritage & Cinematic -->
                 <div style="flex: 1; background: #e8e6e3; padding: 25px 30px; text-align: left; border-radius: 2px;">
                     <p style="font-family: var(--wedding-montserrat); font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 10px;">
@@ -1480,8 +1479,12 @@ if (!function_exists('fmt')) {
                 #whatsapp-btn {
                     display: none !important;
                 }
-                /* Rodapé fixo para mobile */
+                /* Rodapé fixo para mobile - SÓ aparece quando o modal está aberto */
                 .modal-mobile-footer {
+                    display: none !important;
+                }
+                #slide-pacote[style*="display: flex"] .modal-mobile-footer,
+                #slide-pacote.modal-open .modal-mobile-footer {
                     display: flex !important;
                     position: fixed;
                     bottom: 0;
@@ -1499,6 +1502,30 @@ if (!function_exists('fmt')) {
                     display: flex;
                     justify-content: space-between;
                     align-items: baseline;
+                }
+
+                /* Slide de Condições de Pagamento - Mobile */
+                .slide-investimento {
+                    height: auto !important;
+                    min-height: 100vh;
+                }
+                .slide-investimento .investimento-img {
+                    height: 25vh !important;
+                }
+                .slide-investimento .investimento-content {
+                    padding: 30px 25px !important;
+                }
+                .slide-investimento .investimento-title {
+                    font-size: 1.8rem !important;
+                    margin-bottom: 3px !important;
+                }
+                .slide-investimento .investimento-subtitle {
+                    font-size: 0.7rem !important;
+                    margin-bottom: 25px !important;
+                }
+                .slide-investimento .investimento-cards {
+                    flex-direction: column !important;
+                    gap: 12px !important;
                 }
             }
             @media (min-width: 769px) {
@@ -1645,16 +1672,7 @@ if (!function_exists('fmt')) {
             </button>
         </div>
 
-        <!-- Rodapé Mobile para Conversão -->
-        <div class="modal-mobile-footer">
-            <div class="modal-mobile-total-row">
-                <span style="font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: rgba(255,255,255,0.5);">Total do pacote</span>
-                <span id="total-display-mobile" style="font-size: 1.4rem; font-weight: 300; color: #fff;">—</span>
-            </div>
-            <button onclick="sendWhatsApp()" style="width: 100%; padding: 15px; background: #25d366; color: #fff; border: none; border-radius: 6px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                Confirmar via WhatsApp
-            </button>
-        </div>
+        <!-- Rodapé duplicado removido -->
         <script>
             (function () {
                 // Catálogo de Serviços vindo do Banco
@@ -2349,6 +2367,7 @@ if (!function_exists('fmt')) {
             const modal = document.getElementById('slide-pacote');
             if (modal) {
                 modal.style.display = 'flex';
+                modal.classList.add('modal-open');
                 const container = document.querySelector('.wedding-proposal');
                 if (container) container.style.overflow = 'hidden';
                 if (window.lucide) lucide.createIcons();
@@ -2359,6 +2378,7 @@ if (!function_exists('fmt')) {
             const modal = document.getElementById('slide-pacote');
             if (modal) {
                 modal.style.display = 'none';
+                modal.classList.remove('modal-open');
                 const container = document.querySelector('.wedding-proposal');
                 if (container) container.style.overflowY = 'scroll';
             }
