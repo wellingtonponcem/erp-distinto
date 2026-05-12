@@ -373,17 +373,6 @@ $iniciais = strtoupper(mb_substr($nomeUsuario, 0, 1) . (strpos($nomeUsuario, ' '
             <?php endif; ?>
         </a>
 
-        <!-- Voltar -->
-        <div class="rs-section-label">Sistema</div>
-        <div class="rs-section-dot"></div>
-
-        <a href="<?= raizUrl('/dashboard.php') ?>"
-           class="rs-link"
-           data-tip="Painel Principal">
-            <i class="fa-solid fa-arrow-left rs-icon"></i>
-            <span class="rs-label">Painel Principal</span>
-        </a>
-
     </nav>
 
     <!-- Footer / User -->
