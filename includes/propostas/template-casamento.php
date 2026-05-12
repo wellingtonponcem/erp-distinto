@@ -1680,11 +1680,18 @@ if (!function_exists('fmt')) {
 
                 // Definição dos Planos vindo do Banco
                 const planPresets = {};
-                <?php foreach ($planosWedding as $p): ?>
+                <?php 
+                // Mapear condições por plano
+                $condicoesMap = [
+                    'heritage' => $condHC,
+                    'cinematic' => $condHC,
+                    'essencial' => $condE,
+                ];
+                foreach ($planosWedding as $p): ?>
                 planPresets['<?= $p['id'] ?>'] = {
                     nome: '<?= addslashes($p['nome']) ?>',
                     valorBase: <?= (float)$p['preco_venda'] ?>,
-                    condicoes: '<?= addslashes($p['prazo_minimo'] > 0 ? "Saldo parcelado em até {$p['prazo_minimo']}x" : "Condições sob consulta") ?>',
+                    condicoes: '<?= addslashes($condicoesMap[$p['id']] ?? ($p['prazo_minimo'] > 0 ? "Saldo parcelado em até {$p['prazo_minimo']}x" : "Condições sob consulta")) ?>',
                     servicos: <?= $p['itens_json'] ?: '{}' ?>,
                     showBoudoir: <?= $p['show_boudoir'] ? 'true' : 'false' ?>,
                     showPrewedding: <?= $p['show_prewedding'] ? 'true' : 'false' ?>,
