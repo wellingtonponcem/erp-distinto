@@ -1318,6 +1318,67 @@ if (!function_exists('fmt')) {
     </section>
     <?php endif; ?>
 
+    <!-- PÁGINA 10.5: INVESTIMENTO E PLANEJAMENTO -->
+    <?php
+    $condHC_slide = $dados['condicoes_heritage_cinematic'] ?? 'Entrada de 20% + Saldo parcelado em até 6x (dependendo do pacote selecionado)';
+    $condE_slide = $dados['condicoes_essencial'] ?? 'Entrada de 25% + Saldo parcelado em até 5x (dependendo do pacote selecionado)';
+    $clausula_slide = $dados['condicoes_reserva'] ?? 'A reserva da data é oficializada mediante a assinatura do contrato e o pagamento do sinal (entrada), que pode ser de 20% ou 25% do valor do pacote escolhido.';
+    ?>
+    <section class="slide"
+        style="padding: 0; background: #f4f4f4; display: flex; flex-direction: column; overflow: hidden; height: 100vh; width: 100%;">
+
+        <!-- Topo: Imagem com Overlay -->
+        <div style="height: 30%; width: 100%; position: relative; overflow: hidden;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-10.png') ?>"
+                style="width: 100%; height: 100%; object-fit: cover; object-position: center 40%;">
+            <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 40%, #f4f4f4 100%);"></div>
+        </div>
+
+        <!-- Conteúdo -->
+        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 8vw; text-align: center;">
+            <h2 class="reveal-item"
+                style="font-family: var(--wedding-montserrat); font-size: 3rem; font-weight: 300; letter-spacing: 0.08em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 5px;">
+                INVESTIMENTO E PLANEJAMENTO
+            </h2>
+            <p class="reveal-item"
+                style="font-family: var(--wedding-montserrat); font-size: 1rem; font-weight: 400; letter-spacing: 0.25em; color: #888; text-transform: uppercase; margin-bottom: 40px;">
+                FORMAS DE RESERVA E PAGAMENTO
+            </p>
+
+            <!-- Cláusula de Reserva -->
+            <div class="reveal-item"
+                style="max-width: 800px; background: #fff; border-left: 3px solid var(--wedding-gold); padding: 25px 30px; margin-bottom: 30px; text-align: left;">
+                <p style="font-family: var(--wedding-montserrat); font-size: 0.9rem; line-height: 1.8; color: #444; margin: 0;">
+                    <?= htmlspecialchars($clausula_slide) ?>
+                    <br>Opções de Parcelamento: Oferecemos flexibilidade para que o saldo seja quitado de forma equilibrada até a data do evento:
+                </p>
+            </div>
+
+            <!-- Cards de Condições -->
+            <div class="reveal-item" style="display: flex; gap: 20px; width: 100%; max-width: 800px;">
+                <!-- Heritage & Cinematic -->
+                <div style="flex: 1; background: #e8e6e3; padding: 25px 30px; text-align: left; border-radius: 2px;">
+                    <p style="font-family: var(--wedding-montserrat); font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 10px;">
+                        Para Experiência Heritage & Experiência Cinematic
+                    </p>
+                    <p style="font-family: var(--wedding-montserrat); font-size: 0.85rem; line-height: 1.6; color: #555; margin: 0;">
+                        <?= htmlspecialchars($condHC_slide) ?>
+                    </p>
+                </div>
+
+                <!-- Essencial -->
+                <div style="flex: 1; background: #e8e6e3; padding: 25px 30px; text-align: left; border-radius: 2px;">
+                    <p style="font-family: var(--wedding-montserrat); font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 10px;">
+                        Para o Registro Essencial
+                    </p>
+                    <p style="font-family: var(--wedding-montserrat); font-size: 0.85rem; line-height: 1.6; color: #555; margin: 0;">
+                        <?= htmlspecialchars($condE_slide) ?>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- PÁGINA 11: ESCOLHA SEU PACOTE — INTERATIVO -->
     <?php
     $pHeritage = is_numeric($dados['valor_heritage'] ?? '') ? (float) $dados['valor_heritage'] : 7900;
