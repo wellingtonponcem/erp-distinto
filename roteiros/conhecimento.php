@@ -309,9 +309,12 @@ try {
     </style>
 </head>
 <body x-data="knowledgeManager()">
+<div style="display:flex; min-height:100vh;">
+    <?php include __DIR__ . '/includes/sidebar.php'; ?>
+    <div style="flex:1; min-width:0; overflow-x:hidden;">
     <div class="page-wrap">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <a href="index.php" class="back-link">← Voltar para Roteiros</a>
+            <div></div>
             <button @click="rebuildMemory()" class="btn-accent" style="padding: 6px 14px; font-size: 11px; border-radius: 6px;" :disabled="uploading">
                 <i class="fa-solid fa-sync" :class="uploading ? 'fa-spin' : ''"></i> Sincronizar Memória
             </button>
@@ -753,5 +756,8 @@ try {
             }
         }
     </script>
+    </div><!-- /.page-wrap -->
+    </div><!-- /.flex-content -->
+</div><!-- /.flex-wrapper -->
 </body>
 </html>

@@ -728,6 +728,12 @@ $podeCriar      = $dadosSub['pode_criar']      ?? true;
     </style>
 </head>
 <body x-data="scriptManager()">
+<div style="display:flex; min-height:100vh;">
+    <?php
+    $subStatus = $dadosSub['status'] ?? 'trial';
+    include __DIR__ . '/includes/sidebar.php';
+    ?>
+    <div style="flex:1; min-width:0; overflow-x:hidden;">
     <div class="page-wrap">
 
         <?php
@@ -783,7 +789,6 @@ $podeCriar      = $dadosSub['pode_criar']      ?? true;
                 </div>
             </div>
             <div class="header-actions">
-                <a href="conhecimento.php" class="btn-secondary">Base de Conhecimento</a>
                 <button @click="openModal()" class="btn-primary">+ Novo Roteiro</button>
             </div>
         </div>
@@ -940,9 +945,10 @@ $podeCriar      = $dadosSub['pode_criar']      ?? true;
                 </div>
             </template>
         </div>
-    </div>
+    </div><!-- /.page-wrap -->
+    </div><!-- /.flex-content -->
 
-    <!-- ── Reader Offline ──────────────────────────────────────────── -->
+    <!-- ── Reader Offline (full-screen, fora do flex) ───────────────── -->
     <div class="reader-overlay" x-show="viewMode === 'leitura'" x-cloak x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
 
         <!-- Header fixo -->
@@ -1339,5 +1345,6 @@ $podeCriar      = $dadosSub['pode_criar']      ?? true;
             }
         }
     </script>
+</div><!-- /.flex-wrapper -->
 </body>
 </html>
