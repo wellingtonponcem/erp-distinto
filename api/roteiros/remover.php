@@ -18,10 +18,11 @@ if (empty($id)) {
 }
 
 try {
-    $db = Database::get();
-    
-    $stmt = $db->prepare("DELETE FROM roteiros WHERE id = ?");
-    $stmt->execute([$id]);
+    $db      = Database::get();
+    $usuario = usuarioAtual();
+
+    $stmt = $db->prepare("DELETE FROM roteiros WHERE id = ? AND user_id = ?");
+    $stmt->execute([$id, $usuario['id']]);
 
     responderJson(['success' => true]);
 

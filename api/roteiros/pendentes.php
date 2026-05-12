@@ -13,12 +13,15 @@ exigirAutenticacao();
 try {
     $db = Database::get();
 
-    $stmt = $db->query(
+    $usuario = usuarioAtual();
+
+    $stmt = $db->prepare(
         "SELECT id, numero, titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, intencao, tema, status, score
          FROM roteiros
-         WHERE status = 'pendente'
+         WHERE status = 'pendente' AND user_id = ?
          ORDER BY numero ASC NULLS LAST, created_at DESC"
     );
+    $stmt->execute([$usuario['id']]);
     $roteiros = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     responderJson([

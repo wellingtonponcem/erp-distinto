@@ -20,12 +20,17 @@ set_time_limit(300);
 ini_set('memory_limit', '512M');
 
 try {
-    // Chama a função que lê todas as fontes e reconstrói o cérebro da IA
-    $sucesso = IARoteiros::reconstruirMemoria();
+    $usuario = usuarioAtual();
+    $userId  = $usuario['id'];
+
+    // Reconstrói o cérebro da IA para este usuário
+    $sucesso = IARoteiros::reconstruirMemoria($userId);
 
     if ($sucesso === true) {
-        $db = Database::get();
-        $novaMemoria = $db->query("SELECT conteudo FROM roteiros_memoria LIMIT 1")->fetchColumn();
+        $db   = Database::get();
+        $stmt = $db->prepare("SELECT conteudo FROM roteiros_memoria WHERE user_id = ? LIMIT 1");
+        $stmt->execute([$userId]);
+        $novaMemoria = $stmt->fetchColumn();
         responderJson(['success' => true, 'nova_memoria' => $novaMemoria ?: '']);
     } else {
         responderJson(['success' => false, 'error' => $sucesso ?: 'Falha na reconstrução da memória.'], 500);

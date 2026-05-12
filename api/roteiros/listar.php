@@ -16,15 +16,16 @@ try {
     $status = $_GET['status'] ?? null;
     $tag = $_GET['tag'] ?? null;
 
-    $query = "SELECT id, numero, titulo, status, formato, score, created_at FROM roteiros ORDER BY created_at DESC";
-    $params = [];
+    $usuario = usuarioAtual();
+    $query   = "SELECT id, numero, titulo, status, formato, score, created_at FROM roteiros WHERE user_id = ? ORDER BY created_at DESC";
 
     $stmt = $db->prepare($query);
-    $stmt->execute($params);
+    $stmt->execute([$usuario['id']]);
     $roteiros = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Migração em tempo real: Popular números que estão como 0 ou nulos
     $scripts_sem_numero = array_filter($roteiros, fn($r) => !$r['numero']);
+    $userId = $usuario['id'];
     
     if (count($scripts_sem_numero) > 0) {
         foreach ($roteiros as &$r) {
@@ -39,7 +40,7 @@ try {
                     $auto_num = rand(100, 999);
                 }
                 
-                $db->prepare("UPDATE roteiros SET numero = ? WHERE id = ?")->execute([$auto_num, $r['id']]);
+                $db->prepare("UPDATE roteiros SET numero = ? WHERE id = ? AND user_id = ?")->execute([$auto_num, $r['id'], $userId]);
                 $r['numero'] = $auto_num;
             }
         }

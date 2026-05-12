@@ -8,15 +8,49 @@ exigirAutenticacao();
 $db = Database::get();
 
 // Buscar todas oportunidades com dados de proposta
-$oportunidades = $db->query("
-    SELECT o.*, c.nome AS cliente_nome, c.contato AS cliente_contato,
-           p.id AS proposta_id, p.slug AS proposta_slug, p.status AS proposta_status, 
-           p.tipo AS proposta_tipo, p.valor_total AS proposta_valor, p.dados_json
-    FROM oportunidades o 
-    LEFT JOIN clientes c ON c.id = o.cliente_id
-    LEFT JOIN propostas p ON p.oportunidade_id = o.id
-    ORDER BY o.criado_em DESC
-")->fetchAll();
+$oportunidades = [];
+try {
+    $oportunidades = $db->query("
+        SELECT o.*, c.nome AS cliente_nome, c.contato AS cliente_contato,
+               p.id AS proposta_id, p.slug AS proposta_slug, p.status AS proposta_status, 
+               p.tipo AS proposta_tipo, p.valor_total AS proposta_valor, p.dados_json
+        FROM oportunidades o 
+        LEFT JOIN clientes c ON c.id = o.cliente_id
+        LEFT JOIN propostas p ON p.oportunidade_id = o.id
+        ORDER BY o.atualizado_em DESC
+    ")->fetchAll();
+} catch (Exception $e) {
+    // Fallback sem ordem ou com created_at
+    try {
+        $oportunidades = $db->query("
+            SELECT o.*, c.nome AS cliente_nome, c.contato AS cliente_contato,
+                   p.id AS proposta_id, p.slug AS proposta_slug, p.status AS proposta_status, 
+                   p.tipo AS proposta_tipo, p.valor_total AS proposta_valor, p.dados_json
+            FROM oportunidades o 
+            LEFT JOIN clientes c ON c.id = o.cliente_id
+            LEFT JOIN propostas p ON p.oportunidade_id = o.id
+        ")->fetchAll();
+    } catch (Exception $e2) {}
+}
+
+// Incorporar Propostas Órfãs (sem oportunidade vinculada)
+try {
+    $stmtOrfas = $db->query("
+        SELECT p.id, p.cliente_id, p.cliente_nome AS nome, p.valor_total AS valor_estimado,
+               CASE p.status WHEN 'rascunho' THEN 'novo' WHEN 'pendente' THEN 'proposta' WHEN 'aceita' THEN 'ganha' WHEN 'recusada' THEN 'perdida' ELSE 'proposta' END AS etapa,
+               p.created_at AS previsao, 'Sistema' AS responsavel, 
+               CONCAT('Proposta: ', p.titulo) AS descricao,
+               p.id AS proposta_id, p.slug AS proposta_slug, p.status AS proposta_status,
+               p.tipo AS proposta_tipo, p.valor_total AS proposta_valor, p.dados_json,
+               c.nome AS cliente_nome, c.contato AS cliente_contato,
+               TRUE AS is_proposta
+        FROM propostas p
+        LEFT JOIN clientes c ON c.id = p.cliente_id
+        WHERE (p.oportunidade_id IS NULL OR p.oportunidade_id = '')
+    ");
+    $orfas = $stmtOrfas->fetchAll();
+    $oportunidades = array_merge($oportunidades, $orfas);
+} catch (Exception $e) {}
 
 // Agrupar por etapa
 $etapas = ['novo'=>'Novo','qualificado'=>'Qualificado','proposta'=>'Proposta','negociacao'=>'Negociação','ganha'=>'Ganha','perdida'=>'Perdida'];
@@ -29,7 +63,7 @@ foreach ($oportunidades as $o) {
 
 // Contagens para métricas
 $totalOps = count($oportunidades);
-$totalValor = array_sum(array_column($oportunidades, 'valor_estimado'));
+$totalValor = array_sum(array_map(function($o) { return (float)($o['proposta_valor'] ?: $o['valor_estimado'] ?? 0); }, $oportunidades));
 
 $clientes = $db->query("SELECT id, nome FROM clientes ORDER BY nome ASC")->fetchAll();
 

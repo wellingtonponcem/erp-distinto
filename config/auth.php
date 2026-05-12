@@ -51,20 +51,47 @@ function exigirAutenticacao(): void {
 function usuarioAtual(): array {
     iniciarSessao();
     return [
-        'id'   => $_SESSION['user_id'] ?? '',
-        'nome' => $_SESSION['user_nome'] ?? '',
-        'email'=> $_SESSION['user_email'] ?? '',
-        'nivel'=> $_SESSION['user_nivel'] ?? 0,
+        'id'                  => $_SESSION['user_id'] ?? '',
+        'nome'                => $_SESSION['user_nome'] ?? '',
+        'email'               => $_SESSION['user_email'] ?? '',
+        'nivel'               => $_SESSION['user_nivel'] ?? 0,
+        'subscription_status' => $_SESSION['user_subscription_status'] ?? 'trial',
+        'subscription_plan'   => $_SESSION['user_subscription_plan'] ?? null,
     ];
 }
 
 function logarUsuario(array $user): void {
     iniciarSessao();
     session_regenerate_id(true);
-    $_SESSION['user_id']    = $user['id'];
-    $_SESSION['user_nome']  = $user['nome'];
-    $_SESSION['user_email'] = $user['email'];
-    $_SESSION['user_nivel'] = $user['nivel'] ?? 0;
+    $_SESSION['user_id']                  = $user['id'];
+    $_SESSION['user_nome']                = $user['nome'];
+    $_SESSION['user_email']               = $user['email'];
+    $_SESSION['user_nivel']               = $user['nivel'] ?? 0;
+    $_SESSION['user_subscription_status'] = $user['subscription_status'] ?? 'trial';
+    $_SESSION['user_subscription_plan']   = $user['subscription_plan'] ?? null;
+}
+
+/**
+ * Atualiza dados de assinatura na sessão ativa (após webhook ou refresh).
+ */
+function atualizarSessaoAssinatura(string $userId): void
+{
+    try {
+        require_once __DIR__ . '/../config/database.php';
+        $db   = Database::get();
+        $stmt = $db->prepare(
+            "SELECT subscription_status, subscription_plan FROM users WHERE id = ? LIMIT 1"
+        );
+        $stmt->execute([$userId]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($user) {
+            iniciarSessao();
+            $_SESSION['user_subscription_status'] = $user['subscription_status'];
+            $_SESSION['user_subscription_plan']   = $user['subscription_plan'];
+        }
+    } catch (Exception $e) {
+        // Silencioso — não quebrar o fluxo
+    }
 }
 
 function deslogarUsuario(): void {

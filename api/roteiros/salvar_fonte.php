@@ -8,6 +8,7 @@ require_once __DIR__ . '/../../config/auth.php';
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../includes/helpers.php';
 require_once __DIR__ . '/../../includes/ia_roteiros.php';
+require_once __DIR__ . '/../../includes/assinatura.php';
 
 exigirAutenticacao();
 
@@ -15,12 +16,26 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     responderJson(['erro' => 'Método não permitido'], 405);
 }
 
-$d = lerCorpo();
-$type = $d['type'] ?? '';
+$d     = lerCorpo();
+$type  = $d['type']  ?? '';
 $value = $d['value'] ?? '';
 
 if (!$type || !$value) {
     responderJson(['erro' => 'Dados incompletos'], 422);
+}
+
+$usuario = usuarioAtual();
+$userId  = $usuario['id'];
+
+// Verificar limite de arquivos (50 por usuário)
+$limiteConhec = verificarLimiteConhecimento($userId);
+if (!$limiteConhec['ok']) {
+    responderJson([
+        'success' => false,
+        'error'   => "Limite de " . CONHECIMENTO_LIMITE . " fontes atingido. Remova fontes antigas para adicionar novas.",
+        'total'   => $limiteConhec['total'],
+        'limite'  => $limiteConhec['limite'],
+    ], 403);
 }
 
 // Aumentar limites para processamento da IA
@@ -75,15 +90,20 @@ try {
         }
     }
 
-    $stmt = $db->prepare("INSERT INTO roteiros_conhecimento (nome_arquivo, caminho_arquivo, tipo_arquivo, texto_extraido) VALUES (?, ?, ?, ?) RETURNING id, nome_arquivo, tipo_arquivo, created_at, ativo");
-    $stmt->execute([$nome, $type === 'url' ? $value : 'manual_entry', $type, $texto]);
+    $stmt = $db->prepare(
+        "INSERT INTO roteiros_conhecimento (nome_arquivo, caminho_arquivo, tipo_arquivo, texto_extraido, user_id)
+         VALUES (?, ?, ?, ?, ?) RETURNING id, nome_arquivo, tipo_arquivo, created_at, ativo"
+    );
+    $stmt->execute([$nome, $type === 'url' ? $value : 'manual_entry', $type, $texto, $userId]);
     $arquivo_salvo = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // RECONSTRUÇÃO DA MEMÓRIA
-    IARoteiros::reconstruirMemoria();
+    // RECONSTRUÇÃO DA MEMÓRIA DO USUÁRIO
+    IARoteiros::reconstruirMemoria($userId);
 
     // Retorna dados atualizados para o frontend
-    $novaMemoria = $db->query("SELECT conteudo FROM roteiros_memoria LIMIT 1")->fetchColumn();
+    $stmtMem  = $db->prepare("SELECT conteudo FROM roteiros_memoria WHERE user_id = ? LIMIT 1");
+    $stmtMem->execute([$userId]);
+    $novaMemoria = $stmtMem->fetchColumn();
 
     responderJson([
         'success'      => true,

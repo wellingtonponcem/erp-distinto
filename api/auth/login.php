@@ -17,7 +17,7 @@ if (!$email || !$senha) {
 }
 
 $db   = Database::get();
-$stmt = $db->prepare('SELECT id, nome, email, senha, nivel FROM users WHERE email = ? LIMIT 1');
+$stmt = $db->prepare('SELECT id, nome, email, senha, nivel, subscription_status, subscription_plan FROM users WHERE email = ? LIMIT 1');
 $stmt->execute([$email]);
 $user = $stmt->fetch();
 

@@ -7,6 +7,7 @@ require_once __DIR__ . '/../../config/env.php';
 require_once __DIR__ . '/../../config/auth.php';
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../includes/helpers.php';
+require_once __DIR__ . '/../../includes/assinatura.php';
 
 exigirAutenticacao();
 
@@ -14,7 +15,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     responderJson(['erro' => 'Método não permitido'], 405);
 }
 
-$d = lerCorpo();
+$d       = lerCorpo();
+$usuario = usuarioAtual();
+$userId  = $usuario['id'];
 
 try {
     $db = Database::get();
@@ -38,40 +41,54 @@ try {
     $score = ($likes * 1) + ($comentarios * 5) + ($shares * 10) + ($reposts * 15) + ($salvamentos * 20);
 
     if (!empty($d['id'])) {
-        // Update - Numero is NOT updated here to remain permanent
-        $stmt = $db->prepare("UPDATE roteiros SET 
-            titulo = ?, gancho = ?, quebra_crenca = ?, desenvolvimento = ?, 
-            conexao = ?, fechamento = ?, cta = ?, tags = ?, status = ?, 
+        // UPDATE — garantir que o roteiro pertence ao usuário
+        $stmt = $db->prepare("UPDATE roteiros SET
+            titulo = ?, gancho = ?, quebra_crenca = ?, desenvolvimento = ?,
+            conexao = ?, fechamento = ?, cta = ?, tags = ?, status = ?,
             likes = ?, comentarios = ?, shares = ?, reposts = ?, salvamentos = ?, score = ?,
-            intencao = ?, tema = ?, updated_at = CURRENT_TIMESTAMP 
-            WHERE id = ?");
-        
+            intencao = ?, tema = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ? AND user_id = ?");
+
         $stmt->execute([
-            $d['titulo'], $d['gancho'] ?? '', $d['quebra_crenca'] ?? '', 
+            $d['titulo'], $d['gancho'] ?? '', $d['quebra_crenca'] ?? '',
             $d['desenvolvimento'] ?? '', $d['conexao'] ?? '', $d['fechamento'] ?? '',
             $d['cta'] ?? '', $d['tags'] ?? '', $d['status'] ?? 'pendente',
             $likes, $comentarios, $shares, $reposts, $salvamentos, $score,
             $d['intencao'] ?? '', $d['tema'] ?? '',
-            $d['id']
+            $d['id'], $userId
         ]);
-        
+
         $script_id = $d['id'];
     } else {
-        // Insert - Calculate next sequence number
-        $st = $db->query("SELECT COALESCE(MAX(numero), 0) + 1 as prox FROM roteiros");
+        // INSERT — verificar limite diário do trial antes de criar
+        $limite = verificarLimiteDiario($userId);
+        if (!$limite['ok']) {
+            $motivo = $limite['motivo'];
+            if ($motivo === 'trial_expirado') {
+                responderJson(['success' => false, 'paywall' => true, 'motivo' => 'trial_expirado',
+                    'mensagem' => 'Seu período de teste encerrou. Assine para continuar criando roteiros.'], 403);
+            }
+            responderJson(['success' => false, 'paywall' => true, 'motivo' => 'limite_diario',
+                'mensagem' => "Você atingiu o limite de {$limite['limite']} roteiros hoje. Volte amanhã ou assine o plano.",
+                'limite' => $limite['limite'], 'usados' => $limite['usados']], 403);
+        }
+
+        // Próximo número de sequência do usuário
+        $st   = $db->prepare("SELECT COALESCE(MAX(numero), 0) + 1 AS prox FROM roteiros WHERE user_id = ?");
+        $st->execute([$userId]);
         $prox = $st->fetch(PDO::FETCH_ASSOC)['prox'];
 
-        $stmt = $db->prepare("INSERT INTO roteiros 
-            (titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, tags, formato, status, 
-            likes, comentarios, shares, reposts, salvamentos, score, numero, intencao, tema) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id");
-        
+        $stmt = $db->prepare("INSERT INTO roteiros
+            (titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, tags, formato, status,
+            likes, comentarios, shares, reposts, salvamentos, score, numero, intencao, tema, user_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id");
+
         $stmt->execute([
             $d['titulo'], $d['gancho'] ?? '', $d['quebra_crenca'] ?? '',
             $d['desenvolvimento'] ?? '', $d['conexao'] ?? '', $d['fechamento'] ?? '',
             $d['cta'] ?? '', $d['tags'] ?? '', $d['formato'] ?? '', $d['status'] ?? 'pendente',
             $likes, $comentarios, $shares, $reposts, $salvamentos, $score,
-            $prox, $d['intencao'] ?? '', $d['tema'] ?? ''
+            $prox, $d['intencao'] ?? '', $d['tema'] ?? '', $userId
         ]);
         $script_id = $stmt->fetchColumn();
     }
@@ -94,19 +111,18 @@ try {
         if (strlen($textoCompleto) > 100) {
             $caminho_interno = 'roteiro_interno_' . (isset($script_id) ? $script_id : $d['id']);
             
-            $stmtFonte = $db->prepare("SELECT id FROM roteiros_conhecimento WHERE caminho_arquivo = ? LIMIT 1");
-            $stmtFonte->execute([$caminho_interno]);
+            $stmtFonte = $db->prepare("SELECT id FROM roteiros_conhecimento WHERE caminho_arquivo = ? AND user_id = ? LIMIT 1");
+            $stmtFonte->execute([$caminho_interno, $userId]);
             $fonte_id = $stmtFonte->fetchColumn();
 
             $nomeArquivo = "📝 Roteiro: {$d['titulo']}";
 
             if ($fonte_id) {
-                $db->prepare("UPDATE roteiros_conhecimento SET texto_extraido = ?, sincronizado = FALSE, nome_arquivo = ? WHERE id = ?")
-                   ->execute([$textoCompleto, $nomeArquivo, $fonte_id]);
+                $db->prepare("UPDATE roteiros_conhecimento SET texto_extraido = ?, sincronizado = FALSE, nome_arquivo = ? WHERE id = ? AND user_id = ?")
+                   ->execute([$textoCompleto, $nomeArquivo, $fonte_id, $userId]);
             } else {
-                // Cria coluna sincronizado na hora da inserção, caso não exista (já foi tratada no outro script, mas garantimos aqui via query simples)
-                $db->prepare("INSERT INTO roteiros_conhecimento (nome_arquivo, caminho_arquivo, tipo_arquivo, texto_extraido, sincronizado) VALUES (?, ?, 'text', ?, FALSE)")
-                   ->execute([$nomeArquivo, $caminho_interno, $textoCompleto]);
+                $db->prepare("INSERT INTO roteiros_conhecimento (nome_arquivo, caminho_arquivo, tipo_arquivo, texto_extraido, sincronizado, user_id) VALUES (?, ?, 'text', ?, FALSE, ?)")
+                   ->execute([$nomeArquivo, $caminho_interno, $textoCompleto, $userId]);
             }
         }
     }
