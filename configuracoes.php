@@ -8,6 +8,15 @@ exigirAdmin();
 $tituloPagina = 'Configurações';
 $db = Database::get();
 
+// Auto-migração: adiciona colunas do Mercado Pago se ainda não existirem
+foreach ([
+    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_access_token  TEXT",
+    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_public_key     TEXT",
+    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_webhook_secret TEXT",
+] as $sql) {
+    try { $db->exec($sql); } catch (Exception $e) { /* ignora */ }
+}
+
 $config = $db->query("SELECT id, nome, cnpj, telefone, email, endereco, groq_api_key, gemini_api_key,
     mercadopago_access_token, mercadopago_public_key, mercadopago_webhook_secret
     FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
