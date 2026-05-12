@@ -10,18 +10,26 @@ $db = Database::get();
 
 // Auto-migração: adiciona colunas do Mercado Pago se ainda não existirem
 foreach ([
-    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_access_token  TEXT",
-    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_public_key     TEXT",
-    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_webhook_secret TEXT",
-    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_client_id      TEXT",
-    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_client_secret  TEXT",
+    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_access_token      TEXT",
+    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_public_key         TEXT",
+    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_webhook_secret     TEXT",
+    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_client_id          TEXT",
+    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_client_secret      TEXT",
+    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_test_access_token  TEXT",
+    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_test_public_key    TEXT",
+    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_prod_access_token  TEXT",
+    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_prod_public_key    TEXT",
+    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_mode               VARCHAR(10) DEFAULT 'test'",
 ] as $sql) {
     try { $db->exec($sql); } catch (Exception $e) { /* ignora */ }
 }
 
 $config = $db->query("SELECT id, nome, cnpj, telefone, email, endereco, groq_api_key, gemini_api_key,
     mercadopago_access_token, mercadopago_public_key, mercadopago_webhook_secret,
-    mercadopago_client_id, mercadopago_client_secret
+    mercadopago_client_id, mercadopago_client_secret,
+    mercadopago_test_access_token, mercadopago_test_public_key,
+    mercadopago_prod_access_token, mercadopago_prod_public_key,
+    mercadopago_mode
     FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
 
 $sucesso = '';
@@ -61,6 +69,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $campos[] = 'mercadopago_client_secret';
         $vals[] = trim($_POST['mercadopago_client_secret']);
     }
+    // Credenciais separadas teste / produção
+    if (!empty($_POST['mercadopago_test_access_token'])) {
+        $campos[] = 'mercadopago_test_access_token';
+        $vals[] = trim($_POST['mercadopago_test_access_token']);
+    }
+    if (!empty($_POST['mercadopago_test_public_key'])) {
+        $campos[] = 'mercadopago_test_public_key';
+        $vals[] = trim($_POST['mercadopago_test_public_key']);
+    }
+    if (!empty($_POST['mercadopago_prod_access_token'])) {
+        $campos[] = 'mercadopago_prod_access_token';
+        $vals[] = trim($_POST['mercadopago_prod_access_token']);
+    }
+    if (!empty($_POST['mercadopago_prod_public_key'])) {
+        $campos[] = 'mercadopago_prod_public_key';
+        $vals[] = trim($_POST['mercadopago_prod_public_key']);
+    }
+    // Modo ativo — sempre salvo; sincroniza os campos legados automaticamente
+    $modo = in_array($_POST['mercadopago_mode'] ?? '', ['test','prod']) ? $_POST['mercadopago_mode'] : 'test';
+    $campos[] = 'mercadopago_mode';
+    $vals[]   = $modo;
+    // Sincronizar campos legados com base no modo ativo
+    // (access_token e public_key são os que o resto do sistema usa)
+    $cfg_atual = $db->query("SELECT mercadopago_test_access_token, mercadopago_test_public_key,
+        mercadopago_prod_access_token, mercadopago_prod_public_key
+        FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
+    // Mescla: se vieram novos valores no POST, usa-os; caso contrário, usa o que estava salvo
+    $testToken  = !empty($_POST['mercadopago_test_access_token']) ? trim($_POST['mercadopago_test_access_token']) : ($cfg_atual['mercadopago_test_access_token'] ?? '');
+    $testKey    = !empty($_POST['mercadopago_test_public_key'])   ? trim($_POST['mercadopago_test_public_key'])   : ($cfg_atual['mercadopago_test_public_key']   ?? '');
+    $prodToken  = !empty($_POST['mercadopago_prod_access_token']) ? trim($_POST['mercadopago_prod_access_token']) : ($cfg_atual['mercadopago_prod_access_token'] ?? '');
+    $prodKey    = !empty($_POST['mercadopago_prod_public_key'])   ? trim($_POST['mercadopago_prod_public_key'])   : ($cfg_atual['mercadopago_prod_public_key']   ?? '');
+    $activeToken = $modo === 'prod' ? $prodToken : $testToken;
+    $activeKey   = $modo === 'prod' ? $prodKey   : $testKey;
+    if ($activeToken) { $campos[] = 'mercadopago_access_token'; $vals[] = $activeToken; }
+    if ($activeKey)   { $campos[] = 'mercadopago_public_key';   $vals[] = $activeKey; }
 
     $sets = implode(', ', array_map(fn($c) => "\"$c\" = ?", $campos));
     $vals[] = 'principal';
@@ -69,7 +112,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sucesso = 'Configurações salvas com sucesso!';
     $config = $db->query("SELECT id, nome, cnpj, telefone, email, endereco, groq_api_key, gemini_api_key,
         mercadopago_access_token, mercadopago_public_key, mercadopago_webhook_secret,
-        mercadopago_client_id, mercadopago_client_secret
+        mercadopago_client_id, mercadopago_client_secret,
+        mercadopago_test_access_token, mercadopago_test_public_key,
+        mercadopago_prod_access_token, mercadopago_prod_public_key,
+        mercadopago_mode
         FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
 }
 
@@ -142,37 +188,101 @@ include __DIR__ . '/includes/layout/head.php';
                 <!-- ── Seção Pagamento (Mercado Pago) ─────────────────────────── -->
                 <div style="margin-bottom:8px; border-top:1px solid #334155; padding-top:20px;">
                     <h3 style="font-size:15px; font-weight:600; color:#e2e8f0; margin-bottom:4px;">Pagamento — Mercado Pago</h3>
+                    <p style="font-size:12px; color:#6b7280; margin-bottom:4px;">
+                        As credenciais são as <strong style="color:#94a3b8;">mesmas para todos os produtos</strong> (assinatura, checkout, PIX). A diferença é só teste vs produção.
+                    </p>
                     <p style="font-size:12px; color:#6b7280; margin-bottom:20px;">
-                        Credenciais para o Checkout Pro (PIX, cartão, boleto). Nunca aparecem no código.<br>
-                        Use tokens de teste (<code style="color:#94a3b8;">TEST-...</code>) para sandbox, ou produção (<code style="color:#94a3b8;">APP_USR-...</code>) ao subir.
+                        O sistema usa as credenciais do bloco <strong style="color:#94a3b8;">ativo</strong> abaixo. Quando for ao ar, cole as credenciais de produção e apague as de teste.
                     </p>
                 </div>
 
+                <?php
+                $mpToken  = $config['mercadopago_access_token'] ?? '';
+                $mpMode   = str_starts_with($mpToken, 'TEST-') ? 'test' : ($mpToken ? 'prod' : 'none');
+                $modeBadge = match($mpMode) {
+                    'test' => ['🧪 Modo teste ativo', '#fbbf24', 'rgba(251,191,36,0.1)', 'rgba(251,191,36,0.3)'],
+                    'prod' => ['🟢 Produção ativa',  '#34d399', 'rgba(52,211,153,0.1)',  'rgba(52,211,153,0.3)'],
+                    default => ['⚪ Não configurado', '#888',   'rgba(255,255,255,0.04)', 'rgba(255,255,255,0.1)'],
+                };
+                ?>
+                <div style="background:<?= $modeBadge[2] ?>; border:1px solid <?= $modeBadge[3] ?>; border-radius:10px; padding:10px 14px; margin-bottom:20px; display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:13px; font-weight:600; color:<?= $modeBadge[1] ?>;"><?= $modeBadge[0] ?></span>
+                    <?php if ($mpMode !== 'none'): ?>
+                    <span style="font-size:12px; color:#6b7280;">— token <?= $mpMode === 'test' ? 'TEST-...' : 'APP_USR-...' ?> detectado</span>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Credenciais de Teste -->
+                <div style="margin-bottom:4px;">
+                    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#fbbf24; margin-bottom:12px;">🧪 Teste (Sandbox)</div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+                    <div>
+                        <label class="label">Access Token de Teste</label>
+                        <input class="input" type="password" name="mercadopago_test_access_token"
+                               placeholder="<?= !empty($config['mercadopago_test_access_token']) ? '••••••••••••••••••••••••••••••••' : 'TEST-...' ?>">
+                    </div>
+                    <div>
+                        <label class="label">Public Key de Teste</label>
+                        <input class="input" type="text" name="mercadopago_test_public_key"
+                               value="<?= sanitizar($config['mercadopago_test_public_key'] ?? '') ?>"
+                               placeholder="TEST-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+                    </div>
+                </div>
+
+                <!-- Credenciais de Produção -->
+                <div style="margin-bottom:4px;">
+                    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#34d399; margin-bottom:12px;">🟢 Produção</div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+                    <div>
+                        <label class="label">Access Token de Produção</label>
+                        <input class="input" type="password" name="mercadopago_prod_access_token"
+                               placeholder="<?= !empty($config['mercadopago_prod_access_token']) ? '••••••••••••••••••••••••••••••••' : 'APP_USR-...' ?>">
+                    </div>
+                    <div>
+                        <label class="label">Public Key de Produção</label>
+                        <input class="input" type="text" name="mercadopago_prod_public_key"
+                               value="<?= sanitizar($config['mercadopago_prod_public_key'] ?? '') ?>"
+                               placeholder="APP_USR-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+                    </div>
+                </div>
+
+                <!-- Qual usar (toggle) -->
+                <div style="margin-bottom:20px;">
+                    <label class="label">Ambiente ativo</label>
+                    <select class="input" name="mercadopago_mode" style="cursor:pointer;">
+                        <option value="test" <?= ($config['mercadopago_mode'] ?? 'test') === 'test' ? 'selected' : '' ?>>🧪 Teste (Sandbox)</option>
+                        <option value="prod" <?= ($config['mercadopago_mode'] ?? 'test') === 'prod' ? 'selected' : '' ?>>🟢 Produção</option>
+                    </select>
+                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">O sistema usa automaticamente as credenciais do ambiente selecionado.</p>
+                </div>
+
+                <!-- Access Token ativo (calculado) — campo legado, mantido para compatibilidade -->
                 <div style="margin-bottom:16px;">
                     <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
-                        <span>Access Token</span>
+                        <span>Access Token <span style="font-weight:400; font-size:11px; color:#fbbf24;">(campo legado — use os campos acima)</span></span>
                         <?php if (!empty($config['mercadopago_access_token'])): ?>
                             <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Salvo</span>
                         <?php endif; ?>
                     </label>
                     <input class="input" type="password" name="mercadopago_access_token"
-                           placeholder="<?= !empty($config['mercadopago_access_token']) ? '••••••••••••••••••••••••••••••••' : 'TEST-... ou APP_USR-...' ?>">
-                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">
-                        Encontrado em <strong>MP Dashboard → Credenciais → Access Token</strong>. Obrigatório para criar preferências.
-                    </p>
+                           placeholder="<?= !empty($config['mercadopago_access_token']) ? '••••••••••••••••••••••••••••••••' : 'Preenchido automaticamente ao salvar' ?>"
+                           style="opacity:0.5;">
+                    <p style="font-size:12px; color:#6b7280; margin-top:4px;">Sobrescrito automaticamente com base no ambiente ativo.</p>
                 </div>
 
                 <div style="margin-bottom:16px;">
                     <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
-                        <span>Public Key <span style="font-weight:400; font-size:11px;">(não é sensível)</span></span>
+                        <span>Public Key <span style="font-weight:400; font-size:11px; color:#fbbf24;">(campo legado)</span></span>
                         <?php if (!empty($config['mercadopago_public_key'])): ?>
                             <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Salva</span>
                         <?php endif; ?>
                     </label>
                     <input class="input" type="text" name="mercadopago_public_key"
                            value="<?= sanitizar($config['mercadopago_public_key'] ?? '') ?>"
-                           placeholder="APP_USR-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
-                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">Encontrada em <strong>MP Dashboard → Credenciais → Public Key</strong>. Usada para o SDK JS (futuro Checkout Transparente).</p>
+                           placeholder="Preenchido automaticamente ao salvar"
+                           style="opacity:0.5;">
                 </div>
 
                 <div style="margin-bottom:16px;">
