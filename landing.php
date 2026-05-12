@@ -17,7 +17,7 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Distinto Roteiros — IA que aprende o seu estilo</title>
+    <title>Meus Roteiros — IA que aprende o seu estilo</title>
     <meta name="description" content="Crie roteiros para vídeos com IA que aprende o seu estilo. 35 dias grátis, sem cartão.">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -188,7 +188,7 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
 
     <!-- NAV -->
     <nav class="nav">
-        <div class="nav-logo">DISTINTO <span>ROTEIROS</span></div>
+        <div class="nav-logo">MEUS <span>ROTEIROS</span></div>
         <div class="nav-cta">
             <a href="<?= raizUrl('/login-roteiros.php') ?>" class="btn-ghost">Entrar</a>
             <a href="<?= raizUrl('/registro.php') ?>" class="btn-cta">Começar grátis</a>
@@ -214,7 +214,7 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
             <div class="section-tag">O problema</div>
             <div class="section-title">Ficar sem ideia<br><em>trava seu crescimento</em></div>
             <p class="section-text">Você sabe o que quer falar, mas na hora de sentar e escrever o roteiro a cabeça esvazia. Ou você escreve, mas na frente da câmera parece artificial — não parece você.</p>
-            <p class="section-text" style="margin-top:1rem;">O Distinto Roteiros resolve isso: uma IA que aprende com você, não uma IA genérica que produz conteúdo sem identidade.</p>
+            <p class="section-text" style="margin-top:1rem;">O Meus Roteiros resolve isso: uma IA que aprende com você, não uma IA genérica que produz conteúdo sem identidade.</p>
         </div>
     </section>
 
@@ -381,7 +381,7 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
     </section>
 
     <footer>
-        <div>© <?= date('Y') ?> Distinto Roteiros</div>
+        <div>© <?= date('Y') ?> Meus Roteiros</div>
         <div style="display:flex; gap:20px;">
             <a href="<?= raizUrl('/login-roteiros.php') ?>">Entrar</a>
             <a href="<?= raizUrl('/registro.php') ?>">Criar conta</a>

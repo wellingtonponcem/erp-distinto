@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrar — Distinto Roteiros</title>
+    <title>Entrar — Meus Roteiros</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -139,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 
     <div class="card">
-        <div class="logo">DISTINTO</div>
+        <div class="logo">MEUS ROTEIROS</div>
         <div class="headline">Roteiros e Narrativas</div>
 
         <?php if ($erro): ?>

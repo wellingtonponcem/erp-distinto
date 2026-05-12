@@ -23,7 +23,7 @@ $podeCriar      = $dadosSub['pode_criar']      ?? true;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Roteiros — Distinto</title>
+    <title>Gestão de Roteiros — Meus Roteiros</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <meta name="theme-color" content="#0a0a0a">

@@ -13,7 +13,7 @@ if (estaAutenticado()) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Criar conta grátis — Distinto Roteiros</title>
+    <title>Criar conta grátis — Meus Roteiros</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
@@ -147,7 +147,7 @@ if (estaAutenticado()) {
 <body x-data="registroApp()">
 
     <div class="card">
-        <div class="logo">DISTINTO</div>
+        <div class="logo">MEUS ROTEIROS</div>
         <div class="headline">Crie roteiros que<br>geram resultado.</div>
 
         <div class="trial-badge">✦ 35 DIAS GRÁTIS · SEM CARTÃO</div>
