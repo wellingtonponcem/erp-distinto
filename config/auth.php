@@ -56,6 +56,27 @@ function exigirAutenticacao(): void {
 function exigirDistinto(): void {
     exigirAutenticacao();
     $usuario = usuarioAtual();
+    
+    // Se na sessão diz que é distinto, fazemos uma verificação dupla no banco
+    // para garantir que não é um usuário de roteiros em uma sessão antiga.
+    if ($usuario['sistema_origem'] === 'distinto') {
+        try {
+            $db = Database::get();
+            $stmt = $db->prepare("SELECT sistema_origem FROM users WHERE id = ?");
+            $stmt->execute([$usuario['id']]);
+            $origemReal = $stmt->fetchColumn();
+            
+            if ($origemReal && $origemReal !== 'distinto') {
+                // Atualiza a sessão e bloqueia
+                $_SESSION['user_sistema_origem'] = $origemReal;
+                header('Location: ' . raizUrl('/roteiros/index.php'));
+                exit;
+            }
+        } catch (Exception $e) {
+            // Se falhar o banco, seguimos o que está na sessão por segurança (fallback)
+        }
+    }
+
     if ($usuario['sistema_origem'] !== 'distinto') {
         header('Location: ' . raizUrl('/roteiros/index.php'));
         exit;
