@@ -181,15 +181,13 @@ if (estaAutenticado()) {
                 placeholder="••••••••" autocomplete="new-password" @keydown.enter="registrar()">
         </div>
 
-        <button class="btn btn-primary" @click="registrar()" :disabled="loading">
-            <span x-show="!loading">Começar gratuitamente →</span>
-            <span x-show="loading">Criando sua conta...</span>
-        </button>
+        <button class="btn btn-primary" @click="registrar()" :disabled="loading"
+            x-text="loading ? 'Criando sua conta...' : 'Começar gratuitamente →'">Começar gratuitamente →</button>
 
         <hr class="divider">
 
         <div class="footer-link">
-            Já tem conta? <a href="<?= raizUrl('/index.php') ?>">Fazer login</a>
+            Já tem conta? <a href="<?= raizUrl('/index.php') ?>" style="font-weight:600;">Fazer login →</a>
         </div>
         <div class="footer-link" style="margin-top: 0.75rem;">
             <a href="<?= raizUrl('/landing.php') ?>" style="color: var(--muted);">← Voltar para a página inicial</a>
