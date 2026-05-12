@@ -10,7 +10,7 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/helpers.php';
 require_once __DIR__ . '/../includes/assinatura.php';
 
-exigirAutenticacao();
+exigirAdmin();
 $usuario = usuarioAtual();
 if (($usuario['nivel'] ?? 0) < 1) {
     header('Location: /');

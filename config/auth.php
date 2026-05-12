@@ -49,6 +49,19 @@ function exigirAutenticacao(): void {
     }
 }
 
+/**
+ * Garante que o usuário logado é um administrador (Distinto).
+ * Se for nível 0 (Roteiros), redireciona para a área de roteiros.
+ */
+function exigirAdmin(): void {
+    exigirAutenticacao();
+    $usuario = usuarioAtual();
+    if ($usuario['nivel'] != 1) {
+        header('Location: ' . raizUrl('/roteiros/index.php'));
+        exit;
+    }
+}
+
 function usuarioAtual(): array {
     iniciarSessao();
     return [

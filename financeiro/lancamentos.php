@@ -3,7 +3,7 @@ require_once __DIR__ . '/../config/env.php';
 require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/helpers.php';
-exigirAutenticacao();
+exigirAdmin();
 $tituloPagina = 'Lançamentos';
 $db = Database::get();
 $clientes = $db->query("SELECT id, nome FROM clientes ORDER BY nome ASC")->fetchAll();

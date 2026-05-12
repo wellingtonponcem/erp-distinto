@@ -3,7 +3,7 @@ require_once __DIR__ . '/../config/env.php';
 require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../includes/helpers.php';
 
-exigirAutenticacao();
+exigirAdmin();
 
 $tituloPagina = "Contas Bancárias";
 require_once __DIR__ . '/../includes/layout/head.php';

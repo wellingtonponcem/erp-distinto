@@ -3,7 +3,7 @@ require_once __DIR__ . '/../config/env.php';
 require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/helpers.php';
-exigirAutenticacao();
+exigirAdmin();
 $tituloPagina = 'Serviços';
 include __DIR__ . '/../includes/layout/head.php';
 ?>

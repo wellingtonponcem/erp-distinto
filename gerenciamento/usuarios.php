@@ -4,7 +4,7 @@ require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/helpers.php';
 
-exigirAutenticacao();
+exigirAdmin();
 
 $me = usuarioAtual();
 // Patch: Se o nível não estiver na sessão, tenta buscar no banco

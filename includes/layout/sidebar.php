@@ -19,6 +19,12 @@ function menuAtivo(string $path): string {
     global $paginaAtual;
     return str_contains($paginaAtual, $path) ? 'ativo' : '';
 }
+
+// Se o usuário não for administrador (nível 1), exibe o menu simplificado de roteiros
+if ($usuario['nivel'] != 1) {
+    include __DIR__ . '/sidebar-roteiros.php';
+    return;
+}
 ?>
 <aside x-data="{ collapsed: true }" :class="{ 'collapsed': collapsed }" class="sidebar flex flex-col transition-all duration-300 relative group">
     <div style="padding:24px 20px 18px;">
