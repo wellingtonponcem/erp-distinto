@@ -4,9 +4,9 @@ require_once __DIR__ . '/config/auth.php';
 require_once __DIR__ . '/includes/assinatura.php';
 
 // Buscar preços do banco
-$abCfg       = getAbacateConfig();
-$precoMensal = (float)($abCfg['plano_mensal_preco'] ?? PLANO_MENSAL_PRECO);
-$precoAnual  = (float)($abCfg['plano_anual_preco']  ?? PLANO_ANUAL_PRECO);
+$mpCfg       = getMercadoPagoConfig();
+$precoMensal = (float)($mpCfg['plano_mensal_preco'] ?? PLANO_MENSAL_PRECO);
+$precoAnual  = (float)($mpCfg['plano_anual_preco']  ?? PLANO_ANUAL_PRECO);
 $economiaAno = ($precoMensal * 12) - $precoAnual;
 $mensal_eq   = number_format($precoAnual / 12, 2, ',', '.');
 $precoMsStr  = number_format($precoMensal, 0, ',', '.');
@@ -355,7 +355,7 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
                 </div>
 
             </div>
-            <p style="font-size:13px; color:var(--muted); margin-top:1.5rem;">🔒 Pagamento seguro via Abacate Pay · PIX ou cartão</p>
+            <p style="font-size:13px; color:var(--muted); margin-top:1.5rem;">🔒 Pagamento seguro via Mercado Pago · PIX, cartão ou boleto</p>
         </div>
     </section>
 

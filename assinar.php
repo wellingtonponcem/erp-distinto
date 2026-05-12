@@ -12,21 +12,19 @@ $userId    = $usuario['id'];
 $dados     = getDadosAssinatura($userId);
 $subStatus = $dados['status'] ?? 'trial';
 
-$abacateCfg = getAbacateConfig();
-$urlMensal  = $abacateCfg['abacatepay_checkout_mensal'] ?? '';
-$urlAnual   = $abacateCfg['abacatepay_checkout_anual']  ?? '';
-$precoMensal = (float)($abacateCfg['plano_mensal_preco'] ?? PLANO_MENSAL_PRECO);
-$precoAnual  = (float)($abacateCfg['plano_anual_preco']  ?? PLANO_ANUAL_PRECO);
-
-// Adicionar user_id como metadata nas URLs de checkout
-$metaQuery = '?metadata[user_id]=' . urlencode($userId);
-if ($urlMensal) $urlMensal .= $metaQuery;
-if ($urlAnual)  $urlAnual  .= $metaQuery;
+$mpCfg       = getMercadoPagoConfig();
+$temMP       = !empty($mpCfg['mercadopago_access_token']);
+$precoMensal = (float)($mpCfg['plano_mensal_preco'] ?? PLANO_MENSAL_PRECO);
+$precoAnual  = (float)($mpCfg['plano_anual_preco']  ?? PLANO_ANUAL_PRECO);
 
 $precoMensalFmt   = number_format($precoMensal, 2, ',', '.');
 $precoAnualFmt    = number_format($precoAnual,  2, ',', '.');
 $mensalidadeAnual = number_format($precoAnual / 12, 2, ',', '.');
 $economiaAnual    = number_format(($precoMensal * 12) - $precoAnual, 0, ',', '.');
+
+// Status de retorno do Mercado Pago
+$statusMP = $_GET['status'] ?? '';
+$erroMP   = $_GET['erro']   ?? '';
 
 $isAtivo    = $dados['assinante_ativo'] ?? false;
 $isExpirado = $dados['trial_expirado']  ?? false;
@@ -242,6 +240,21 @@ $diasRest   = $dados['dias_restantes']  ?? 0;
             </div>
             <?php endif; ?>
 
+            <!-- Alertas de retorno do Mercado Pago -->
+            <?php if ($statusMP === 'sucesso'): ?>
+            <div style="background:rgba(52,211,153,0.08); border:1px solid rgba(52,211,153,0.3); border-radius:14px; padding:16px 20px; margin-bottom:28px; font-size:14px; color:#34d399; text-align:center;">
+                ✅ Pagamento confirmado! Seu acesso será ativado em instantes.
+            </div>
+            <?php elseif ($statusMP === 'pendente'): ?>
+            <div style="background:rgba(251,191,36,0.08); border:1px solid rgba(251,191,36,0.3); border-radius:14px; padding:16px 20px; margin-bottom:28px; font-size:14px; color:#fbbf24; text-align:center;">
+                ⏳ Pagamento em análise. Você receberá a confirmação em breve.
+            </div>
+            <?php elseif ($statusMP === 'falha' || $erroMP): ?>
+            <div style="background:rgba(255,71,71,0.06); border:1px solid rgba(255,71,71,0.25); border-radius:14px; padding:16px 20px; margin-bottom:28px; font-size:14px; color:#ff7070; text-align:center;">
+                ❌ <?= $erroMP === 'checkout_falhou' ? 'Erro ao iniciar o checkout. Tente novamente ou fale com o suporte.' : 'O pagamento não foi concluído. Tente novamente.' ?>
+            </div>
+            <?php endif; ?>
+
             <!-- Cards de plano -->
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:36px;">
 
@@ -257,10 +270,13 @@ $diasRest   = $dados['dias_restantes']  ?? 0;
                         <li><span class="check">✓</span>Modo leitura offline</li>
                         <li><span class="check">✓</span>Cancele quando quiser</li>
                     </ul>
-                    <?php if ($urlMensal): ?>
-                        <a href="<?= sanitizar($urlMensal) ?>" target="_blank" rel="noopener" class="btn-plan-mensal">
-                            Assinar por R$<?= $precoMensalFmt ?>/mês
-                        </a>
+                    <?php if ($temMP): ?>
+                        <form method="POST" action="<?= raizUrl('/api/assinatura/criar_preferencia.php') ?>">
+                            <input type="hidden" name="plano" value="mensal">
+                            <button type="submit" class="btn-plan-mensal" style="width:100%; font-family:inherit;">
+                                Assinar por R$<?= $precoMensalFmt ?>/mês
+                            </button>
+                        </form>
                     <?php else: ?>
                         <button class="btn-plan-mensal" disabled style="opacity:0.4; cursor:not-allowed;">Em breve</button>
                     <?php endif; ?>
@@ -279,10 +295,13 @@ $diasRest   = $dados['dias_restantes']  ?? 0;
                         <li><span class="check">✓</span>50 fontes de conhecimento</li>
                         <li><span class="check">✓</span>Prioridade em novos recursos</li>
                     </ul>
-                    <?php if ($urlAnual): ?>
-                        <a href="<?= sanitizar($urlAnual) ?>" target="_blank" rel="noopener" class="btn-plan-anual">
-                            Assinar por R$<?= $precoAnualFmt ?>/ano
-                        </a>
+                    <?php if ($temMP): ?>
+                        <form method="POST" action="<?= raizUrl('/api/assinatura/criar_preferencia.php') ?>">
+                            <input type="hidden" name="plano" value="anual">
+                            <button type="submit" class="btn-plan-anual" style="width:100%; font-family:inherit;">
+                                Assinar por R$<?= $precoAnualFmt ?>/ano
+                            </button>
+                        </form>
                     <?php else: ?>
                         <button class="btn-plan-anual" disabled style="opacity:0.4; cursor:not-allowed;">Em breve</button>
                     <?php endif; ?>
@@ -292,7 +311,7 @@ $diasRest   = $dados['dias_restantes']  ?? 0;
 
             <!-- Segurança -->
             <div style="text-align:center; font-size:13px; color:var(--muted); margin-bottom:40px; line-height:1.8;">
-                <div>🔒 Pagamento seguro via <strong style="color:var(--text);">Abacate Pay</strong> · PIX ou cartão de crédito</div>
+                <div>🔒 Pagamento seguro via <strong style="color:var(--text);">Mercado Pago</strong> · PIX, cartão de crédito ou boleto</div>
                 <div>Sem cobrança automática após o trial. Você escolhe quando assinar.</div>
             </div>
 

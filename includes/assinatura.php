@@ -210,16 +210,16 @@ function cancelarAssinatura(string $externalId, string $gateway, string $rawPayl
 }
 
 // =========================================================================
-// CONFIGURAÇÕES DO ABACATE PAY (lidas do banco)
+// CONFIGURAÇÕES DO MERCADO PAGO (lidas do banco)
 // =========================================================================
 
-function getAbacateConfig(): array
+function getMercadoPagoConfig(): array
 {
     try {
         $db   = Database::get();
         $stmt = $db->query(
-            "SELECT abacatepay_api_key, abacatepay_webhook_secret,
-                    abacatepay_checkout_mensal, abacatepay_checkout_anual,
+            "SELECT mercadopago_access_token, mercadopago_public_key,
+                    mercadopago_webhook_secret,
                     plano_mensal_preco, plano_anual_preco
              FROM configuracao_empresa WHERE id = 'principal' LIMIT 1"
         );
@@ -230,12 +230,118 @@ function getAbacateConfig(): array
     }
 }
 
-function getAbacateApiKey(): ?string
+function getMercadoPagoAccessToken(): ?string
 {
-    $cfg = getAbacateConfig();
-    $key = $cfg['abacatepay_api_key'] ?? '';
-    if (!$key && defined('ABACATE_API_KEY')) $key = ABACATE_API_KEY;
-    return $key ?: null;
+    $cfg   = getMercadoPagoConfig();
+    $token = $cfg['mercadopago_access_token'] ?? '';
+    if (!$token && defined('MP_ACCESS_TOKEN')) $token = MP_ACCESS_TOKEN;
+    return $token ?: null;
+}
+
+/**
+ * Cria uma preferência de pagamento no Mercado Pago e retorna o init_point.
+ * Tokens de teste (TEST-...) usam sandbox_init_point automaticamente.
+ *
+ * @throws RuntimeException em caso de falha na API
+ */
+function criarPreferenciaMercadoPago(
+    string $userId,
+    string $plan,
+    float  $preco,
+    string $titulo,
+    string $notificationUrl,
+    string $successUrl,
+    string $failureUrl,
+    string $pendingUrl
+): string {
+    $accessToken = getMercadoPagoAccessToken();
+    if (!$accessToken) {
+        throw new RuntimeException('Mercado Pago não configurado.');
+    }
+
+    $body = [
+        'items' => [[
+            'id'          => 'plano_' . $plan,
+            'title'       => $titulo,
+            'quantity'    => 1,
+            'unit_price'  => $preco,
+            'currency_id' => 'BRL',
+        ]],
+        'external_reference' => $userId . ':' . $plan,
+        'notification_url'   => $notificationUrl,
+        'back_urls' => [
+            'success' => $successUrl,
+            'failure' => $failureUrl,
+            'pending' => $pendingUrl,
+        ],
+        'auto_return' => 'approved',
+        'metadata'    => ['user_id' => $userId, 'plan' => $plan],
+    ];
+
+    $ch = curl_init('https://api.mercadopago.com/checkout/preferences');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => json_encode($body),
+        CURLOPT_HTTPHEADER     => [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $accessToken,
+        ],
+        CURLOPT_TIMEOUT        => 15,
+    ]);
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlError = curl_error($ch);
+    curl_close($ch);
+
+    if ($curlError) {
+        throw new RuntimeException('cURL error: ' . $curlError);
+    }
+    if ($httpCode !== 201) {
+        throw new RuntimeException('MP API error ' . $httpCode . ': ' . $response);
+    }
+
+    $data = json_decode($response, true);
+
+    // Sandbox quando token de teste
+    $isTest    = str_starts_with($accessToken, 'TEST-');
+    $initPoint = $isTest
+        ? ($data['sandbox_init_point'] ?? $data['init_point'] ?? '')
+        : ($data['init_point'] ?? '');
+
+    if (!$initPoint) {
+        throw new RuntimeException('init_point não retornado pelo MP.');
+    }
+
+    return $initPoint;
+}
+
+/**
+ * Valida a assinatura do webhook do Mercado Pago.
+ * Header x-signature: ts=...,v1=...
+ */
+function validarAssinaturaMercadoPago(
+    string $xSignature,
+    string $xRequestId,
+    string $dataId,
+    string $secret
+): bool {
+    // Extrair ts e v1
+    $parts = [];
+    foreach (explode(',', $xSignature) as $part) {
+        [$k, $v] = explode('=', trim($part), 2);
+        $parts[trim($k)] = trim($v);
+    }
+
+    $ts = $parts['ts'] ?? '';
+    $v1 = $parts['v1'] ?? '';
+
+    if (!$ts || !$v1) return false;
+
+    $message = "id:{$dataId};request-id:{$xRequestId};ts:{$ts};";
+    $expected = hash_hmac('sha256', $message, $secret);
+
+    return hash_equals($expected, $v1);
 }
 
 // =========================================================================

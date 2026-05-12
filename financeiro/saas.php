@@ -390,7 +390,7 @@ include __DIR__ . '/../includes/layout/head.php';
         <!-- ── Bloco 5: Gestão de Preços ────────────────────────────────── -->
         <div class="card" style="padding:24px; margin-bottom:28px;">
             <h3 style="font-size:15px; font-weight:600; color:#e2e8f0; margin-bottom:4px;">Gestão de Preços & Tarifas</h3>
-            <p style="font-size:12px; color:#6b7280; margin-bottom:20px;">Altera valores para novos assinantes. "Aplicar a todos" atualiza também os assinantes existentes (apenas referência interna — o Abacate Pay cobra o valor configurado lá).</p>
+            <p style="font-size:12px; color:#6b7280; margin-bottom:20px;">Altera valores para novos assinantes. "Aplicar a todos" atualiza também os assinantes existentes (apenas referência interna — o Mercado Pago cobra o valor da preferência criada no momento do checkout).</p>
 
             <form method="POST">
                 <input type="hidden" name="acao" value="salvar_precos">

@@ -20,8 +20,9 @@ function menuAtivo(string $path): string {
     return str_contains($paginaAtual, $path) ? 'ativo' : '';
 }
 
-// Se o usuário não for do sistema Distinto, exibe o menu simplificado de roteiros
-if ($usuario['sistema_origem'] !== 'distinto') {
+// Se estiver na área de roteiros OU o usuário não for do sistema Distinto, exibe o menu simplificado
+$isAreaRoteiros = str_contains($_SERVER['SCRIPT_NAME'], '/roteiros/');
+if ($usuario['sistema_origem'] !== 'distinto' || $isAreaRoteiros) {
     include __DIR__ . '/sidebar-roteiros.php';
     return;
 }

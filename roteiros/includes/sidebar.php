@@ -302,8 +302,8 @@ $iniciais = strtoupper(mb_substr($nomeUsuario, 0, 1) . (strpos($nomeUsuario, ' '
     <!-- Header / Logo -->
     <div class="rs-header">
         <div class="rs-logo">
-            <span class="rs-logo-main">Distinto</span>
-            <span class="rs-logo-sub">roteiros</span>
+            <span class="rs-logo-main">MEUS</span>
+            <span class="rs-logo-sub">Roteiros</span>
         </div>
         <button class="rs-toggle" @click="toggle()" :title="collapsed ? 'Expandir' : 'Recolher'">
             <i class="fa-solid" :class="collapsed ? 'fa-chevron-right' : 'fa-chevron-left'"></i>

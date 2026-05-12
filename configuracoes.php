@@ -9,7 +9,7 @@ $tituloPagina = 'Configurações';
 $db = Database::get();
 
 $config = $db->query("SELECT id, nome, cnpj, telefone, email, endereco, groq_api_key, gemini_api_key,
-    abacatepay_api_key, abacatepay_webhook_secret, abacatepay_checkout_mensal, abacatepay_checkout_anual
+    mercadopago_access_token, mercadopago_public_key, mercadopago_webhook_secret
     FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
 
 $sucesso = '';
@@ -28,20 +28,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $vals[] = trim($_POST['gemini_api_key']);
     }
 
-    // Abacate Pay — campos sensíveis: só atualiza se enviado
-    if (!empty($_POST['abacatepay_api_key'])) {
-        $campos[] = 'abacatepay_api_key';
-        $vals[] = trim($_POST['abacatepay_api_key']);
+    // Mercado Pago — campos sensíveis: só atualiza se enviado
+    if (!empty($_POST['mercadopago_access_token'])) {
+        $campos[] = 'mercadopago_access_token';
+        $vals[] = trim($_POST['mercadopago_access_token']);
     }
-    if (!empty($_POST['abacatepay_webhook_secret'])) {
-        $campos[] = 'abacatepay_webhook_secret';
-        $vals[] = trim($_POST['abacatepay_webhook_secret']);
+    if (!empty($_POST['mercadopago_public_key'])) {
+        $campos[] = 'mercadopago_public_key';
+        $vals[] = trim($_POST['mercadopago_public_key']);
     }
-    // URLs de checkout não são sensíveis — atualiza sempre
-    $campos[] = 'abacatepay_checkout_mensal';
-    $vals[] = trim($_POST['abacatepay_checkout_mensal'] ?? '');
-    $campos[] = 'abacatepay_checkout_anual';
-    $vals[] = trim($_POST['abacatepay_checkout_anual'] ?? '');
+    if (!empty($_POST['mercadopago_webhook_secret'])) {
+        $campos[] = 'mercadopago_webhook_secret';
+        $vals[] = trim($_POST['mercadopago_webhook_secret']);
+    }
 
     $sets = implode(', ', array_map(fn($c) => "\"$c\" = ?", $campos));
     $vals[] = 'principal';
@@ -49,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute($vals);
     $sucesso = 'Configurações salvas com sucesso!';
     $config = $db->query("SELECT id, nome, cnpj, telefone, email, endereco, groq_api_key, gemini_api_key,
-        abacatepay_api_key, abacatepay_webhook_secret, abacatepay_checkout_mensal, abacatepay_checkout_anual
+        mercadopago_access_token, mercadopago_public_key, mercadopago_webhook_secret
         FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
 }
 
@@ -119,55 +118,57 @@ include __DIR__ . '/includes/layout/head.php';
                     <p style="font-size:12px; color:#6b7280; margin-top:6px;">Essencial para Visão (OCR), leitura de imagens e PDFs.</p>
                 </div>
 
-                <!-- ── Seção Pagamento (Abacate Pay) ──────────────────────────── -->
+                <!-- ── Seção Pagamento (Mercado Pago) ─────────────────────────── -->
                 <div style="margin-bottom:8px; border-top:1px solid #334155; padding-top:20px;">
-                    <h3 style="font-size:15px; font-weight:600; color:#e2e8f0; margin-bottom:4px;">Pagamento — Abacate Pay</h3>
-                    <p style="font-size:12px; color:#6b7280; margin-bottom:20px;">Credenciais para processar assinaturas via PIX e cartão. Nunca aparecem no código.</p>
-                </div>
-
-                <div style="margin-bottom:16px;">
-                    <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
-                        <span>API Key</span>
-                        <?php if (!empty($config['abacatepay_api_key'])): ?>
-                            <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Chave salva</span>
-                        <?php endif; ?>
-                    </label>
-                    <input class="input" type="password" name="abacatepay_api_key"
-                           placeholder="<?= !empty($config['abacatepay_api_key']) ? '••••••••••••••••••••••••••••••••' : 'abacate_live_...' ?>">
-                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">Chave de produção do painel do Abacate Pay.</p>
-                </div>
-
-                <div style="margin-bottom:16px;">
-                    <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
-                        <span>Webhook Secret</span>
-                        <?php if (!empty($config['abacatepay_webhook_secret'])): ?>
-                            <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Secret salvo</span>
-                        <?php endif; ?>
-                    </label>
-                    <input class="input" type="password" name="abacatepay_webhook_secret"
-                           placeholder="<?= !empty($config['abacatepay_webhook_secret']) ? '••••••••••••••••••••••••••••••••' : 'Token para validar webhooks' ?>">
-                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">
-                        Configure o webhook no painel do Abacate Pay apontando para:<br>
-                        <code style="color:#94a3b8; background:#1e293b; padding:2px 6px; border-radius:4px; font-size:11px;">
-                            <?= (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'seudominio.com') ?>/api/assinatura/webhook_abacate.php
-                        </code>
+                    <h3 style="font-size:15px; font-weight:600; color:#e2e8f0; margin-bottom:4px;">Pagamento — Mercado Pago</h3>
+                    <p style="font-size:12px; color:#6b7280; margin-bottom:20px;">
+                        Credenciais para o Checkout Pro (PIX, cartão, boleto). Nunca aparecem no código.<br>
+                        Use tokens de teste (<code style="color:#94a3b8;">TEST-...</code>) para sandbox, ou produção (<code style="color:#94a3b8;">APP_USR-...</code>) ao subir.
                     </p>
                 </div>
 
                 <div style="margin-bottom:16px;">
-                    <label class="label">URL Checkout — Plano Mensal</label>
-                    <input class="input" type="url" name="abacatepay_checkout_mensal"
-                           value="<?= sanitizar($config['abacatepay_checkout_mensal'] ?? '') ?>"
-                           placeholder="https://www.abacatepay.com/pay/...">
-                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">Link do produto mensal (R$15) gerado no painel do Abacate Pay.</p>
+                    <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>Access Token</span>
+                        <?php if (!empty($config['mercadopago_access_token'])): ?>
+                            <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Salvo</span>
+                        <?php endif; ?>
+                    </label>
+                    <input class="input" type="password" name="mercadopago_access_token"
+                           placeholder="<?= !empty($config['mercadopago_access_token']) ? '••••••••••••••••••••••••••••••••' : 'TEST-... ou APP_USR-...' ?>">
+                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">
+                        Encontrado em <strong>MP Dashboard → Credenciais → Access Token</strong>. Obrigatório para criar preferências.
+                    </p>
+                </div>
+
+                <div style="margin-bottom:16px;">
+                    <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>Public Key <span style="font-weight:400; font-size:11px;">(não é sensível)</span></span>
+                        <?php if (!empty($config['mercadopago_public_key'])): ?>
+                            <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Salva</span>
+                        <?php endif; ?>
+                    </label>
+                    <input class="input" type="text" name="mercadopago_public_key"
+                           value="<?= sanitizar($config['mercadopago_public_key'] ?? '') ?>"
+                           placeholder="APP_USR-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">Encontrada em <strong>MP Dashboard → Credenciais → Public Key</strong>. Usada para o SDK JS (futuro Checkout Transparente).</p>
                 </div>
 
                 <div style="margin-bottom:24px;">
-                    <label class="label">URL Checkout — Plano Anual</label>
-                    <input class="input" type="url" name="abacatepay_checkout_anual"
-                           value="<?= sanitizar($config['abacatepay_checkout_anual'] ?? '') ?>"
-                           placeholder="https://www.abacatepay.com/pay/...">
-                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">Link do produto anual (R$158) gerado no painel do Abacate Pay.</p>
+                    <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>Webhook Secret <span style="font-weight:400; font-size:11px;">(opcional, mas recomendado)</span></span>
+                        <?php if (!empty($config['mercadopago_webhook_secret'])): ?>
+                            <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Salvo</span>
+                        <?php endif; ?>
+                    </label>
+                    <input class="input" type="password" name="mercadopago_webhook_secret"
+                           placeholder="<?= !empty($config['mercadopago_webhook_secret']) ? '••••••••••••••••••••••••••••••••' : 'Secret do painel de webhooks' ?>">
+                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">
+                        Configure no <strong>MP Dashboard → Webhooks → Adicionar</strong>, tipo <em>Pagamentos</em>, apontando para:<br>
+                        <code style="color:#94a3b8; background:#1e293b; padding:2px 6px; border-radius:4px; font-size:11px; word-break:break-all;">
+                            <?= APP_URL ?>/api/assinatura/webhook_mercadopago.php
+                        </code>
+                    </p>
                 </div>
 
                 <button type="submit" class="btn-primary">
@@ -203,10 +204,11 @@ include __DIR__ . '/includes/layout/head.php';
                     </div>
                 </div>
                 <div>
-                    <div style="color:#6b7280; margin-bottom:2px;">Abacate Pay</div>
-                    <?php $temAbacate = !empty($config['abacatepay_api_key']); ?>
-                    <div style="color:<?= $temAbacate ? '#10b981' : '#ef4444' ?>;">
-                        <?= $temAbacate ? '✓ Configurado' : '✗ Não configurado' ?>
+                    <div style="color:#6b7280; margin-bottom:2px;">Mercado Pago</div>
+                    <?php $temMP = !empty($config['mercadopago_access_token']); ?>
+                    <?php $isMPTest = $temMP && str_starts_with($config['mercadopago_access_token'], 'TEST-'); ?>
+                    <div style="color:<?= $temMP ? '#10b981' : '#ef4444' ?>;">
+                        <?= $temMP ? ('✓ ' . ($isMPTest ? 'Sandbox' : 'Produção')) : '✗ Não configurado' ?>
                     </div>
                 </div>
                 <div>
