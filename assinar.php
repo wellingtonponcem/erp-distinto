@@ -143,6 +143,22 @@ $statusMP   = $_GET['status'] ?? '';
         /* MP Brick dark override */
         #paymentBrick_container { min-height: 200px; }
 
+        /*
+         * Esconde o badge "Parcelamento disponível" que o MP exibe
+         * estaticamente na lista de métodos de pagamento.
+         * Com maxInstallments:1 o usuário não consegue parcelar de qualquer
+         * forma, mas o badge aparece por padrão — ocultamos via CSS.
+         */
+        #paymentBrick_container .andes-badge,
+        #paymentBrick_container [class*="Badge"],
+        #paymentBrick_container [class*="badge"],
+        #paymentBrick_container [class*="installment"],
+        #paymentBrick_container [class*="Installment"],
+        #paymentBrick_container [data-testid*="installment"],
+        #paymentBrick_container [data-testid*="badge"] {
+            display: none !important;
+        }
+
         [x-cloak] { display: none !important; }
     </style>
 </head>
