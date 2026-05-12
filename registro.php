@@ -40,11 +40,23 @@ if (estaAutenticado()) {
             width: 100%; max-width: 440px;
         }
         .logo {
+            font-size: 32px;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logo span:first-child {
             font-family: var(--display);
-            font-size: 28px;
+            color: var(--text);
+            text-transform: uppercase;
+        }
+        .logo span:last-child {
+            font-family: var(--serif);
+            font-style: italic;
             color: var(--accent);
-            letter-spacing: 0.05em;
-            margin-bottom: 0.25rem;
+            font-weight: 400;
         }
         .headline {
             font-family: var(--serif);
@@ -147,7 +159,7 @@ if (estaAutenticado()) {
 <body x-data="registroApp()">
 
     <div class="card">
-        <div class="logo">MEUS ROTEIROS</div>
+        <div class="logo"><span>MEUS</span> <span>Roteiros</span></div>
         <div class="headline">Crie roteiros que<br>geram resultado.</div>
 
         <div class="trial-badge">✦ 35 DIAS GRÁTIS · SEM CARTÃO</div>

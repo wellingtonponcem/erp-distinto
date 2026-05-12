@@ -61,12 +61,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             width: 100%; max-width: 400px;
         }
         .logo {
+            font-size: 32px;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .logo span:first-child {
             font-family: var(--display);
-            font-size: 28px;
+            color: var(--text);
+            text-transform: uppercase;
+        }
+        .logo span:last-child {
+            font-family: var(--serif);
+            font-style: italic;
             color: var(--accent);
-            letter-spacing: 0.05em;
-            margin-bottom: 0.25rem;
-            text-align: center;
+            font-weight: 400;
         }
         .headline {
             font-family: var(--serif);
@@ -139,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 
     <div class="card">
-        <div class="logo">MEUS ROTEIROS</div>
+        <div class="logo"><span>MEUS</span> <span>Roteiros</span></div>
         <div class="headline">Roteiros e Narrativas</div>
 
         <?php if ($erro): ?>

@@ -45,8 +45,24 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
             display: flex; align-items: center; justify-content: space-between;
             height: 60px;
         }
-        .nav-logo { font-family: var(--display); font-size: 22px; letter-spacing: 0.05em; color: var(--text); }
-        .nav-logo span { color: var(--accent); }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 20px;
+            letter-spacing: -0.01em;
+        }
+        .nav-logo span:first-child {
+            font-family: var(--display);
+            color: var(--text);
+            text-transform: uppercase;
+        }
+        .nav-logo span:last-child {
+            font-family: var(--serif);
+            font-style: italic;
+            color: var(--accent);
+            font-weight: 400;
+        }
         .nav-cta { display: flex; gap: 12px; align-items: center; }
         .btn-ghost { font-size: 13px; color: var(--muted); transition: color 0.2s; }
         .btn-ghost:hover { color: var(--text); }
@@ -188,7 +204,7 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
 
     <!-- NAV -->
     <nav class="nav">
-        <div class="nav-logo">MEUS <span>ROTEIROS</span></div>
+        <div class="nav-logo"><span>MEUS</span> <span>Roteiros</span></div>
         <div class="nav-cta">
             <a href="<?= raizUrl('/login-roteiros.php') ?>" class="btn-ghost">Entrar</a>
             <a href="<?= raizUrl('/registro.php') ?>" class="btn-cta">Começar grátis</a>
