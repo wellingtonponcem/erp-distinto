@@ -181,9 +181,8 @@ if (estaAutenticado()) {
                 placeholder="••••••••" autocomplete="new-password" @keydown.enter="registrar()">
         </div>
 
-        <button class="btn btn-primary" @click="registrar()" :disabled="loading">
-            <span x-show="!loading">Começar gratuitamente →</span>
-            <span x-show="loading">Criando sua conta...</span>
+        <button class="btn btn-primary" @click="registrar()" :disabled="loading" style="color: #000 !important;">
+            Começar gratuitamente →
         </button>
 
         <hr class="divider">
