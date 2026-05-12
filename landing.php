@@ -190,7 +190,7 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
     <nav class="nav">
         <div class="nav-logo">DISTINTO <span>ROTEIROS</span></div>
         <div class="nav-cta">
-            <a href="<?= raizUrl('/index.php') ?>" class="btn-ghost">Entrar</a>
+            <a href="<?= raizUrl('/login-roteiros.php') ?>" class="btn-ghost">Entrar</a>
             <a href="<?= raizUrl('/registro.php') ?>" class="btn-cta">Começar grátis</a>
         </div>
     </nav>
@@ -383,7 +383,7 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
     <footer>
         <div>© <?= date('Y') ?> Distinto Roteiros</div>
         <div style="display:flex; gap:20px;">
-            <a href="<?= raizUrl('/index.php') ?>">Entrar</a>
+            <a href="<?= raizUrl('/login-roteiros.php') ?>">Entrar</a>
             <a href="<?= raizUrl('/registro.php') ?>">Criar conta</a>
         </div>
     </footer>

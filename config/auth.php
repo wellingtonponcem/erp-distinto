@@ -31,7 +31,8 @@ function exigirAutenticacao(): void {
 
         // Tenta usar a APP_URL se disponível, senão usa lógica de path
         if (defined('APP_URL')) {
-            header('Location: ' . rtrim(APP_URL, '/') . '/index.php');
+            $loginPage = str_contains($_SERVER['SCRIPT_NAME'], '/roteiros/') ? '/login-roteiros.php' : '/index.php';
+            header('Location: ' . rtrim(APP_URL, '/') . $loginPage);
             exit;
         }
 

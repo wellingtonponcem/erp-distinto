@@ -189,7 +189,7 @@ if (estaAutenticado()) {
         <hr class="divider">
 
         <div class="footer-link">
-            Já tem conta? <a href="index.php" style="color: var(--accent); font-weight: 700; text-decoration: underline; display: inline-block; margin-left: 5px;">Fazer login →</a>
+            Já tem conta? <a href="login-roteiros.php" style="color: var(--accent); font-weight: 700; text-decoration: underline; display: inline-block; margin-left: 5px;">Fazer login →</a>
         </div>
         <div class="footer-link" style="margin-top: 0.75rem;">
             <a href="<?= raizUrl('/landing.php') ?>" style="color: var(--muted);">← Voltar para a página inicial</a>
