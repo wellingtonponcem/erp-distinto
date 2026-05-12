@@ -347,6 +347,7 @@ const PRECO_ANUAL       = <?= json_encode($precoAnual) ?>;
 const URL_PROCESSAR     = <?= json_encode(raizUrl('/api/assinatura/processar_pagamento.php')) ?>;
 const URL_SUCESSO       = <?= json_encode(raizUrl('/assinar.php?status=sucesso')) ?>;
 const TEM_MP            = <?= json_encode($temMP && !empty($publicKey)) ?>;
+const PAYER_EMAIL       = <?= json_encode($usuario['email'] ?? '') ?>;
 
 function assinaturaApp() {
     return {
@@ -386,17 +387,45 @@ function assinaturaApp() {
                 const amount  = plano === 'anual' ? PRECO_ANUAL : PRECO_MENSAL;
 
                 this.brickController = await builder.create('payment', 'paymentBrick_container', {
-                    initialization: { amount },
+                    initialization: {
+                        amount,
+                        payer: {
+                            email: PAYER_EMAIL,
+                        },
+                    },
                     customization: {
                         paymentMethods: {
-                            creditCard:   'all',
-                            debitCard:    'all',
-                            ticket:       'all',   // boleto
-                            bankTransfer: 'all',   // PIX
+                            creditCard:      'all',
+                            debitCard:       'all',
+                            ticket:          'all',  // boleto
+                            bankTransfer:    'all',  // PIX
+                            // Mensal: sem parcelamento (R$15 não faz sentido parcelar)
+                            // Anual: até 3x (R$158 ÷ 3 = R$52,67/mês)
+                            maxInstallments: plano === 'anual' ? 3 : 1,
                         },
                         visual: {
-                            style:    { theme: 'dark' },
-                            hideFormTitle:   true,
+                            style: {
+                                theme: 'dark',
+                                customVariables: {
+                                    // Fundo
+                                    formBackgroundColor:  '#111111',
+                                    // Inputs
+                                    inputBackgroundColor: '#181818',
+                                    inputBorderColor:     'rgba(255,255,255,0.10)',
+                                    // Textos
+                                    textPrimaryColor:     '#F0EDE6',
+                                    textSecondaryColor:   '#888888',
+                                    // Accent (seleção, botão, radio)
+                                    baseColor:            '#E8FF47',
+                                    // Border radius
+                                    borderRadiusLarge:    '16px',
+                                    borderRadiusMedium:   '10px',
+                                    borderRadiusSmall:    '6px',
+                                    // Botão pagar
+                                    buttonHeight:         '52px',
+                                },
+                            },
+                            hideFormTitle:    true,
                             hidePaymentButton: false,
                         },
                     },

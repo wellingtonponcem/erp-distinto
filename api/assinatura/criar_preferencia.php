@@ -1,5 +1,16 @@
 <?php
 /**
+ * ============================================================
+ * USO FUTURO — PAGAMENTO DIRETO NAS PROPOSTAS
+ * ============================================================
+ * Este arquivo cria uma preferência de Checkout Pro (redirect)
+ * no Mercado Pago. Será usado quando os clientes puderem pagar
+ * propostas diretamente pelo sistema (não é o checkout de
+ * assinatura do SaaS — para isso, ver processar_pagamento.php).
+ *
+ * NÃO REMOVER. NÃO USAR POR ENQUANTO.
+ * ============================================================
+ *
  * Cria preferência de pagamento no Mercado Pago e redireciona para o checkout.
  * POST /api/assinatura/criar_preferencia.php
  * Body: plano=mensal|anual
