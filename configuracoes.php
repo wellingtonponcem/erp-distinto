@@ -8,14 +8,16 @@ exigirAutenticacao();
 $tituloPagina = 'Configurações';
 $db = Database::get();
 
-$config = $db->query("SELECT id, nome, cnpj, telefone, email, endereco, groq_api_key, gemini_api_key FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
+$config = $db->query("SELECT id, nome, cnpj, telefone, email, endereco, groq_api_key, gemini_api_key,
+    abacatepay_api_key, abacatepay_webhook_secret, abacatepay_checkout_mensal, abacatepay_checkout_anual
+    FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
 
 $sucesso = '';
 $erro = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $campos = ['nome','cnpj','telefone','email','endereco'];
     $vals = array_map(fn($c) => trim($_POST[$c] ?? ''), $campos);
-    
+
     if (!empty($_POST['groq_api_key'])) {
         $campos[] = 'groq_api_key';
         $vals[] = trim($_POST['groq_api_key']);
@@ -25,13 +27,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $campos[] = 'gemini_api_key';
         $vals[] = trim($_POST['gemini_api_key']);
     }
-    
+
+    // Abacate Pay — campos sensíveis: só atualiza se enviado
+    if (!empty($_POST['abacatepay_api_key'])) {
+        $campos[] = 'abacatepay_api_key';
+        $vals[] = trim($_POST['abacatepay_api_key']);
+    }
+    if (!empty($_POST['abacatepay_webhook_secret'])) {
+        $campos[] = 'abacatepay_webhook_secret';
+        $vals[] = trim($_POST['abacatepay_webhook_secret']);
+    }
+    // URLs de checkout não são sensíveis — atualiza sempre
+    $campos[] = 'abacatepay_checkout_mensal';
+    $vals[] = trim($_POST['abacatepay_checkout_mensal'] ?? '');
+    $campos[] = 'abacatepay_checkout_anual';
+    $vals[] = trim($_POST['abacatepay_checkout_anual'] ?? '');
+
     $sets = implode(', ', array_map(fn($c) => "\"$c\" = ?", $campos));
     $vals[] = 'principal';
     $stmt = $db->prepare("UPDATE configuracao_empresa SET $sets WHERE id = ?");
     $stmt->execute($vals);
     $sucesso = 'Configurações salvas com sucesso!';
-    $config = $db->query("SELECT id, nome, cnpj, telefone, email, endereco, groq_api_key, gemini_api_key FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
+    $config = $db->query("SELECT id, nome, cnpj, telefone, email, endereco, groq_api_key, gemini_api_key,
+        abacatepay_api_key, abacatepay_webhook_secret, abacatepay_checkout_mensal, abacatepay_checkout_anual
+        FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
 }
 
 include __DIR__ . '/includes/layout/head.php';
@@ -100,6 +119,57 @@ include __DIR__ . '/includes/layout/head.php';
                     <p style="font-size:12px; color:#6b7280; margin-top:6px;">Essencial para Visão (OCR), leitura de imagens e PDFs.</p>
                 </div>
 
+                <!-- ── Seção Pagamento (Abacate Pay) ──────────────────────────── -->
+                <div style="margin-bottom:8px; border-top:1px solid #334155; padding-top:20px;">
+                    <h3 style="font-size:15px; font-weight:600; color:#e2e8f0; margin-bottom:4px;">Pagamento — Abacate Pay</h3>
+                    <p style="font-size:12px; color:#6b7280; margin-bottom:20px;">Credenciais para processar assinaturas via PIX e cartão. Nunca aparecem no código.</p>
+                </div>
+
+                <div style="margin-bottom:16px;">
+                    <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>API Key</span>
+                        <?php if (!empty($config['abacatepay_api_key'])): ?>
+                            <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Chave salva</span>
+                        <?php endif; ?>
+                    </label>
+                    <input class="input" type="password" name="abacatepay_api_key"
+                           placeholder="<?= !empty($config['abacatepay_api_key']) ? '••••••••••••••••••••••••••••••••' : 'abacate_live_...' ?>">
+                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">Chave de produção do painel do Abacate Pay.</p>
+                </div>
+
+                <div style="margin-bottom:16px;">
+                    <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>Webhook Secret</span>
+                        <?php if (!empty($config['abacatepay_webhook_secret'])): ?>
+                            <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Secret salvo</span>
+                        <?php endif; ?>
+                    </label>
+                    <input class="input" type="password" name="abacatepay_webhook_secret"
+                           placeholder="<?= !empty($config['abacatepay_webhook_secret']) ? '••••••••••••••••••••••••••••••••' : 'Token para validar webhooks' ?>">
+                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">
+                        Configure o webhook no painel do Abacate Pay apontando para:<br>
+                        <code style="color:#94a3b8; background:#1e293b; padding:2px 6px; border-radius:4px; font-size:11px;">
+                            <?= (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'seudominio.com') ?>/api/assinatura/webhook_abacate.php
+                        </code>
+                    </p>
+                </div>
+
+                <div style="margin-bottom:16px;">
+                    <label class="label">URL Checkout — Plano Mensal</label>
+                    <input class="input" type="url" name="abacatepay_checkout_mensal"
+                           value="<?= sanitizar($config['abacatepay_checkout_mensal'] ?? '') ?>"
+                           placeholder="https://www.abacatepay.com/pay/...">
+                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">Link do produto mensal (R$15) gerado no painel do Abacate Pay.</p>
+                </div>
+
+                <div style="margin-bottom:24px;">
+                    <label class="label">URL Checkout — Plano Anual</label>
+                    <input class="input" type="url" name="abacatepay_checkout_anual"
+                           value="<?= sanitizar($config['abacatepay_checkout_anual'] ?? '') ?>"
+                           placeholder="https://www.abacatepay.com/pay/...">
+                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">Link do produto anual (R$158) gerado no painel do Abacate Pay.</p>
+                </div>
+
                 <button type="submit" class="btn-primary">
                     <i data-lucide="save" style="width:15px;height:15px;"></i> Salvar Configurações
                 </button>
@@ -130,6 +200,13 @@ include __DIR__ . '/includes/layout/head.php';
                     <?php $temGemini = !empty($config['gemini_api_key']) || !empty(GEMINI_API_KEY); ?>
                     <div style="color:<?= $temGemini ? '#10b981' : '#ef4444' ?>;">
                         <?= $temGemini ? '✓ Configurada' : '✗ Não configurada' ?>
+                    </div>
+                </div>
+                <div>
+                    <div style="color:#6b7280; margin-bottom:2px;">Abacate Pay</div>
+                    <?php $temAbacate = !empty($config['abacatepay_api_key']); ?>
+                    <div style="color:<?= $temAbacate ? '#10b981' : '#ef4444' ?>;">
+                        <?= $temAbacate ? '✓ Configurado' : '✗ Não configurado' ?>
                     </div>
                 </div>
                 <div>

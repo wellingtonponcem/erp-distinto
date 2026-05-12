@@ -11,6 +11,8 @@ if (!$id) {
     exit;
 }
 
+$usuario = usuarioAtual();
+
 try {
     $db = Database::get();
 
@@ -25,8 +27,9 @@ try {
         // Ignora se já existirem
     }
 
-    $stmt = $db->prepare("SELECT id, titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, tags, formato, status, score, views, likes, shares, reposts, comentarios, salvamentos, intencao, tema, numero FROM roteiros WHERE id = ?");
-    $stmt->execute([$id]);
+    // Filtrar por user_id para garantir que o usuário só acessa seus próprios roteiros
+    $stmt = $db->prepare("SELECT id, titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, tags, formato, status, score, views, likes, shares, reposts, comentarios, salvamentos, intencao, tema, numero FROM roteiros WHERE id = ? AND user_id = ?");
+    $stmt->execute([$id, $usuario['id']]);
     $roteiro = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$roteiro) {

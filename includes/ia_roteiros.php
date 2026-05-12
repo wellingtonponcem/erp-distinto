@@ -226,15 +226,25 @@ Conteúdo:
     // MEMÓRIA — consolidação com Groq
     // =========================================================================
 
-    private static function getBaseConhecimento(): string
+    private static function getBaseConhecimento(string $userId = ''): string
     {
         try {
             $db = Database::get();
-            $stmt = $db->query("SELECT conteudo FROM roteiros_memoria LIMIT 1");
+            if ($userId) {
+                $stmt = $db->prepare("SELECT conteudo FROM roteiros_memoria WHERE user_id = ? LIMIT 1");
+                $stmt->execute([$userId]);
+            } else {
+                $stmt = $db->query("SELECT conteudo FROM roteiros_memoria LIMIT 1");
+            }
             $memoria = $stmt->fetchColumn();
             if ($memoria) return $memoria;
 
-            $stmt  = $db->query("SELECT texto_extraido FROM roteiros_conhecimento WHERE ativo = TRUE");
+            if ($userId) {
+                $stmt = $db->prepare("SELECT texto_extraido FROM roteiros_conhecimento WHERE ativo = TRUE AND user_id = ?");
+                $stmt->execute([$userId]);
+            } else {
+                $stmt = $db->query("SELECT texto_extraido FROM roteiros_conhecimento WHERE ativo = TRUE");
+            }
             $textos = $stmt->fetchAll(PDO::FETCH_COLUMN);
             return implode("\n\n---\n\n", $textos);
         } catch (Exception $e) {
@@ -242,11 +252,16 @@ Conteúdo:
         }
     }
 
-    private static function getMelhoresRoteiros(): string
+    private static function getMelhoresRoteiros(string $userId = ''): string
     {
         try {
-            $db   = Database::get();
-            $stmt = $db->query("SELECT titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta FROM roteiros WHERE score > 0 ORDER BY score DESC LIMIT 3");
+            $db = Database::get();
+            if ($userId) {
+                $stmt = $db->prepare("SELECT titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta FROM roteiros WHERE score > 0 AND user_id = ? ORDER BY score DESC LIMIT 3");
+                $stmt->execute([$userId]);
+            } else {
+                $stmt = $db->query("SELECT titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta FROM roteiros WHERE score > 0 ORDER BY score DESC LIMIT 3");
+            }
             $roteiros = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $texto = "";
             foreach ($roteiros as $r) {
@@ -259,18 +274,22 @@ Conteúdo:
         }
     }
 
-    private static function salvarMemoria(string $novaMemoria): void
+    private static function salvarMemoria(string $novaMemoria, string $userId = ''): void
     {
         $db = Database::get();
-        $db->exec("CREATE TABLE IF NOT EXISTS roteiros_memoria (id SERIAL PRIMARY KEY, conteudo TEXT, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
-        $db->exec("DELETE FROM roteiros_memoria");
-        $stmt = $db->prepare("INSERT INTO roteiros_memoria (conteudo) VALUES (?)");
-        $stmt->execute([$novaMemoria]);
+        $db->exec("ALTER TABLE roteiros_memoria ADD COLUMN IF NOT EXISTS user_id VARCHAR(32)");
+        if ($userId) {
+            $db->prepare("DELETE FROM roteiros_memoria WHERE user_id = ?")->execute([$userId]);
+            $db->prepare("INSERT INTO roteiros_memoria (conteudo, user_id) VALUES (?, ?)")->execute([$novaMemoria, $userId]);
+        } else {
+            $db->exec("DELETE FROM roteiros_memoria WHERE user_id IS NULL");
+            $db->prepare("INSERT INTO roteiros_memoria (conteudo) VALUES (?)")->execute([$novaMemoria]);
+        }
     }
 
-    public static function consolidarMemoria(string $novoTexto): bool
+    public static function consolidarMemoria(string $novoTexto, string $userId = ''): bool
     {
-        $memoriaAtual = self::getBaseConhecimento();
+        $memoriaAtual = self::getBaseConhecimento($userId);
 
         $novaMemoria = self::chamarGroq([
             ['role' => 'system', 'content' => "Você é um Engenheiro de Conhecimento e Estrategista.
@@ -284,36 +303,46 @@ REGRAS: Nunca use emojis. Seja direto. Priorize o conteúdo mais recente em cont
         if (strpos($novaMemoria, 'Erro') === 0) return false;
 
         try {
-            self::salvarMemoria($novaMemoria);
+            self::salvarMemoria($novaMemoria, $userId);
             return true;
         } catch (Exception $e) {
             return false;
         }
     }
 
-    public static function reconstruirMemoria()
+    public static function reconstruirMemoria(string $userId = '')
     {
         try {
             $db = Database::get();
-            $db->exec("CREATE TABLE IF NOT EXISTS roteiros_memoria (id SERIAL PRIMARY KEY, conteudo TEXT, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
+            $db->exec("ALTER TABLE roteiros_memoria ADD COLUMN IF NOT EXISTS user_id VARCHAR(32)");
 
-            $stmt   = $db->query("SELECT texto_extraido FROM roteiros_conhecimento WHERE ativo = TRUE");
+            if ($userId) {
+                $stmt = $db->prepare("SELECT texto_extraido FROM roteiros_conhecimento WHERE ativo = TRUE AND user_id = ?");
+                $stmt->execute([$userId]);
+            } else {
+                $stmt = $db->query("SELECT texto_extraido FROM roteiros_conhecimento WHERE ativo = TRUE");
+            }
             $textos = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
             if (empty($textos)) {
-                $db->exec("DELETE FROM roteiros_memoria");
+                if ($userId) {
+                    $db->prepare("DELETE FROM roteiros_memoria WHERE user_id = ?")->execute([$userId]);
+                } else {
+                    $db->exec("DELETE FROM roteiros_memoria WHERE user_id IS NULL");
+                }
                 return true;
             }
 
             $textosFiltrados = array_filter($textos, fn($t) => !empty(trim($t)));
             if (empty($textosFiltrados)) {
-                $db->exec("DELETE FROM roteiros_memoria");
+                if ($userId) $db->prepare("DELETE FROM roteiros_memoria WHERE user_id = ?")->execute([$userId]);
                 return true;
             }
 
-            $textoUnificado = implode("\n\n--- PRÓXIMA FONTE ---\n\n", $textosFiltrados);
-
-            $textoUnificadoTruncado = mb_substr($textoUnificado, 0, 24000);
+            $textoUnificado = mb_substr(
+                implode("\n\n--- PRÓXIMA FONTE ---\n\n", $textosFiltrados),
+                0, 24000
+            );
 
             $novaMemoria = self::chamarGroq([
                 ['role' => 'system', 'content' => "Você é um Engenheiro de Conhecimento Senior. Crie o 'Cérebro Digital' do usuário.
@@ -321,12 +350,12 @@ REGRAS CRÍTICAS:
 1. NÃO ignore nenhuma fonte.
 2. Organize por tópicos (Diretrizes, Tom de Voz, Gatilhos, Estruturas).
 3. Seja denso e técnico. Nunca use emojis. Português do Brasil."],
-                ['role' => 'user', 'content' => "Fontes carregadas:\n\n$textoUnificadoTruncado\n\nConsolide TODO esse conhecimento em uma Memória Mestra única e organizada:"]
+                ['role' => 'user', 'content' => "Fontes carregadas:\n\n$textoUnificado\n\nConsolide TODO esse conhecimento em uma Memória Mestra única e organizada:"]
             ]);
 
             if (strpos($novaMemoria, 'Erro') === 0) return $novaMemoria;
 
-            self::salvarMemoria($novaMemoria);
+            self::salvarMemoria($novaMemoria, $userId);
             return true;
 
         } catch (Exception $e) {
@@ -338,10 +367,10 @@ REGRAS CRÍTICAS:
     // GERAÇÃO DE ROTEIROS — Groq
     // =========================================================================
 
-    public static function gerarRoteiro(string $briefing = ''): array
+    public static function gerarRoteiro(string $briefing = '', string $userId = ''): array
     {
-        $conhecimento = self::getBaseConhecimento();
-        $exemplos     = self::getMelhoresRoteiros();
+        $conhecimento = self::getBaseConhecimento($userId);
+        $exemplos     = self::getMelhoresRoteiros($userId);
 
         $respostaRaw = self::chamarGroq([
             ['role' => 'system', 'content' => "Você é um Estrategista de Social Media e Roteirista de Elite.

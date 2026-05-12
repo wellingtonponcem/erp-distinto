@@ -2,26 +2,38 @@
 require_once __DIR__ . '/../config/env.php';
 require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/helpers.php';
+require_once __DIR__ . '/../includes/assinatura.php';
 exigirAutenticacao();
 
-$db = Database::get();
+$db      = Database::get();
+$usuario = usuarioAtual();
+$userId  = $usuario['id'];
+
+// Limite de conhecimento
+$limiteConhec = verificarLimiteConhecimento($userId);
+$totalArquivos = $limiteConhec['total'];
+$limiteArquivos = $limiteConhec['limite'];
 
 // Garante que a coluna sincronizado existe (migração segura)
 try {
     $db->exec("ALTER TABLE roteiros_conhecimento ADD COLUMN IF NOT EXISTS sincronizado BOOLEAN DEFAULT FALSE");
 } catch (Exception $e) {}
 
-// Buscar arquivos/fontes
+// Buscar arquivos/fontes do usuário atual
 try {
-    $stmt = $db->query("SELECT id, nome_arquivo, caminho_arquivo, tipo_arquivo, ativo, created_at, COALESCE(sincronizado, FALSE) as sincronizado FROM roteiros_conhecimento ORDER BY created_at DESC");
+    $stmt = $db->prepare("SELECT id, nome_arquivo, caminho_arquivo, tipo_arquivo, ativo, created_at, COALESCE(sincronizado, FALSE) as sincronizado FROM roteiros_conhecimento WHERE user_id = ? ORDER BY created_at DESC");
+    $stmt->execute([$userId]);
 } catch (Exception $e) {
-    $stmt = $db->query("SELECT id, nome_arquivo, caminho_arquivo, tipo_arquivo, ativo, created_at, FALSE as sincronizado FROM roteiros_conhecimento ORDER BY created_at DESC");
+    $stmt = $db->prepare("SELECT id, nome_arquivo, caminho_arquivo, tipo_arquivo, ativo, created_at, FALSE as sincronizado FROM roteiros_conhecimento WHERE user_id = ? ORDER BY created_at DESC");
+    $stmt->execute([$userId]);
 }
 $arquivos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Buscar memória mestra consolidada
+// Buscar memória mestra do usuário
 try {
-    $stmtMem = $db->query("SELECT conteudo FROM roteiros_memoria LIMIT 1");
+    $stmtMem = $db->prepare("SELECT conteudo FROM roteiros_memoria WHERE user_id = ? LIMIT 1");
+    $stmtMem->execute([$userId]);
     $memoriaMestra = $stmtMem->fetchColumn();
 } catch(Exception $e) {
     $memoriaMestra = "";
@@ -308,6 +320,26 @@ try {
         <div class="header">
             <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.25em; color: var(--accent); margin-bottom: 12px; font-weight: 700;">Inteligência Artificial</div>
             <h1>Base de <em>Conhecimento</em></h1>
+
+            <!-- Contador de arquivos -->
+            <div style="display:flex; align-items:center; gap:12px; margin-top:16px;">
+                <div style="flex:1; max-width:200px;">
+                    <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:5px;">
+                        <span>Fontes de conhecimento</span>
+                        <span style="color:<?= $totalArquivos >= $limiteArquivos ? '#ef4444' : 'var(--accent)' ?>; font-weight:700;">
+                            <?= $totalArquivos ?> / <?= $limiteArquivos ?>
+                        </span>
+                    </div>
+                    <div style="height:4px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden;">
+                        <div style="height:100%; width:<?= round(($totalArquivos / $limiteArquivos) * 100) ?>%; background:<?= $totalArquivos >= $limiteArquivos ? '#ef4444' : 'var(--accent)' ?>; border-radius:4px; transition:width 0.4s;"></div>
+                    </div>
+                </div>
+                <?php if ($totalArquivos >= $limiteArquivos): ?>
+                <div style="font-size:12px; color:#fca5a5; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); padding:4px 12px; border-radius:100px;">
+                    ⚠️ Limite atingido — remova fontes para adicionar novas
+                </div>
+                <?php endif; ?>
+            </div>
         </div>
 
         <!-- NotebookLM Style Input Zone -->

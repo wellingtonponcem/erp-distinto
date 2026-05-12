@@ -157,10 +157,18 @@ function menuAtivo(string $path): string {
             <i data-lucide="settings" style="width:20px;height:20px; flex-shrink:0;"></i>
             <span class="nav-label hide-on-collapse transition-opacity">Ajustes Gerais</span>
         </a>
+        <a href="<?= raizUrl('/assinar.php') ?>" class="nav-link <?= menuAtivo('/assinar') ?>">
+            <i data-lucide="credit-card" style="width:20px;height:20px; flex-shrink:0;"></i>
+            <span class="nav-label hide-on-collapse transition-opacity">Assinatura</span>
+        </a>
         <?php if ($usuario['nivel'] == 1): ?>
         <a href="<?= raizUrl('/gerenciamento/usuarios.php') ?>" class="nav-link <?= menuAtivo('/gerenciamento/usuarios') ?>">
             <i data-lucide="shield-check" style="width:20px;height:20px; flex-shrink:0;"></i>
             <span class="nav-label hide-on-collapse transition-opacity">Gestão de Equipe</span>
+        </a>
+        <a href="<?= raizUrl('/financeiro/saas.php') ?>" class="nav-link <?= menuAtivo('/financeiro/saas') ?>">
+            <i data-lucide="bar-chart-2" style="width:20px;height:20px; flex-shrink:0;"></i>
+            <span class="nav-label hide-on-collapse transition-opacity">Financeiro SaaS</span>
         </a>
         <?php endif; ?>
     </nav>

@@ -82,9 +82,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
 
-    <p style="text-align:center; font-size:12px; color:#4b5563; margin-top:20px;">
-        Primeiro acesso? Execute <code style="color:#a78bfa;">/setup/seed.php</code> para criar o usuário.
-    </p>
+    <div style="text-align:center; margin-top:20px; display:flex; flex-direction:column; gap:10px;">
+        <a href="<?= raizUrl('/registro.php') ?>" style="display:block; background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.3); color:#818cf8; padding:12px; border-radius:10px; font-size:14px; font-weight:600; text-decoration:none; transition:all 0.15s;">
+            ✨ Criar conta grátis — 35 dias sem cartão
+        </a>
+        <p style="font-size:12px; color:#4b5563;">
+            Ou acesse <a href="<?= raizUrl('/landing.php') ?>" style="color:#6b7280; text-decoration:underline;">a página de apresentação</a>
+        </p>
+    </div>
 </div>
 
 </body>

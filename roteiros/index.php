@@ -1,8 +1,22 @@
 <?php
 require_once __DIR__ . '/../config/env.php';
 require_once __DIR__ . '/../config/auth.php';
+require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/helpers.php';
+require_once __DIR__ . '/../includes/assinatura.php';
 exigirAutenticacao();
+
+$usuario     = usuarioAtual();
+$dadosSub    = getDadosAssinatura($usuario['id']);
+$limiteInfo  = verificarLimiteDiario($usuario['id']);
+
+$isAtivo        = $dadosSub['assinante_ativo'] ?? false;
+$isTrialExp     = $dadosSub['trial_expirado']  ?? false;
+$diasRestantes  = $dadosSub['dias_restantes']  ?? 35;
+$diasTrial      = $dadosSub['dias_trial']      ?? 0;
+$criadosHoje    = $dadosSub['criados_hoje']    ?? 0;
+$limiteHoje     = $dadosSub['limite_hoje'];          // null = sem limite (ativo)
+$podeCriar      = $dadosSub['pode_criar']      ?? true;
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -611,10 +625,148 @@ exigirAutenticacao();
             color: var(--muted);
         }
         .empty-offline i { font-size: 40px; margin-bottom: 1rem; opacity: 0.3; }
+
+        /* ── Trial Banner ───────────────────────────────── */
+        .trial-banner {
+            border-radius: 12px;
+            padding: 14px 20px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .trial-banner.neutral { background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); }
+        .trial-banner.warning { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); }
+        .trial-banner.danger  { background: rgba(239,68,68,0.08);  border: 1px solid rgba(239,68,68,0.25); animation: pulseAlert 2s infinite; }
+        .trial-banner.expired { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.4); }
+
+        @keyframes pulseAlert {
+            0%,100% { border-color: rgba(239,68,68,0.25); }
+            50%      { border-color: rgba(239,68,68,0.6);  }
+        }
+
+        .trial-bar {
+            height: 4px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.08);
+            margin-top: 8px;
+            overflow: hidden;
+            width: 160px;
+            max-width: 100%;
+        }
+        .trial-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.4s;
+        }
+        .trial-bar-fill.neutral { background: #818cf8; }
+        .trial-bar-fill.warning { background: #fbbf24; }
+        .trial-bar-fill.danger  { background: #ef4444; }
+
+        /* ── Daily counter ──────────────────────────────── */
+        .daily-counter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--muted);
+            padding: 6px 14px;
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            white-space: nowrap;
+        }
+        .daily-counter.warning { color: #fbbf24; border-color: rgba(245,158,11,0.4); }
+        .daily-counter.danger  { color: #ef4444;  border-color: rgba(239,68,68,0.4); }
+
+        /* ── Paywall Modal ──────────────────────────────── */
+        .paywall-card {
+            background: var(--surface2);
+            border: 1px solid rgba(99,102,241,0.3);
+            padding: 2.5rem;
+            border-radius: 24px;
+            max-width: 480px;
+            width: 90vw;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        }
+        .paywall-icon { font-size: 44px; margin-bottom: 1rem; }
+        .paywall-title {
+            font-family: var(--display);
+            font-size: 30px;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+        .paywall-text { color: var(--muted); font-size: 14px; margin-bottom: 2rem; line-height: 1.6; }
+        .btn-paywall-primary {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: #6366f1;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            margin-bottom: 10px;
+        }
+        .btn-paywall-secondary {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body x-data="scriptManager()">
     <div class="page-wrap">
+
+        <?php
+        // ── Trial Banner ──────────────────────────────────────────────────
+        if (!$isAtivo):
+            $pct = $isTrialExp ? 0 : round(($diasRestantes / 35) * 100);
+            $cor = $isTrialExp ? 'expired' : ($diasRestantes <= 7 ? 'danger' : ($diasRestantes <= 14 ? 'warning' : 'neutral'));
+        ?>
+        <div class="trial-banner <?= $cor ?>">
+            <div>
+                <?php if ($isTrialExp): ?>
+                    <div style="font-size:14px; font-weight:700; color:#fca5a5; margin-bottom:2px;">⛔ Trial encerrado</div>
+                    <div style="font-size:12px; color:#9ca3af;">Seus roteiros existentes estão disponíveis para leitura.</div>
+                <?php elseif ($cor === 'danger'): ?>
+                    <div style="font-size:14px; font-weight:700; color:#fca5a5; margin-bottom:2px;">🔴 <?= $diasRestantes ?> dia<?= $diasRestantes !== 1 ? 's' : '' ?> restante<?= $diasRestantes !== 1 ? 's' : '' ?> no trial</div>
+                    <div style="font-size:12px; color:#9ca3af;">Assine agora para não perder o acesso à criação.</div>
+                <?php elseif ($cor === 'warning'): ?>
+                    <div style="font-size:14px; font-weight:700; color:#fbbf24; margin-bottom:2px;">⚠️ <?= $diasRestantes ?> dias restantes no trial</div>
+                    <div style="font-size:12px; color:#9ca3af;">Aproveite ao máximo antes de expirar.</div>
+                <?php else: ?>
+                    <div style="font-size:14px; font-weight:600; color:#a5b4fc; margin-bottom:2px;">✨ Trial gratuito · <?= $diasRestantes ?> dias restantes</div>
+                <?php endif; ?>
+
+                <?php if (!$isTrialExp): ?>
+                <div class="trial-bar" style="margin-top:8px;">
+                    <div class="trial-bar-fill <?= $cor ?>" style="width:<?= $pct ?>%;"></div>
+                </div>
+                <?php endif; ?>
+            </div>
+            <a href="<?= raizUrl('/assinar.php') ?>" style="
+                display:inline-block; white-space:nowrap;
+                background:#6366f1; color:#fff; padding:9px 20px;
+                border-radius:100px; font-size:13px; font-weight:700;
+                text-decoration:none; flex-shrink:0;">
+                <?= $isTrialExp ? 'Assinar agora' : 'Ver planos' ?>
+            </a>
+        </div>
+        <?php endif; ?>
+
         <div class="header">
             <div class="header-title">
                 <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 8px;">Sistema de Gestão</div>
@@ -650,6 +802,16 @@ exigirAutenticacao();
                 <button class="nav-pill" :class="filter === 'todos' ? 'active' : ''" @click="setFilter('todos')">
                     Todos <span class="pill-count" x-text="scripts.length"></span>
                 </button>
+                <?php if (!$isAtivo && !$isTrialExp && $limiteHoje !== null): ?>
+                <?php
+                $restantes = max(0, $limiteHoje - $criadosHoje);
+                $contCor = $restantes === 0 ? 'danger' : ($restantes <= 1 ? 'warning' : '');
+                ?>
+                <div class="daily-counter <?= $contCor ?>">
+                    <i class="fa-solid fa-pen-to-square" style="font-size:10px;"></i>
+                    <?= $criadosHoje ?> / <?= $limiteHoje ?> hoje
+                </div>
+                <?php endif; ?>
             </div>
             <button
                 x-show="pendentes.length > 0"
@@ -880,13 +1042,28 @@ exigirAutenticacao();
         <div class="custom-modal-card" @click.away="customModal.show = false">
             <div class="custom-modal-title" x-text="customModal.title"></div>
             <div class="custom-modal-text" x-text="customModal.text"></div>
-            
+
             <div class="custom-modal-footer">
                 <button class="btn-modal-cancel" @click="customModal.show = false">Cancelar</button>
                 <button class="btn-modal-danger" @click="customModalAction()">
                     <span x-text="customModal.confirmText"></span>
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal Paywall -->
+    <div class="modal-overlay" x-show="paywallModal.show" x-cloak x-transition style="z-index: 2500;">
+        <div class="paywall-card">
+            <div class="paywall-icon" x-text="paywallModal.motivo === 'trial_expirado' ? '🔒' : '⏳'"></div>
+            <div class="paywall-title" x-text="paywallModal.motivo === 'trial_expirado' ? 'Trial Encerrado' : 'Limite Diário'"></div>
+            <div class="paywall-text" x-text="paywallModal.mensagem"></div>
+            <a href="<?= raizUrl('/assinar.php') ?>" class="btn-paywall-primary">
+                Ver planos · a partir de R$<?= number_format(PLANO_MENSAL_PRECO, 2, ',', '.') ?>/mês
+            </a>
+            <button class="btn-paywall-secondary" @click="paywallModal.show = false">
+                <span x-text="paywallModal.motivo === 'trial_expirado' ? 'Continuar em modo leitura' : 'Tentar amanhã'"></span>
+            </button>
         </div>
     </div>
 
@@ -915,6 +1092,11 @@ exigirAutenticacao();
                     text: '',
                     confirmText: 'Confirmar',
                     onConfirm: null
+                },
+                paywallModal: {
+                    show: false,
+                    motivo: '',
+                    mensagem: ''
                 },
 
                 // ── Offline ────────────────────────────────────────
@@ -1074,8 +1256,22 @@ exigirAutenticacao();
                 },
 
                 openModal() {
+                    <?php if ($isTrialExp): ?>
+                    // Trial expirado: bloquear direto
+                    this.abrirPaywall('trial_expirado', 'Seu período de trial encerrou. Assine para continuar criando roteiros — seus roteiros existentes ficam disponíveis para leitura.');
+                    return;
+                    <?php elseif (!$podeCriar && !$isAtivo): ?>
+                    // Limite diário atingido
+                    this.abrirPaywall('limite_diario_atingido', 'Você atingiu o limite de criação de hoje. Assine para criar roteiros sem limites diários.');
+                    return;
+                    <?php endif; ?>
                     this.newScript = { tema: '', briefing: '' };
                     this.showModal = true;
+                },
+
+                abrirPaywall(motivo, mensagem) {
+                    this.paywallModal = { show: true, motivo, mensagem };
+                    this.showModal = false;
                 },
 
                 formatDate(dateStr) {
@@ -1085,20 +1281,26 @@ exigirAutenticacao();
 
                 generateIA() {
                     this.loadingIA = true;
-                    
-                    fetch('../api/roteiros/gerar.php', {
+
+                    fetch('<?= raizUrl('/api/roteiros/gerar.php') ?>', {
                         method: 'POST',
                         body: JSON.stringify({ briefing: this.newScript.briefing })
                     })
                     .then(r => r.json())
                     .then(data => {
                         this.loadingIA = false;
+                        if (data.paywall) {
+                            this.showModal = false;
+                            this.abrirPaywall(data.motivo, data.mensagem || 'Limite atingido.');
+                            return;
+                        }
                         if (data.success) {
                             this.saveManual(data.roteiro);
                         } else {
                             alert('Erro: ' + data.error);
                         }
-                    });
+                    })
+                    .catch(() => { this.loadingIA = false; });
                 },
 
                 saveManual(roteiroIA = null) {
@@ -1118,12 +1320,17 @@ exigirAutenticacao();
                         is_ia_generated: false
                     };
 
-                    fetch('../api/roteiros/salvar.php', {
+                    fetch('<?= raizUrl('/api/roteiros/salvar.php') ?>', {
                         method: 'POST',
                         body: JSON.stringify(payload)
                     })
                     .then(r => r.json())
                     .then(data => {
+                        if (data.paywall) {
+                            this.showModal = false;
+                            this.abrirPaywall(data.motivo, data.mensagem || 'Limite atingido.');
+                            return;
+                        }
                         if (data.success) {
                             window.location.href = 'detalhes.php?id=' + data.id;
                         }
