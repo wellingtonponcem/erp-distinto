@@ -50,14 +50,26 @@ function exigirAutenticacao(): void {
 }
 
 /**
- * Garante que o usuário logado é um administrador (Distinto).
- * Se for nível 0 (Roteiros), redireciona para a área de roteiros.
+ * Garante que o usuário logado é do sistema Distinto (CRM).
+ * Usuários que se registraram via Roteiros (SaaS) jamais acessam o CRM.
  */
-function exigirAdmin(): void {
+function exigirDistinto(): void {
     exigirAutenticacao();
     $usuario = usuarioAtual();
-    if ($usuario['nivel'] != 1) {
+    if ($usuario['sistema_origem'] !== 'distinto') {
         header('Location: ' . raizUrl('/roteiros/index.php'));
+        exit;
+    }
+}
+
+/**
+ * Garante que o usuário logado é um administrador do CRM.
+ */
+function exigirAdmin(): void {
+    exigirDistinto(); // Primeiro precisa ser usuário Distinto
+    $usuario = usuarioAtual();
+    if ($usuario['nivel'] != 1) {
+        header('Location: ' . raizUrl('/dashboard.php'));
         exit;
     }
 }
@@ -69,6 +81,7 @@ function usuarioAtual(): array {
         'nome'                => $_SESSION['user_nome'] ?? '',
         'email'               => $_SESSION['user_email'] ?? '',
         'nivel'               => $_SESSION['user_nivel'] ?? 0,
+        'sistema_origem'      => $_SESSION['user_sistema_origem'] ?? 'distinto', // default para não quebrar antigos
         'subscription_status' => $_SESSION['user_subscription_status'] ?? 'trial',
         'subscription_plan'   => $_SESSION['user_subscription_plan'] ?? null,
     ];
@@ -81,6 +94,7 @@ function logarUsuario(array $user): void {
     $_SESSION['user_nome']                = $user['nome'];
     $_SESSION['user_email']               = $user['email'];
     $_SESSION['user_nivel']               = $user['nivel'] ?? 0;
+    $_SESSION['user_sistema_origem']      = $user['sistema_origem'] ?? 'distinto';
     $_SESSION['user_subscription_status'] = $user['subscription_status'] ?? 'trial';
     $_SESSION['user_subscription_plan']   = $user['subscription_plan'] ?? null;
 }

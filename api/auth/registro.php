@@ -50,8 +50,8 @@ try {
     $hash  = password_hash($senha, PASSWORD_DEFAULT);
 
     $stmt = $db->prepare(
-        "INSERT INTO users (id, nome, email, senha, nivel, trial_started_at, subscription_status)
-         VALUES (?, ?, ?, ?, 0, CURRENT_TIMESTAMP, 'trial')"
+        "INSERT INTO users (id, nome, email, senha, nivel, trial_started_at, subscription_status, sistema_origem)
+         VALUES (?, ?, ?, ?, 0, CURRENT_TIMESTAMP, 'trial', 'roteiros')"
     );
     $stmt->execute([$id, $nome, $email, $hash]);
 
@@ -61,6 +61,7 @@ try {
         'nome'                => $nome,
         'email'               => $email,
         'nivel'               => 0,
+        'sistema_origem'      => 'roteiros',
         'subscription_status' => 'trial',
         'subscription_plan'   => null,
     ]);

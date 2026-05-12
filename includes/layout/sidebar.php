@@ -20,8 +20,8 @@ function menuAtivo(string $path): string {
     return str_contains($paginaAtual, $path) ? 'ativo' : '';
 }
 
-// Se o usuário não for administrador (nível 1), exibe o menu simplificado de roteiros
-if ($usuario['nivel'] != 1) {
+// Se o usuário não for do sistema Distinto, exibe o menu simplificado de roteiros
+if ($usuario['sistema_origem'] !== 'distinto') {
     include __DIR__ . '/sidebar-roteiros.php';
     return;
 }
