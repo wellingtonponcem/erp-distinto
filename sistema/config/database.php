@@ -7,9 +7,14 @@ class Database {
     public static function get(): PDO {
         if (self::$instance === null) {
             try {
-                // Suporte para SNI no Neon (necessário para libpq antiga)
-                $endpoint = explode('.', DB_HOST)[0];
-                $dsn = 'pgsql:host=' . DB_HOST . ';port=' . DB_PORT . ';dbname=' . DB_NAME . ';sslmode=require;options=\'endpoint=' . $endpoint . '\'';
+                if (DB_PORT == 3306) {
+                    // Conexão MySQL (Hostinger)
+                    $dsn = 'mysql:host=' . DB_HOST . ';port=' . DB_PORT . ';dbname=' . DB_NAME . ';charset=utf8mb4';
+                } else {
+                    // Conexão PostgreSQL (Neon)
+                    $endpoint = explode('.', DB_HOST)[0];
+                    $dsn = 'pgsql:host=' . DB_HOST . ';port=' . DB_PORT . ';dbname=' . DB_NAME . ';sslmode=require;options=\'endpoint=' . $endpoint . '\'';
+                }
                 
                 self::$instance = new PDO($dsn, DB_USER, DB_PASS, [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -18,29 +23,55 @@ class Database {
                 ]);
             } catch (PDOException $e) {
                 http_response_code(500);
-                die(json_encode(['erro' => 'Falha na conexão com o banco de dados.']));
+                die(json_encode(['erro' => 'Falha na conexão com o banco de dados: ' . $e->getMessage()]));
             }
         }
         
-        // Auto-migration para Nível de Usuário (PostgreSQL)
+        // Auto-migration compatível com MySQL e PostgreSQL
         try {
-            $stmt = self::$instance->query("SELECT COUNT(*) FROM information_schema.columns WHERE table_name='users' AND column_name='nivel'");
-            if ($stmt->fetchColumn() == 0) {
-                self::$instance->exec("ALTER TABLE users ADD COLUMN nivel INTEGER DEFAULT 0");
+            $isMysql = (DB_PORT == 3306);
+            
+            // Verifica coluna 'nivel'
+            $checkColSql = $isMysql 
+                ? "SHOW COLUMNS FROM users LIKE 'nivel'"
+                : "SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='nivel'";
+            
+            $stmt = self::$instance->query($checkColSql);
+            if (!$stmt->fetch()) {
+                $alterSql = $isMysql 
+                    ? "ALTER TABLE users ADD COLUMN nivel INT DEFAULT 0"
+                    : "ALTER TABLE users ADD COLUMN nivel INTEGER DEFAULT 0";
+                self::$instance->exec($alterSql);
             }
-            // Garantir que o primeiro usuário ou o email específico seja admin
-            self::$instance->exec("UPDATE users SET nivel = 1 WHERE (email = 'faustinosdg@gmail.com' OR id = (SELECT id FROM users ORDER BY criado_em ASC LIMIT 1)) AND nivel != 1");
-            // Auto-migration para Histórico de Propostas
-            $stmtH = self::$instance->query("SELECT COUNT(*) FROM information_schema.tables WHERE table_name='propostas_historico'");
-            if ($stmtH->fetchColumn() == 0) {
-                self::$instance->exec("CREATE TABLE propostas_historico (
-                    id SERIAL PRIMARY KEY,
-                    proposta_id TEXT NOT NULL,
-                    user_id TEXT NOT NULL,
-                    tipo TEXT DEFAULT 'nota',
-                    conteudo TEXT NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )");
+
+            // Garantir admin
+            self::$instance->exec("UPDATE users SET nivel = 1 WHERE (email = 'faustinosdg@gmail.com' OR id = (SELECT id FROM (SELECT id FROM users ORDER BY " . ($isMysql ? "id" : "criado_em") . " ASC LIMIT 1) as t)) AND nivel != 1");
+
+            // Verifica tabela de histórico
+            $checkTableSql = $isMysql
+                ? "SHOW TABLES LIKE 'propostas_historico'"
+                : "SELECT 1 FROM information_schema.tables WHERE table_name='propostas_historico'";
+                
+            $stmtH = self::$instance->query($checkTableSql);
+            if (!$stmtH->fetch()) {
+                $createTableSql = $isMysql
+                    ? "CREATE TABLE propostas_historico (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        proposta_id VARCHAR(255) NOT NULL,
+                        user_id VARCHAR(255) NOT NULL,
+                        tipo VARCHAR(50) DEFAULT 'nota',
+                        conteudo TEXT NOT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                      )"
+                    : "CREATE TABLE propostas_historico (
+                        id SERIAL PRIMARY KEY,
+                        proposta_id TEXT NOT NULL,
+                        user_id TEXT NOT NULL,
+                        tipo TEXT DEFAULT 'nota',
+                        conteudo TEXT NOT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                      )";
+                self::$instance->exec($createTableSql);
             }
         } catch (Exception $e) {
             // Ignorar erros de migração silenciosamente
