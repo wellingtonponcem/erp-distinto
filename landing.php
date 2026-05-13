@@ -73,7 +73,6 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
             padding: 10px 24px; border-radius: 12px;
             font-weight: 600; font-size: 14px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-<<<<<<< HEAD
         .btn-cta:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255,255,255,0.1); }
 
         /* ── Hero ───────────────────────────────── */
@@ -233,7 +232,6 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
 
     <!-- HERO -->
     <section class="hero">
->>>>>>> b4dc8144255ea2fef2a63c58f2f05b4d78db6922
         <div class="container">
             <div class="hero-badge">✨ Gestão financeira <span>simplificada</span> para agências</div>
             <h1><span>O controle total da<br>sua agência.</span></h1>

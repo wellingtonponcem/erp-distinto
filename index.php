@@ -23,7 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($user && password_verify($senha, $user['senha'])) {
             logarUsuario($user);
-            header('Location: dashboard.php');
+            
+            // Redirecionamento inteligente baseado na origem
+            $target = ($user['sistema_origem'] === 'roteiros') ? 'roteiros/index.php' : 'dashboard.php';
+            header('Location: ' . raizUrl('/' . $target));
             exit;
         }
     }
