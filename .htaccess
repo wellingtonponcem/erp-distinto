@@ -3,9 +3,9 @@ RewriteEngine On
 
 # ── Ajuste RewriteBase conforme onde o app está hospedado ──
 # Em subfolder /distinto-php/:
-RewriteBase /distinto-php/
-# Na raiz do domínio, troque para:
-# RewriteBase /
+# RewriteBase /distinto-php/
+# Na raiz do domínio:
+RewriteBase /
 
 # Força HTTPS (descomente em produção com SSL)
 # RewriteCond %{HTTPS} off

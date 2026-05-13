@@ -5,7 +5,7 @@ require_once __DIR__ . '/includes/helpers.php';
 
 // Já logado → ir para dashboard
 if (estaAutenticado()) {
-    header('Location: dashboard.php');
+    header('Location: ' . raizUrl('/dashboard.php'));
     exit;
 }
 
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($user && password_verify($senha, $user['senha'])) {
             logarUsuario($user);
-            header('Location: dashboard.php');
+            header('Location: ' . raizUrl('/dashboard.php'));
             exit;
         }
     }
