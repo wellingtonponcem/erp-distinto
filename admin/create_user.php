@@ -6,6 +6,18 @@ $senha = '1234';
 $hash = password_hash($senha, PASSWORD_DEFAULT);
 
 try {
+    // Cria a tabela se não existir (PostgreSQL)
+    db()->exec("
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            nome VARCHAR(255) NOT NULL,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            senha VARCHAR(255) NOT NULL,
+            nivel INTEGER DEFAULT 0,
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ");
+
     // Verifica se o usuário já existe
     $stmt = db()->prepare("SELECT id FROM users WHERE email = :email");
     $stmt->execute([':email' => $email]);
@@ -20,7 +32,6 @@ try {
         echo "Usuário <b>$email</b> atualizado com sucesso. (Senha redefinida para: $senha)";
     } else {
         // Tenta inserir o novo usuário
-        // Campos básicos baseados no uso do sistema
         $stmt = db()->prepare("INSERT INTO users (nome, email, senha, nivel) VALUES (:nome, :email, :senha, 1)");
         $stmt->execute([
             ':nome' => 'Faustino',
