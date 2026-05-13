@@ -81,5 +81,11 @@ function raizUrl(string $caminho = ''): string {
         $path = parse_url(APP_URL, PHP_URL_PATH) ?: '';
         $base = rtrim($path, '/');
     }
-    return $base . $caminho;
+    
+    // Se o caminho já começa com a base, removemos para não duplicar
+    if ($base !== '' && str_starts_with($caminho, $base)) {
+        $caminho = substr($caminho, strlen($base));
+    }
+    
+    return $base . '/' . ltrim($caminho, '/');
 }
