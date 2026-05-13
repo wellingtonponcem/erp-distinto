@@ -103,14 +103,18 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
         .mock-wrap {
             position: relative;
         }
-        .mock-wrap::before {
-            content: '';
+        .mock-glow {
             position: absolute;
-            inset: -30% -20%;
-            background: radial-gradient(ellipse at 55% 50%,
-                rgba(232, 255, 71, 0.13) 0%,
-                rgba(232, 255, 71, 0.05) 35%,
-                transparent 70%
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 140%;
+            height: 140%;
+            background: radial-gradient(ellipse at center,
+                rgba(232, 255, 71, 0.22) 0%,
+                rgba(232, 255, 71, 0.10) 30%,
+                rgba(232, 255, 71, 0.03) 55%,
+                transparent 72%
             );
             pointer-events: none;
             z-index: 0;
@@ -349,6 +353,7 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
 
             <!-- Mock animado -->
             <div class="mock-wrap">
+                <div class="mock-glow"></div>
                 <div class="mock-browser">
                     <div class="mock-topbar">
                         <span class="mock-dot r"></span>
