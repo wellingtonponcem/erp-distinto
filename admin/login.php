@@ -10,13 +10,24 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $_POST['username'] ?? '';
     $pass = $_POST['password'] ?? '';
-    // Credenciais simples — altere após deploy
-    if ($user === 'distinto' && $pass === 'distinto@2025') {
-        $_SESSION['admin_logged'] = true;
-        header('Location: ' . url('admin/'));
-        exit;
+    
+    try {
+        $stmt = db()->prepare('SELECT id, email, senha, nivel FROM users WHERE email = :email LIMIT 1');
+        $stmt->execute([':email' => $user]);
+        $db_user = $stmt->fetch();
+
+        if ($db_user && password_verify($pass, $db_user['senha']) && (int)$db_user['nivel'] >= 1) {
+            $_SESSION['admin_logged'] = true;
+            header('Location: ' . url('admin/'));
+            exit;
+        }
+    } catch (PDOException $e) {
+        $error = 'Erro de conexão ou tabela inexistente.';
     }
-    $error = 'Usuário ou senha incorretos.';
+    
+    if (!$error) {
+        $error = 'E-mail ou senha incorretos.';
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -38,8 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
     <form method="POST" class="space-y-6">
         <div>
-            <label class="text-xs text-white/40 uppercase tracking-widest block mb-2">Usuário</label>
-            <input name="username" type="text" class="w-full bg-transparent border border-white/10 focus:border-white px-4 py-3 outline-none text-sm" required>
+            <label class="text-xs text-white/40 uppercase tracking-widest block mb-2">E-mail</label>
+            <input name="username" type="email" class="w-full bg-transparent border border-white/10 focus:border-white px-4 py-3 outline-none text-sm" required>
         </div>
         <div>
             <label class="text-xs text-white/40 uppercase tracking-widest block mb-2">Senha</label>
