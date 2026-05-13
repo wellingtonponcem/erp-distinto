@@ -1,7 +1,8 @@
+RewriteBase /sistema/sistema/
 Options -Indexes
 ServerSignature Off
 
-# Proteger arquivos de configuração
+# Proteger arquivos de configuracao
 <FilesMatch "^(env|database|auth)\.php$">
     Order allow,deny
     Deny from all
@@ -21,7 +22,7 @@ ServerSignature Off
     AddDefaultCharset UTF-8
 </IfModule>
 
-# Headers de segurança
+# Headers de seguranca
 <IfModule mod_headers.c>
     Header always set X-Content-Type-Options nosniff
     Header always set X-Frame-Options SAMEORIGIN

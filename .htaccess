@@ -2,25 +2,30 @@ Options -Indexes
 Options -MultiViews
 RewriteEngine On
 
-# ── Ajuste RewriteBase conforme onde o app está hospedado ──
-RewriteBase /
+RewriteBase /sistema/
 
-# Se o arquivo ou pasta existe fisicamente, serve direto e para aqui
+# Raiz /sistema/ -> ERP (rewrite interno, URL fica como /sistema/)
+# THE_REQUEST garante que nao dispara para rewrite interno da raiz /
+RewriteCond %{THE_REQUEST} \s/sistema/?\s [NC]
+RewriteCond %{REQUEST_URI} !^/sistema/sistema
+RewriteRule ^$ /sistema/sistema/ [L]
+
+# Se o arquivo ou pasta existe fisicamente, serve direto
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# Garante que a pasta 'sistema' e seus subdiretórios não sejam afetados pelas regras abaixo
+# Garante que /sistema/sistema nao seja afetado
 RewriteRule ^sistema(/.*)?$ - [L]
 
-# Rotas limpas
+# Rotas limpas do site
 RewriteRule ^projetos/?$       projetos/index.php [L,QSA]
 RewriteRule ^sobre/?$          sobre/index.php    [L,QSA]
 RewriteRule ^contato/?$        contato/index.php  [L,QSA]
 RewriteRule ^admin/?$          admin/index.php    [L,QSA]
 RewriteRule ^setup/?$          setup/install.php  [L,QSA]
 
-# Segurança: bloqueia acesso direto a includes/
+# Seguranca: bloqueia acesso direto a includes/
 RewriteRule ^includes/         -                  [F,L]
 
 # PHP configs
@@ -29,7 +34,7 @@ php_value post_max_size 64M
 php_value memory_limit 256M
 php_value max_execution_time 60
 
-# Cache para assets estáticos
+# Cache para assets estaticos
 <FilesMatch "\.(jpg|jpeg|png|gif|svg|webp|ico|woff|woff2|ttf)$">
     Header set Cache-Control "public, max-age=2592000"
 </FilesMatch>
