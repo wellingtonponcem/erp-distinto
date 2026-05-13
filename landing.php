@@ -59,7 +59,7 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
 
         /* ── Layout helpers ─────────────────────── */
         section { padding: 6rem 6vw; }
-        .container { max-width: 980px; margin: 0 auto; }
+        .container { max-width: 1100px; margin: 0 auto; }
         .section-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
         .section-title { font-family: var(--display); font-size: clamp(32px,5vw,56px); line-height: 1; margin-bottom: 1.5rem; }
         .section-title em { font-family: var(--serif); font-style: italic; }
@@ -69,10 +69,10 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
         .hero { padding: 6rem 6vw 4rem; }
         .hero-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 5rem;
+            grid-template-columns: 1fr 1.1fr;
+            gap: 4rem;
             align-items: center;
-            max-width: 980px;
+            max-width: 1180px;
             margin: 0 auto;
         }
         .hero-badge {
@@ -84,13 +84,13 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
         }
         .hero h1 {
             font-family: var(--display);
-            font-size: clamp(46px, 5.5vw, 78px);
+            font-size: clamp(42px, 4.8vw, 72px);
             line-height: 0.95; letter-spacing: 0.01em;
             margin-bottom: 1.25rem;
         }
         .hero h1 em { font-family: var(--serif); font-style: italic; color: var(--accent); }
         .hero-sub { font-size: 16px; color: var(--muted); max-width: 440px; margin-bottom: 2rem; line-height: 1.65; }
-        .hero-cta-group { display: flex; gap: 12px; flex-wrap: wrap; }
+        .hero-cta-group { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-start; }
         .btn-hero-primary {
             background: var(--accent); color: #0a0a0a;
             padding: 15px 34px; border-radius: 100px;
@@ -320,7 +320,7 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
             <!-- Texto -->
             <div>
                 <div class="hero-badge">✨ 35 dias grátis · Sem cartão</div>
-                <h1>Crie roteiros que<br>viram <em>vídeos</em></h1>
+                <h1>Crie roteiros<br>que viram <em>vídeos</em></h1>
                 <p class="hero-sub">A IA que aprende o seu estilo de fala, sua narrativa e sua voz — para criar roteiros prontos para gravar.</p>
                 <div class="hero-cta-group">
                     <a href="<?= raizUrl('/registro.php') ?>" class="btn-hero-primary">Começar gratuitamente</a>
