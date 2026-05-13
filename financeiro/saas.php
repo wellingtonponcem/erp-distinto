@@ -190,243 +190,376 @@ include __DIR__ . '/../includes/layout/head.php';
         </div>
         <?php endif; ?>
 
-        <!-- ── Bloco 1: Usuários ──────────────────────────────────────────── -->
-        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(160px,1fr)); gap:16px; margin-bottom:28px;">
+        <!-- ── Bloco 1: Usuários (Top Cards) ──────────────────────────────────────────── -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:20px; margin-bottom:28px;">
             <?php foreach ([
-                ['Total de usuários',   $totalUsers,   '#94a3b8'],
-                ['Em trial',            $totalTrial,   '#818cf8'],
-                ['Assinantes ativos',   $totalAtivos,  '#34d399'],
-                ['Expirados/Cancelados',$totalExpirado,'#f87171'],
-            ] as [$label, $val, $cor]): ?>
-            <div class="card" style="padding:20px; text-align:center;">
-                <div style="font-size:28px; font-weight:800; color:<?= $cor ?>;"><?= $val ?></div>
-                <div style="font-size:12px; color:#6b7280; margin-top:4px;"><?= $label ?></div>
+                ['Total de usuários',   $totalUsers,   '#94a3b8', 'users'],
+                ['Em trial',            $totalTrial,   '#818cf8', 'clock'],
+                ['Assinantes ativos',   $totalAtivos,  '#34d399', 'check-circle'],
+                ['Expirados/Cancelados',$totalExpirado,'#f87171', 'x-circle'],
+            ] as [$label, $val, $cor, $icon]): ?>
+            <div class="card" style="padding:24px; position:relative; overflow:hidden;">
+                <div style="position:absolute; top:16px; right:16px; opacity:0.1; color:<?= $cor ?>;">
+                    <i data-lucide="<?= $icon ?>" style="width:24px; height:24px;"></i>
+                </div>
+                <div style="font-size:36px; font-weight:800; color:<?= $cor ?>; line-height:1;"><?= $val ?></div>
+                <div style="font-size:13px; font-weight:600; color:#6b7280; margin-top:8px; text-transform:uppercase; letter-spacing:0.02em;"><?= $label ?></div>
             </div>
             <?php endforeach; ?>
         </div>
 
-        <!-- ── Bloco 2: P&L ──────────────────────────────────────────────── -->
-        <div class="card" style="padding:24px; margin-bottom:28px;">
-            <h3 style="font-size:15px; font-weight:600; color:#e2e8f0; margin-bottom:20px;">P&L — <?= date('M/Y') ?></h3>
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:16px; margin-bottom:20px; flex-wrap:wrap;">
+        <!-- ── Bloco 2: P&L (Profit and Loss) ──────────────────────────────────────── -->
+        <div class="card" style="padding:28px; margin-bottom:28px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+                <h3 style="font-size:16px; font-weight:700; color:#e2e8f0;">P&L — <?= date('M/Y') ?></h3>
+                <div style="padding:4px 12px; background:rgba(255,255,255,0.03); border-radius:99px; border:1px solid rgba(255,255,255,0.05); font-size:11px; color:#6b7280;">
+                    Saúde Financeira
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:24px; margin-bottom:32px;">
                 <div>
-                    <div style="font-size:12px; color:#6b7280; margin-bottom:4px;">Receita Mensal</div>
-                    <div style="font-size:22px; font-weight:700; color:#34d399;">R$ <?= number_format($receitaTotalMes, 2, ',', '.') ?></div>
-                    <div style="font-size:11px; color:#4b5563; margin-top:2px;">
-                        Mensal: R$<?= number_format($receitaMensal,2,',','.') ?> +
-                        Anual pró-rata: R$<?= number_format($receitaAnualProrateada,2,',','.') ?>
+                    <div style="font-size:12px; font-weight:600; color:#6b7280; margin-bottom:6px; text-transform:uppercase;">Receita Mensal</div>
+                    <div style="font-size:26px; font-weight:800; color:#34d399;">R$ <?= number_format($receitaTotalMes, 2, ',', '.') ?></div>
+                    <div style="font-size:11px; margin-top:6px; display:flex; flex-direction:column; gap:2px;">
+                        <span style="color:#6b7280;">Mensal: <span style="color:#ffffff;">R$<?= number_format($receitaMensal,2,',','.') ?></span></span>
+                        <span style="color:#6b7280;">Anual pró-rata: <span style="color:#ffffff;">R$<?= number_format($receitaAnualProrateada,2,',','.') ?></span></span>
                     </div>
                 </div>
                 <div>
-                    <div style="font-size:12px; color:#6b7280; margin-bottom:4px;">Custos de Infra</div>
-                    <div style="font-size:22px; font-weight:700; color:#f87171;">R$ <?= number_format($totalCustoInfraMes, 2, ',', '.') ?></div>
-                    <div style="font-size:11px; color:#4b5563; margin-top:2px;">Normalizado p/ mês</div>
+                    <div style="font-size:12px; font-weight:600; color:#6b7280; margin-bottom:6px; text-transform:uppercase;">Custos de Infra</div>
+                    <div style="font-size:26px; font-weight:800; color:#f87171;">R$ <?= number_format($totalCustoInfraMes, 2, ',', '.') ?></div>
+                    <div style="font-size:11px; color:#6b7280; margin-top:6px;">Normalizado p/ mês</div>
                 </div>
                 <div>
-                    <div style="font-size:12px; color:#6b7280; margin-bottom:4px;">Custos de IA</div>
-                    <div style="font-size:22px; font-weight:700; color:#fbbf24;">R$ <?= number_format($totalCustoIAbrl, 2, ',', '.') ?></div>
-                    <div style="font-size:11px; color:#4b5563; margin-top:2px;">USD <?= number_format($totalCustoIAusd, 4, ',', '.') ?> × R$<?= number_format($cambioUSD,2,',','.') ?></div>
+                    <div style="font-size:12px; font-weight:600; color:#6b7280; margin-bottom:6px; text-transform:uppercase;">Custos de IA</div>
+                    <div style="font-size:26px; font-weight:800; color:#fbbf24;">R$ <?= number_format($totalCustoIAbrl, 2, ',', '.') ?></div>
+                    <div style="font-size:11px; margin-top:6px;">
+                        <span style="color:#6b7280;">USD <?= number_format($totalCustoIAusd, 4, ',', '.') ?></span>
+                        <span style="color:#6b7280; margin: 0 4px;">×</span>
+                        <span style="color:#ffffff;">R$<?= number_format($cambioUSD,2,',','.') ?></span>
+                    </div>
                 </div>
-                <div>
-                    <div style="font-size:12px; color:#6b7280; margin-bottom:4px;">Resultado</div>
-                    <div style="font-size:22px; font-weight:700; color:<?= $resultado >= 0 ? '#34d399' : '#f87171' ?>;">
+                <div style="padding-left:24px; border-left:1px solid rgba(255,255,255,0.05);">
+                    <div style="font-size:12px; font-weight:600; color:#6b7280; margin-bottom:6px; text-transform:uppercase;">Resultado</div>
+                    <div style="font-size:26px; font-weight:800; color:<?= $resultado >= 0 ? '#34d399' : '#f87171' ?>;">
                         R$ <?= number_format($resultado, 2, ',', '.') ?>
                     </div>
-                    <div style="font-size:11px; color:#4b5563; margin-top:2px;">
-                        Custo mín/sub: R$<?= number_format($custoMinSub,2,',','.') ?>
+                    <div style="font-size:11px; color:#6b7280; margin-top:6px;">
+                        Custo mín/sub: <span style="color:#ffffff;">R$<?= number_format($custoMinSub,2,',','.') ?></span>
                     </div>
                 </div>
             </div>
 
-            <!-- Barra visual P&L -->
-            <?php if ($receitaTotalMes > 0): ?>
-            <div style="margin-top:8px;">
-                <div style="display:flex; justify-content:space-between; font-size:11px; color:#6b7280; margin-bottom:4px;">
-                    <span>Custos (<?= round(($totalCustos / $receitaTotalMes) * 100) ?>%)</span>
-                    <span>Margem (<?= round(($resultado / $receitaTotalMes) * 100) ?>%)</span>
+            <!-- Barra Visual P&L (Termômetro) -->
+            <div style="background:rgba(255,255,255,0.02); padding:20px; border-radius:16px; border:1px solid rgba(255,255,255,0.03);">
+                <?php if ($receitaTotalMes > 0): 
+                    $percInfra = ($totalCustoInfraMes / $receitaTotalMes) * 100;
+                    $percIA = ($totalCustoIAbrl / $receitaTotalMes) * 100;
+                    $percMargem = ($resultado / $receitaTotalMes) * 100;
+                ?>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <div style="display:flex; gap:16px;">
+                        <span style="display:flex; align-items:center; gap:6px; font-size:11px; font-weight:600; color:#6b7280;">
+                            <span style="width:8px; height:8px; border-radius:2px; background:#ef4444;"></span> Infra (<?= round($percInfra) ?>%)
+                        </span>
+                        <span style="display:flex; align-items:center; gap:6px; font-size:11px; font-weight:600; color:#6b7280;">
+                            <span style="width:8px; height:8px; border-radius:2px; background:#f59e0b;"></span> IA (<?= round($percIA) ?>%)
+                        </span>
+                        <?php if ($resultado > 0): ?>
+                        <span style="display:flex; align-items:center; gap:6px; font-size:11px; font-weight:600; color:#6b7280;">
+                            <span style="width:8px; height:8px; border-radius:2px; background:#10b981;"></span> Margem (<?= round($percMargem) ?>%)
+                        </span>
+                        <?php endif; ?>
+                    </div>
+                    <div style="font-size:12px; font-weight:700; color:<?= $resultado >= 0 ? '#10b981' : '#ef4444' ?>;">
+                        <?= $resultado >= 0 ? '+' : '' ?><?= round($percMargem) ?>%
+                    </div>
                 </div>
-                <div style="height:8px; background:#1e293b; border-radius:8px; overflow:hidden; display:flex;">
-                    <div style="width:<?= min(100, round(($totalCustoInfraMes/$receitaTotalMes)*100)) ?>%; background:#ef4444; transition:width 0.4s;"></div>
-                    <div style="width:<?= min(100-round(($totalCustoInfraMes/$receitaTotalMes)*100), round(($totalCustoIAbrl/$receitaTotalMes)*100)) ?>%; background:#f59e0b; transition:width 0.4s;"></div>
+                <div style="height:10px; background:rgba(0,0,0,0.2); border-radius:99px; overflow:hidden; display:flex; box-shadow:inset 0 1px 2px rgba(0,0,0,0.1);">
+                    <div style="width:<?= min(100, $percInfra) ?>%; background:#ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);"></div>
+                    <div style="width:<?= min(100 - $percInfra, $percIA) ?>%; background:#f59e0b; box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);"></div>
                     <?php if ($resultado > 0): ?>
-                    <div style="flex:1; background:#10b981;"></div>
+                    <div style="flex:1; background:#10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);"></div>
                     <?php endif; ?>
                 </div>
-                <div style="display:flex; gap:16px; font-size:11px; color:#6b7280; margin-top:6px;">
-                    <span style="display:flex; align-items:center; gap:4px;"><span style="width:8px; height:8px; border-radius:2px; background:#ef4444; display:inline-block;"></span>Infra</span>
-                    <span style="display:flex; align-items:center; gap:4px;"><span style="width:8px; height:8px; border-radius:2px; background:#f59e0b; display:inline-block;"></span>IA</span>
-                    <span style="display:flex; align-items:center; gap:4px;"><span style="width:8px; height:8px; border-radius:2px; background:#10b981; display:inline-block;"></span>Resultado</span>
+                <?php else: ?>
+                <div style="text-align:center; padding:10px; font-size:13px; color:#4b5563; font-style:italic;">
+                    Aguardando receita para gerar o termômetro de lucratividade.
                 </div>
+                <?php endif; ?>
             </div>
-            <?php else: ?>
-            <div style="font-size:13px; color:#4b5563; font-style:italic;">Sem receita registrada este mês.</div>
-            <?php endif; ?>
         </div>
 
-        <!-- ── Bloco 3: Custos de IA ─────────────────────────────────────── -->
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:28px;">
+        <!-- ── Bloco 3: Custos de IA & Top Usuários ─────────────────────────────────────── -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:28px;">
             <div class="card" style="padding:24px;">
-                <h3 style="font-size:15px; font-weight:600; color:#e2e8f0; margin-bottom:16px;">Consumo de IA — <?= date('M/Y') ?></h3>
-                <?php foreach ([
-                    ['groq',   'Groq',   '#818cf8'],
-                    ['gemini', 'Gemini', '#34d399'],
-                ] as [$key, $label, $cor]): ?>
-                <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:13px;">
-                    <span style="color:#94a3b8;"><?= $label ?></span>
-                    <span style="color:<?= $cor ?>;">
-                        <?= number_format($tokensPorProvider[$key]['tokens'] ?? 0, 0, ',', '.') ?> tokens
-                        (USD <?= number_format($tokensPorProvider[$key]['custo_usd'] ?? 0, 4, ',', '.') ?>)
-                    </span>
+                <h3 style="font-size:15px; font-weight:700; color:#e2e8f0; margin-bottom:20px; display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="cpu" style="width:18px; height:18px; color:#fbbf24;"></i>
+                    Consumo de IA — <?= date('M/Y') ?>
+                </h3>
+                
+                <div style="display:flex; flex-direction:column; gap:16px;">
+                    <?php foreach ([
+                        ['groq',   'Groq',   '#818cf8', 'zap'],
+                        ['gemini', 'Gemini', '#34d399', 'brain-circuit'],
+                    ] as [$key, $label, $cor, $icon]): ?>
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; background:rgba(255,255,255,0.02); border-radius:12px; border:1px solid rgba(255,255,255,0.03);">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <div style="width:32px; height:32px; border-radius:8px; background:rgba(255,255,255,0.03); display:flex; align-items:center; justify-content:center; color:<?= $cor ?>;">
+                                <i data-lucide="<?= $icon ?>" style="width:16px; height:16px;"></i>
+                            </div>
+                            <div>
+                                <div style="font-size:13px; font-weight:700; color:#f1f5f9;"><?= $label ?></div>
+                                <div style="font-size:11px; color:#6b7280;"><?= number_format($tokensPorProvider[$key]['tokens'] ?? 0, 0, ',', '.') ?> tokens</div>
+                            </div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:13px; font-weight:700; color:<?= $cor ?>;">USD <?= number_format($tokensPorProvider[$key]['custo_usd'] ?? 0, 4, ',', '.') ?></div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
                 </div>
-                <?php endforeach; ?>
-                <div style="border-top:1px solid #334155; padding-top:12px; font-size:13px; display:flex; justify-content:space-between;">
-                    <span style="color:#6b7280;">Total</span>
-                    <span style="color:#fbbf24; font-weight:700;"><?= number_format($totalTokens, 0, ',', '.') ?> tokens · R$<?= number_format($totalCustoIAbrl, 4, ',', '.') ?></span>
+
+                <div style="margin-top:20px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:13px; color:#6b7280; font-weight:600;">Custo Total Estimado</span>
+                    <span style="font-size:16px; color:#fbbf24; font-weight:800;">R$ <?= number_format($totalCustoIAbrl, 2, ',', '.') ?></span>
                 </div>
+                
                 <?php if ($totalCustoIAbrl == 0): ?>
-                <div style="margin-top:12px; font-size:12px; color:#4b5563; font-style:italic;">APIs em tier gratuito — custo zero por enquanto.</div>
+                <div style="margin-top:12px; display:flex; align-items:center; gap:6px; font-size:11px; color:#4b5563; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:8px;">
+                    <i data-lucide="info" style="width:14px; height:14px;"></i>
+                    <span>Utilizando tiers gratuitos das APIs.</span>
+                </div>
                 <?php endif; ?>
             </div>
 
             <!-- Top consumidores -->
             <div class="card" style="padding:24px;">
-                <h3 style="font-size:15px; font-weight:600; color:#e2e8f0; margin-bottom:16px;">Top Usuários por Tokens</h3>
+                <h3 style="font-size:15px; font-weight:700; color:#e2e8f0; margin-bottom:20px; display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="trending-up" style="width:18px; height:18px; color:#34d399;"></i>
+                    Top Usuários (Tokens & Custo)
+                </h3>
+
                 <?php if (empty($topUsuarios)): ?>
-                <div style="font-size:13px; color:#4b5563; font-style:italic;">Nenhum dado de IA registrado este mês.</div>
-                <?php else: ?>
-                <?php foreach ($topUsuarios as $u): ?>
-                <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:12px;">
-                    <span style="color:#94a3b8; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:60%;">
-                        <?= sanitizar($u['nome'] ?? $u['user_id']) ?>
-                    </span>
-                    <span style="color:#fbbf24; flex-shrink:0;"><?= number_format($u['total_tokens'], 0, ',', '.') ?> tk</span>
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 0; color:#4b5563;">
+                    <i data-lucide="users" style="width:32px; height:32px; margin-bottom:12px; opacity:0.2;"></i>
+                    <div style="font-size:13px; font-style:italic;">Nenhum consumo de IA este mês.</div>
                 </div>
-                <?php endforeach; ?>
+                <?php else: ?>
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <?php foreach ($topUsuarios as $u): 
+                        $iniciais = '';
+                        $nomes = explode(' ', $u['nome'] ?? 'User');
+                        $iniciais = strtoupper(substr($nomes[0], 0, 1) . (isset($nomes[1]) ? substr($nomes[1], 0, 1) : ''));
+                        $custoBRL = ($u['custo_usd'] ?? 0) * $cambioUSD;
+                    ?>
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.03);">
+                        <div style="display:flex; align-items:center; gap:12px; max-width:65%;">
+                            <div style="width:34px; height:34px; border-radius:99px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; color:#f1f5f9; flex-shrink:0;">
+                                <?= $iniciais ?>
+                            </div>
+                            <div style="overflow:hidden;">
+                                <div style="font-size:13px; font-weight:700; color:#f1f5f9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?= sanitizar($u['nome'] ?? $u['user_id']) ?></div>
+                                <div style="font-size:11px; color:#6b7280;"><?= number_format($u['total_tokens'], 0, ',', '.') ?> tokens</div>
+                            </div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:13px; font-weight:700; color:#fbbf24;">R$ <?= number_format($custoBRL, 2, ',', '.') ?></div>
+                            <div style="font-size:10px; color:#4b5563;">USD <?= number_format($u['custo_usd'] ?? 0, 3, ',', '.') ?></div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
                 <?php endif; ?>
             </div>
         </div>
 
         <!-- ── Bloco 4: Custos de Infraestrutura ─────────────────────────── -->
-        <div class="card" style="padding:24px; margin-bottom:28px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h3 style="font-size:15px; font-weight:600; color:#e2e8f0;">Custos de Infraestrutura</h3>
-                <button @click="addCusto = !addCusto" class="btn-primary" style="padding:7px 16px; font-size:12px;">+ Adicionar</button>
+        <div class="card" style="padding:28px; margin-bottom:28px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+                <h3 style="font-size:16px; font-weight:700; color:#e2e8f0; display:flex; align-items:center; gap:10px;">
+                    <i data-lucide="server" style="width:20px; height:20px; color:#818cf8;"></i>
+                    Custos de Infraestrutura
+                </h3>
+                <button @click="addCusto = !addCusto" class="btn-primary" style="padding:8px 20px; font-size:13px; border-radius:10px; display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="plus" style="width:16px; height:16px;"></i>
+                    Novo Custo
+                </button>
             </div>
 
             <!-- Formulário de novo custo -->
-            <div x-show="addCusto" x-cloak style="background:#1e293b; padding:16px; border-radius:8px; margin-bottom:16px;">
-                <form method="POST" style="display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+            <div x-show="addCusto" x-cloak x-transition style="background:rgba(255,255,255,0.02); padding:24px; border-radius:16px; border:1px solid rgba(255,255,255,0.05); margin-bottom:24px; box-shadow:0 10px 30px rgba(0,0,0,0.2);">
+                <form method="POST" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:20px; align-items:end;">
                     <input type="hidden" name="acao" value="add_custo">
                     <div>
-                        <label class="label" style="font-size:11px;">Descrição</label>
-                        <input class="input" name="descricao" required placeholder="VPS Hetzner" style="width:160px;">
+                        <label class="label-premium">Descrição</label>
+                        <input class="input" name="descricao" required placeholder="Ex: VPS Hetzner" style="background:rgba(0,0,0,0.2);">
                     </div>
                     <div>
-                        <label class="label" style="font-size:11px;">Valor</label>
-                        <input class="input" type="number" step="0.01" name="valor" required placeholder="0.00" style="width:90px;">
+                        <label class="label-premium">Valor</label>
+                        <div style="position:relative;">
+                            <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:13px; font-weight:700; color:#6b7280;">$</span>
+                            <input class="input" type="number" step="0.01" name="valor" required placeholder="0.00" style="padding-left:30px; background:rgba(0,0,0,0.2);">
+                        </div>
                     </div>
                     <div>
-                        <label class="label" style="font-size:11px;">Moeda</label>
-                        <select class="input" name="moeda" style="width:70px;">
+                        <label class="label-premium">Moeda</label>
+                        <select class="input" name="moeda" style="background:rgba(0,0,0,0.2);">
                             <option value="BRL">BRL</option>
                             <option value="USD">USD</option>
                             <option value="EUR">EUR</option>
                         </select>
                     </div>
                     <div>
-                        <label class="label" style="font-size:11px;">Período</label>
-                        <select class="input" name="periodo" style="width:90px;">
+                        <label class="label-premium">Período</label>
+                        <select class="input" name="periodo" style="background:rgba(0,0,0,0.2);">
                             <option value="mensal">Mensal</option>
                             <option value="anual">Anual</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn-primary" style="padding:10px 20px; font-size:13px; height:42px;">Salvar</button>
-                    <button type="button" @click="addCusto=false" class="btn-secondary" style="height:42px;">Cancelar</button>
+                    <div style="display:flex; gap:10px;">
+                        <button type="submit" class="btn-primary" style="flex:1; height:42px;">Salvar</button>
+                        <button type="button" @click="addCusto=false" class="btn-secondary" style="height:42px;"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+                    </div>
                 </form>
             </div>
 
             <?php if (empty($custos)): ?>
-            <div style="font-size:13px; color:#4b5563; font-style:italic;">Nenhum custo cadastrado.</div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 0; background:rgba(255,255,255,0.01); border:2px dashed rgba(255,255,255,0.03); border-radius:20px;">
+                <div style="width:64px; height:64px; border-radius:99px; background:rgba(255,255,255,0.02); display:flex; align-items:center; justify-content:center; margin-bottom:20px; color:#4b5563;">
+                    <i data-lucide="cloud-off" style="width:32px; height:32px;"></i>
+                </div>
+                <div style="font-size:15px; font-weight:600; color:#94a3b8; margin-bottom:4px;">Nenhum custo cadastrado</div>
+                <div style="font-size:13px; color:#6b7280; margin-bottom:20px;">Adicione seus custos fixos para calcular o P&L real.</div>
+                <button @click="addCusto = true" class="btn-secondary" style="padding:10px 24px; border-radius:99px;">
+                    <i data-lucide="plus" style="width:16px; height:16px; margin-right:8px;"></i>
+                    Começar a Gerir
+                </button>
+            </div>
             <?php else: ?>
-            <table style="width:100%; font-size:13px; border-collapse:collapse;">
-                <thead>
-                    <tr style="color:#6b7280; font-size:11px; text-transform:uppercase; letter-spacing:0.05em; border-bottom:1px solid #334155;">
-                        <th style="text-align:left; padding:8px 0;">Descrição</th>
-                        <th style="text-align:right; padding:8px 0;">Valor</th>
-                        <th style="text-align:right; padding:8px 0;">Período</th>
-                        <th style="text-align:right; padding:8px 0;">Mês equiv.</th>
-                        <th style="padding:8px 0;"></th>
+            <div style="overflow-x:auto;">
+                <table style="width:100%; font-size:13px; border-collapse:collapse;">
+                    <thead>
+                        <tr style="color:#6b7280; font-size:11px; text-transform:uppercase; letter-spacing:0.08em; border-bottom:1px solid rgba(255,255,255,0.05);">
+                            <th style="text-align:left; padding:16px 12px;">Descrição</th>
+                            <th style="text-align:right; padding:16px 12px;">Valor Original</th>
+                            <th style="text-align:right; padding:16px 12px;">Ciclo</th>
+                            <th style="text-align:right; padding:16px 12px;">Equivalente Mensal</th>
+                            <th style="padding:16px 12px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($custos as $c): ?>
+                    <?php $mesequiv = ($c['periodo'] === 'anual') ? ($c['valor'] / 12) : $c['valor']; ?>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.02); transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.01)'" onmouseout="this.style.background='transparent'">
+                        <td style="padding:16px 12px; color:#f1f5f9; font-weight:600;"><?= sanitizar($c['descricao']) ?></td>
+                        <td style="text-align:right; color:#e2e8f0;"><?= $c['moeda'] ?> <?= number_format($c['valor'], 2, ',', '.') ?></td>
+                        <td style="text-align:right; padding:16px 12px;">
+                            <span style="padding:4px 10px; background:rgba(255,255,255,0.03); border-radius:99px; font-size:10px; font-weight:800; text-transform:uppercase; color:#94a3b8; border:1px solid rgba(255,255,255,0.05);">
+                                <?= $c['periodo'] ?>
+                            </span>
+                        </td>
+                        <td style="text-align:right; color:#f1f5f9; font-weight:700;">R$ <?= number_format($mesequiv, 2, ',', '.') ?></td>
+                        <td style="text-align:right; padding:16px 12px;">
+                            <form method="POST" style="display:inline;" onsubmit="return confirm('Remover este custo?')">
+                                <input type="hidden" name="acao" value="del_custo">
+                                <input type="hidden" name="custo_id" value="<?= $c['id'] ?>">
+                                <button type="submit" style="width:32px; height:32px; border-radius:8px; border:none; background:rgba(248,113,113,0.1); color:#f87171; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s;" title="Remover" onmouseover="this.style.background='rgba(248,113,113,0.2)'" onmouseout="this.style.background='rgba(248,113,113,0.1)'">
+                                    <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
+                                </button>
+                            </form>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                <?php foreach ($custos as $c): ?>
-                <?php $mesequiv = ($c['periodo'] === 'anual') ? ($c['valor'] / 12) : $c['valor']; ?>
-                <tr style="border-bottom:1px solid #1e293b;">
-                    <td style="padding:10px 0; color:#94a3b8;"><?= sanitizar($c['descricao']) ?></td>
-                    <td style="text-align:right; color:#e2e8f0;"><?= $c['moeda'] ?> <?= number_format($c['valor'], 2, ',', '.') ?></td>
-                    <td style="text-align:right; color:#6b7280;"><?= $c['periodo'] ?></td>
-                    <td style="text-align:right; color:#94a3b8;">R$ <?= number_format($mesequiv, 2, ',', '.') ?></td>
-                    <td style="text-align:right; padding-left:12px;">
-                        <form method="POST" style="display:inline;" onsubmit="return confirm('Remover este custo?')">
-                            <input type="hidden" name="acao" value="del_custo">
-                            <input type="hidden" name="custo_id" value="<?= $c['id'] ?>">
-                            <button type="submit" style="background:none; border:none; color:#6b7280; cursor:pointer; font-size:12px;" title="Remover">✕</button>
-                        </form>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-                </tbody>
-                <tfoot>
-                    <tr style="border-top:1px solid #334155;">
-                        <td colspan="3" style="padding:10px 0; font-size:12px; color:#6b7280;">Total mensal</td>
-                        <td style="text-align:right; color:#f87171; font-weight:700;">R$ <?= number_format($totalCustoInfraMes, 2, ',', '.') ?></td>
-                        <td></td>
-                    </tr>
-                </tfoot>
-            </table>
+                    <?php endforeach; ?>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" style="padding:24px 12px; font-size:12px; color:#6b7280; font-weight:600; text-transform:uppercase;">Custo Operacional Mensal</td>
+                            <td style="text-align:right; padding:24px 12px; color:#f87171; font-size:18px; font-weight:800;">R$ <?= number_format($totalCustoInfraMes, 2, ',', '.') ?></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
             <?php endif; ?>
         </div>
 
         <!-- ── Bloco 5: Gestão de Preços ────────────────────────────────── -->
-        <div class="card" style="padding:24px; margin-bottom:28px;">
-            <h3 style="font-size:15px; font-weight:600; color:#e2e8f0; margin-bottom:4px;">Gestão de Preços & Tarifas</h3>
-            <p style="font-size:12px; color:#6b7280; margin-bottom:20px;">Altera valores para novos assinantes. "Aplicar a todos" atualiza também os assinantes existentes (apenas referência interna — o Mercado Pago cobra o valor da preferência criada no momento do checkout).</p>
+        <div class="card" style="padding:28px; margin-bottom:28px; border-left:4px solid #10b981;">
+            <div style="margin-bottom:28px;">
+                <h3 style="font-size:16px; font-weight:700; color:#e2e8f0; display:flex; align-items:center; gap:10px;">
+                    <i data-lucide="settings-2" style="width:20px; height:20px; color:#34d399;"></i>
+                    Gestão de Preços & Tarifas
+                </h3>
+                <p style="font-size:13px; color:#6b7280; margin-top:4px;">Configurações de precificação global e custos de API.</p>
+            </div>
 
             <form method="POST">
                 <input type="hidden" name="acao" value="salvar_precos">
-                <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px; margin-bottom:20px;">
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:24px; margin-bottom:32px;">
                     <div>
-                        <label class="label">Plano Mensal (R$)</label>
-                        <input class="input" type="number" step="0.01" name="plano_mensal_preco" value="<?= $precoMensal ?>" required>
+                        <label class="label-premium">Plano Mensal</label>
+                        <div style="position:relative;">
+                            <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:13px; font-weight:700; color:#6b7280;">R$</span>
+                            <input class="input" type="number" step="0.01" name="plano_mensal_preco" value="<?= $precoMensal ?>" required style="padding-left:36px; background:rgba(0,0,0,0.2);">
+                        </div>
                     </div>
                     <div>
-                        <label class="label">Plano Anual (R$)</label>
-                        <input class="input" type="number" step="0.01" name="plano_anual_preco" value="<?= $precoAnual ?>" required>
+                        <label class="label-premium">Plano Anual</label>
+                        <div style="position:relative;">
+                            <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:13px; font-weight:700; color:#6b7280;">R$</span>
+                            <input class="input" type="number" step="0.01" name="plano_anual_preco" value="<?= $precoAnual ?>" required style="padding-left:36px; background:rgba(0,0,0,0.2);">
+                        </div>
                     </div>
                     <div>
-                        <label class="label">Câmbio USD → BRL</label>
-                        <input class="input" type="number" step="0.01" name="custo_usd_brl" value="<?= $cambioUSD ?>" required>
+                        <label class="label-premium" style="display:flex; align-items:center; gap:6px;">
+                            Câmbio USD → BRL
+                            <i data-lucide="help-circle" style="width:14px; height:14px; color:#6b7280; cursor:help;" title="Definição manual para cálculos de custos de API convertidos para Real."></i>
+                        </label>
+                        <div style="position:relative;">
+                            <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:13px; font-weight:700; color:#6b7280;">R$</span>
+                            <input class="input" type="number" step="0.01" name="custo_usd_brl" value="<?= $cambioUSD ?>" required style="padding-left:36px; background:rgba(0,0,0,0.2);">
+                        </div>
                     </div>
                     <div>
-                        <label class="label">Groq custo/1k tokens (USD)</label>
-                        <input class="input" type="number" step="0.000001" name="groq_custo" value="<?= $custoGroq1k ?>" placeholder="0.000000">
-                        <p style="font-size:11px; color:#4b5563; margin-top:4px;">0 = grátis / tier free</p>
+                        <label class="label-premium">Custo Groq (1k tokens)</label>
+                        <div style="position:relative;">
+                            <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:13px; font-weight:700; color:#6b7280;">$</span>
+                            <input class="input" type="number" step="0.000001" name="groq_custo" value="<?= $custoGroq1k ?>" placeholder="0.000000" style="padding-left:26px; background:rgba(0,0,0,0.2);">
+                        </div>
+                        <p style="font-size:11px; color:#4b5563; margin-top:6px;">Tier Free = 0.00</p>
                     </div>
                     <div>
-                        <label class="label">Gemini custo/1k tokens (USD)</label>
-                        <input class="input" type="number" step="0.000001" name="gemini_custo" value="<?= $custoGemini1k ?>" placeholder="0.000000">
-                        <p style="font-size:11px; color:#4b5563; margin-top:4px;">0 = grátis / tier free</p>
+                        <label class="label-premium">Custo Gemini (1k tokens)</label>
+                        <div style="position:relative;">
+                            <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:13px; font-weight:700; color:#6b7280;">$</span>
+                            <input class="input" type="number" step="0.000001" name="gemini_custo" value="<?= $custoGemini1k ?>" placeholder="0.000000" style="padding-left:26px; background:rgba(0,0,0,0.2);">
+                        </div>
+                        <p style="font-size:11px; color:#4b5563; margin-top:6px;">Tier Free = 0.00</p>
                     </div>
                 </div>
-                <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
-                    <button type="submit" class="btn-primary">Salvar para novos</button>
-                    <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:#94a3b8; cursor:pointer;">
-                        <input type="checkbox" name="aplicar_todos" style="width:16px; height:16px;">
-                        Aplicar também a todos os assinantes ativos
+
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; padding:24px; background:rgba(255,255,255,0.02); border-radius:16px; border:1px solid rgba(255,255,255,0.05);">
+                    <label style="display:flex; align-items:center; gap:12px; font-size:14px; color:#94a3b8; cursor:pointer; flex:1;">
+                        <input type="checkbox" name="aplicar_todos" style="width:18px; height:18px; accent-color:#10b981;">
+                        <span>Aplicar atualização também para <strong>todos os assinantes ativos</strong></span>
                     </label>
+                    <button type="submit" class="btn-primary" style="padding:12px 32px; font-size:14px; background:#10b981; border-color:#10b981; box-shadow:0 10px 20px rgba(16, 185, 129, 0.2);">
+                        Atualizar Precificação
+                    </button>
                 </div>
             </form>
         </div>
+
+        <script>
+            // Forçar re-renderização dos ícones Lucide após Alpine carregar
+            document.addEventListener('alpine:initialized', () => {
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            });
+        </script>
 
     </main>
 </div>
