@@ -174,7 +174,7 @@ include __DIR__ . '/../includes/layout/head.php';
 <div id="app-wrapper" style="display:flex; min-height:100vh;">
     <?php include __DIR__ . '/../includes/layout/sidebar.php'; ?>
 
-    <main id="main-content" style="flex:1; padding:28px 32px; overflow-y:auto; background:#0A0A0A;" 
+    <main id="main-content" style="flex:1; padding:28px 32px; overflow-y:auto; background:#0A0A0A !important;" 
           x-data="{ 
             addCusto: false, 
             showSimulador: false,
@@ -196,15 +196,15 @@ include __DIR__ . '/../includes/layout/head.php';
 
         <div style="margin-bottom:28px; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
             <div>
-                <h1 style="font-size:22px; font-weight:700; color:#FFFFFF;">Financeiro SaaS</h1>
-                <p style="font-size:14px; color:#9CA3AF; margin-top:2px;">Inteligência de negócio, P&L e gestão de infraestrutura</p>
+                <h1 style="font-size:22px; font-weight:700; color:#FFFFFF !important;">Financeiro SaaS</h1>
+                <p style="font-size:14px; color:#9CA3AF !important; margin-top:2px;">Inteligência de negócio, P&L e gestão de infraestrutura</p>
             </div>
             <div style="display:flex; gap:10px;">
-                <button @click="showSimulador = !showSimulador" class="btn-secondary" style="background:#141414; border:1px solid rgba(255,255,255,0.1); color:#FFFFFF; font-weight:700;">
+                <button @click="showSimulador = !showSimulador" class="btn-secondary" style="background:#141414 !important; border:1px solid rgba(255,255,255,0.1); color:#FFFFFF !important; font-weight:700;">
                     <i data-lucide="calculator" style="width:16px; height:16px; margin-right:6px;"></i>
                     Simular Cenários
                 </button>
-                <div style="font-size:12px; color:#9CA3AF; align-self:center;"><?= date('F Y') ?></div>
+                <div style="font-size:12px; color:#9CA3AF !important; align-self:center;"><?= date('F Y') ?></div>
             </div>
         </div>
 
@@ -255,63 +255,63 @@ include __DIR__ . '/../includes/layout/head.php';
                 ['Assinantes ativos',   $totalAtivos,  '#00C897', 'check-circle'],
                 ['Expirados/Cancelados',$totalExpirado,'#f87171', 'x-circle'],
             ] as [$label, $val, $cor, $icon]): ?>
-            <div style="padding:24px; position:relative; overflow:hidden; background:#141414; border:1px solid rgba(255,255,255,0.05); border-radius:16px;">
+            <div style="padding:24px; position:relative; overflow:hidden; background:#141414 !important; border:1px solid rgba(255,255,255,0.06); border-radius:16px;">
                 <div style="position:absolute; top:16px; right:16px; color:<?= $cor ?>; opacity:0.3;">
                     <i data-lucide="<?= $icon ?>" style="width:22px; height:22px;"></i>
                 </div>
-                <div style="font-size:36px; font-weight:800; color:#FFFFFF; line-height:1;"><?= $val ?></div>
-                <div style="font-size:12px; font-weight:700; color:#9CA3AF; margin-top:10px; text-transform:uppercase; letter-spacing:0.04em;"><?= $label ?></div>
+                <div style="font-size:36px; font-weight:800; color:#FFFFFF !important; line-height:1;"><?= $val ?></div>
+                <div style="font-size:12px; font-weight:700; color:#9CA3AF !important; margin-top:10px; text-transform:uppercase; letter-spacing:0.04em;"><?= $label ?></div>
             </div>
             <?php endforeach; ?>
         </div>
 
-        <div style="padding:28px; margin-bottom:28px; position:relative; background:#141414; border:1px solid rgba(255,255,255,0.05); border-radius:20px;">
+        <div style="padding:28px; margin-bottom:28px; position:relative; background:#141414 !important; border:1px solid rgba(255,255,255,0.06); border-radius:20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-                <h3 style="font-size:16px; font-weight:700; color:#FFFFFF; display:flex; align-items:center; gap:8px;">
+                <h3 style="font-size:16px; font-weight:700; color:#FFFFFF !important; display:flex; align-items:center; gap:8px;">
                     <i data-lucide="bar-chart-3" style="width:18px; height:18px; color:#9CA3AF;"></i>
                     P&L — <?= date('M/Y') ?>
                 </h3>
-                <button class="btn-secondary" style="background:transparent; border:1px solid rgba(255,255,255,0.1); color:#9CA3AF; font-size:11px; padding:6px 14px; border-radius:99px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; transition:all 0.2s; cursor:pointer;" onmouseover="this.style.borderColor='rgba(255,255,255,0.3)'; this.style.color='#FFFFFF'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.color='#9CA3AF'">
+                <button class="btn-secondary" style="background:transparent !important; border:1px solid rgba(255,255,255,0.1); color:#9CA3AF !important; font-size:11px; padding:6px 14px; border-radius:99px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; transition:all 0.2s; cursor:pointer;" onmouseover="this.style.borderColor='rgba(255,255,255,0.3)'; this.style.color='#FFFFFF'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.color='#9CA3AF'">
                     Relatório Mensal
                 </button>
             </div>
 
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:24px; margin-bottom:32px;">
                 <div>
-                    <div style="font-size:11px; font-weight:700; color:#9CA3AF; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">Receita Mensal</div>
-                    <div style="font-size:26px; font-weight:800; color:#00C897;">R$ <?= number_format($receitaTotalMes, 2, ',', '.') ?></div>
+                    <div style="font-size:11px; font-weight:700; color:#9CA3AF !important; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">Receita Mensal</div>
+                    <div style="font-size:26px; font-weight:800; color:#00C897 !important;">R$ <?= number_format($receitaTotalMes, 2, ',', '.') ?></div>
                     <div style="font-size:11px; margin-top:8px; display:flex; flex-direction:column; gap:4px;">
-                        <span style="color:#9CA3AF;">Mensal: <span style="color:#FFFFFF; font-weight:600;">R$<?= number_format($receitaMensal,2,',','.') ?></span></span>
-                        <span style="color:#9CA3AF;">Anual pró-rata: <span style="color:#FFFFFF; font-weight:600;">R$<?= number_format($receitaAnualProrateada,2,',','.') ?></span></span>
+                        <span style="color:#9CA3AF !important;">Mensal: <span style="color:#FFFFFF !important; font-weight:600;">R$<?= number_format($receitaMensal,2,',','.') ?></span></span>
+                        <span style="color:#9CA3AF !important;">Anual pró-rata: <span style="color:#FFFFFF !important; font-weight:600;">R$<?= number_format($receitaAnualProrateada,2,',','.') ?></span></span>
                     </div>
                 </div>
                 <div>
-                    <div style="font-size:11px; font-weight:700; color:#9CA3AF; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">Custos de Infra</div>
-                    <div style="font-size:26px; font-weight:800; color:#f87171;">R$ <?= number_format($totalCustoInfraMes, 2, ',', '.') ?></div>
-                    <div style="font-size:11px; color:#9CA3AF; margin-top:8px; font-style:italic;">Normalizado p/ mês</div>
+                    <div style="font-size:11px; font-weight:700; color:#9CA3AF !important; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">Custos de Infra</div>
+                    <div style="font-size:26px; font-weight:800; color:#f87171 !important;">R$ <?= number_format($totalCustoInfraMes, 2, ',', '.') ?></div>
+                    <div style="font-size:11px; color:#9CA3AF !important; margin-top:8px; font-style:italic;">Normalizado p/ mês</div>
                 </div>
                 <div>
-                    <div style="font-size:11px; font-weight:700; color:#9CA3AF; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">Custos de IA</div>
-                    <div style="font-size:26px; font-weight:800; color:#fbbf24;">R$ <?= number_format($totalCustoIAbrl, 2, ',', '.') ?></div>
+                    <div style="font-size:11px; font-weight:700; color:#9CA3AF !important; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">Custos de IA</div>
+                    <div style="font-size:26px; font-weight:800; color:#fbbf24 !important;">R$ <?= number_format($totalCustoIAbrl, 2, ',', '.') ?></div>
                     <div style="font-size:11px; margin-top:8px;">
-                        <span style="color:#9CA3AF;">USD <?= number_format($totalCustoIAusd, 4, ',', '.') ?></span>
+                        <span style="color:#9CA3AF !important;">USD <?= number_format($totalCustoIAusd, 4, ',', '.') ?></span>
                         <span style="color:#4b5563; margin: 0 4px;">×</span>
-                        <span style="color:#FFFFFF; font-weight:600;">R$<?= number_format($cambioUSD,2,',','.') ?></span>
+                        <span style="color:#FFFFFF !important; font-weight:600;">R$<?= number_format($cambioUSD,2,',','.') ?></span>
                     </div>
                 </div>
-                <div style="padding-left:24px; border:1px solid #00C897; border-radius:12px; background:rgba(0,200,151,0.02); padding:16px 20px; position:relative;">
-                    <div style="font-size:11px; font-weight:700; color:#9CA3AF; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">Resultado Líquido</div>
-                    <div style="font-size:32px; font-weight:900; color:#FFFFFF; line-height:1;">
+                <div style="padding-left:24px; border:1px solid #00C897; border-radius:12px; background:rgba(0,200,151,0.02) !important; padding:16px 20px; position:relative;">
+                    <div style="font-size:11px; font-weight:700; color:#9CA3AF !important; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">Resultado Líquido</div>
+                    <div style="font-size:32px; font-weight:900; color:#FFFFFF !important; line-height:1;">
                         R$ <?= number_format($resultado, 2, ',', '.') ?>
                     </div>
-                    <div style="font-size:11px; color:#9CA3AF; margin-top:10px;">
-                        Break-even unitário: <span style="color:#FFFFFF; font-weight:600;">R$<?= number_format($custoMinSub,2,',','.') ?></span>
+                    <div style="font-size:11px; color:#9CA3AF !important; margin-top:10px;">
+                        Break-even unitário: <span style="color:#FFFFFF !important; font-weight:600;">R$<?= number_format($custoMinSub,2,',','.') ?></span>
                     </div>
                 </div>
             </div>
 
             <!-- Barra Visual P&L (Termômetro) -->
-            <div style="background:rgba(0,0,0,0.2); padding:20px; border-radius:16px; border:1px solid rgba(255,255,255,0.03);">
+            <div style="background:rgba(0,0,0,0.2) !important; padding:20px; border-radius:16px; border:1px solid rgba(255,255,255,0.06);">
                 <?php if ($receitaTotalMes > 0): 
                     $percInfra = ($totalCustoInfraMes / $receitaTotalMes) * 100;
                     $percIA = ($totalCustoIAbrl / $receitaTotalMes) * 100;
@@ -319,23 +319,23 @@ include __DIR__ . '/../includes/layout/head.php';
                 ?>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                     <div style="display:flex; gap:20px;">
-                        <span style="display:flex; align-items:center; gap:8px; font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.02em;">
+                        <span style="display:flex; align-items:center; gap:8px; font-size:11px; font-weight:700; color:#9CA3AF !important; text-transform:uppercase; letter-spacing:0.02em;">
                             <span style="width:10px; height:10px; border-radius:3px; background:#ef4444;"></span> Infra (<?= round($percInfra) ?>%)
                         </span>
-                        <span style="display:flex; align-items:center; gap:8px; font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.02em;">
+                        <span style="display:flex; align-items:center; gap:8px; font-size:11px; font-weight:700; color:#9CA3AF !important; text-transform:uppercase; letter-spacing:0.02em;">
                             <span style="width:10px; height:10px; border-radius:3px; background:#f59e0b;"></span> IA (<?= round($percIA) ?>%)
                         </span>
                         <?php if ($resultado > 0): ?>
-                        <span style="display:flex; align-items:center; gap:8px; font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.02em;">
+                        <span style="display:flex; align-items:center; gap:8px; font-size:11px; font-weight:700; color:#9CA3AF !important; text-transform:uppercase; letter-spacing:0.02em;">
                             <span style="width:10px; height:10px; border-radius:3px; background:#10b981;"></span> Margem (<?= round($percMargem) ?>%)
                         </span>
                         <?php endif; ?>
                     </div>
-                    <div style="font-size:13px; font-weight:800; color:<?= $resultado >= 0 ? '#10b981' : '#ef4444' ?>; letter-spacing:-0.01em;">
+                    <div style="font-size:13px; font-weight:800; color:<?= $resultado >= 0 ? '#10b981' : '#ef4444' ?> !important; letter-spacing:-0.01em;">
                         <?= $resultado >= 0 ? '+' : '' ?><?= round($percMargem, 1) ?>%
                     </div>
                 </div>
-                <div style="height:12px; background:rgba(0,0,0,0.3); border-radius:99px; overflow:hidden; display:flex; border:1px solid rgba(255,255,255,0.03);">
+                <div style="height:12px; background:rgba(0,0,0,0.3) !important; border-radius:99px; overflow:hidden; display:flex; border:1px solid rgba(255,255,255,0.06);">
                     <div style="width:<?= min(100, $percInfra) ?>%; background:#ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.1);"></div>
                     <div style="width:<?= min(100 - $percInfra, $percIA) ?>%; background:#f59e0b; box-shadow: 0 0 10px rgba(245, 158, 11, 0.1);"></div>
                     <?php if ($resultado > 0): ?>
@@ -343,11 +343,11 @@ include __DIR__ . '/../includes/layout/head.php';
                     <?php endif; ?>
                 </div>
                 <?php else: ?>
-                <div style="display:flex; align-items:center; justify-content:center; gap:12px; padding:15px; border:1px dashed rgba(255,255,255,0.05); border-radius:12px;">
-                    <div style="height:8px; width:100px; background:rgba(255,255,255,0.03); border-radius:99px; position:relative; overflow:hidden;">
+                <div style="display:flex; align-items:center; justify-content:center; gap:12px; padding:15px; border:1px dashed rgba(255,255,255,0.06); border-radius:12px;">
+                    <div style="height:8px; width:100px; background:rgba(255,255,255,0.03) !important; border-radius:99px; position:relative; overflow:hidden;">
                         <div style="position:absolute; inset:0; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); animation: skeleton-scan 2s infinite;"></div>
                     </div>
-                    <div style="font-size:12px; color:#4b5563; font-weight:600;">Aguardando dados de receita para gerar o termômetro.</div>
+                    <div style="font-size:12px; color:#9CA3AF !important; font-weight:600;">Aguardando dados de receita para gerar o termômetro.</div>
                 </div>
                 <?php endif; ?>
             </div>
@@ -355,8 +355,8 @@ include __DIR__ . '/../includes/layout/head.php';
 
         <!-- ── Bloco 3: Custos de IA & Top Usuários ─────────────────────────────────────── -->
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:28px;">
-            <div style="padding:24px; background:#141414; border:1px solid rgba(255,255,255,0.05); border-radius:20px;">
-                <h3 style="font-size:15px; font-weight:700; color:#FFFFFF; margin-bottom:24px; display:flex; align-items:center; gap:10px;">
+            <div style="padding:24px; background:#141414 !important; border:1px solid rgba(255,255,255,0.06); border-radius:20px;">
+                <h3 style="font-size:15px; font-weight:700; color:#FFFFFF !important; margin-bottom:24px; display:flex; align-items:center; gap:10px;">
                     <i data-lucide="cpu" style="width:18px; height:18px; color:#fbbf24;"></i>
                     Consumo de IA
                 </h3>
@@ -368,36 +368,36 @@ include __DIR__ . '/../includes/layout/head.php';
                     ] as [$key, $label, $cor, $icon]): ?>
                     <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 16px; border-radius:12px; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
                         <div style="display:flex; align-items:center; gap:14px;">
-                            <div style="width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,0.03); display:flex; align-items:center; justify-content:center; color:<?= $cor ?>;">
+                            <div style="width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,0.03) !important; display:flex; align-items:center; justify-content:center; color:<?= $cor ?>;">
                                 <i data-lucide="<?= $icon ?>" style="width:18px; height:18px;"></i>
                             </div>
                             <div>
-                                <div style="font-size:14px; font-weight:700; color:#FFFFFF;"><?= $label ?></div>
-                                <div style="font-size:11px; color:#9CA3AF; font-weight:500;"><?= number_format($tokensPorProvider[$key]['tokens'] ?? 0, 0, ',', '.') ?> tokens</div>
+                                <div style="font-size:14px; font-weight:700; color:#FFFFFF !important;"><?= $label ?></div>
+                                <div style="font-size:11px; color:#9CA3AF !important; font-weight:500;"><?= number_format($tokensPorProvider[$key]['tokens'] ?? 0, 0, ',', '.') ?> tokens</div>
                             </div>
                         </div>
                         <div style="text-align:right;">
-                            <div style="font-size:14px; font-weight:800; color:<?= $cor ?>;">USD <?= number_format($tokensPorProvider[$key]['custo_usd'] ?? 0, 4, ',', '.') ?></div>
+                            <div style="font-size:14px; font-weight:800; color:<?= $cor ?> !important;">USD <?= number_format($tokensPorProvider[$key]['custo_usd'] ?? 0, 4, ',', '.') ?></div>
                         </div>
                     </div>
                     <?php endforeach; ?>
                 </div>
 
                 <div style="margin-top:20px; padding:20px 16px 0; border-top:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:13px; color:#9CA3AF; font-weight:700; text-transform:uppercase;">Total Estimado</span>
-                    <span style="font-size:22px; color:#fbbf24; font-weight:900;">R$ <?= number_format($totalCustoIAbrl, 2, ',', '.') ?></span>
+                    <span style="font-size:13px; color:#9CA3AF !important; font-weight:700; text-transform:uppercase;">Total Estimado</span>
+                    <span style="font-size:22px; color:#fbbf24 !important; font-weight:900;">R$ <?= number_format($totalCustoIAbrl, 2, ',', '.') ?></span>
                 </div>
             </div>
 
             <!-- Top consumidores -->
-            <div style="padding:24px; background:#141414; border:1px solid rgba(255,255,255,0.05); border-radius:20px;">
-                <h3 style="font-size:15px; font-weight:700; color:#FFFFFF; margin-bottom:24px; display:flex; align-items:center; gap:10px;">
+            <div style="padding:24px; background:#141414 !important; border:1px solid rgba(255,255,255,0.06); border-radius:20px;">
+                <h3 style="font-size:15px; font-weight:700; color:#FFFFFF !important; margin-bottom:24px; display:flex; align-items:center; gap:10px;">
                     <i data-lucide="crown" style="width:18px; height:18px; color:#00C897;"></i>
                     Top Usuários
                 </h3>
 
                 <?php if (empty($topUsuarios)): ?>
-                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:50px 0; color:#4b5563; border:1px dashed rgba(255,255,255,0.03); border-radius:16px;">
+                <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:50px 0; color:#4b5563; border:1px dashed rgba(255,255,255,0.06); border-radius:16px;">
                     <i data-lucide="users-2" style="width:36px; height:36px; margin-bottom:12px; opacity:0.1;"></i>
                     <div style="font-size:13px; font-style:italic; font-weight:500;">Nenhum registro.</div>
                 </div>
@@ -410,16 +410,16 @@ include __DIR__ . '/../includes/layout/head.php';
                     ?>
                     <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-radius:12px; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
                         <div style="display:flex; align-items:center; gap:12px; flex:1; min-width:0;">
-                            <div style="width:38px; height:38px; border-radius:99px; background:#1A1A1A; border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#FFFFFF; flex-shrink:0;">
+                            <div style="width:38px; height:38px; border-radius:99px; background:#1A1A1A !important; border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#FFFFFF !important; flex-shrink:0;">
                                 <?= $iniciais ?>
                             </div>
                             <div style="overflow:hidden;">
-                                <div style="font-size:14px; font-weight:700; color:#FFFFFF; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?= sanitizar($u['nome'] ?? $u['user_id']) ?></div>
-                                <div style="font-size:11px; color:#9CA3AF; font-weight:500;"><?= number_format($u['total_tokens'], 0, ',', '.') ?> tokens</div>
+                                <div style="font-size:14px; font-weight:700; color:#FFFFFF !important; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?= sanitizar($u['nome'] ?? $u['user_id']) ?></div>
+                                <div style="font-size:11px; color:#9CA3AF !important; font-weight:500;"><?= number_format($u['total_tokens'], 0, ',', '.') ?> tokens</div>
                             </div>
                         </div>
                         <div style="text-align:right; flex-shrink:0; padding-left:16px;">
-                            <div style="font-size:15px; font-weight:800; color:#fbbf24;">R$ <?= number_format($custoBRL, 2, ',', '.') ?></div>
+                            <div style="font-size:15px; font-weight:800; color:#fbbf24 !important;">R$ <?= number_format($custoBRL, 2, ',', '.') ?></div>
                         </div>
                     </div>
                     <?php endforeach; ?>
@@ -428,25 +428,25 @@ include __DIR__ . '/../includes/layout/head.php';
             </div>
         </div>
 
-        <div style="padding:28px; background:#141414; border:1px solid rgba(255,255,255,0.05); border-radius:20px; margin-bottom:28px;">
+        <div style="padding:28px; background:#141414 !important; border:1px solid rgba(255,255,255,0.06); border-radius:20px; margin-bottom:28px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-                <h3 style="font-size:16px; font-weight:700; color:#FFFFFF; display:flex; align-items:center; gap:10px;">
+                <h3 style="font-size:16px; font-weight:700; color:#FFFFFF !important; display:flex; align-items:center; gap:10px;">
                     <i data-lucide="database" style="width:20px; height:20px; color:#818cf8;"></i>
                     Custos de Infraestrutura
                 </h3>
-                <button @click="addCusto = !addCusto" style="background:transparent; border:1px solid rgba(255,255,255,0.1); color:#FFFFFF; font-size:13px; padding:10px 22px; border-radius:12px; cursor:pointer; display:flex; align-items:center; gap:8px;">
+                <button @click="addCusto = !addCusto" style="background:transparent !important; border:1px solid rgba(255,255,255,0.1); color:#FFFFFF !important; font-size:13px; padding:10px 22px; border-radius:12px; cursor:pointer; display:flex; align-items:center; gap:8px;">
                     <i data-lucide="plus" style="width:16px; height:16px;"></i>
                     Adicionar Custo
                 </button>
             </div>
 
             <!-- Formulário de novo custo -->
-            <div x-show="addCusto" x-cloak x-transition style="background:#1A1A1A; padding:28px; border-radius:20px; border:1px solid rgba(255,255,255,0.1); margin-bottom:28px;">
+            <div x-show="addCusto" x-cloak x-transition style="background:#1A1A1A !important; padding:28px; border-radius:20px; border:1px solid rgba(255,255,255,0.1); margin-bottom:28px;">
                 <form method="POST" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:24px; align-items:end;">
                     <input type="hidden" name="acao" value="add_custo">
                     <div>
-                        <label style="font-size:11px; font-weight:700; color:#9CA3AF; text-transform:uppercase; margin-bottom:8px; display:block;">Descrição</label>
-                        <input class="input" name="descricao" required placeholder="Ex: Supabase Cloud" style="background:#141414; border-color:rgba(255,255,255,0.1); color:#FFFFFF;">
+                        <label style="font-size:11px; font-weight:700; color:#9CA3AF !important; text-transform:uppercase; margin-bottom:8px; display:block;">Descrição</label>
+                        <input class="input" name="descricao" required placeholder="Ex: Supabase Cloud" style="background:#141414 !important; border-color:rgba(255,255,255,0.1); color:#FFFFFF !important;">
                     </div>
                     <div>
                         <label style="font-size:11px; font-weight:700; color:#9CA3AF; text-transform:uppercase; margin-bottom:8px; display:block;">Valor ($)</label>
@@ -506,9 +506,9 @@ include __DIR__ . '/../includes/layout/head.php';
         </div>
 
         <!-- ── Bloco 5: Gestão de Preços ────────────────────────────────── -->
-        <div style="padding:28px; background:#141414; border:1px solid rgba(255,255,255,0.05); border-radius:20px; border-left:4px solid #00C897; margin-bottom:28px;">
+        <div style="padding:28px; background:#141414 !important; border:1px solid rgba(255,255,255,0.06); border-radius:20px; border-left:4px solid #00C897; margin-bottom:28px;">
             <div style="margin-bottom:32px;">
-                <h3 style="font-size:16px; font-weight:700; color:#FFFFFF; display:flex; align-items:center; gap:10px;">
+                <h3 style="font-size:16px; font-weight:700; color:#FFFFFF !important; display:flex; align-items:center; gap:10px;">
                     <i data-lucide="sliders" style="width:20px; height:20px; color:#00C897;"></i>
                     Precificação Global
                 </h3>
@@ -523,21 +523,21 @@ include __DIR__ . '/../includes/layout/head.php';
                         ['custo_usd_brl',     'Câmbio USD',   $cambioUSD,   'R$'],
                     ] as [$name, $label, $val, $prefix]): ?>
                     <div>
-                        <label style="font-size:11px; font-weight:700; color:#9CA3AF; text-transform:uppercase; margin-bottom:8px; display:block;"><?= $label ?></label>
+                        <label style="font-size:11px; font-weight:700; color:#9CA3AF !important; text-transform:uppercase; margin-bottom:8px; display:block;"><?= $label ?></label>
                         <div style="position:relative;">
                             <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:13px; font-weight:800; color:#4b5563;"><?= $prefix ?></span>
-                            <input class="input" type="number" step="0.01" name="<?= $name ?>" value="<?= $val ?>" required style="padding-left:36px; background:#1A1A1A; border-color:rgba(255,255,255,0.1); color:#FFFFFF; font-weight:700;">
+                            <input class="input" type="number" step="0.01" name="<?= $name ?>" value="<?= $val ?>" required style="padding-left:36px; background:#1A1A1A !important; border-color:rgba(255,255,255,0.1); color:#FFFFFF !important; font-weight:700;">
                         </div>
                     </div>
                     <?php endforeach; ?>
                 </div>
 
-                <div style="display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; padding:30px; background:#1A1A1A; border-radius:20px; border:1px solid rgba(255,255,255,0.05);">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; padding:30px; background:#1A1A1A !important; border-radius:20px; border:1px solid rgba(255,255,255,0.05);">
                     <div style="flex:1; display:flex; align-items:center; gap:16px;">
                         <input type="checkbox" name="aplicar_todos" style="width:20px; height:20px; accent-color:#00C897; cursor:pointer;">
-                        <span style="font-size:14px; color:#9CA3AF;">Atualizar todas as assinaturas ativas</span>
+                        <span style="font-size:14px; color:#9CA3AF !important;">Atualizar todas as assinaturas ativas</span>
                     </div>
-                    <button type="submit" style="padding:14px 36px; font-size:14px; background:#00C897; border:none; color:#FFFFFF; font-weight:800; border-radius:14px; cursor:pointer; box-shadow:0 8px 25px rgba(0, 200, 151, 0.2);">
+                    <button type="submit" style="padding:14px 36px; font-size:14px; background:#00C897 !important; border:none; color:#FFFFFF !important; font-weight:800; border-radius:14px; cursor:pointer; box-shadow:0 8px 25px rgba(0, 200, 151, 0.2);">
                         Salvar Configurações
                     </button>
                 </div>
