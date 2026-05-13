@@ -23,10 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($user && password_verify($senha, $user['senha'])) {
             logarUsuario($user);
-            
-            // Redirecionamento inteligente baseado na origem
-            $target = ($user['sistema_origem'] === 'roteiros') ? 'roteiros/index.php' : 'dashboard.php';
-            header('Location: ' . raizUrl('/' . $target));
+            header('Location: dashboard.php');
             exit;
         }
     }
@@ -39,74 +36,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — <?= APP_NAME ?></title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
     <link href="<?= raizUrl('/assets/css/tailwind.css') ?>" rel="stylesheet">
     <style>
-        body { 
-            background-color: #050505; 
-            font-family: 'Outfit', sans-serif; 
-            color: #f1f5f9;
-        }
-        .login-card {
-            background: #0a0a0a;
-            border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-        }
-        .input { 
-            background: rgba(255,255,255,0.03); 
-            border: 1px solid rgba(255,255,255,0.08); 
-            color: #f1f5f9; 
-            border-radius: 12px; 
-            padding: 12px 16px; 
-            font-size: 15px; 
-            width: 100%; 
-            outline: none; 
-            transition: all 0.2s; 
-        }
-        .input:focus { 
-            border-color: rgba(255,255,255,0.2); 
-            background: rgba(255,255,255,0.05);
-            box-shadow: 0 0 0 4px rgba(255,255,255,0.03); 
-        }
-        .input::placeholder { color: #4b5563; }
-        
-        .btn-primary {
-            background: #f1f5f9;
-            color: #050505;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 700;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            background: #ffffff;
-            box-shadow: 0 10px 20px -5px rgba(255,255,255,0.1);
-        }
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-        
-        .logo-container {
-            width: 64px;
-            height: 64px;
-            background: #111;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
+        body { background-color: #0c0c18; font-family: system-ui, sans-serif; }
+        .input { background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#f1f5f9; border-radius:8px; padding:11px 16px; font-size:15px; width:100%; outline:none; transition:border-color 0.15s; }
+        .input:focus { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.15); }
+        .input::placeholder { color:#4b5563; }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-6">
@@ -114,45 +49,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div style="width:100%; max-width:400px;">
 
     <!-- Logo -->
-    <div style="text-align:center; margin-bottom:40px;">
-        <div class="logo-container">
-            <img src="<?= raizUrl('/favicon.svg') ?>" alt="Logo Distinto" style="width:36px; height:36px; filter: invert(1);">
+    <div style="text-align:center; margin-bottom:36px;">
+        <div style="width:52px; height:52px; background:linear-gradient(135deg,#7c3aed,#3b82f6); border-radius:14px; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
         </div>
-        <h1 style="font-size:28px; font-weight:800; color:#fff; letter-spacing:-0.05em; margin-bottom: 4px;">Distinto</h1>
-        <p style="font-size:14px; color:#6b7280; font-weight: 500;">Gestão Financeira para Agências</p>
+        <h1 style="font-size:24px; font-weight:700; color:#f1f5f9; letter-spacing:-0.5px;">Distinto</h1>
+        <p style="font-size:14px; color:#6b7280; margin-top:4px;">Gestão Financeira para Agências</p>
     </div>
 
     <!-- Card de login -->
-    <div class="login-card" style="border-radius:24px; padding:40px;">
-        <h2 style="font-size:20px; font-weight:700; color:#fff; margin-bottom:28px; letter-spacing: -0.02em;">Acessar sistema</h2>
+    <div style="background:#1a1a2e; border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:32px;">
+        <h2 style="font-size:18px; font-weight:600; color:#e2e8f0; margin-bottom:24px;">Acessar sistema</h2>
 
         <?php if ($erro): ?>
-        <div style="background:rgba(239,68,68,0.05); border:1px solid rgba(239,68,68,0.2); border-radius:12px; padding:12px 16px; margin-bottom:24px; font-size:14px; color:#f87171; font-weight: 500;">
+        <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:8px; padding:12px 16px; margin-bottom:20px; font-size:14px; color:#f87171;">
             <?= sanitizar($erro) ?>
         </div>
         <?php endif; ?>
 
         <form method="POST" action="">
-            <div style="margin-bottom:20px;">
-                <label style="font-size:12px; font-weight:700; color:#4b5563; display:block; margin-bottom:8px; text-transform: uppercase; letter-spacing: 0.05em;">E-mail</label>
+            <div style="margin-bottom:16px;">
+                <label style="font-size:12px; font-weight:500; color:#94a3b8; display:block; margin-bottom:6px;">E-mail</label>
                 <input class="input" type="email" name="email" placeholder="seu@email.com.br" required autocomplete="email" value="<?= sanitizar($_POST['email'] ?? '') ?>">
             </div>
-            <div style="margin-bottom:32px;">
-                <label style="font-size:12px; font-weight:700; color:#4b5563; display:block; margin-bottom:8px; text-transform: uppercase; letter-spacing: 0.05em;">Senha</label>
+            <div style="margin-bottom:24px;">
+                <label style="font-size:12px; font-weight:500; color:#94a3b8; display:block; margin-bottom:6px;">Senha</label>
                 <input class="input" type="password" name="senha" placeholder="••••••••" required autocomplete="current-password">
             </div>
-            <button type="submit" class="btn-primary" style="width:100%;">
-                Entrar no Sistema
+            <button type="submit" style="width:100%; background:linear-gradient(135deg,#7c3aed,#6d28d9); color:white; padding:12px; border-radius:10px; font-size:15px; font-weight:600; border:none; cursor:pointer; transition:opacity 0.15s;">
+                Entrar
             </button>
         </form>
     </div>
 
-    <div style="text-align:center; margin-top:32px; display:flex; flex-direction:column; gap:16px;">
-        <a href="<?= raizUrl('/registro.php') ?>" style="display:block; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:#fff; padding:14px; border-radius:14px; font-size:14px; font-weight:600; text-decoration:none; transition:all 0.2s;">
-            ✨ Criar conta grátis — Teste por 30 dias
+    <div style="text-align:center; margin-top:20px; display:flex; flex-direction:column; gap:10px;">
+        <a href="<?= raizUrl('/registro.php') ?>" style="display:block; background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.3); color:#818cf8; padding:12px; border-radius:10px; font-size:14px; font-weight:600; text-decoration:none; transition:all 0.15s;">
+            ✨ Criar conta grátis — 35 dias sem cartão
         </a>
-        <p style="font-size:13px; color:#4b5563; font-weight: 500;">
-            Ou acesse <a href="<?= raizUrl('/landing.php') ?>" style="color:#9ca3af; text-decoration:none; border-bottom: 1px solid #374151;">a página de apresentação</a>
+        <p style="font-size:12px; color:#4b5563;">
+            Ou acesse <a href="<?= raizUrl('/landing.php') ?>" style="color:#6b7280; text-decoration:underline;">a página de apresentação</a>
         </p>
     </div>
 </div>
