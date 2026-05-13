@@ -2,13 +2,7 @@ Options -Indexes
 Options -MultiViews
 RewriteEngine On
 
-RewriteBase /sistema/
-
-# Raiz /sistema/ -> ERP (rewrite interno, URL fica como /sistema/)
-# THE_REQUEST garante que nao dispara para rewrite interno da raiz /
-RewriteCond %{THE_REQUEST} \s/sistema/?\s [NC]
-RewriteCond %{REQUEST_URI} !^/sistema/sistema
-RewriteRule ^$ /sistema/sistema/ [L]
+RewriteBase /
 
 # Se o arquivo ou pasta existe fisicamente, serve direto
 RewriteCond %{REQUEST_FILENAME} -f [OR]

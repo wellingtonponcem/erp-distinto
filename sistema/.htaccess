@@ -1,4 +1,4 @@
-RewriteBase /sistema/sistema/
+RewriteBase /sistema/
 Options -Indexes
 ServerSignature Off
 
