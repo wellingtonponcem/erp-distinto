@@ -103,32 +103,16 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
         .mock-wrap {
             position: relative;
         }
-        .mock-glow {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 140%;
-            height: 140%;
-            background: radial-gradient(ellipse at center,
-                rgba(232, 255, 71, 0.22) 0%,
-                rgba(232, 255, 71, 0.10) 30%,
-                rgba(232, 255, 71, 0.03) 55%,
-                transparent 72%
-            );
-            pointer-events: none;
-            z-index: 0;
-        }
-        .mock-wrap .mock-browser {
-            position: relative;
-            z-index: 1;
-        }
         .mock-browser {
             background: #0d0d0d;
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 18px;
             overflow: hidden;
-            box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+            box-shadow:
+                0 32px 80px rgba(0,0,0,0.6),
+                0 0 0 1px rgba(255,255,255,0.04),
+                0 0 80px 20px rgba(232,255,71,0.14),
+                0 0 160px 60px rgba(232,255,71,0.07);
         }
         .mock-topbar {
             background: #1c1c1c;
@@ -353,7 +337,6 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
 
             <!-- Mock animado -->
             <div class="mock-wrap">
-                <div class="mock-glow"></div>
                 <div class="mock-browser">
                     <div class="mock-topbar">
                         <span class="mock-dot r"></span>
