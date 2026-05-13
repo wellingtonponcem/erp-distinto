@@ -20,12 +20,7 @@ function menuAtivo(string $path): string {
     return str_contains($paginaAtual, $path) ? 'ativo' : '';
 }
 
-// Se estiver na área de roteiros OU o usuário não for do sistema Distinto, exibe o menu simplificado
-$isAreaRoteiros = str_contains($_SERVER['SCRIPT_NAME'], '/roteiros/');
-if ($usuario['sistema_origem'] !== 'distinto' || $isAreaRoteiros) {
-    include __DIR__ . '/sidebar-roteiros.php';
-    return;
-}
+// Removida lógica de redirecionamento para sidebar-roteiros para manter unidade visual no Distinto
 ?>
 <aside x-data="{ collapsed: true }" :class="{ 'collapsed': collapsed }" class="sidebar flex flex-col transition-all duration-300 relative group">
     <div style="padding:24px 20px 18px;">
@@ -96,10 +91,6 @@ if ($usuario['sistema_origem'] !== 'distinto' || $isAreaRoteiros) {
         <a href="<?= raizUrl('/gerenciamento/depoimentos.php') ?>" class="nav-link <?= menuAtivo('/gerenciamento/depoimentos') ?>">
             <i data-lucide="message-square-quote" style="width:20px;height:20px; flex-shrink:0;"></i>
             <span class="nav-label hide-on-collapse transition-opacity">Depoimentos</span>
-        </a>
-        <a href="<?= raizUrl('/roteiros/index.php') ?>" class="nav-link <?= menuAtivo('/roteiros') ?>">
-            <i data-lucide="video" style="width:20px;height:20px; flex-shrink:0;"></i>
-            <span class="nav-label hide-on-collapse transition-opacity">Roteiros</span>
         </a>
 
         <div class="nav-section hide-on-collapse">Configurações</div>
