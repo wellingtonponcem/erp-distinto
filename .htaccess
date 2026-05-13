@@ -4,13 +4,14 @@ RewriteEngine On
 
 RewriteBase /
 
+# Rotas do ERP — deve vir antes das demais regras
+RewriteCond %{REQUEST_URI} ^/sistema(/|$)
+RewriteRule ^ - [L]
+
 # Se o arquivo ou pasta existe fisicamente, serve direto
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
-
-# Garante que /sistema/sistema nao seja afetado
-RewriteRule ^sistema(/.*)?$ - [L]
 
 # Rotas limpas do site
 RewriteRule ^projetos/?$       projetos/index.php [L,QSA]

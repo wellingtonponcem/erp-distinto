@@ -14,8 +14,9 @@ if (!defined('BASE_PATH')) {
         $base = str_replace($doc_root, '', $app_root);
     }
     
-    // Se o caminho base detectado for igual ao nome da pasta do sistema, mas estamos na raiz, forçamos vazio
-    if ($base === '/sistema' && !str_contains($_SERVER['SCRIPT_NAME'], '/sistema/')) {
+    // Se a URL requisitada não começa com /sistema, não há subfolder ativo no Hostinger
+    $request_uri = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
+    if ($base !== '' && strpos($request_uri, $base . '/') !== 0 && $request_uri !== $base) {
         $base = '';
     }
     

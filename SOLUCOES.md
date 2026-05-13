@@ -51,3 +51,24 @@ git push origin main
 
 (Nota: Se o terminal pedir sua senha do GitHub, você precisará gerar um "Personal Access Token" nas configurações de desenvolvedor da sua conta do GitHub e colar no lugar da senha, pois o GitHub não aceita mais senhas normais no terminal).
 Personal Access Token: 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
+
+---
+
+## [2026-05-13] - Correção de Logo e Roteamento /sistema
+
+- **Problema 1:** Logo do site institucional apontava para `wedistinto.com/sistema/` em vez de `wedistinto.com/`.
+- **Problema 2:** `wedistinto.com/sistema` abria o mesmo conteúdo da raiz em vez do ERP.
+
+### Causa Raiz:
+- Em `includes/db.php`, o BASE_PATH era calculado usando `$_SERVER['SCRIPT_NAME']`, que no Hostinger retorna `/sistema/index.php` mesmo quando o usuário acessa a raiz do domínio (inconsistência do DOCUMENT_ROOT). A condição de correção usava `SCRIPT_NAME` e nunca disparava.
+- No `.htaccess`, a regra de proteção do `/sistema` estava posicionada depois da regra de arquivos físicos, sem verificar `REQUEST_URI` explicitamente.
+
+### Correções:
+1. **`includes/db.php`:** Substituída a checagem de `SCRIPT_NAME` por `REQUEST_URI`. Agora verifica se a URL realmente solicitada começa com o base detectado — se não começar, o base é zerado. Isso é confiável independente do comportamento do Hostinger com DOCUMENT_ROOT.
+2. **`.htaccess`:** Adicionada regra explícita no topo que detecta `REQUEST_URI ^/sistema(/|$)` e encerra o processamento imediatamente, garantindo que o Apache sirva o diretório do ERP sem interferência das rotas limpas do site institucional.
+
+### Estrutura esperada no servidor:
+- `public_html/sistema/` → raiz do git repo → site institucional
+- `public_html/sistema/sistema/` → pasta `sistema/` do repo → ERP (login em `index.php`)
+- `wedistinto.com` → abre `public_html/sistema/index.php` (site institucional)
+- `wedistinto.com/sistema` → abre `public_html/sistema/sistema/index.php` (ERP login)
