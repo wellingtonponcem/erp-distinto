@@ -1,29 +1,38 @@
 Options -Indexes
-ServerSignature Off
+RewriteEngine On
 
-# Proteger arquivos de configuração
-<FilesMatch "^(env|database|auth)\.php$">
-    Order allow,deny
-    Deny from all
+# ── Ajuste RewriteBase conforme onde o app está hospedado ──
+# Em subfolder /distinto-php/:
+RewriteBase /distinto-php/
+# Na raiz do domínio, troque para:
+# RewriteBase /
+
+# Força HTTPS (descomente em produção com SSL)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Arquivos e pastas reais são servidos diretamente
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Rotas limpas
+RewriteRule ^projetos/?$       projetos/index.php [L,QSA]
+RewriteRule ^sobre/?$          sobre/index.php    [L,QSA]
+RewriteRule ^contato/?$        contato/index.php  [L,QSA]
+RewriteRule ^admin/?$          admin/index.php    [L,QSA]
+RewriteRule ^setup/?$          setup/install.php  [L,QSA]
+
+# Segurança: bloqueia acesso direto a includes/
+RewriteRule ^includes/         -                  [F,L]
+
+# PHP configs
+php_value upload_max_filesize 64M
+php_value post_max_size 64M
+php_value memory_limit 256M
+php_value max_execution_time 60
+
+# Cache para assets estáticos
+<FilesMatch "\.(jpg|jpeg|png|gif|svg|webp|ico|woff|woff2|ttf)$">
+    Header set Cache-Control "public, max-age=2592000"
 </FilesMatch>
-
-# Proteger pasta config
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-
-    # Bloquear acesso direto a config/
-    RewriteRule ^config/ - [F,L]
-
-    # Rota para propostas: /p/slug-da-proposta
-    RewriteRule ^p/([a-zA-Z0-9_-]+)/?$ p.php?slug=$1 [QSA,L]
-
-    # PHP charset
-    AddDefaultCharset UTF-8
-</IfModule>
-
-# Headers de segurança
-<IfModule mod_headers.c>
-    Header always set X-Content-Type-Options nosniff
-    Header always set X-Frame-Options SAMEORIGIN
-    Header always set X-XSS-Protection "1; mode=block"
-</IfModule>

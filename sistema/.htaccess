@@ -1,0 +1,29 @@
+Options -Indexes
+ServerSignature Off
+
+# Proteger arquivos de configuração
+<FilesMatch "^(env|database|auth)\.php$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Proteger pasta config
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Bloquear acesso direto a config/
+    RewriteRule ^config/ - [F,L]
+
+    # Rota para propostas: /p/slug-da-proposta
+    RewriteRule ^p/([a-zA-Z0-9_-]+)/?$ p.php?slug=$1 [QSA,L]
+
+    # PHP charset
+    AddDefaultCharset UTF-8
+</IfModule>
+
+# Headers de segurança
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options SAMEORIGIN
+    Header always set X-XSS-Protection "1; mode=block"
+</IfModule>
