@@ -174,7 +174,7 @@ include __DIR__ . '/../includes/layout/head.php';
 <div id="app-wrapper" style="display:flex; min-height:100vh;">
     <?php include __DIR__ . '/../includes/layout/sidebar.php'; ?>
 
-    <main id="main-content" style="flex:1; padding:28px 32px; overflow-y:auto;" 
+    <main id="main-content" style="flex:1; padding:28px 32px; overflow-y:auto; background:#0A0A0A;" 
           x-data="{ 
             addCusto: false, 
             showSimulador: false,
@@ -196,46 +196,45 @@ include __DIR__ . '/../includes/layout/head.php';
 
         <div style="margin-bottom:28px; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
             <div>
-                <h1 style="font-size:22px; font-weight:700; color:#f1f5f9;">Financeiro SaaS</h1>
-                <p style="font-size:14px; color:#6b7280; margin-top:2px;">Inteligência de negócio, P&L e gestão de infraestrutura</p>
+                <h1 style="font-size:22px; font-weight:700; color:#FFFFFF;">Financeiro SaaS</h1>
+                <p style="font-size:14px; color:#9CA3AF; margin-top:2px;">Inteligência de negócio, P&L e gestão de infraestrutura</p>
             </div>
             <div style="display:flex; gap:10px;">
-                <button @click="showSimulador = !showSimulador" class="btn-secondary" style="background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.1); color:#f1f5f9; font-weight:700;">
+                <button @click="showSimulador = !showSimulador" class="btn-secondary" style="background:#141414; border:1px solid rgba(255,255,255,0.1); color:#FFFFFF; font-weight:700;">
                     <i data-lucide="calculator" style="width:16px; height:16px; margin-right:6px;"></i>
                     Simular Cenários
                 </button>
-                <div style="font-size:12px; color:#6b7280; align-self:center;"><?= date('F Y') ?></div>
+                <div style="font-size:12px; color:#9CA3AF; align-self:center;"><?= date('F Y') ?></div>
             </div>
         </div>
 
-        <!-- ── Simulador de Cenários (BI) ── -->
-        <div x-show="showSimulador" x-cloak x-transition style="margin-bottom:28px; background:rgba(129,140,248,0.05); border:1px solid rgba(129,140,248,0.2); border-radius:20px; padding:24px;">
+        <div x-show="showSimulador" x-cloak x-transition style="margin-bottom:28px; background:#141414; border:1px solid rgba(129,140,248,0.3); border-radius:20px; padding:24px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                 <h3 style="font-size:14px; font-weight:800; color:#818cf8; text-transform:uppercase; letter-spacing:0.05em; display:flex; align-items:center; gap:8px;">
                     <i data-lucide="wand-2" style="width:16px; height:16px;"></i>
                     Simulador de Impacto (Modo Inteligência)
                 </h3>
-                <button @click="showSimulador = false" style="background:none; border:none; color:#6b7280; cursor:pointer;"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
+                <button @click="showSimulador = false" style="background:none; border:none; color:#9CA3AF; cursor:pointer;"><i data-lucide="x" style="width:16px; height:16px;"></i></button>
             </div>
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:20px;">
                 <div>
-                    <label class="label-premium">Câmbio Simulado</label>
+                    <label class="label-premium" style="color:#9CA3AF;">Câmbio Simulado</label>
                     <input type="range" min="4" max="7" step="0.05" x-model="simCambio" style="width:100%; accent-color:#818cf8;">
-                    <div style="display:flex; justify-content:space-between; font-size:12px; color:#f1f5f9; font-weight:700; margin-top:8px;">
+                    <div style="display:flex; justify-content:space-between; font-size:12px; color:#FFFFFF; font-weight:700; margin-top:8px;">
                         <span>R$ 4.00</span>
                         <span style="color:#818cf8;">R$ <span x-text="parseFloat(simCambio).toFixed(2)"></span></span>
                         <span>R$ 7.00</span>
                     </div>
                 </div>
                 <div>
-                    <label class="label-premium">Custo IA (Tokens/1k)</label>
+                    <label class="label-premium" style="color:#9CA3AF;">Custo IA (Tokens/1k)</label>
                     <div style="display:flex; gap:10px;">
-                        <input class="input" type="number" step="0.0001" x-model="simGroq" style="background:rgba(0,0,0,0.2); font-size:11px;" title="Groq">
-                        <input class="input" type="number" step="0.0001" x-model="simGemini" style="background:rgba(0,0,0,0.2); font-size:11px;" title="Gemini">
+                        <input class="input" type="number" step="0.0001" x-model="simGroq" style="background:#1A1A1A; color:#FFFFFF; border-color:rgba(255,255,255,0.1); font-size:11px;" title="Groq">
+                        <input class="input" type="number" step="0.0001" x-model="simGemini" style="background:#1A1A1A; color:#FFFFFF; border-color:rgba(255,255,255,0.1); font-size:11px;" title="Gemini">
                     </div>
                 </div>
-                <div style="padding:12px; background:rgba(0,0,0,0.2); border-radius:12px; border:1px solid rgba(255,255,255,0.05); display:flex; flex-direction:column; justify-content:center;">
-                    <div style="font-size:10px; font-weight:800; color:#6b7280; text-transform:uppercase; margin-bottom:4px;">Resultado Estimado</div>
+                <div style="padding:12px; background:#1A1A1A; border-radius:12px; border:1px solid rgba(255,255,255,0.05); display:flex; flex-direction:column; justify-content:center;">
+                    <div style="font-size:10px; font-weight:800; color:#9CA3AF; text-transform:uppercase; margin-bottom:4px;">Resultado Estimado</div>
                     <div style="font-size:18px; font-weight:900;" :class="simResultado >= 0 ? 'text-emerald-400' : 'text-red-400'">
                         R$ <span x-text="parseFloat(simResultado).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></span>
                     </div>
@@ -249,69 +248,65 @@ include __DIR__ . '/../includes/layout/head.php';
         </div>
         <?php endif; ?>
 
-        <!-- ── Bloco 1: Usuários (Top Cards) ──────────────────────────────────────────── -->
         <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:20px; margin-bottom:28px;">
             <?php foreach ([
                 ['Total de usuários',   $totalUsers,   '#94a3b8', 'users'],
                 ['Em trial',            $totalTrial,   '#818cf8', 'clock'],
-                ['Assinantes ativos',   $totalAtivos,  '#34d399', 'check-circle'],
+                ['Assinantes ativos',   $totalAtivos,  '#00C897', 'check-circle'],
                 ['Expirados/Cancelados',$totalExpirado,'#f87171', 'x-circle'],
             ] as [$label, $val, $cor, $icon]): ?>
-            <div class="card" style="padding:24px; position:relative; overflow:hidden; background:rgba(255,255,255,0.02); border-color:rgba(255,255,255,0.05);">
+            <div style="padding:24px; position:relative; overflow:hidden; background:#141414; border:1px solid rgba(255,255,255,0.05); border-radius:16px;">
                 <div style="position:absolute; top:16px; right:16px; color:<?= $cor ?>; opacity:0.3;">
                     <i data-lucide="<?= $icon ?>" style="width:22px; height:22px;"></i>
                 </div>
-                <div style="font-size:36px; font-weight:800; color:#f1f5f9; line-height:1;"><?= $val ?></div>
-                <div style="font-size:12px; font-weight:700; color:#6b7280; margin-top:10px; text-transform:uppercase; letter-spacing:0.04em;"><?= $label ?></div>
+                <div style="font-size:36px; font-weight:800; color:#FFFFFF; line-height:1;"><?= $val ?></div>
+                <div style="font-size:12px; font-weight:700; color:#9CA3AF; margin-top:10px; text-transform:uppercase; letter-spacing:0.04em;"><?= $label ?></div>
             </div>
             <?php endforeach; ?>
         </div>
 
-        <!-- ── Bloco 2: P&L (Profit and Loss) ──────────────────────────────────────── -->
-        <div class="card" style="padding:28px; margin-bottom:28px; position:relative; background:rgba(10,10,10,0.4); border-color:rgba(255,255,255,0.05);">
+        <div style="padding:28px; margin-bottom:28px; position:relative; background:#141414; border:1px solid rgba(255,255,255,0.05); border-radius:20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-                <h3 style="font-size:16px; font-weight:700; color:#e2e8f0; display:flex; align-items:center; gap:8px;">
-                    <i data-lucide="bar-chart-3" style="width:18px; height:18px; color:#94a3b8;"></i>
+                <h3 style="font-size:16px; font-weight:700; color:#FFFFFF; display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="bar-chart-3" style="width:18px; height:18px; color:#9CA3AF;"></i>
                     P&L — <?= date('M/Y') ?>
                 </h3>
-                <button class="btn-secondary" style="background:transparent; border:1px solid rgba(255,255,255,0.1); color:#94a3b8; font-size:11px; padding:6px 14px; border-radius:99px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.3)'; this.style.color='#f1f5f9'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.color='#94a3b8'">
+                <button class="btn-secondary" style="background:transparent; border:1px solid rgba(255,255,255,0.1); color:#9CA3AF; font-size:11px; padding:6px 14px; border-radius:99px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; transition:all 0.2s; cursor:pointer;" onmouseover="this.style.borderColor='rgba(255,255,255,0.3)'; this.style.color='#FFFFFF'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.color='#9CA3AF'">
                     Relatório Mensal
                 </button>
             </div>
 
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:24px; margin-bottom:32px;">
                 <div>
-                    <div style="font-size:11px; font-weight:700; color:#6b7280; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">Receita Mensal</div>
-                    <div style="font-size:26px; font-weight:800; color:#34d399;">R$ <?= number_format($receitaTotalMes, 2, ',', '.') ?></div>
+                    <div style="font-size:11px; font-weight:700; color:#9CA3AF; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">Receita Mensal</div>
+                    <div style="font-size:26px; font-weight:800; color:#00C897;">R$ <?= number_format($receitaTotalMes, 2, ',', '.') ?></div>
                     <div style="font-size:11px; margin-top:8px; display:flex; flex-direction:column; gap:4px;">
-                        <span style="color:#6b7280;">Mensal: <span style="color:#f1f5f9; font-weight:600;">R$<?= number_format($receitaMensal,2,',','.') ?></span></span>
-                        <span style="color:#6b7280;">Anual pró-rata: <span style="color:#f1f5f9; font-weight:600;">R$<?= number_format($receitaAnualProrateada,2,',','.') ?></span></span>
+                        <span style="color:#9CA3AF;">Mensal: <span style="color:#FFFFFF; font-weight:600;">R$<?= number_format($receitaMensal,2,',','.') ?></span></span>
+                        <span style="color:#9CA3AF;">Anual pró-rata: <span style="color:#FFFFFF; font-weight:600;">R$<?= number_format($receitaAnualProrateada,2,',','.') ?></span></span>
                     </div>
                 </div>
                 <div>
-                    <div style="font-size:11px; font-weight:700; color:#6b7280; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">Custos de Infra</div>
+                    <div style="font-size:11px; font-weight:700; color:#9CA3AF; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">Custos de Infra</div>
                     <div style="font-size:26px; font-weight:800; color:#f87171;">R$ <?= number_format($totalCustoInfraMes, 2, ',', '.') ?></div>
-                    <div style="font-size:11px; color:#6b7280; margin-top:8px; font-style:italic;">Normalizado p/ mês</div>
+                    <div style="font-size:11px; color:#9CA3AF; margin-top:8px; font-style:italic;">Normalizado p/ mês</div>
                 </div>
                 <div>
-                    <div style="font-size:11px; font-weight:700; color:#6b7280; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">Custos de IA</div>
+                    <div style="font-size:11px; font-weight:700; color:#9CA3AF; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">Custos de IA</div>
                     <div style="font-size:26px; font-weight:800; color:#fbbf24;">R$ <?= number_format($totalCustoIAbrl, 2, ',', '.') ?></div>
                     <div style="font-size:11px; margin-top:8px;">
-                        <span style="color:#6b7280;">USD <?= number_format($totalCustoIAusd, 4, ',', '.') ?></span>
+                        <span style="color:#9CA3AF;">USD <?= number_format($totalCustoIAusd, 4, ',', '.') ?></span>
                         <span style="color:#4b5563; margin: 0 4px;">×</span>
-                        <span style="color:#f1f5f9; font-weight:600;">R$<?= number_format($cambioUSD,2,',','.') ?></span>
+                        <span style="color:#FFFFFF; font-weight:600;">R$<?= number_format($cambioUSD,2,',','.') ?></span>
                     </div>
                 </div>
-                <div style="padding-left:24px; border-left:1px solid rgba(255,255,255,0.05); position:relative;">
-                    <div style="font-size:11px; font-weight:700; color:#6b7280; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">Resultado Líquido</div>
-                    <div style="font-size:32px; font-weight:900; color:#ffffff; line-height:1;">
+                <div style="padding-left:24px; border:1px solid #00C897; border-radius:12px; background:rgba(0,200,151,0.02); padding:16px 20px; position:relative;">
+                    <div style="font-size:11px; font-weight:700; color:#9CA3AF; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">Resultado Líquido</div>
+                    <div style="font-size:32px; font-weight:900; color:#FFFFFF; line-height:1;">
                         R$ <?= number_format($resultado, 2, ',', '.') ?>
                     </div>
-                    <div style="font-size:11px; color:#6b7280; margin-top:10px;">
-                        Custo mín/sub: <span style="color:#f1f5f9; font-weight:600;">R$<?= number_format($custoMinSub,2,',','.') ?></span>
+                    <div style="font-size:11px; color:#9CA3AF; margin-top:10px;">
+                        Break-even unitário: <span style="color:#FFFFFF; font-weight:600;">R$<?= number_format($custoMinSub,2,',','.') ?></span>
                     </div>
-                    <!-- Indicador Lateral Premium -->
-                    <div style="position:absolute; left:0; top:0; bottom:0; width:4px; background:<?= $resultado >= 0 ? '#34d399' : '#f87171' ?>; opacity:0.8; border-radius:4px; box-shadow: 0 0 15px <?= $resultado >= 0 ? 'rgba(52,211,153,0.3)' : 'rgba(248,113,113,0.3)' ?>;"></div>
                 </div>
             </div>
 
@@ -360,51 +355,51 @@ include __DIR__ . '/../includes/layout/head.php';
 
         <!-- ── Bloco 3: Custos de IA & Top Usuários ─────────────────────────────────────── -->
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:28px;">
-            <div class="card" style="padding:24px; background:rgba(255,255,255,0.01); border-color:rgba(255,255,255,0.05);">
-                <h3 style="font-size:15px; font-weight:700; color:#e2e8f0; margin-bottom:24px; display:flex; align-items:center; gap:10px;">
+            <div style="padding:24px; background:#141414; border:1px solid rgba(255,255,255,0.05); border-radius:20px;">
+                <h3 style="font-size:15px; font-weight:700; color:#FFFFFF; margin-bottom:24px; display:flex; align-items:center; gap:10px;">
                     <i data-lucide="cpu" style="width:18px; height:18px; color:#fbbf24;"></i>
-                    Consumo de IA — <?= date('M/Y') ?>
+                    Consumo de IA
                 </h3>
                 
                 <div style="display:flex; flex-direction:column; gap:4px;">
                     <?php foreach ([
                         ['groq',   'Groq',   '#818cf8', 'zap'],
-                        ['gemini', 'Gemini', '#34d399', 'brain-circuit'],
+                        ['gemini', 'Gemini', '#00C897', 'brain-circuit'],
                     ] as [$key, $label, $cor, $icon]): ?>
                     <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 16px; border-radius:12px; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
                         <div style="display:flex; align-items:center; gap:14px;">
-                            <div style="width:36px; height:36px; border-radius:10px; background:rgba(<?= $key=='groq'?'129,140,248':'52,211,153' ?>, 0.1); display:flex; align-items:center; justify-content:center; color:<?= $cor ?>;">
+                            <div style="width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,0.03); display:flex; align-items:center; justify-content:center; color:<?= $cor ?>;">
                                 <i data-lucide="<?= $icon ?>" style="width:18px; height:18px;"></i>
                             </div>
                             <div>
-                                <div style="font-size:14px; font-weight:700; color:#f1f5f9;"><?= $label ?></div>
-                                <div style="font-size:11px; color:#6b7280; font-weight:500;"><?= number_format($tokensPorProvider[$key]['tokens'] ?? 0, 0, ',', '.') ?> tokens</div>
+                                <div style="font-size:14px; font-weight:700; color:#FFFFFF;"><?= $label ?></div>
+                                <div style="font-size:11px; color:#9CA3AF; font-weight:500;"><?= number_format($tokensPorProvider[$key]['tokens'] ?? 0, 0, ',', '.') ?> tokens</div>
                             </div>
                         </div>
                         <div style="text-align:right;">
-                            <div style="font-size:14px; font-weight:800; color:<?= $cor ?>; letter-spacing:-0.01em;">USD <?= number_format($tokensPorProvider[$key]['custo_usd'] ?? 0, 4, ',', '.') ?></div>
+                            <div style="font-size:14px; font-weight:800; color:<?= $cor ?>;">USD <?= number_format($tokensPorProvider[$key]['custo_usd'] ?? 0, 4, ',', '.') ?></div>
                         </div>
                     </div>
                     <?php endforeach; ?>
                 </div>
 
                 <div style="margin-top:20px; padding:20px 16px 0; border-top:1px solid rgba(255,255,255,0.06); display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:13px; color:#6b7280; font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">Total Estimado</span>
-                    <span style="font-size:22px; color:#fbbf24; font-weight:900; letter-spacing:-0.02em;">R$ <?= number_format($totalCustoIAbrl, 2, ',', '.') ?></span>
+                    <span style="font-size:13px; color:#9CA3AF; font-weight:700; text-transform:uppercase;">Total Estimado</span>
+                    <span style="font-size:22px; color:#fbbf24; font-weight:900;">R$ <?= number_format($totalCustoIAbrl, 2, ',', '.') ?></span>
                 </div>
             </div>
 
             <!-- Top consumidores -->
-            <div class="card" style="padding:24px; background:rgba(255,255,255,0.01); border-color:rgba(255,255,255,0.05);">
-                <h3 style="font-size:15px; font-weight:700; color:#e2e8f0; margin-bottom:24px; display:flex; align-items:center; gap:10px;">
-                    <i data-lucide="crown" style="width:18px; height:18px; color:#34d399;"></i>
-                    Top Usuários (Simétrico)
+            <div style="padding:24px; background:#141414; border:1px solid rgba(255,255,255,0.05); border-radius:20px;">
+                <h3 style="font-size:15px; font-weight:700; color:#FFFFFF; margin-bottom:24px; display:flex; align-items:center; gap:10px;">
+                    <i data-lucide="crown" style="width:18px; height:18px; color:#00C897;"></i>
+                    Top Usuários
                 </h3>
 
                 <?php if (empty($topUsuarios)): ?>
                 <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:50px 0; color:#4b5563; border:1px dashed rgba(255,255,255,0.03); border-radius:16px;">
                     <i data-lucide="users-2" style="width:36px; height:36px; margin-bottom:12px; opacity:0.1;"></i>
-                    <div style="font-size:13px; font-style:italic; font-weight:500;">Nenhum registro de consumo.</div>
+                    <div style="font-size:13px; font-style:italic; font-weight:500;">Nenhum registro.</div>
                 </div>
                 <?php else: ?>
                 <div style="display:flex; flex-direction:column; gap:8px;">
@@ -415,17 +410,16 @@ include __DIR__ . '/../includes/layout/head.php';
                     ?>
                     <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-radius:12px; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
                         <div style="display:flex; align-items:center; gap:12px; flex:1; min-width:0;">
-                            <div style="width:38px; height:38px; border-radius:99px; background:linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)); border:1px solid rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#f1f5f9; flex-shrink:0;">
+                            <div style="width:38px; height:38px; border-radius:99px; background:#1A1A1A; border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#FFFFFF; flex-shrink:0;">
                                 <?= $iniciais ?>
                             </div>
                             <div style="overflow:hidden;">
-                                <div style="font-size:14px; font-weight:700; color:#f1f5f9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?= sanitizar($u['nome'] ?? $u['user_id']) ?></div>
-                                <div style="font-size:11px; color:#6b7280; font-weight:500;"><?= number_format($u['total_tokens'], 0, ',', '.') ?> tokens</div>
+                                <div style="font-size:14px; font-weight:700; color:#FFFFFF; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"><?= sanitizar($u['nome'] ?? $u['user_id']) ?></div>
+                                <div style="font-size:11px; color:#9CA3AF; font-weight:500;"><?= number_format($u['total_tokens'], 0, ',', '.') ?> tokens</div>
                             </div>
                         </div>
                         <div style="text-align:right; flex-shrink:0; padding-left:16px;">
-                            <div style="font-size:15px; font-weight:800; color:#fbbf24; letter-spacing:-0.01em;">R$ <?= number_format($custoBRL, 2, ',', '.') ?></div>
-                            <div style="font-size:10px; color:#4b5563; font-weight:600; text-transform:uppercase;">$<?= number_format($u['custo_usd'] ?? 0, 3, ',', '.') ?></div>
+                            <div style="font-size:15px; font-weight:800; color:#fbbf24;">R$ <?= number_format($custoBRL, 2, ',', '.') ?></div>
                         </div>
                     </div>
                     <?php endforeach; ?>
@@ -434,75 +428,56 @@ include __DIR__ . '/../includes/layout/head.php';
             </div>
         </div>
 
-        <!-- ── Bloco 4: Custos de Infraestrutura ─────────────────────────── -->
-        <div class="card" style="padding:28px; margin-bottom:28px; background:rgba(255,255,255,0.01); border-color:rgba(255,255,255,0.05);">
+        <div style="padding:28px; background:#141414; border:1px solid rgba(255,255,255,0.05); border-radius:20px; margin-bottom:28px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-                <h3 style="font-size:16px; font-weight:700; color:#e2e8f0; display:flex; align-items:center; gap:10px;">
+                <h3 style="font-size:16px; font-weight:700; color:#FFFFFF; display:flex; align-items:center; gap:10px;">
                     <i data-lucide="database" style="width:20px; height:20px; color:#818cf8;"></i>
                     Custos de Infraestrutura
                 </h3>
-                <button @click="addCusto = !addCusto" class="btn-primary" style="padding:10px 22px; font-size:13px; border-radius:12px; display:flex; align-items:center; gap:8px; background:#1e293b; border-color:rgba(255,255,255,0.1); color:#f1f5f9;">
+                <button @click="addCusto = !addCusto" style="background:transparent; border:1px solid rgba(255,255,255,0.1); color:#FFFFFF; font-size:13px; padding:10px 22px; border-radius:12px; cursor:pointer; display:flex; align-items:center; gap:8px;">
                     <i data-lucide="plus" style="width:16px; height:16px;"></i>
                     Adicionar Custo
                 </button>
             </div>
 
             <!-- Formulário de novo custo -->
-            <div x-show="addCusto" x-cloak x-transition style="background:rgba(0,0,0,0.3); padding:28px; border-radius:20px; border:1px solid rgba(255,255,255,0.06); margin-bottom:28px; box-shadow:0 20px 40px rgba(0,0,0,0.4);">
+            <div x-show="addCusto" x-cloak x-transition style="background:#1A1A1A; padding:28px; border-radius:20px; border:1px solid rgba(255,255,255,0.1); margin-bottom:28px;">
                 <form method="POST" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:24px; align-items:end;">
                     <input type="hidden" name="acao" value="add_custo">
                     <div>
-                        <label class="label-premium">Descrição do Serviço</label>
-                        <input class="input" name="descricao" required placeholder="Ex: Supabase Cloud" style="background:rgba(0,0,0,0.3); border-color:rgba(255,255,255,0.1);">
+                        <label style="font-size:11px; font-weight:700; color:#9CA3AF; text-transform:uppercase; margin-bottom:8px; display:block;">Descrição</label>
+                        <input class="input" name="descricao" required placeholder="Ex: Supabase Cloud" style="background:#141414; border-color:rgba(255,255,255,0.1); color:#FFFFFF;">
                     </div>
                     <div>
-                        <label class="label-premium">Valor</label>
-                        <div style="position:relative;">
-                            <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:13px; font-weight:800; color:#4b5563;">$</span>
-                            <input class="input" type="number" step="0.01" name="valor" required placeholder="0.00" style="padding-left:32px; background:rgba(0,0,0,0.3); border-color:rgba(255,255,255,0.1);">
-                        </div>
+                        <label style="font-size:11px; font-weight:700; color:#9CA3AF; text-transform:uppercase; margin-bottom:8px; display:block;">Valor ($)</label>
+                        <input class="input" type="number" step="0.01" name="valor" required placeholder="0.00" style="background:#141414; border-color:rgba(255,255,255,0.1); color:#FFFFFF;">
                     </div>
                     <div>
-                        <label class="label-premium">Moeda</label>
-                        <select class="input" name="moeda" style="background:rgba(0,0,0,0.3); border-color:rgba(255,255,255,0.1);">
+                        <label style="font-size:11px; font-weight:700; color:#9CA3AF; text-transform:uppercase; margin-bottom:8px; display:block;">Moeda</label>
+                        <select class="input" name="moeda" style="background:#141414; border-color:rgba(255,255,255,0.1); color:#FFFFFF;">
                             <option value="BRL">BRL</option>
                             <option value="USD">USD</option>
-                            <option value="EUR">EUR</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="label-premium">Periodicidade</label>
-                        <select class="input" name="periodo" style="background:rgba(0,0,0,0.3); border-color:rgba(255,255,255,0.1);">
-                            <option value="mensal">Mensal</option>
-                            <option value="anual">Anual</option>
                         </select>
                     </div>
                     <div style="display:flex; gap:12px;">
-                        <button type="submit" class="btn-primary" style="flex:1; height:44px; background:#10b981; border:none; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);">Confirmar</button>
-                        <button type="button" @click="addCusto=false" class="btn-secondary" style="height:44px; width:44px; padding:0; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.03);"><i data-lucide="x" style="width:18px; height:18px;"></i></button>
+                        <button type="submit" style="flex:1; height:44px; background:#00C897; border:none; border-radius:10px; color:#FFFFFF; font-weight:800; cursor:pointer;">Confirmar</button>
                     </div>
                 </form>
             </div>
 
             <?php if (empty($custos)): ?>
-            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:70px 0; background:rgba(0,0,0,0.15); border:2px dashed rgba(255,255,255,0.03); border-radius:24px;">
-                <div style="width:72px; height:72px; border-radius:20px; background:rgba(255,255,255,0.01); display:flex; align-items:center; justify-content:center; margin-bottom:24px; color:#4b5563; border:1px solid rgba(255,255,255,0.03);">
-                    <i data-lucide="cloud-lightning" style="width:36px; height:36px;"></i>
-                </div>
-                <div style="font-size:16px; font-weight:700; color:#f1f5f9; margin-bottom:6px;">Gestão de Infra Zero</div>
-                <div style="font-size:13px; color:#6b7280; margin-bottom:24px; text-align:center; max-width:300px;">Cadastre seus serviços de hospedagem e APIs para obter o cálculo real da sua margem líquida.</div>
-                <button @click="addCusto = true" class="btn-primary" style="padding:12px 32px; border-radius:99px; background:#10b981; border:none; color:#ffffff; font-weight:800; box-shadow:0 8px 20px rgba(16, 185, 129, 0.2);">
-                    Começar a Gerir
-                </button>
+            <div style="text-align:center; padding:60px 0; background:rgba(0,0,0,0.2); border:1px dashed rgba(255,255,255,0.05); border-radius:24px;">
+                <div style="font-size:13px; color:#9CA3AF; margin-bottom:20px;">Nenhum custo cadastrado.</div>
+                <button @click="addCusto = true" style="padding:12px 32px; border-radius:99px; background:#00C897; border:none; color:#FFFFFF; font-weight:800; cursor:pointer;">Começar a Gerir</button>
             </div>
             <?php else: ?>
             <div style="overflow-x:auto;">
                 <table style="width:100%; font-size:13px; border-collapse:collapse;">
                     <thead>
-                        <tr style="color:#6b7280; font-size:11px; text-transform:uppercase; letter-spacing:0.1em; border-bottom:1px solid rgba(255,255,255,0.06);">
+                        <tr style="color:#9CA3AF; font-size:11px; text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,0.06);">
                             <th style="text-align:left; padding:20px 12px;">Serviço</th>
                             <th style="text-align:right; padding:20px 12px;">Valor Original</th>
-                            <th style="text-align:right; padding:20px 12px;">Ciclo de Fatura</th>
+                            <th style="text-align:right; padding:20px 12px;">Ciclo</th>
                             <th style="text-align:right; padding:20px 12px;">Custo Mensal (BRL)</th>
                             <th style="padding:20px 12px;"></th>
                         </tr>
@@ -510,103 +485,59 @@ include __DIR__ . '/../includes/layout/head.php';
                     <tbody>
                     <?php foreach ($custos as $c): ?>
                     <?php $mesequiv = ($c['periodo'] === 'anual') ? ($c['valor'] / 12) : $c['valor']; ?>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.02); transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.015)'" onmouseout="this.style.background='transparent'">
-                        <td style="padding:18px 12px; color:#f1f5f9; font-weight:700;"><?= sanitizar($c['descricao']) ?></td>
-                        <td style="text-align:right; color:#cbd5e1; font-weight:500;"><?= $c['moeda'] ?> <?= number_format($c['valor'], 2, ',', '.') ?></td>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.02);">
+                        <td style="padding:18px 12px; color:#FFFFFF; font-weight:700;"><?= sanitizar($c['descricao']) ?></td>
+                        <td style="text-align:right; color:#FFFFFF;"><?= $c['moeda'] ?> <?= number_format($c['valor'], 2, ',', '.') ?></td>
+                        <td style="text-align:right; padding:18px 12px; color:#9CA3AF;"><?= $c['periodo'] ?></td>
+                        <td style="text-align:right; color:#FFFFFF; font-weight:800;">R$ <?= number_format($mesequiv, 2, ',', '.') ?></td>
                         <td style="text-align:right; padding:18px 12px;">
-                            <span style="padding:5px 12px; background:rgba(255,255,255,0.03); border-radius:8px; font-size:10px; font-weight:800; text-transform:uppercase; color:#94a3b8; border:1px solid rgba(255,255,255,0.06);">
-                                <?= $c['periodo'] ?>
-                            </span>
-                        </td>
-                        <td style="text-align:right; color:#f1f5f9; font-weight:800;">R$ <?= number_format($mesequiv, 2, ',', '.') ?></td>
-                        <td style="text-align:right; padding:18px 12px;">
-                            <form method="POST" style="display:inline;" onsubmit="return confirm('Remover este custo?')">
+                            <form method="POST" style="display:inline;">
                                 <input type="hidden" name="acao" value="del_custo">
                                 <input type="hidden" name="custo_id" value="<?= $c['id'] ?>">
-                                <button type="submit" style="width:36px; height:36px; border-radius:10px; border:none; background:rgba(248,113,113,0.08); color:#f87171; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s;">
-                                    <i data-lucide="trash-2" style="width:16px; height:16px;"></i>
-                                </button>
+                                <button type="submit" style="width:36px; height:36px; border-radius:10px; background:rgba(248,113,113,0.1); color:#f87171; border:none; cursor:pointer;"><i data-lucide="trash-2" style="width:16px; height:16px;"></i></button>
                             </form>
                         </td>
                     </tr>
                     <?php endforeach; ?>
                     </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="3" style="padding:32px 12px; font-size:12px; color:#4b5563; font-weight:800; text-transform:uppercase; letter-spacing:0.05em;">Custo de Infra Total</td>
-                            <td style="text-align:right; padding:32px 12px; color:#f87171; font-size:20px; font-weight:900; letter-spacing:-0.02em;">R$ <?= number_format($totalCustoInfraMes, 2, ',', '.') ?></td>
-                            <td></td>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
             <?php endif; ?>
         </div>
 
         <!-- ── Bloco 5: Gestão de Preços ────────────────────────────────── -->
-        <div class="card" style="padding:28px; margin-bottom:28px; border-left:4px solid #10b981; background:rgba(255,255,255,0.01); border-color:rgba(255,255,255,0.05);">
+        <div style="padding:28px; background:#141414; border:1px solid rgba(255,255,255,0.05); border-radius:20px; border-left:4px solid #00C897; margin-bottom:28px;">
             <div style="margin-bottom:32px;">
-                <h3 style="font-size:16px; font-weight:700; color:#e2e8f0; display:flex; align-items:center; gap:10px;">
-                    <i data-lucide="sliders" style="width:20px; height:20px; color:#34d399;"></i>
-                    Configuração de Precificação Global
+                <h3 style="font-size:16px; font-weight:700; color:#FFFFFF; display:flex; align-items:center; gap:10px;">
+                    <i data-lucide="sliders" style="width:20px; height:20px; color:#00C897;"></i>
+                    Precificação Global
                 </h3>
-                <p style="font-size:13px; color:#6b7280; margin-top:6px; font-weight:500;">Ajuste os valores dos planos e as taxas de conversão para faturamento.</p>
             </div>
 
             <form method="POST">
                 <input type="hidden" name="acao" value="salvar_precos">
                 <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:28px; margin-bottom:40px;">
+                    <?php foreach ([
+                        ['plano_mensal_preco', 'Plano Mensal', $precoMensal, 'R$'],
+                        ['plano_anual_preco',  'Plano Anual',  $precoAnual,  'R$'],
+                        ['custo_usd_brl',     'Câmbio USD',   $cambioUSD,   'R$'],
+                    ] as [$name, $label, $val, $prefix]): ?>
                     <div>
-                        <label class="label-premium">Ticket Plano Mensal</label>
+                        <label style="font-size:11px; font-weight:700; color:#9CA3AF; text-transform:uppercase; margin-bottom:8px; display:block;"><?= $label ?></label>
                         <div style="position:relative;">
-                            <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:13px; font-weight:800; color:#4b5563;">R$</span>
-                            <input class="input" type="number" step="0.01" name="plano_mensal_preco" value="<?= $precoMensal ?>" required style="padding-left:40px; background:rgba(0,0,0,0.25); border-color:rgba(255,255,255,0.1); font-weight:700;">
+                            <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:13px; font-weight:800; color:#4b5563;"><?= $prefix ?></span>
+                            <input class="input" type="number" step="0.01" name="<?= $name ?>" value="<?= $val ?>" required style="padding-left:36px; background:#1A1A1A; border-color:rgba(255,255,255,0.1); color:#FFFFFF; font-weight:700;">
                         </div>
                     </div>
-                    <div>
-                        <label class="label-premium">Ticket Plano Anual</label>
-                        <div style="position:relative;">
-                            <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:13px; font-weight:800; color:#4b5563;">R$</span>
-                            <input class="input" type="number" step="0.01" name="plano_anual_preco" value="<?= $precoAnual ?>" required style="padding-left:40px; background:rgba(0,0,0,0.25); border-color:rgba(255,255,255,0.1); font-weight:700;">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="label-premium" style="display:flex; align-items:center; gap:8px;">
-                            Taxa de Câmbio (USD/BRL)
-                            <i data-lucide="help-circle" style="width:15px; height:15px; color:#6b7280; cursor:help;" title="Definição manual para cálculos de custos."></i>
-                        </label>
-                        <div style="position:relative;">
-                            <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:13px; font-weight:800; color:#4b5563;">R$</span>
-                            <input class="input" type="number" step="0.01" name="custo_usd_brl" value="<?= $cambioUSD ?>" required style="padding-left:40px; background:rgba(0,0,0,0.25); border-color:rgba(255,255,255,0.1); font-weight:700;">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="label-premium">Custo Groq (1k tokens)</label>
-                        <div style="position:relative;">
-                            <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:13px; font-weight:800; color:#4b5563;">$</span>
-                            <input class="input" type="number" step="0.000001" name="groq_custo" value="<?= $custoGroq1k ?>" placeholder="0.000000" style="padding-left:28px; background:rgba(0,0,0,0.25); border-color:rgba(255,255,255,0.1);">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="label-premium">Custo Gemini (1k tokens)</label>
-                        <div style="position:relative;">
-                            <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:13px; font-weight:800; color:#4b5563;">$</span>
-                            <input class="input" type="number" step="0.000001" name="gemini_custo" value="<?= $custoGemini1k ?>" placeholder="0.000000" style="padding-left:28px; background:rgba(0,0,0,0.25); border-color:rgba(255,255,255,0.1);">
-                        </div>
-                    </div>
+                    <?php endforeach; ?>
                 </div>
 
-                <div style="display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; padding:30px; background:rgba(0,0,0,0.25); border-radius:20px; border:1px solid rgba(255,255,255,0.05);">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; padding:30px; background:#1A1A1A; border-radius:20px; border:1px solid rgba(255,255,255,0.05);">
                     <div style="flex:1; display:flex; align-items:center; gap:16px;">
-                        <div style="width:40px; height:40px; border-radius:12px; background:rgba(251,191,36,0.1); display:flex; align-items:center; justify-content:center; color:#fbbf24; flex-shrink:0;">
-                            <i data-lucide="alert-triangle" style="width:20px; height:20px;"></i>
-                        </div>
-                        <label style="display:flex; align-items:center; gap:12px; font-size:14px; color:#94a3b8; cursor:pointer;">
-                            <input type="checkbox" name="aplicar_todos" style="width:20px; height:20px; accent-color:#fbbf24; cursor:pointer;">
-                            <span>Atualizar valor em <strong>todas as assinaturas ativas</strong> (Ação Crítica)</span>
-                        </label>
+                        <input type="checkbox" name="aplicar_todos" style="width:20px; height:20px; accent-color:#00C897; cursor:pointer;">
+                        <span style="font-size:14px; color:#9CA3AF;">Atualizar todas as assinaturas ativas</span>
                     </div>
-                    <button type="submit" class="btn-primary" style="padding:14px 36px; font-size:14px; background:#10b981; border:none; box-shadow:0 8px 25px rgba(16, 185, 129, 0.25); font-weight:800; border-radius:14px;">
+                    <button type="submit" style="padding:14px 36px; font-size:14px; background:#00C897; border:none; color:#FFFFFF; font-weight:800; border-radius:14px; cursor:pointer; box-shadow:0 8px 25px rgba(0, 200, 151, 0.2);">
                         Salvar Configurações
                     </button>
                 </div>
