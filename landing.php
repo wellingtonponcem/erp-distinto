@@ -100,6 +100,25 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
         .hero-meta { font-size: 12px; color: var(--muted); margin-top: 1rem; }
 
         /* ── Mock Browser ───────────────────────── */
+        .mock-wrap {
+            position: relative;
+        }
+        .mock-wrap::before {
+            content: '';
+            position: absolute;
+            inset: -30% -20%;
+            background: radial-gradient(ellipse at 55% 50%,
+                rgba(232, 255, 71, 0.13) 0%,
+                rgba(232, 255, 71, 0.05) 35%,
+                transparent 70%
+            );
+            pointer-events: none;
+            z-index: 0;
+        }
+        .mock-wrap .mock-browser {
+            position: relative;
+            z-index: 1;
+        }
         .mock-browser {
             background: #0d0d0d;
             border: 1px solid rgba(255,255,255,0.1);
@@ -329,7 +348,7 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
             </div>
 
             <!-- Mock animado -->
-            <div>
+            <div class="mock-wrap">
                 <div class="mock-browser">
                     <div class="mock-topbar">
                         <span class="mock-dot r"></span>
