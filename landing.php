@@ -66,7 +66,7 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
         .section-text { font-size: 16px; color: var(--muted); max-width: 560px; line-height: 1.7; }
 
         /* ── Hero ───────────────────────────────── */
-        .hero { padding: 6rem 6vw 4rem; }
+        .hero { padding: 6rem 6vw 2rem; }
         .hero-grid {
             display: grid;
             grid-template-columns: 1fr 1.1fr;
@@ -219,7 +219,7 @@ $precoAnStr  = number_format($precoAnual,  0, ',', '.');
         .score-stat-pill-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; opacity: 0.7; }
 
         /* ── Problem ───────────────────────────── */
-        .problem { background: #0d0d0d; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .problem { background: #0d0d0d; border-bottom: 1px solid var(--border); }
 
         /* ── Steps ─────────────────────────────── */
         .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 3rem; }
