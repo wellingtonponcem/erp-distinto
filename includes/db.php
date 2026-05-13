@@ -7,8 +7,19 @@
 if (!defined('BASE_PATH')) {
     $doc_root = rtrim(str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT'])), '/');
     $app_root = rtrim(str_replace('\\', '/', realpath(__DIR__ . '/..')), '/');
-    $base = str_replace($doc_root, '', $app_root);
-    define('BASE_PATH', rtrim($base, '/')); // ex: '/distinto-php' ou ''
+    
+    // Fallback para Hostinger/ambientes onde realpath pode falhar ou ser inconsistente
+    $base = '';
+    if (strpos($app_root, $doc_root) === 0) {
+        $base = str_replace($doc_root, '', $app_root);
+    }
+    
+    // Se o caminho base detectado for igual ao nome da pasta do sistema, mas estamos na raiz, forçamos vazio
+    if ($base === '/sistema' && !str_contains($_SERVER['SCRIPT_NAME'], '/sistema/')) {
+        $base = '';
+    }
+    
+    define('BASE_PATH', rtrim($base, '/')); 
 }
 
 // Neon SNI workaround: endpoint ID nas options (libpq não usa URL encoding)
