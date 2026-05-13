@@ -60,7 +60,7 @@ try {
         if ($isYouTube) {
             // ── YouTube: Gemini lê o vídeo diretamente pela URL ──────────────
             $nome  = "YouTube: " . $value;
-            $texto = IARoteiros::processarYoutube($value);
+            $texto = IARoteiros::processarYoutube($value, $userId);
             if (strpos($texto, 'Erro') === 0) throw new Exception($texto);
 
         } else {
@@ -85,7 +85,7 @@ try {
             $bruto = trim($bruto);
 
             // Gemini extrai apenas o que é estratégico
-            $texto = IARoteiros::resumirConteudoUrl($bruto, $value);
+            $texto = IARoteiros::resumirConteudoUrl($bruto, $value, $userId);
             if (strpos($texto, 'Erro') === 0) throw new Exception($texto);
         }
     }

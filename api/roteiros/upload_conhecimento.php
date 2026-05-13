@@ -63,13 +63,13 @@ if (move_uploaded_file($arquivo['tmp_name'], $targetPath)) {
 
         } elseif ($ext === 'pdf') {
             $base64 = base64_encode(file_get_contents($targetPath));
-            $texto  = IARoteiros::processarPdf($base64);
+            $texto  = IARoteiros::processarPdf($base64, $userId);
             if (strpos($texto, 'Erro') === 0) throw new Exception($texto);
 
         } elseif (in_array($ext, ['png', 'jpg', 'jpeg'])) {
             $base64   = base64_encode(file_get_contents($targetPath));
             $mimeType = ($ext === 'png') ? 'image/png' : 'image/jpeg';
-            $texto    = IARoteiros::processarImagem($base64, $mimeType);
+            $texto    = IARoteiros::processarImagem($base64, $mimeType, $userId);
             if (strpos($texto, 'Erro') === 0) throw new Exception($texto);
         }
 

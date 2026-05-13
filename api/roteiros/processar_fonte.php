@@ -14,6 +14,10 @@ exigirAutenticacao();
 set_time_limit(300);
 ini_set('memory_limit', '1024M');
 
+$d       = lerCorpo();
+$usuario = usuarioAtual();
+$userId  = $usuario['id'];
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     responderJson(['erro' => 'Método não permitido'], 405);
 }
@@ -46,23 +50,23 @@ try {
 
         if ($ext === 'pdf' && file_exists($caminho)) {
             $base64 = base64_encode(file_get_contents($caminho));
-            $texto  = IARoteiros::processarPdf($base64);
+            $texto  = IARoteiros::processarPdf($base64, $userId);
             if (strpos($texto, 'Erro') === 0) throw new Exception($texto);
 
         } elseif (in_array($ext, ['png', 'jpg', 'jpeg']) && file_exists($caminho)) {
             $base64   = base64_encode(file_get_contents($caminho));
             $mimeType = ($ext === 'png') ? 'image/png' : 'image/jpeg';
-            $texto    = IARoteiros::processarImagem($base64, $mimeType);
+            $texto    = IARoteiros::processarImagem($base64, $mimeType, $userId);
             if (strpos($texto, 'Erro') === 0) throw new Exception($texto);
 
         } elseif ($tipo === 'url' && !empty($fonte['caminho_arquivo'])) {
             // YouTube ou site: re-processa a URL
             $url = $fonte['caminho_arquivo'];
             if (str_contains($url, 'youtube.com') || str_contains($url, 'youtu.be')) {
-                $texto = IARoteiros::processarYoutube($url);
+                $texto = IARoteiros::processarYoutube($url, $userId);
             } else {
                 $conteudo = @file_get_contents($url);
-                $texto = $conteudo ? IARoteiros::resumirConteudoUrl($conteudo, $url) : '';
+                $texto = $conteudo ? IARoteiros::resumirConteudoUrl($conteudo, $url, $userId) : '';
             }
             if (strpos($texto ?? '', 'Erro') === 0) throw new Exception($texto);
         }
@@ -83,7 +87,7 @@ try {
     }
 
     // --- Destilação no Groq → Memória Mestra ---
-    $consolidou = IARoteiros::consolidarMemoria($texto);
+    $consolidou = IARoteiros::consolidarMemoria($texto, $userId);
 
     if ($consolidou) {
         $db->prepare("UPDATE roteiros_conhecimento SET sincronizado = TRUE WHERE id = ?")

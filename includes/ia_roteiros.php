@@ -14,6 +14,27 @@ class IARoteiros
     // INFRAESTRUTURA — chamadas às APIs
     // =========================================================================
 
+    private static function logarChamadaIA(string $userId, string $provider, string $operacao, int $tokensIn, int $tokensOut): void
+    {
+        if (!$userId) return;
+
+        try {
+            $db = Database::get();
+            
+            // Buscar custo por 1k tokens
+            $colunaCusto = ($provider === 'groq') ? 'groq_custo_por_1k_tokens' : 'gemini_custo_por_1k_tokens';
+            $custo1k = (float) $db->query("SELECT $colunaCusto FROM configuracao_empresa WHERE id = 'principal' LIMIT 1")->fetchColumn();
+            
+            $totalTokens = $tokensIn + $tokensOut;
+            $custoUsd = ($totalTokens / 1000) * $custo1k;
+
+            $stmt = $db->prepare("INSERT INTO log_ia_calls (user_id, provider, operacao, tokens_in, tokens_out, custo_usd) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$userId, $provider, $operacao, $tokensIn, $tokensOut, $custoUsd]);
+        } catch (Exception $e) {
+            // Silencioso para não quebrar a experiência do usuário se o log falhar
+        }
+    }
+
     private static function getConfig(string $chave)
     {
         try {
@@ -53,7 +74,7 @@ class IARoteiros
 
     // ─── Groq ─────────────────────────────────────────────────────────────────
 
-    public static function chamarGroq(array $mensagens, ?string $model = null)
+    public static function chamarGroq(array $mensagens, ?string $model = null, string $userId = '', string $operacao = 'Generativa')
     {
         $apiKey = self::getGroqKey();
         if (!$apiKey) return "Erro: GROQ_API_KEY não configurada.";
@@ -88,6 +109,14 @@ class IARoteiros
         if (json_last_error() !== JSON_ERROR_NONE) {
             return "Erro: resposta Groq não é JSON válido. Body: " . substr($resposta, 0, 200);
         }
+
+        // Log de consumo
+        if (isset($dados['usage'])) {
+            $tokensIn  = (int) ($dados['usage']['prompt_tokens'] ?? 0);
+            $tokensOut = (int) ($dados['usage']['completion_tokens'] ?? 0);
+            self::logarChamadaIA($userId, 'groq', $operacao, $tokensIn, $tokensOut);
+        }
+
         return $dados['choices'][0]['message']['content']
             ?? "Erro: resposta Groq sem conteúdo. Body: " . json_encode($dados);
     }
@@ -101,7 +130,7 @@ class IARoteiros
      *   base64   → ['inline_data' => ['mime_type' => '...', 'data' => '<base64>']]
      *   arquivo  → ['file_data'   => ['mime_type' => '...', 'file_uri' => 'https://...']]
      */
-    public static function chamarGemini(array $parts, string $model = 'gemini-2.5-flash'): string
+    public static function chamarGemini(array $parts, string $model = 'gemini-2.5-flash', string $userId = '', string $operacao = 'Vision/Análise'): string
     {
         $apiKey = self::getGeminiKey();
         if (!$apiKey) return "Erro: GEMINI_API_KEY não configurada em config/env.php.";
@@ -133,6 +162,14 @@ class IARoteiros
         }
 
         $dados = json_decode($resposta, true);
+
+        // Log de consumo
+        if (isset($dados['usageMetadata'])) {
+            $tokensIn  = (int) ($dados['usageMetadata']['promptTokenCount'] ?? 0);
+            $tokensOut = (int) ($dados['usageMetadata']['candidatesTokenCount'] ?? 0);
+            self::logarChamadaIA($userId, 'gemini', $operacao, $tokensIn, $tokensOut);
+        }
+
         return $dados['candidates'][0]['content']['parts'][0]['text']
             ?? "Erro: resposta inesperada do Gemini. Body: " . substr($resposta, 0, 300);
     }
@@ -145,7 +182,7 @@ class IARoteiros
      * Extrai conhecimento de uma IMAGEM usando Gemini Vision (base64).
      * Suporta PNG, JPG, JPEG, WEBP, GIF.
      */
-    public static function processarImagem(string $base64, string $mimeType): string
+    public static function processarImagem(string $base64, string $mimeType, string $userId = ''): string
     {
         if (!self::temGemini()) {
             return "Erro: GEMINI_API_KEY não configurada. Adicione sua chave em config/env.php.";
@@ -156,13 +193,13 @@ class IARoteiros
 Se for um print de rede social, identifique o tom de voz, os ganchos utilizados e a estrutura do post.
 Responda apenas com o conteúdo extraído, organizado em português. Não descreva o visual — foque no texto e nas estratégias."],
             ['inline_data' => ['mime_type' => $mimeType, 'data' => $base64]]
-        ]);
+        ], 'gemini-2.5-flash', $userId, 'Processar Imagem');
     }
 
     /**
      * Extrai conhecimento de um PDF usando Gemini (base64, até ~20MB).
      */
-    public static function processarPdf(string $base64): string
+    public static function processarPdf(string $base64, string $userId = ''): string
     {
         if (!self::temGemini()) {
             return "Erro: GEMINI_API_KEY não configurada. Adicione sua chave em config/env.php.";
@@ -172,14 +209,14 @@ Responda apenas com o conteúdo extraído, organizado em português. Não descre
             ['text' => "Leia este PDF e extraia todo o conteúdo estratégico relevante: metodologias, frameworks, diretrizes de comunicação, tom de voz, estruturas de copywriting, gatilhos mentais, conceitos-chave e qualquer insight útil para marketing e criação de conteúdo.
 Organize por tópicos em português. Descarte sumários, índices e cabeçalhos sem conteúdo."],
             ['inline_data' => ['mime_type' => 'application/pdf', 'data' => $base64]]
-        ]);
+        ], 'gemini-2.5-flash', $userId, 'Processar PDF');
     }
 
     /**
      * Extrai conhecimento de um vídeo do YouTube usando Gemini (URL nativa).
      * O Gemini 2.0 Flash lê a transcrição e o contexto do vídeo diretamente.
      */
-    public static function processarYoutube(string $url): string
+    public static function processarYoutube(string $url, string $userId = ''): string
     {
         if (!self::temGemini()) {
             return "Erro: GEMINI_API_KEY não configurada. Adicione sua chave em config/env.php.";
@@ -195,14 +232,14 @@ Organize por tópicos em português. Descarte sumários, índices e cabeçalhos 
 
 Responda em português, organizado por tópicos. Foque no conteúdo estratégico."],
             ['file_data' => ['mime_type' => 'video/*', 'file_uri' => $url]]
-        ]);
+        ], 'gemini-2.5-flash', $userId, 'Processar YouTube');
     }
 
     /**
      * Resume e extrai conhecimento estratégico do conteúdo de uma URL/site.
      * Usa Gemini se disponível, senão cai para Groq.
      */
-    public static function resumirConteudoUrl(string $conteudo, string $url): string
+    public static function resumirConteudoUrl(string $conteudo, string $url, string $userId = ''): string
     {
         $prompt = "URL: $url
 
@@ -212,14 +249,14 @@ Conteúdo:
 " . mb_substr($conteudo, 0, 30000);
 
         if (self::temGemini()) {
-            return self::chamarGemini([['text' => $prompt]]);
+            return self::chamarGemini([['text' => $prompt]], 'gemini-2.5-flash', $userId, 'Resumir URL');
         }
 
         // Fallback Groq
         return self::chamarGroq([
             ['role' => 'system', 'content' => 'Você é um Estrategista de Conteúdo. Extraia apenas informações estratégicas relevantes.'],
             ['role' => 'user',   'content' => mb_substr($prompt, 0, 15000)]
-        ]);
+        ], null, $userId, 'Resumir URL (Fallback)');
     }
 
     // =========================================================================
@@ -298,7 +335,7 @@ OBJETIVO: extrair apenas a essência estratégica, metodologias, tom de voz e di
 Elimine redundâncias, mescle o novo conteúdo com a memória atual de forma fluida.
 REGRAS: Nunca use emojis. Seja direto. Priorize o conteúdo mais recente em contradições. Português do Brasil."],
             ['role' => 'user', 'content' => "### MEMÓRIA ATUAL:\n" . mb_substr($memoriaAtual, 0, 14000) . "\n\n### NOVO CONTEÚDO:\n" . mb_substr($novoTexto, 0, 10000) . "\n\nGere a nova Memória Mestra Consolidada:"]
-        ]);
+        ], null, $userId, 'Consolidar Memória');
 
         if (strpos($novaMemoria, 'Erro') === 0) return false;
 
@@ -351,7 +388,7 @@ REGRAS CRÍTICAS:
 2. Organize por tópicos (Diretrizes, Tom de Voz, Gatilhos, Estruturas).
 3. Seja denso e técnico. Nunca use emojis. Português do Brasil."],
                 ['role' => 'user', 'content' => "Fontes carregadas:\n\n$textoUnificado\n\nConsolide TODO esse conhecimento em uma Memória Mestra única e organizada:"]
-            ]);
+            ], null, $userId, 'Reconstruir Memória');
 
             if (strpos($novaMemoria, 'Erro') === 0) return $novaMemoria;
 
@@ -407,7 +444,7 @@ $vozEstilo
             ['role' => 'user', 'content' => $briefing
                 ? "Gere um roteiro completo. Briefing: $briefing"
                 : "Gere um roteiro inédito seguindo o padrão dos exemplos de sucesso."]
-        ]);
+        ], null, $userId, 'Gerar Roteiro');
 
         $json  = preg_replace('/```json\n?|\n?```/', '', $respostaRaw);
         $dados = json_decode(trim($json), true);
