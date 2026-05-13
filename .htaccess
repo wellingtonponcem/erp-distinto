@@ -1,20 +1,17 @@
 Options -Indexes
+Options -MultiViews
 RewriteEngine On
 
 # ── Ajuste RewriteBase conforme onde o app está hospedado ──
-# Em subfolder /distinto-php/:
-# RewriteBase /distinto-php/
-# Na raiz do domínio:
 RewriteBase /
 
-# Força HTTPS (descomente em produção com SSL)
-# RewriteCond %{HTTPS} off
-# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
-# Arquivos e pastas reais são servidos diretamente
+# Se o arquivo ou pasta existe fisicamente, serve direto e para aqui
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
+
+# Garante que a pasta 'sistema' e seus subdiretórios não sejam afetados pelas regras abaixo
+RewriteRule ^sistema(/.*)?$ - [L]
 
 # Rotas limpas
 RewriteRule ^projetos/?$       projetos/index.php [L,QSA]
