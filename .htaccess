@@ -1,35 +1,35 @@
 Options -Indexes
-Options -MultiViews
-RewriteEngine On
+ServerSignature Off
 
-RewriteBase /
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /sistema/
 
-# Rotas do ERP — deve vir antes das demais regras
-RewriteCond %{REQUEST_URI} ^/sistema(/|$)
-RewriteRule ^ - [L]
+    # Proteger arquivos e pastas sensiveis
+    RewriteRule ^(config|includes)/ - [F,L]
+    <FilesMatch "^(env|database|auth)\.php$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
 
-# Se o arquivo ou pasta existe fisicamente, serve direto
-RewriteCond %{REQUEST_FILENAME} -f [OR]
-RewriteCond %{REQUEST_FILENAME} -d
-RewriteRule ^ - [L]
+    # Rota para propostas: /p/slug-da-proposta
+    RewriteRule ^p/([a-zA-Z0-9_-]+)/?$ p.php?slug=$1 [QSA,L]
 
-# Rotas limpas do site
-RewriteRule ^projetos/?$       projetos/index.php [L,QSA]
-RewriteRule ^sobre/?$          sobre/index.php    [L,QSA]
-RewriteRule ^contato/?$        contato/index.php  [L,QSA]
-RewriteRule ^admin/?$          admin/index.php    [L,QSA]
-RewriteRule ^setup/?$          setup/install.php  [L,QSA]
+    # Se for um arquivo ou diretorio real, serve direto
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
 
-# Seguranca: bloqueia acesso direto a includes/
-RewriteRule ^includes/         -                  [F,L]
+    # Roteamento padrao (opcional, caso queira URLs limpas no futuro)
+    # RewriteRule ^ index.php [L]
+</IfModule>
 
-# PHP configs
-php_value upload_max_filesize 64M
-php_value post_max_size 64M
-php_value memory_limit 256M
-php_value max_execution_time 60
+# PHP charset
+AddDefaultCharset UTF-8
 
-# Cache para assets estaticos
-<FilesMatch "\.(jpg|jpeg|png|gif|svg|webp|ico|woff|woff2|ttf)$">
-    Header set Cache-Control "public, max-age=2592000"
-</FilesMatch>
+# Headers de seguranca
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options SAMEORIGIN
+    Header always set X-XSS-Protection "1; mode=block"
+</IfModule>
