@@ -3,7 +3,7 @@ ServerSignature Off
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /sistema/sistema/
+    RewriteBase /sistema/
 
     # Proteger arquivos e pastas sensiveis
     RewriteRule ^(config|includes)/ - [F,L]

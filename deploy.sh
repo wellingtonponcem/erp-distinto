@@ -13,7 +13,7 @@ set -e
 SERVER_USER="u306254544"
 SERVER_HOST="147.93.38.189"
 SERVER_PORT="65002"
-SERVER_PATH="/home/u306254544/domains/wedistinto.com/public_html/sistema"
+SERVER_PATH="/home/u306254544/domains/wedistinto.com/public_html"
 SSH_PASS='!@Jeane&w#1'
 
 # ── Cores ──────────────────────────────────────────────────

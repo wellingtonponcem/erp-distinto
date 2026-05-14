@@ -1,9 +1,9 @@
 <?php
-require_once __DIR__ . '/../config/env.php';
-require_once __DIR__ . '/../config/auth.php';
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../includes/helpers.php';
-require_once __DIR__ . '/../includes/assinatura.php';
+require_once __DIR__ . '/../sistema/config/env.php';
+require_once __DIR__ . '/../sistema/config/auth.php';
+require_once __DIR__ . '/../sistema/config/database.php';
+require_once __DIR__ . '/../sistema/includes/helpers.php';
+require_once __DIR__ . '/../sistema/includes/assinatura.php';
 exigirAutenticacao();
 
 $db      = Database::get();
@@ -544,7 +544,7 @@ try {
                         salvando: false
                     };
                     try {
-                        const res = await fetch(`../api/roteiros/fonte_texto.php?id=${file.id}`);
+                        const res = await fetch(`/sistema/api/roteiros/fonte_texto.php?id=${file.id}`);
                         const text = await res.text();
                         try {
                             const data = JSON.parse(text);
@@ -568,7 +568,7 @@ try {
                     formData.append('id', this.textModal.id);
                     formData.append('texto', this.textModal.texto);
                     try {
-                        const res = await fetch('../api/roteiros/fonte_texto.php', { method: 'POST', body: formData });
+                        const res = await fetch('/sistema/api/roteiros/fonte_texto.php', { method: 'POST', body: formData });
                         const data = await res.json();
                         if (data.success) {
                             // Marca a fonte como pendente na lista (precisará resincronizar)
@@ -615,7 +615,7 @@ try {
                     this.progress = 50;
                     this.statusMsg = type === 'url' ? 'Lendo conteúdo...' : 'Salvando texto...';
 
-                    fetch('../api/roteiros/salvar_fonte.php', {
+                    fetch('/sistema/api/roteiros/salvar_fonte.php', {
                         method: 'POST',
                         body: JSON.stringify({ type, value })
                     })
@@ -672,13 +672,13 @@ try {
                             }
                         }
                     };
-                    xhr.open('POST', '../api/roteiros/upload_conhecimento.php', true);
+                    xhr.open('POST', '/sistema/api/roteiros/upload_conhecimento.php', true);
                     xhr.send(formData);
                 },
 
                 deleteFile(id) {
                     this.showConfirm('Remover Fonte', 'Deseja remover esta fonte? A memória será reconstruída.', () => {
-                        fetch('../api/roteiros/deletar_conhecimento.php', {
+                        fetch('/sistema/api/roteiros/deletar_conhecimento.php', {
                             method: 'POST',
                             body: JSON.stringify({ id })
                         })
@@ -728,7 +728,7 @@ try {
                             const formData = new FormData();
                             formData.append('id', fonte.id);
 
-                            const res = await fetch('../api/roteiros/processar_fonte.php', {
+                            const res = await fetch('/sistema/api/roteiros/processar_fonte.php', {
                                 method: 'POST',
                                 body: formData
                             });
