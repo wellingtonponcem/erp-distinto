@@ -1,11 +1,10 @@
 #!/bin/bash
 # ============================================================
-#  deploy.sh — Envia commits locais para o GitHub e atualiza
-#              o servidor Hostinger via SSH
+#  deploy.sh — Deploy para o servidor Hostinger via SSH
 # ============================================================
 #  Uso:
-#    ./deploy.sh                  → só sincroniza (pull no server)
-#    ./deploy.sh "mensagem"       → commit + push + pull no server
+#    ./deploy.sh                  → só sincroniza servidor
+#    ./deploy.sh "mensagem"       → commit + push + sync servidor
 # ============================================================
 
 set -e
@@ -13,44 +12,43 @@ set -e
 SERVER_USER="u306254544"
 SERVER_HOST="147.93.38.189"
 SERVER_PORT="65002"
-SERVER_PATH="/home/u306254544/domains/wedistinto.com/public_html/sistema"
-SSH_PASS='!@Jeane&w#1'
+SSH_KEY="$HOME/.ssh/distinto"
 
-# ── Cores ──────────────────────────────────────────────────
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-NC='\033[0m'
+# Caminhos no servidor
+PATH_ERP="/home/u306254544/domains/wedistinto.com/public_html/sistema"
+PATH_SITE="/home/u306254544/domains/wedistinto.com/public_html"
 
+GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
 ok()   { echo -e "${GREEN}✓ $1${NC}"; }
 info() { echo -e "${YELLOW}→ $1${NC}"; }
-err()  { echo -e "${RED}✗ $1${NC}"; exit 1; }
 
-# ── 1. Commit + Push (opcional) ────────────────────────────
+ssh_cmd() {
+    ssh -p "$SERVER_PORT" -i "$SSH_KEY" -o StrictHostKeyChecking=no \
+        "$SERVER_USER@$SERVER_HOST" "$1"
+}
+
+# ── 1. Commit + Push do ERP (opcional) ─────────────────────
 if [ -n "$1" ]; then
-    info "Adicionando arquivos ao stage..."
+    info "Adicionando ao stage..."
     git add -A
-
-    info "Criando commit: $1"
-    git commit -m "$1" || { echo "Nada para commitar."; }
-
+    git commit -m "$1" || echo "Nada para commitar."
     info "Enviando para o GitHub..."
     git push origin main
     ok "GitHub atualizado."
-else
-    info "Nenhuma mensagem de commit fornecida — pulando etapa de commit/push."
 fi
 
-# ── 2. Pull no servidor ────────────────────────────────────
-info "Conectando ao servidor Hostinger..."
-SSHPASS="$SSH_PASS" sshpass -e ssh -p "$SERVER_PORT" \
-    -o StrictHostKeyChecking=no \
-    "$SERVER_USER@$SERVER_HOST" \
-    "cd $SERVER_PATH && git pull origin main 2>&1"
+# ── 2. Sync no servidor ─────────────────────────────────────
+info "Atualizando servidor..."
+ssh_cmd "
+    echo '→ ERP (erp-distinto)...'
+    cd $PATH_ERP && git pull origin main 2>&1 | tail -3
 
-ok "Servidor atualizado com sucesso!"
+    echo '→ Site (distinto-site)...'
+    cd $PATH_SITE && git pull origin main 2>&1 | tail -3
+"
+
+ok "Servidor atualizado!"
 echo ""
 echo "  wedistinto.com         → site da agência"
-echo "  wedistinto.com/sistema → ERP (login)"
-echo "  wedistinto.com/roteiros → módulo de roteiros"
-echo ""
+echo "  wedistinto.com/sistema → ERP"
+echo "  wedistinto.com/roteiros → roteiros"
