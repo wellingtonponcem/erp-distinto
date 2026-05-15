@@ -19,7 +19,11 @@ Sempre crie um arquivo MD com um histórico do que estamos fazendo para que se e
   2. Inicializado e configurado corretamente o repositório `meus-roteiros` dentro da pasta `/roteiros/`.
   3. Configurado o Token de Acesso (PAT) no repositório de roteiros para permitir deploys futuros sem erro de credenciais.
 
+### Sincronização de Contas (Nova Regra)
+- **Requisito**: Os usuários `faustinosdg@gmail.com` e `jeaneponcem13@gmail.com` devem compartilhar a mesma base de dados.
+- **Implementação**: Modificada a função `usuarioAtual()` no arquivo `config/auth.php` para que ambos utilizem o ID do usuário Faustino como "ID Mestre" para todas as operações de banco de dados. Isso garante que qualquer roteiro criado ou editado por um apareça instantaneamente para o outro.
+
 ### Estado Atual:
 - **Site Principal**: Restaurado e funcional.
 - **Roteiros**: Pasta `/roteiros/` isolada e com repositório próprio sincronizado.
-- **API**: Respondendo corretamente (200 para OPTIONS, 401 para sem auth).
+- **Sincronização**: Ativa para os dois e-mails especificados.
