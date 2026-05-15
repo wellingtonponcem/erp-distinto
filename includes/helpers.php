@@ -76,13 +76,26 @@ function calcularStatusAtualizado(float $valor, float $valorPago, string $vencim
 }
 
 function raizUrl(string $caminho = ''): string {
+    // Se o caminho já começa com uma das bases conhecidas do ecossistema, 
+    // assumimos que é um link absoluto entre módulos e não mexemos.
+    if (str_starts_with($caminho, '/roteiros/') || str_starts_with($caminho, '/sistema/')) {
+        return '/' . ltrim($caminho, '/');
+    }
+
     static $base = null;
     if ($base === null) {
-        $path = parse_url(APP_URL, PHP_URL_PATH) ?: '';
-        $base = rtrim($path, '/');
+        $script = $_SERVER['SCRIPT_NAME'] ?? '';
+        if (str_contains($script, '/roteiros/')) {
+            $base = '/roteiros';
+        } elseif (str_contains($script, '/sistema/')) {
+            $base = '/sistema';
+        } else {
+            $path = parse_url(APP_URL, PHP_URL_PATH) ?: '';
+            $base = rtrim($path, '/');
+        }
     }
     
-    // Se o caminho já começa com a base, removemos para não duplicar
+    // Se o caminho já começa com a base detectada, removemos para não duplicar no return final
     if ($base !== '' && str_starts_with($caminho, $base)) {
         $caminho = substr($caminho, strlen($base));
     }
