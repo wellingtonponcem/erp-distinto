@@ -20,6 +20,15 @@ function estaAutenticado(): bool {
 }
 
 function exigirAutenticacao(): void {
+    // Permitir pre-flight OPTIONS sem autenticação para CORS
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Origin, Accept");
+        header("Access-Control-Max-Age: 86400");
+        exit;
+    }
+
     if (!estaAutenticado()) {
         // Se for uma requisição de API, responde com JSON em vez de redirecionar
         if (str_contains($_SERVER['SCRIPT_NAME'], '/api/')) {
