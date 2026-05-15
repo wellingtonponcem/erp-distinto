@@ -17,6 +17,7 @@ SSH_KEY="$HOME/.ssh/distinto"
 # Caminhos no servidor
 PATH_ERP="/home/u306254544/domains/wedistinto.com/public_html/sistema"
 PATH_SITE="/home/u306254544/domains/wedistinto.com/public_html"
+PATH_ROTEIROS="/home/u306254544/domains/wedistinto.com/public_html/roteiros"
 
 GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
 ok()   { echo -e "${GREEN}✓ $1${NC}"; }
@@ -27,7 +28,8 @@ ssh_cmd() {
         "$SERVER_USER@$SERVER_HOST" "$1"
 }
 
-# ── 1. Commit + Push do ERP (opcional) ─────────────────────
+# ── 1. Commit + Push (opcional) ────────────────────────────
+# Nota: Este script faz push apenas do repositório onde é executado (ERP)
 if [ -n "$1" ]; then
     info "Adicionando ao stage..."
     git add -A
@@ -42,6 +44,9 @@ info "Atualizando servidor..."
 ssh_cmd "
     echo '→ ERP (erp-distinto)...'
     cd $PATH_ERP && git pull origin main 2>&1 | tail -3
+
+    echo '→ Roteiros (meus-roteiros)...'
+    cd $PATH_ROTEIROS && git pull origin main 2>&1 | tail -3
 
     echo '→ Site (distinto-site)...'
     cd $PATH_SITE && git pull origin main 2>&1 | tail -3
