@@ -106,12 +106,23 @@ function exigirAdmin(): void {
 
 function usuarioAtual(): array {
     iniciarSessao();
+    
+    $id    = $_SESSION['user_id'] ?? '';
+    $email = $_SESSION['user_email'] ?? '';
+    
+    // Sincronização de contas: faustinosdg e jeaneponcem compartilham a mesma base
+    // Usamos o ID do faustinosdg como ID mestre para ambos.
+    $sharedEmails = ['faustinosdg@gmail.com', 'jeaneponcem13@gmail.com'];
+    if (in_array($email, $sharedEmails)) {
+        $id = '8f63b895d7c5ce2f37d4b68278cae976';
+    }
+
     return [
-        'id'                  => $_SESSION['user_id'] ?? '',
+        'id'                  => $id,
         'nome'                => $_SESSION['user_nome'] ?? '',
-        'email'               => $_SESSION['user_email'] ?? '',
+        'email'               => $email,
         'nivel'               => $_SESSION['user_nivel'] ?? 0,
-        'sistema_origem'      => $_SESSION['user_sistema_origem'] ?? 'distinto', // default para não quebrar antigos
+        'sistema_origem'      => $_SESSION['user_sistema_origem'] ?? 'distinto', 
         'subscription_status' => $_SESSION['user_subscription_status'] ?? 'trial',
         'subscription_plan'   => $_SESSION['user_subscription_plan'] ?? null,
     ];
