@@ -365,11 +365,23 @@ async function exportPdfTemplate(config, values) {
         stage.appendChild(pageEl);
     };
 
+    const packagePages = (config.pages || []).filter(p => p.is_pacote);
+    const countPkgPages = packagePages.length;
+    let pkgCounter = 0;
+
     (config.pages || []).forEach(page => {
         if (page.is_pacote && values.planos && values.planos.length > 0) {
-            values.planos.forEach(plano => {
-                renderSinglePage(page, plano);
-            });
+            if (countPkgPages > 1) {
+                const plano = values.planos[pkgCounter] || null;
+                if (plano) {
+                    renderSinglePage(page, plano);
+                }
+                pkgCounter++;
+            } else {
+                values.planos.forEach(plano => {
+                    renderSinglePage(page, plano);
+                });
+            }
         } else {
             renderSinglePage(page);
         }

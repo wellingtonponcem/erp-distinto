@@ -353,6 +353,16 @@ function pdfTemplateEditor() {
             }
         ],
         get page() { return this.template.config.pages[this.currentPage] || null; },
+        get currentPackageMock() {
+            if (!this.page || !this.page.is_pacote) return this.planosMockados[0];
+            let countPkgPages = this.template.config.pages.filter(p => p.is_pacote).length;
+            if (countPkgPages > 1) {
+                let pkgPagesSoFar = this.template.config.pages.slice(0, this.currentPage + 1).filter(p => p.is_pacote);
+                let pkgIndex = Math.max(0, pkgPagesSoFar.length - 1);
+                return this.planosMockados[pkgIndex] || this.planosMockados[0];
+            }
+            return this.planosMockados[0];
+        },
         init() {
             if (!this.template.config) this.template.config = { pages: [] };
             if (!this.template.config.pages) this.template.config.pages = [];
@@ -374,7 +384,15 @@ function pdfTemplateEditor() {
             return window.crypto?.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2);
         },
         fieldPreview(field) {
-            const raw = field.text || this.values[field.key] || '{{' + field.key + '}}';
+            let mock = this.currentPackageMock;
+            let raw = field.text || '';
+            if (!raw) {
+                if (this.page?.is_pacote && mock && mock[field.key] !== undefined) {
+                    raw = mock[field.key];
+                } else {
+                    raw = this.values[field.key] || '{{' + field.key + '}}';
+                }
+            }
             return String(raw).replace(/\n/g, '<br>');
         },
         fieldStyle(field) {
@@ -691,11 +709,23 @@ function pdfTemplateEditor() {
             };
 
             const pagesHtml = [];
+            const packagePages = this.template.config.pages.filter(p => p.is_pacote);
+            const countPkgPages = packagePages.length;
+            let pkgCounter = 0;
+
             this.template.config.pages.forEach(page => {
                 if (page.is_pacote) {
-                    this.planosMockados.forEach(plano => {
-                        pagesHtml.push(renderPage(page, plano));
-                    });
+                    if (countPkgPages > 1) {
+                        const plano = this.planosMockados[pkgCounter] || null;
+                        if (plano) {
+                            pagesHtml.push(renderPage(page, plano));
+                        }
+                        pkgCounter++;
+                    } else {
+                        this.planosMockados.forEach(plano => {
+                            pagesHtml.push(renderPage(page, plano));
+                        });
+                    }
                 } else {
                     pagesHtml.push(renderPage(page));
                 }

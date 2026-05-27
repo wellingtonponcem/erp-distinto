@@ -8,8 +8,9 @@ Melhorias no ERP Distinto, com foco na consistência visual entre a proposta web
   - Ajustado o texto padrão de `experiencias_distintas_texto` em `includes/pdf_templates.php` e no editor `pdf_template_editor.php` para incluir o nome do casal e a última frase em negrito usando a tag `<b>`.
   - Atualizado o editor `pdf_template_editor.php` (no palco do Alpine.js com `x-html` e na janela de `preview`) para permitir a renderização de tags `<b>` e `<strong>` com segurança.
   - Modificado o arquivo `assets/js/propostas.js` na função `exportPdfTemplate` para interpretar tags HTML básicas de negrito (`<b>` e `<strong>`) utilizando `innerHTML` em vez de `textContent`, após sanitização.
-- **Páginas Dinâmicas de Pacotes Sequenciais**:
-  - Multiplica automaticamente as páginas de pacotes no PDF com base nos planos ativos na proposta de forma sequencial (Heritage, Cinematic e Essencial), mapeando as fotos correspondentes (`pacote_foto`).
+- **Páginas Dinâmicas de Pacotes Sequenciais e Resolutivas**:
+  - Implementada a renderização sequencial estrita quando o template possui mais de uma página marcada como `is_pacote`: a 1ª página renderiza o 1º pacote ativo (ex: Heritage), a 2ª o 2º pacote (ex: Cinematic) e a 3ª o 3º pacote (ex: Essencial). Se houver apenas 1 página de pacote no template, ela continua se multiplicando por todos para compatibilidade.
+  - Correção aplicada em tempo real no palco do editor (através da propriedade computada `currentPackageMock`), na janela de `preview()` e na exportação final de PDFs (`assets/js/propostas.js`), eliminando completamente o bug das páginas repetidas exibindo a mesma coisa.
   - Adicionado o **terceiro plano mockado** (Registro Essencial) na lista de planos de teste do editor para que o preview simule fielmente as 3 páginas completas.
 - **Usabilidade Simplificada de Foto**:
   - Criado o botão direto **"Adicionar Foto do Pacote"** no painel do editor para inserir o campo de imagem dinâmico instantaneamente.
