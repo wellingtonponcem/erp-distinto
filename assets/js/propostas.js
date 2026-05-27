@@ -312,7 +312,14 @@ async function exportPdfTemplate(config, values) {
 
         (page.fields || []).forEach(field => {
             const div = document.createElement('div');
-            div.textContent = field.text || values[field.key] || '';
+            const esc = (value) => String(value || '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
+            const rawText = field.text || values[field.key] || '';
+            const safeText = esc(rawText)
+                .replace(/&lt;b&gt;/g, '<b>')
+                .replace(/&lt;\/b&gt;/g, '</b>')
+                .replace(/&lt;strong&gt;/g, '<strong>')
+                .replace(/&lt;\/strong&gt;/g, '</strong>');
+            div.innerHTML = safeText;
             div.style.position = 'absolute';
             div.style.left = `${field.x || 0}%`;
             div.style.top = `${field.y || 0}%`;

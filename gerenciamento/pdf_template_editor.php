@@ -166,7 +166,7 @@ include __DIR__ . '/../includes/layout/head.php';
                                  :style="fieldStyle(field)"
                                  @mousedown.prevent="startDrag($event, field)"
                                  @click.stop="selectedField = field">
-                                <div class="pdf-field-text" x-text="fieldPreview(field)"></div>
+                                <div class="pdf-field-text" x-html="fieldPreview(field)"></div>
                                 <template x-if="selectedField && selectedField.id === field.id">
                                     <div>
                                         <span class="pdf-resize-handle nw" @mousedown.stop.prevent="startResize($event, field, 'nw')"></span>
@@ -260,7 +260,7 @@ function pdfTemplateEditor() {
             saudacao_casal: 'Ola, Igor & Gabriela!',
             mensagem_pessoal: 'A gente sabe que fotografia e muito mais do que so apertar um botao. Nosso trabalho e capturar o que voces sentem um pelo outro, de um jeito que pareca real e sem poses forcadas.',
             visao_ia: 'Uma leitura sensivel da historia do casal, transformando o dia em memoria visual com verdade, beleza e intencao.',
-            experiencias_distintas_texto: 'Na Distinto, nao comecamos com ideias soltas. Comecamos com clareza.\n\nDesenhamos tres caminhos estrategicos para que a historia de Igor & Gabriela seja preservada com a forca e a verdade que merecem.\n\nApresentamos nossas propostas de investimento. Cada uma delas foi pensada para transformar o seu casamento em uma experiencia totalmente nova, onde a nossa perspectiva artistica garante que todas as variaveis do dia ganhem o mais bonito sentido.\n\nEscolham o caminho que melhor se conecta com o sonho de voces.\n\nNossa meta e uma so: arrepiar.',
+            experiencias_distintas_texto: 'Na Distinto, nao comecamos com ideias soltas. Comecamos com clareza.\n\nDesenhamos tres caminhos estrategicos para que a historia de <b>Igor & Gabriela</b> seja preservada com a forca e a verdade que merecem.\n\nApresentamos nossas propostas de investimento. Cada uma delas foi pensada para transformar o seu casamento em uma experiencia totalmente nova, onde a nossa perspectiva artistica garante que todas as variaveis do dia ganhem o mais bonito sentido.\n\nEscolham o caminho que melhor se conecta com o sonho de voces.\n\n<b>Nossa meta e uma so: arrepiar.</b>',
             pacote_escolhido: 'Experiencia Heritage',
             valor_total: 'R$ 7.900,00',
             itens_inclusos: 'Cobertura documental\nAlbum\nDrone',
@@ -570,7 +570,13 @@ function pdfTemplateEditor() {
             const fontLink = this.googleFontUrl(this.usedFonts());
             const pages = this.template.config.pages.map(page => {
                 const fields = (page.fields || []).map(field => {
-                    const text = esc(field.text || this.values[field.key] || '{{' + field.key + '}}').replace(/\n/g, '<br>');
+                    const rawText = field.text || this.values[field.key] || '{{' + field.key + '}}';
+                    const text = esc(rawText)
+                        .replace(/&lt;b&gt;/g, '<b>')
+                        .replace(/&lt;\/b&gt;/g, '</b>')
+                        .replace(/&lt;strong&gt;/g, '<strong>')
+                        .replace(/&lt;\/strong&gt;/g, '</strong>')
+                        .replace(/\n/g, '<br>');
                     return `<div style="position:absolute;left:${field.x || 0}%;top:${field.y || 0}%;width:${field.w || 20}%;height:${field.h || 8}%;font-family:${esc(field.font || 'Arial')};font-size:${field.size || 18}px;color:${esc(field.color || '#111')};font-weight:${esc(field.weight || '400')};text-align:${esc(field.align || 'left')};line-height:${field.lineHeight || 1.25};white-space:pre-wrap;overflow:hidden;">${text}</div>`;
                 }).join('');
                 return `<section class="page"><img src="${esc(page.image)}">${fields}</section>`;
