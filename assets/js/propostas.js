@@ -291,7 +291,7 @@ async function exportPdfTemplate(config, values) {
     const stage = document.createElement('div');
     stage.className = 'pdf-export-stage pdf-template-export';
 
-    (config.pages || []).forEach(page => {
+    const renderSinglePage = (page, currentPlan = null) => {
         const pageEl = document.createElement('section');
         pageEl.className = 'pdf-export-page';
         pageEl.style.position = 'relative';
@@ -311,32 +311,62 @@ async function exportPdfTemplate(config, values) {
         pageEl.appendChild(img);
 
         (page.fields || []).forEach(field => {
-            const div = document.createElement('div');
             const esc = (value) => String(value || '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
-            const rawText = field.text || values[field.key] || '';
-            const safeText = esc(rawText)
-                .replace(/&lt;b&gt;/g, '<b>')
-                .replace(/&lt;\/b&gt;/g, '</b>')
-                .replace(/&lt;strong&gt;/g, '<strong>')
-                .replace(/&lt;\/strong&gt;/g, '</strong>');
-            div.innerHTML = safeText;
-            div.style.position = 'absolute';
-            div.style.left = `${field.x || 0}%`;
-            div.style.top = `${field.y || 0}%`;
-            div.style.width = `${field.w || 20}%`;
-            div.style.height = `${field.h || 8}%`;
-            div.style.fontFamily = field.font || 'Arial, sans-serif';
-            div.style.fontSize = `${(field.size || 18) * 0.63}px`;
-            div.style.color = field.color || '#111';
-            div.style.fontWeight = field.weight || '400';
-            div.style.textAlign = field.align || 'left';
-            div.style.lineHeight = field.lineHeight || 1.25;
-            div.style.whiteSpace = 'pre-wrap';
-            div.style.overflow = 'hidden';
-            pageEl.appendChild(div);
+            let rawText = field.text || '';
+            if (!rawText) {
+                if (currentPlan && currentPlan[field.key] !== undefined) {
+                    rawText = currentPlan[field.key];
+                } else {
+                    rawText = values[field.key] || '';
+                }
+            }
+
+            let element;
+            if (field.key === 'pacote_foto') {
+                element = document.createElement('img');
+                element.src = rawText;
+                element.crossOrigin = 'anonymous';
+                element.style.objectFit = 'cover';
+            } else {
+                element = document.createElement('div');
+                const safeText = esc(rawText)
+                    .replace(/&lt;b&gt;/g, '<b>')
+                    .replace(/&lt;\/b&gt;/g, '</b>')
+                    .replace(/&lt;strong&gt;/g, '<strong>')
+                    .replace(/&lt;\/strong&gt;/g, '</strong>');
+                element.innerHTML = safeText;
+            }
+
+            element.style.position = 'absolute';
+            element.style.left = `${field.x || 0}%`;
+            element.style.top = `${field.y || 0}%`;
+            element.style.width = `${field.w || 20}%`;
+            element.style.height = `${field.h || 8}%`;
+            element.style.fontFamily = field.font || 'Arial, sans-serif';
+            
+            const fontScale = field.scale || 1;
+            element.style.fontSize = `${(field.size || 18) * fontScale * 0.63}px`;
+            
+            element.style.color = field.color || '#111';
+            element.style.fontWeight = field.weight || '400';
+            element.style.textAlign = field.align || 'left';
+            element.style.lineHeight = field.lineHeight || 1.25;
+            element.style.whiteSpace = 'pre-wrap';
+            element.style.overflow = 'hidden';
+            pageEl.appendChild(element);
         });
 
         stage.appendChild(pageEl);
+    };
+
+    (config.pages || []).forEach(page => {
+        if (page.is_pacote && values.planos && values.planos.length > 0) {
+            values.planos.forEach(plano => {
+                renderSinglePage(page, plano);
+            });
+        } else {
+            renderSinglePage(page);
+        }
     });
 
     document.body.appendChild(stage);

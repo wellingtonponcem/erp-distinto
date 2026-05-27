@@ -64,6 +64,13 @@ $camposPorSessao = [
     '07 - Andamento da negociacao' => [
         'andamento_proposta' => 'Historico/andamento',
     ],
+    '08 - Pagina Dinamica de Pacote' => [
+        'pacote_nome' => 'Nome do pacote',
+        'pacote_valor' => 'Valor do pacote',
+        'pacote_itens' => 'Itens do pacote',
+        'pacote_condicoes' => 'Condicoes do pacote',
+        'pacote_foto' => 'Foto do pacote (Imagem)',
+    ],
     '99 - Dados gerais' => [
         'cliente_nome' => 'Nome do cliente',
         'titulo_proposta' => 'Titulo da proposta',
@@ -150,6 +157,11 @@ include __DIR__ . '/../includes/layout/head.php';
                     <button type="button" @click="$refs.replaceUpload.click()" class="btn w-full" :disabled="!page || uploading">Substituir imagem</button>
                     <button type="button" @click="removePage()" class="btn w-full text-red-500" :disabled="!page || uploading">Remover pagina</button>
                     <input type="file" x-ref="replaceUpload" class="hidden" accept="image/png,image/jpeg,image/webp" @change="replacePage($event)">
+                    <template x-if="page">
+                        <label class="flex items-center gap-2 text-xs font-black mt-4 text-zinc-700 bg-zinc-100 p-2 rounded-lg cursor-pointer">
+                            <input type="checkbox" x-model="page.is_pacote"> Página de Pacotes
+                        </label>
+                    </template>
                 </div>
             </aside>
 
@@ -166,7 +178,14 @@ include __DIR__ . '/../includes/layout/head.php';
                                  :style="fieldStyle(field)"
                                  @mousedown.prevent="startDrag($event, field)"
                                  @click.stop="selectedField = field">
-                                <div class="pdf-field-text" x-html="fieldPreview(field)"></div>
+                                <div class="pdf-field-text">
+                                    <template x-if="field.key === 'pacote_foto'">
+                                        <img :src="fieldPreview(field)" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;">
+                                    </template>
+                                    <template x-if="field.key !== 'pacote_foto'">
+                                        <div x-html="fieldPreview(field)" style="width: 100%; height: 100%;"></div>
+                                    </template>
+                                </div>
                                 <template x-if="selectedField && selectedField.id === field.id">
                                     <div>
                                         <span class="pdf-resize-handle nw" @mousedown.stop.prevent="startResize($event, field, 'nw')"></span>
@@ -222,12 +241,15 @@ include __DIR__ . '/../includes/layout/head.php';
                                 </select>
                             </div>
                             <div><label class="prop-label">Tamanho</label><input type="number" class="input" x-model.number="selectedField.size"></div>
+                            <div><label class="prop-label">Upscaling Fonte</label><input type="number" step="0.1" class="input" placeholder="Ex: 1.0" x-model.number="selectedField.scale"></div>
                             <div><label class="prop-label">Cor</label><input type="color" class="input h-10" x-model="selectedField.color"></div>
-                            <div><label class="prop-label">Peso</label><select class="input" x-model="selectedField.weight"><option value="400">Normal</option><option value="700">Negrito</option><option value="900">Black</option></select></div>
                         </div>
-                        <div>
-                            <label class="prop-label">Alinhamento</label>
-                            <select class="input" x-model="selectedField.align"><option value="left">Esquerda</option><option value="center">Centro</option><option value="right">Direita</option></select>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div><label class="prop-label">Peso</label><select class="input" x-model="selectedField.weight"><option value="400">Normal</option><option value="700">Negrito</option><option value="900">Black</option></select></div>
+                            <div>
+                                <label class="prop-label">Alinhamento</label>
+                                <select class="input" x-model="selectedField.align"><option value="left">Esquerda</option><option value="center">Centro</option><option value="right">Direita</option></select>
+                            </div>
                         </div>
                         <button type="button" @click="removeField()" class="btn w-full text-red-500">Remover campo</button>
                     </div>
@@ -264,8 +286,29 @@ function pdfTemplateEditor() {
             pacote_escolhido: 'Experiencia Heritage',
             valor_total: 'R$ 7.900,00',
             itens_inclusos: 'Cobertura documental\nAlbum\nDrone',
-            condicoes_pagamento: 'Entrada de 20% + saldo parcelado'
+            condicoes_pagamento: 'Entrada de 20% + saldo parcelado',
+            pacote_nome: 'Experiencia Heritage',
+            pacote_valor: 'R$ 7.900,00',
+            pacote_itens: 'Cobertura documental\nAlbum master de luxo\nDrone profissional\nEnsaio pre-wedding',
+            pacote_condicoes: 'Entrada de 20% + Saldo parcelado em ate 6x',
+            pacote_foto: '/imagens-proposta-casamento/foto-section-07.png'
         },
+        planosMockados: [
+            {
+                pacote_nome: 'Experiencia Heritage',
+                pacote_valor: 'R$ 7.900,00',
+                pacote_itens: 'Cobertura documental\nAlbum master de luxo\nDrone profissional\nEnsaio pre-wedding',
+                pacote_condicoes: 'Entrada de 20% + Saldo parcelado em ate 6x',
+                pacote_foto: '/imagens-proposta-casamento/foto-section-07.png'
+            },
+            {
+                pacote_nome: 'Experiencia Cinematic',
+                pacote_valor: 'R$ 4.500,00',
+                pacote_itens: 'Cobertura documental\nShort film (video)\nAlbum standard\nMaking of',
+                pacote_condicoes: 'Entrada de 20% + Saldo parcelado em ate 6x',
+                pacote_foto: '/imagens-proposta-casamento/foto-section-08.png'
+            }
+        ],
         get page() { return this.template.config.pages[this.currentPage] || null; },
         init() {
             if (!this.template.config) this.template.config = { pages: [] };
@@ -291,7 +334,8 @@ function pdfTemplateEditor() {
             return field.text || this.values[field.key] || '{{' + field.key + '}}';
         },
         fieldStyle(field) {
-            const size = Math.max(1, (field.size || 18) * this.stageScale);
+            const fontScale = field.scale || 1;
+            const size = Math.max(1, (field.size || 18) * fontScale * this.stageScale);
             return `left:${field.x}%;top:${field.y}%;width:${field.w}%;height:${field.h}%;font-family:${field.font};font-size:${size}px;color:${field.color};font-weight:${field.weight};text-align:${field.align};line-height:${field.lineHeight || 1.25};`;
         },
         updateStageScale() {
@@ -568,20 +612,50 @@ function pdfTemplateEditor() {
             if (!win) return alert('Permita pop-ups para visualizar o template.');
             const esc = (value) => String(value || '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
             const fontLink = this.googleFontUrl(this.usedFonts());
-            const pages = this.template.config.pages.map(page => {
+            
+            const renderPage = (page, currentPlan = null) => {
                 const fields = (page.fields || []).map(field => {
-                    const rawText = field.text || this.values[field.key] || '{{' + field.key + '}}';
+                    let rawText = field.text || '';
+                    if (!rawText) {
+                        if (currentPlan && currentPlan[field.key] !== undefined) {
+                            rawText = currentPlan[field.key];
+                        } else {
+                            rawText = this.values[field.key] || '{{' + field.key + '}}';
+                        }
+                    }
+                    
+                    if (field.key === 'pacote_foto') {
+                        return `<img src="${esc(rawText)}" style="position:absolute;left:${field.x || 0}%;top:${field.y || 0}%;width:${field.w || 20}%;height:${field.h || 8}%;object-fit:cover;overflow:hidden;">`;
+                    }
+                    
                     const text = esc(rawText)
                         .replace(/&lt;b&gt;/g, '<b>')
                         .replace(/&lt;\/b&gt;/g, '</b>')
                         .replace(/&lt;strong&gt;/g, '<strong>')
                         .replace(/&lt;\/strong&gt;/g, '</strong>')
                         .replace(/\n/g, '<br>');
-                    return `<div style="position:absolute;left:${field.x || 0}%;top:${field.y || 0}%;width:${field.w || 20}%;height:${field.h || 8}%;font-family:${esc(field.font || 'Arial')};font-size:${field.size || 18}px;color:${esc(field.color || '#111')};font-weight:${esc(field.weight || '400')};text-align:${esc(field.align || 'left')};line-height:${field.lineHeight || 1.25};white-space:pre-wrap;overflow:hidden;">${text}</div>`;
+                    
+                    const fontScale = field.scale || 1;
+                    const scaledSize = (field.size || 18) * fontScale;
+                    
+                    return `<div style="position:absolute;left:${field.x || 0}%;top:${field.y || 0}%;width:${field.w || 20}%;height:${field.h || 8}%;font-family:${esc(field.font || 'Arial')};font-size:${scaledSize}px;color:${esc(field.color || '#111')};font-weight:${esc(field.weight || '400')};text-align:${esc(field.align || 'left')};line-height:${field.lineHeight || 1.25};white-space:pre-wrap;overflow:hidden;">${text}</div>`;
                 }).join('');
+                
                 return `<section class="page"><img src="${esc(page.image)}">${fields}</section>`;
-            }).join('');
-            win.document.write(`<!doctype html><html><head><title>Preview PDF</title>${fontLink ? `<link rel="stylesheet" href="${esc(fontLink)}">` : ''}<style>body{margin:0;background:#222;font-family:Arial,sans-serif}.page{position:relative;width:960px;height:540px;margin:24px auto;background:#fff;overflow:hidden}.page img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}@media print{@page{size:160mm 90mm;margin:0}body{background:#fff}.page{margin:0;width:160mm;height:90mm;page-break-after:always}}</style></head><body>${pages}</body></html>`);
+            };
+
+            const pagesHtml = [];
+            this.template.config.pages.forEach(page => {
+                if (page.is_pacote) {
+                    this.planosMockados.forEach(plano => {
+                        pagesHtml.push(renderPage(page, plano));
+                    });
+                } else {
+                    pagesHtml.push(renderPage(page));
+                }
+            });
+            
+            win.document.write(`<!doctype html><html><head><title>Preview PDF</title>${fontLink ? `<link rel="stylesheet" href="${esc(fontLink)}">` : ''}<style>body{margin:0;background:#222;font-family:Arial,sans-serif}.page{position:relative;width:960px;height:540px;margin:24px auto;background:#fff;overflow:hidden}.page img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}@media print{@page{size:160mm 90mm;margin:0}body{background:#fff}.page{margin:0;width:160mm;height:90mm;page-break-after:always}}</style></head><body>${pagesHtml.join('')}</body></html>`);
             win.document.close();
         }
     }

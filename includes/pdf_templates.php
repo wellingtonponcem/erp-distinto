@@ -106,6 +106,77 @@ function dadosPdfProposta(array $proposta): array
         if ($item) $itens[] = '+ ' . $item;
     }
 
+    $planosAtivos = [];
+    
+    // Heritage
+    if (($dados['show_heritage'] ?? true) !== false) {
+        $itensH = [];
+        $itensTextoH = $dados['itens_heritage'] ?? '';
+        foreach (preg_split('/\r\n|\r|\n/', $itensTextoH) as $linha) {
+            $linha = trim($linha);
+            if ($linha !== '') $itensH[] = $linha;
+        }
+        foreach (($dados['itens_personalizados']['heritage'] ?? []) as $item) {
+            if (!empty($item['nome']) && (($item['incluido'] ?? '1') !== '0')) {
+                $itensH[] = $item['nome'] . (!empty($item['descricao']) ? ': ' . $item['descricao'] : '');
+            }
+        }
+        $planosAtivos[] = [
+            'id' => 'heritage',
+            'pacote_nome' => 'Experiencia Heritage',
+            'pacote_valor' => formatarValorPdf($dados['valor_heritage'] ?? 7900),
+            'pacote_itens' => implode("\n", array_unique($itensH)),
+            'pacote_condicoes' => $dados['condicoes_heritage_cinematic'] ?? 'Entrada de 20% + Saldo parcelado em até 6x',
+            'pacote_foto' => raizUrl('/imagens-proposta-casamento/foto-section-07.png')
+        ];
+    }
+    
+    // Cinematic
+    if (($dados['show_cinematic'] ?? true) !== false) {
+        $itensC = [];
+        $itensTextoC = $dados['itens_cinematic'] ?? '';
+        foreach (preg_split('/\r\n|\r|\n/', $itensTextoC) as $linha) {
+            $linha = trim($linha);
+            if ($linha !== '') $itensC[] = $linha;
+        }
+        foreach (($dados['itens_personalizados']['cinematic'] ?? []) as $item) {
+            if (!empty($item['nome']) && (($item['incluido'] ?? '1') !== '0')) {
+                $itensC[] = $item['nome'] . (!empty($item['descricao']) ? ': ' . $item['descricao'] : '');
+            }
+        }
+        $planosAtivos[] = [
+            'id' => 'cinematic',
+            'pacote_nome' => 'Experiencia Cinematic',
+            'pacote_valor' => formatarValorPdf($dados['valor_cinematic'] ?? 4500),
+            'pacote_itens' => implode("\n", array_unique($itensC)),
+            'pacote_condicoes' => $dados['condicoes_heritage_cinematic'] ?? 'Entrada de 20% + Saldo parcelado em até 6x',
+            'pacote_foto' => raizUrl('/imagens-proposta-casamento/foto-section-08.png')
+        ];
+    }
+    
+    // Essencial
+    if (($dados['show_essencial'] ?? true) !== false) {
+        $itensE = [];
+        $itensTextoE = $dados['itens_essencial'] ?? '';
+        foreach (preg_split('/\r\n|\r|\n/', $itensTextoE) as $linha) {
+            $linha = trim($linha);
+            if ($linha !== '') $itensE[] = $linha;
+        }
+        foreach (($dados['itens_personalizados']['essencial'] ?? []) as $item) {
+            if (!empty($item['nome']) && (($item['incluido'] ?? '1') !== '0')) {
+                $itensE[] = $item['nome'] . (!empty($item['descricao']) ? ': ' . $item['descricao'] : '');
+            }
+        }
+        $planosAtivos[] = [
+            'id' => 'essencial',
+            'pacote_nome' => 'Registro Essencial',
+            'pacote_valor' => formatarValorPdf($dados['valor_essencial'] ?? 2800),
+            'pacote_itens' => implode("\n", array_unique($itensE)),
+            'pacote_condicoes' => $dados['condicoes_essencial'] ?? 'Entrada de 25% + Saldo parcelado em até 5x',
+            'pacote_foto' => raizUrl('/imagens-proposta-casamento/foto-section-09.png')
+        ];
+    }
+
     return [
         'cliente_nome' => $proposta['cliente_nome'] ?? '',
         'titulo_proposta' => $proposta['titulo'] ?? '',
@@ -125,5 +196,6 @@ function dadosPdfProposta(array $proposta): array
         'mensagem_pessoal' => $mensagemPessoal,
         'prazo_previas' => $dados['prazo_previas'] ?? '',
         'prazo_final' => $dados['prazo_final'] ?? '',
+        'planos' => $planosAtivos,
     ];
 }
