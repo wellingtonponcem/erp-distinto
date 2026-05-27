@@ -354,6 +354,54 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                             <?php endforeach; ?>
                         </div>
 
+                        <div class="border-t border-white/5 pt-8 mt-8">
+                            <h3 class="text-sm font-bold text-white mb-6 flex items-center gap-2">
+                                <i data-lucide="git-branch" class="w-4 h-4 text-amber-400"></i> Revisao e proposta consolidada
+                            </h3>
+                            <div class="space-y-6">
+                                <label class="flex items-center justify-between p-4 rounded-2xl upgrade-card cursor-pointer">
+                                    <div class="flex flex-col">
+                                        <span class="text-[11px] font-bold text-zinc-100">Usar preco unico nesta proposta</span>
+                                        <span class="text-[9px] text-zinc-500">Substitui as opcoes por um investimento consolidado.</span>
+                                    </div>
+                                    <div class="switch">
+                                        <input type="checkbox" name="preco_unico_ativo" x-model="precoUnicoAtivo">
+                                        <span class="slider"></span>
+                                    </div>
+                                </label>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" x-show="precoUnicoAtivo" x-collapse>
+                                    <div class="form-group">
+                                        <label class="label-premium">Titulo do pacote</label>
+                                        <input type="text" name="preco_unico_titulo" class="input" x-model="precoUnicoTitulo">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="label-premium">Valor unico (R$)</label>
+                                        <input type="number" step="0.01" name="preco_unico_valor" class="input font-bold" x-model="precoUnicoValor">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="label-premium">Versao</label>
+                                        <input type="text" name="versao_proposta" class="input" x-model="versaoProposta">
+                                    </div>
+                                    <div class="md:col-span-3 form-group">
+                                        <label class="label-premium">Itens inclusos no preco unico</label>
+                                        <textarea name="preco_unico_itens" class="input text-xs leading-relaxed" x-model="precoUnicoItens" rows="4"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="label-premium">Ajustes apos alinhamento</label>
+                                    <textarea name="atualizacoes_versao" class="input text-xs leading-relaxed" x-model="atualizacoesVersao" rows="3"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="label-premium">Andamento da proposta</label>
+                                    <textarea name="andamento_proposta" class="input text-xs leading-relaxed" x-model="andamentoProposta" rows="4"></textarea>
+                                    <label class="flex items-center gap-2 mt-3 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+                                        <input type="checkbox" name="mostrar_andamento_cliente" x-model="mostrarAndamentoCliente" class="w-4 h-4 rounded border-zinc-300">
+                                        Mostrar andamento para o cliente
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Condições Financeiras (Casamento) -->
                         <div class="border-t border-white/5 pt-8 mt-8">
                             <h4 class="text-[11px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-6">Condições de Pagamento e Reserva</h4>
@@ -635,6 +683,14 @@ document.addEventListener('alpine:init', () => {
         itensEssencial: 'Cobertura Fotográfica Essencial',
         valorBoudoir: '',
         valorPrewedding: '',
+        precoUnicoAtivo: false,
+        precoUnicoTitulo: 'Proposta Consolidada',
+        precoUnicoValor: '',
+        precoUnicoItens: '',
+        atualizacoesVersao: '',
+        andamentoProposta: '',
+        mostrarAndamentoCliente: true,
+        versaoProposta: 'v2',
         condicoesReserva: '',
         condicoesHeritageCinematic: '',
         condicoesEssencial: '',
@@ -694,6 +750,15 @@ document.addEventListener('alpine:init', () => {
             this.valorEssencial = dados.valor_essencial || '';
             this.itensEssencial = dados.itens_essencial || 'Cobertura Fotográfica Essencial';
             
+            this.precoUnicoAtivo = !!dados.preco_unico_ativo;
+            this.precoUnicoTitulo = dados.preco_unico_titulo || 'Proposta Consolidada';
+            this.precoUnicoValor = dados.preco_unico_valor || '';
+            this.precoUnicoItens = dados.preco_unico_itens || 'Album para os clientes\nCaptacao por drone';
+            this.atualizacoesVersao = dados.atualizacoes_versao || 'Inclusao de 1 album para os clientes.\nInclusao de captacao por drone.\nConsolidacao do investimento em um valor unico.';
+            this.andamentoProposta = dados.andamento_proposta || '';
+            this.mostrarAndamentoCliente = (dados.mostrar_andamento_cliente !== undefined) ? !!dados.mostrar_andamento_cliente : true;
+            this.versaoProposta = dados.versao_proposta || 'v2';
+
             this.condicoesReserva = dados.condicoes_reserva || 'A reserva da data é oficializada mediante a assinatura do contrato e o pagamento do sinal (entrada).';
             this.condicoesHeritageCinematic = dados.condicoes_heritage_cinematic || 'Entrada de 20% + Saldo parcelado';
             this.condicoesEssencial = dados.condicoes_essencial || 'Entrada de 25% + Saldo parcelado';

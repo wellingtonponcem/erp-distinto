@@ -101,6 +101,15 @@ $itensHeritage = $dados['itens_heritage'] ?? "Cobertura Documental Completa: Pre
 $itensCinematic = $dados['itens_cinematic'] ?? "Cobertura Cinematográfica 8h: Foco narrativo e estético.\nSessão Engagement (Pré-Wedding): Ensaio externo com fotos e vídeo.\nShort Film: Filme de 4 a 6 minutos.\nSocial Content Kit: Material otimizado para Instagram.\nMaking Of Completo: Registro dos preparativos do casal.\nBônus: Pendrive de luxo com arquivos em alta resolução.";
 $itensEssencial = $dados['itens_essencial'] ?? "Cobertura Fotográfica 6h: Foco no essencial do evento.\nGaleria Online: Entrega digital em alta resolução.\nEdição Especial: Curadoria de fotos com tratamento Distinto.\nEntrega em até 45 dias.";
 
+$precoUnicoAtivo = !empty($dados['preco_unico_ativo']);
+$precoUnicoTitulo = trim($dados['preco_unico_titulo'] ?? 'Proposta Consolidada') ?: 'Proposta Consolidada';
+$precoUnicoValor = $dados['preco_unico_valor'] ?? '';
+$precoUnicoItens = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $dados['preco_unico_itens'] ?? ''))));
+$atualizacoesVersao = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $dados['atualizacoes_versao'] ?? ''))));
+$andamentoProposta = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $dados['andamento_proposta'] ?? ''))));
+$mostrarAndamentoCliente = !empty($dados['mostrar_andamento_cliente']);
+$versaoProposta = trim($dados['versao_proposta'] ?? '');
+
 // Formatação de Moeda Helper
 if (!function_exists('fmt')) {
     function fmt($valor)
@@ -1066,7 +1075,71 @@ if (!function_exists('fmt')) {
             style="opacity: 1; z-index: 1;">
     </section>
 
-    <?php if (($dados['show_heritage'] ?? true) !== false): ?>
+    <?php if (!empty($atualizacoesVersao) || ($mostrarAndamentoCliente && !empty($andamentoProposta))): ?>
+    <section class="slide" style="padding: 0; background: #f7f6f4; display: flex; flex-direction: row; overflow: hidden; height: 100vh; width: 100%;">
+        <div style="flex: 0.9; background: #1a1a1a; color: white; padding: 0 7vw; display: flex; flex-direction: column; justify-content: center;">
+            <p style="font-family: var(--wedding-montserrat); font-size: 0.75rem; letter-spacing: 0.25em; color: var(--wedding-gold); text-transform: uppercase; margin-bottom: 22px;">
+                <?= htmlspecialchars($versaoProposta ?: 'Proposta revisada') ?>
+            </p>
+            <h2 style="font-family: var(--wedding-montserrat); font-size: 3.2rem; font-weight: 300; letter-spacing: 0.06em; color: white; text-transform: uppercase; line-height: 1.1; margin-bottom: 28px;">
+                AJUSTES APOS<br>ALINHAMENTO
+            </h2>
+            <p style="font-family: var(--wedding-montserrat); font-size: 0.98rem; line-height: 1.8; color: rgba(255,255,255,0.72); margin: 0;">
+                Esta versao consolida o escopo negociado e substitui as condicoes comerciais apresentadas anteriormente.
+            </p>
+        </div>
+        <div style="flex: 1.1; padding: 0 7vw; display: flex; flex-direction: column; justify-content: center;">
+            <?php if (!empty($atualizacoesVersao)): ?>
+            <h3 style="font-family: var(--wedding-montserrat); font-size: 0.85rem; font-weight: 800; letter-spacing: 0.18em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 18px;">Atualizacoes desta versao</h3>
+            <ul style="list-style: none; padding: 0; margin: 0 0 34px;">
+                <?php foreach ($atualizacoesVersao as $linha): ?>
+                <li style="font-family: var(--wedding-montserrat); font-size: 1rem; line-height: 1.7; color: #333; margin-bottom: 12px; padding-left: 22px; position: relative;">
+                    <span style="position: absolute; left: 0; color: var(--wedding-gold);">•</span><?= htmlspecialchars($linha) ?>
+                </li>
+                <?php endforeach; ?>
+            </ul>
+            <?php endif; ?>
+            <?php if ($mostrarAndamentoCliente && !empty($andamentoProposta)): ?>
+            <h3 style="font-family: var(--wedding-montserrat); font-size: 0.85rem; font-weight: 800; letter-spacing: 0.18em; color: #1a1a1a; text-transform: uppercase; margin-bottom: 18px;">Andamento da proposta</h3>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <?php foreach ($andamentoProposta as $linha): ?>
+                <div style="background: #fff; border-left: 3px solid var(--wedding-gold); padding: 12px 16px; font-family: var(--wedding-montserrat); font-size: 0.82rem; line-height: 1.6; color: #444;">
+                    <?= htmlspecialchars($linha) ?>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <?php if ($precoUnicoAtivo): ?>
+    <section class="slide" style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; height: 100vh; width: 100%;">
+        <div style="flex: 1; height: 100%;">
+            <img src="<?= raizUrl('/imagens-proposta-casamento/foto-section-07.png') ?>" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div style="flex: 1.1; padding: 0 7vw; display: flex; flex-direction: column; justify-content: center; background: #f9f9f9; position: relative;">
+            <h2 style="font-family: var(--wedding-montserrat); font-size: 3.3rem; font-weight: 300; letter-spacing: 0.05em; color: #1a1a1a; text-transform: uppercase; line-height: 1.1; margin-bottom: 26px;">
+                <?= htmlspecialchars($precoUnicoTitulo) ?>
+            </h2>
+            <ul style="list-style: none; padding: 0; margin: 0 0 34px;">
+                <?php foreach ($precoUnicoItens as $linha): ?>
+                <li style="font-family: var(--wedding-montserrat); font-size: 1rem; line-height: 1.65; color: #444; margin-bottom: 11px; padding-left: 22px; position: relative;">
+                    <span style="position: absolute; left: 0; color: #1a1a1a;">•</span><?= htmlspecialchars($linha) ?>
+                </li>
+                <?php endforeach; ?>
+            </ul>
+            <div style="border-top: 1px solid #dcdcdc; padding-top: 24px;">
+                <p style="font-family: var(--wedding-montserrat); font-size: 0.8rem; font-weight: 800; letter-spacing: 0.2em; color: #888; text-transform: uppercase; margin-bottom: 8px;">Investimento unico</p>
+                <p style="font-family: var(--wedding-serif); font-size: 3rem; line-height: 1; color: #1a1a1a; margin: 0;">
+                    <?= fmt($precoUnicoValor) ?>
+                </p>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
+
+    <?php if (!$precoUnicoAtivo && (($dados['show_heritage'] ?? true) !== false)): ?>
     <!-- PÁGINA 08: EXPERIÊNCIA HERITAGE -->
     <section class="slide package-slide"
         style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
@@ -1146,7 +1219,7 @@ if (!function_exists('fmt')) {
     </section>
     <?php endif; ?>
 
-    <?php if (($dados['show_cinematic'] ?? true) !== false): ?>
+    <?php if (!$precoUnicoAtivo && (($dados['show_cinematic'] ?? true) !== false)): ?>
     <!-- PÁGINA 09: EXPERIÊNCIA CINEMATIC -->
     <section class="slide package-slide"
         style="padding: 0; background: #fff; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
@@ -1240,7 +1313,7 @@ if (!function_exists('fmt')) {
     </section>
     <?php endif; ?>
 
-    <?php if (($dados['show_essencial'] ?? true) !== false): ?>
+    <?php if (!$precoUnicoAtivo && (($dados['show_essencial'] ?? true) !== false)): ?>
     <!-- PÁGINA 10: REGISTRO ESSENCIAL -->
     <section class="slide package-slide"
         style="padding: 0; background: #f4f4f4; display: flex; flex-direction: row; overflow: hidden; position: relative; height: 100vh; width: 100%;">
@@ -1353,6 +1426,7 @@ if (!function_exists('fmt')) {
                 </p>
             </div>
 
+            <?php if (!$precoUnicoAtivo): ?>
             <!-- Cards de Condições -->
             <div class="reveal-item investimento-cards" style="display: flex; gap: 20px; width: 100%; max-width: 800px;">
                 <!-- Heritage & Cinematic -->
@@ -1378,7 +1452,10 @@ if (!function_exists('fmt')) {
         </div>
     </section>
 
+    <?php endif; ?>
+
     <!-- PÁGINA 11: ESCOLHA SEU PACOTE — INTERATIVO -->
+    <?php if (!$precoUnicoAtivo): ?>
     <?php
     $pHeritage = is_numeric($dados['valor_heritage'] ?? '') ? (float) $dados['valor_heritage'] : 7900;
     $pCinematic = is_numeric($dados['valor_cinematic'] ?? '') ? (float) $dados['valor_cinematic'] : 4500;
@@ -1889,6 +1966,8 @@ if (!function_exists('fmt')) {
             })();
         </script>
     </div>
+
+    <?php endif; ?>
 
     <!-- PÁGINA 12: WEDDING PORTFOLIO CAPA -->
     <section id="wedding-portfolio" class="slide portfolio-capa-slide"

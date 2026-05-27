@@ -417,6 +417,52 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         <?php endforeach; ?>
 
                         <div class="border-t border-zinc-100/50 pt-8 mt-8">
+                            <h4 class="text-[11px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-6">Revisao e proposta consolidada</h4>
+                            <div class="space-y-6">
+                                <label class="flex items-center justify-between p-4 rounded-2xl upgrade-card cursor-pointer">
+                                    <div class="flex flex-col">
+                                        <span class="text-[11px] font-bold text-zinc-100">Usar preco unico nesta proposta</span>
+                                        <span class="text-[9px] text-zinc-500">Substitui as opcoes por um investimento consolidado.</span>
+                                    </div>
+                                    <div class="switch">
+                                        <input type="checkbox" name="preco_unico_ativo" x-model="precoUnicoAtivo">
+                                        <span class="slider"></span>
+                                    </div>
+                                </label>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" x-show="precoUnicoAtivo" x-collapse>
+                                    <div class="form-group">
+                                        <label class="label-premium">Titulo do pacote</label>
+                                        <input type="text" name="preco_unico_titulo" class="input" x-model="precoUnicoTitulo" placeholder="Proposta Consolidada">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="label-premium">Valor unico (R$)</label>
+                                        <input type="number" step="0.01" name="preco_unico_valor" class="input font-bold" x-model="precoUnicoValor" placeholder="0,00">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="label-premium">Versao</label>
+                                        <input type="text" name="versao_proposta" class="input" x-model="versaoProposta" placeholder="v2">
+                                    </div>
+                                    <div class="md:col-span-3 form-group">
+                                        <label class="label-premium">Itens inclusos no preco unico</label>
+                                        <textarea name="preco_unico_itens" class="input text-xs leading-relaxed" x-model="precoUnicoItens" rows="4" placeholder="Album para os clientes&#10;Captacao por drone&#10;Cobertura fotografica do evento"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="label-premium">Ajustes apos alinhamento</label>
+                                    <textarea name="atualizacoes_versao" class="input text-xs leading-relaxed" x-model="atualizacoesVersao" rows="3" placeholder="Inclusao de 1 album para os clientes.&#10;Inclusao de captacao por drone.&#10;Consolidacao do investimento em um valor unico."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="label-premium">Andamento da proposta</label>
+                                    <textarea name="andamento_proposta" class="input text-xs leading-relaxed" x-model="andamentoProposta" rows="4" placeholder="20/05/2026 | Proposta inicial enviada | Pacote fotografico e galeria digital | Comercial | Enviada&#10;26/05/2026 | Proposta revisada | Album e drone incluidos com preco unico | Comercial + IA | Pronta para envio"></textarea>
+                                    <label class="flex items-center gap-2 mt-3 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+                                        <input type="checkbox" name="mostrar_andamento_cliente" x-model="mostrarAndamentoCliente" class="w-4 h-4 rounded border-zinc-300">
+                                        Mostrar andamento para o cliente
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-zinc-100/50 pt-8 mt-8">
                             <h4 class="text-[11px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-6">Condições de Pagamento e Reserva</h4>
                             <div class="space-y-6">
                                 <div class="form-group">
@@ -736,6 +782,14 @@ document.addEventListener('alpine:init', () => {
         itensEssencial: `<?= $essencialPkg['beneficios_json'] ?? '' ?>`,
         valorBoudoir: '',
         valorPrewedding: '',
+        precoUnicoAtivo: false,
+        precoUnicoTitulo: 'Proposta Consolidada',
+        precoUnicoValor: '',
+        precoUnicoItens: 'Album para os clientes\nCaptacao por drone',
+        atualizacoesVersao: 'Inclusao de 1 album para os clientes.\nInclusao de captacao por drone.\nConsolidacao do investimento em um valor unico.',
+        andamentoProposta: '',
+        mostrarAndamentoCliente: true,
+        versaoProposta: 'v2',
         condicoesReserva: 'A reserva da data é oficializada mediante a assinatura do contrato e o pagamento do sinal (entrada), que pode ser de 20% ou 25% do valor do pacote escolhido.\nOpções de Parcelamento: Oferecemos flexibilidade para que o saldo seja quitado de forma equilibrada até a data do evento:',
         condicoesHeritageCinematic: 'Entrada de 20% + Saldo parcelado em até 6x (dependendo do pacote selecionado)',
         condicoesEssencial: 'Entrada de 25% + Saldo parcelado em até 5x (dependendo do pacote selecionado)',
