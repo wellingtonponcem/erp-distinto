@@ -258,8 +258,8 @@ async function exportPdfTemplate(config, values) {
         const pageEl = document.createElement('section');
         pageEl.className = 'pdf-export-page';
         pageEl.style.position = 'relative';
-        pageEl.style.width = '297mm';
-        pageEl.style.height = '210mm';
+        pageEl.style.width = '160mm';
+        pageEl.style.height = '90mm';
         pageEl.style.overflow = 'hidden';
         pageEl.style.background = '#fff';
 
@@ -299,7 +299,7 @@ async function exportPdfTemplate(config, values) {
     await new Promise(resolve => setTimeout(resolve, 500));
 
     const pages = Array.from(stage.querySelectorAll('.pdf-export-page'));
-    const pdf = new JsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4', compress: true });
+    const pdf = new JsPDF({ orientation: 'landscape', unit: 'mm', format: [160, 90], compress: true });
     const filenameBase = (document.title || 'proposta-comercial').replace(/[\\/:*?"<>|]+/g, '-').slice(0, 90);
 
     try {
@@ -316,8 +316,8 @@ async function exportPdfTemplate(config, values) {
                 scrollX: 0,
                 scrollY: 0
             });
-            if (index > 0) pdf.addPage('a4', 'landscape');
-            pdf.addImage(canvas.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, 297, 210, undefined, 'FAST');
+            if (index > 0) pdf.addPage([160, 90], 'landscape');
+            pdf.addImage(canvas.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, 160, 90, undefined, 'FAST');
         }
         pdf.save(`${filenameBase}.pdf`);
     } catch (error) {

@@ -47,7 +47,7 @@ include __DIR__ . '/../includes/layout/head.php';
 <style>
     .pdf-editor-shell { display: grid; grid-template-columns: 240px minmax(0, 1fr) 320px; gap: 16px; min-height: calc(100vh - 120px); }
     .pdf-stage-wrap { overflow: auto; background: #0b0b0b; border-radius: 12px; padding: 24px; }
-    .pdf-page-stage { position: relative; width: min(100%, 960px); aspect-ratio: 297 / 210; margin: 0 auto; background: #fff; box-shadow: 0 24px 80px rgba(0,0,0,.35); overflow: hidden; }
+    .pdf-page-stage { position: relative; width: min(100%, 960px); aspect-ratio: 16 / 9; margin: 0 auto; background: #fff; box-shadow: 0 24px 80px rgba(0,0,0,.35); overflow: hidden; }
     .pdf-page-stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; user-select: none; pointer-events: none; }
     .pdf-field { position: absolute; min-width: 40px; min-height: 24px; border: 1px dashed rgba(255,255,255,.65); background: rgba(0,0,0,.18); cursor: move; white-space: pre-wrap; overflow: hidden; padding: 4px; }
     .pdf-field.active { outline: 2px solid #38bdf8; border-color: #38bdf8; }
@@ -307,7 +307,7 @@ function pdfTemplateEditor() {
                 }).join('');
                 return `<section class="page"><img src="${esc(page.image)}">${fields}</section>`;
             }).join('');
-            win.document.write(`<!doctype html><html><head><title>Preview PDF</title><style>body{margin:0;background:#222;font-family:Arial,sans-serif}.page{position:relative;width:1123px;height:794px;margin:24px auto;background:#fff;overflow:hidden}.page img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}@media print{@page{size:A4 landscape;margin:0}body{background:#fff}.page{margin:0;width:297mm;height:210mm;page-break-after:always}}</style></head><body>${pages}</body></html>`);
+            win.document.write(`<!doctype html><html><head><title>Preview PDF</title><style>body{margin:0;background:#222;font-family:Arial,sans-serif}.page{position:relative;width:960px;height:540px;margin:24px auto;background:#fff;overflow:hidden}.page img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}@media print{@page{size:160mm 90mm;margin:0}body{background:#fff}.page{margin:0;width:160mm;height:90mm;page-break-after:always}}</style></head><body>${pages}</body></html>`);
             win.document.close();
         }
     }
