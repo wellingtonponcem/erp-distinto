@@ -976,7 +976,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Reavaliar quando mudar o tipo
     const selectTipo = document.getElementById('tipoPropostaSelect');
-    const selectCliente = document.getElementById('cliente_id');
+    const selectClienteFiltro = document.getElementById('cliente_id');
     const selectClienteCasamento = document.getElementById('cliente_id_casamento');
     const selectOportunidade = document.querySelector('select[name="oportunidade_id"]');
 
@@ -997,8 +997,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    if (selectCliente) {
-        selectCliente.addEventListener('change', () => filterOportunidadesPorCliente(selectCliente.value));
+    if (selectClienteFiltro) {
+        selectClienteFiltro.addEventListener('change', () => filterOportunidadesPorCliente(selectClienteFiltro.value));
     }
     if (selectClienteCasamento) {
         selectClienteCasamento.addEventListener('change', () => filterOportunidadesPorCliente(selectClienteCasamento.value));
@@ -1008,11 +1008,11 @@ document.addEventListener('DOMContentLoaded', function() {
         selectTipo.addEventListener('change', () => {
             const checked = document.querySelector('input[name="modo_cliente"]:checked');
             if (checked) checked.dispatchEvent(new Event('change'));
-            filterOportunidadesPorCliente((selectCliente && selectCliente.value) || (selectClienteCasamento && selectClienteCasamento.value) || '');
+            filterOportunidadesPorCliente((selectClienteFiltro && selectClienteFiltro.value) || (selectClienteCasamento && selectClienteCasamento.value) || '');
         });
     }
 
-    filterOportunidadesPorCliente((selectCliente && selectCliente.value) || (selectClienteCasamento && selectClienteCasamento.value) || '');
+    filterOportunidadesPorCliente((selectClienteFiltro && selectClienteFiltro.value) || (selectClienteCasamento && selectClienteCasamento.value) || '');
 
     form.addEventListener('submit', async function(e) {
         e.preventDefault();

@@ -319,7 +319,7 @@ async function exportPdfTemplate(config, values) {
             div.style.width = `${field.w || 20}%`;
             div.style.height = `${field.h || 8}%`;
             div.style.fontFamily = field.font || 'Arial, sans-serif';
-            div.style.fontSize = `${field.size || 18}px`;
+            div.style.fontSize = `${(field.size || 18) * 0.63}px`;
             div.style.color = field.color || '#111';
             div.style.fontWeight = field.weight || '400';
             div.style.textAlign = field.align || 'left';

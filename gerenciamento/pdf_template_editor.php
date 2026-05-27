@@ -182,6 +182,7 @@ function pdfTemplateEditor() {
         selectedField: null,
         uploading: false,
         zoom: 1,
+        stageScale: 1,
         error: '',
         fontOptions: [
             'Outfit', 'Montserrat', 'Playfair Display', 'Cormorant Garamond',
@@ -212,6 +213,8 @@ function pdfTemplateEditor() {
                 });
             });
             this.usedFonts().forEach(font => this.loadGoogleFont(font));
+            this.$nextTick(() => this.updateStageScale());
+            window.addEventListener('resize', () => this.updateStageScale());
         },
         newId() {
             return window.crypto?.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2);
@@ -220,7 +223,12 @@ function pdfTemplateEditor() {
             return field.text || this.values[field.key] || '{{' + field.key + '}}';
         },
         fieldStyle(field) {
-            return `left:${field.x}%;top:${field.y}%;width:${field.w}%;height:${field.h}%;font-family:${field.font};font-size:${field.size}px;color:${field.color};font-weight:${field.weight};text-align:${field.align};line-height:${field.lineHeight || 1.25};`;
+            const size = Math.max(1, (field.size || 18) * this.stageScale);
+            return `left:${field.x}%;top:${field.y}%;width:${field.w}%;height:${field.h}%;font-family:${field.font};font-size:${size}px;color:${field.color};font-weight:${field.weight};text-align:${field.align};line-height:${field.lineHeight || 1.25};`;
+        },
+        updateStageScale() {
+            if (!this.$refs.stage) return;
+            this.stageScale = Math.max(0.1, this.$refs.stage.getBoundingClientRect().width / 960);
         },
         usedFonts() {
             const fonts = new Set();
@@ -290,6 +298,7 @@ function pdfTemplateEditor() {
                 this.template.config.pages.push({ id: this.newId(), image: url, fields: [] });
                 this.currentPage = this.template.config.pages.length - 1;
                 this.selectedField = null;
+                this.$nextTick(() => this.updateStageScale());
             } catch (error) {
                 this.error = error.message || 'Falha no upload.';
                 alert(this.error);
@@ -317,6 +326,7 @@ function pdfTemplateEditor() {
             event.preventDefault();
             const delta = event.deltaY > 0 ? -0.08 : 0.08;
             this.zoom = Math.max(0.45, Math.min(2.5, Math.round((this.zoom + delta) * 100) / 100));
+            this.$nextTick(() => this.updateStageScale());
         },
         startDrag(event, field) {
             this.selectedField = field;
