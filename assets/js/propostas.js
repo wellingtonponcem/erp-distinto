@@ -98,7 +98,7 @@ window.hideExportModal = function() {
     if (modal) modal.style.display = 'none';
 };
 
-window.exportPDF = function(orientation) {
+window.exportPDFLegacyPrintDisabled = function(orientation) {
     window.hideExportModal();
     
     // 1. Cria ou atualiza o estilo dinâmico para a orientação
@@ -128,7 +128,7 @@ window.exportPDF = function(orientation) {
     // 3. Dispara a impressão nativa
     // Pequeno delay para o navegador processar as novas regras de CSS
     setTimeout(() => {
-        window.print();
+        console.warn('Exportação por impressão nativa desativada. Use html2pdf.');
         
         // 4. Limpeza após fechar a janela de impressão
         document.body.classList.remove('exporting-pdf', 'export-horizontal', 'export-vertical');
@@ -201,6 +201,96 @@ window.exportPDF = async function() {
 
     try {
         await html2pdf().set(options).from(clone).save();
+    } catch (error) {
+        console.error('Erro ao exportar PDF:', error);
+        alert('Não foi possível exportar o PDF. Verifique as imagens da proposta e tente novamente.');
+    } finally {
+        document.body.classList.remove('exporting-pdf-html2pdf');
+        stage.remove();
+        if (trigger) {
+            trigger.innerHTML = originalTriggerHTML;
+            trigger.disabled = false;
+            if (window.lucide) lucide.createIcons();
+        }
+    }
+};
+
+window.exportPDF = async function() {
+    window.hideExportModal();
+
+    if (typeof html2canvas === 'undefined' || !window.jspdf?.jsPDF) {
+        alert('Bibliotecas de exportação PDF não carregadas. Recarregue a página e tente novamente.');
+        return;
+    }
+
+    const source = document.querySelector('.proposal-wrapper');
+    if (!source) {
+        alert('Conteúdo da proposta não encontrado.');
+        return;
+    }
+
+    const trigger = document.querySelector('.btn-export-top');
+    const originalTriggerHTML = trigger ? trigger.innerHTML : '';
+    if (trigger) {
+        trigger.innerHTML = '<span>Gerando...</span>';
+        trigger.disabled = true;
+    }
+
+    const stage = document.createElement('div');
+    stage.className = 'pdf-export-stage';
+    const clone = source.cloneNode(true);
+    clone.querySelectorAll('script, .no-print, #slide-pacote, #plan-modal, .export-modal, .fixed-section-title').forEach(el => el.remove());
+
+    const pages = Array.from(clone.querySelectorAll('.proposal-page, .slide'));
+    pages.forEach(page => {
+        page.classList.add('is-visible', 'pdf-export-page');
+        page.classList.remove('is-leaving');
+    });
+
+    stage.appendChild(clone);
+    document.body.appendChild(stage);
+    document.body.classList.add('exporting-pdf-html2pdf');
+
+    await new Promise(resolve => setTimeout(resolve, 600));
+
+    const filenameBase = (document.title || 'proposta-comercial')
+        .replace(/[\\/:*?"<>|]+/g, '-')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 90) || 'proposta-comercial';
+
+    const pdf = new window.jspdf.jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4',
+        compress: true
+    });
+
+    try {
+        for (let index = 0; index < pages.length; index += 1) {
+            const canvas = await html2canvas(pages[index], {
+                scale: 2,
+                useCORS: true,
+                allowTaint: false,
+                letterRendering: true,
+                backgroundColor: '#ffffff',
+                width: pages[index].offsetWidth,
+                height: pages[index].offsetHeight,
+                scrollX: 0,
+                scrollY: 0,
+                windowWidth: pages[index].offsetWidth,
+                windowHeight: pages[index].offsetHeight
+            });
+
+            if (index > 0) {
+                pdf.addPage('a4', 'landscape');
+            }
+
+            const image = canvas.toDataURL('image/jpeg', 0.98);
+            pdf.addImage(image, 'JPEG', 0, 0, 297, 210, undefined, 'FAST');
+        }
+
+        pdf.save(`${filenameBase}.pdf`);
     } catch (error) {
         console.error('Erro ao exportar PDF:', error);
         alert('Não foi possível exportar o PDF. Verifique as imagens da proposta e tente novamente.');

@@ -696,6 +696,10 @@ body.on-dark .fixed-section-title h2 {
 /* --- REGRAS DE IMPRESSÃO (PDF) --- */
 
 @media print {
+    @page {
+        size: A4 landscape;
+        margin: 0;
+    }
 
     /* Ocultar elementos de UI */
     .no-print,

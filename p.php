@@ -262,7 +262,7 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
         <?php endif; ?>
 
     </script>
-    <script src="<?= raizUrl('/assets/js/propostas.js') ?>"></script>
+    <script src="<?= raizUrl('/assets/js/propostas.js') ?>?v=pdf-html2pdf-2"></script>
 
     <?php if ($tipo === 'casamento'): ?>
     <?php
