@@ -54,6 +54,28 @@ function formatarValorPdf($valor): string
     return 'R$ ' . number_format((float)$valor, 2, ',', '.');
 }
 
+function formatarItemRico($linha) {
+    $linha = trim($linha);
+    if ($linha === '') return '';
+    
+    // Se a linha já começa com bolinha, traço ou asterisco, limpa para não duplicar
+    $prefixos = ['•', '-', '*'];
+    foreach ($prefixos as $p) {
+        if (str_starts_with($linha, $p)) {
+            $linha = trim(substr($linha, strlen($p)));
+        }
+    }
+    
+    $pos = strpos($linha, ':');
+    if ($pos !== false) {
+        $titulo = trim(substr($linha, 0, $pos));
+        $desc = trim(substr($linha, $pos + 1));
+        return "• <b>{$titulo}:</b> {$desc}";
+    }
+    
+    return "• {$linha}";
+}
+
 function dadosPdfProposta(array $proposta): array
 {
     $dados = json_decode($proposta['dados_json'] ?? '{}', true) ?: [];
@@ -112,11 +134,11 @@ function dadosPdfProposta(array $proposta): array
 
     foreach (preg_split('/\r\n|\r|\n/', $itensTextoVal) as $linha) {
         $linha = trim($linha);
-        if ($linha !== '') $itens[] = $linha;
+        if ($linha !== '') $itens[] = formatarItemRico($linha);
     }
     foreach (($dados['itens_personalizados'][$planoId] ?? []) as $item) {
         if (!empty($item['nome']) && (($item['incluido'] ?? '1') !== '0')) {
-            $itens[] = $item['nome'] . (!empty($item['descricao']) ? ': ' . $item['descricao'] : '');
+            $itens[] = formatarItemRico($item['nome'] . (!empty($item['descricao']) ? ': ' . $item['descricao'] : ''));
         }
     }
     foreach (($dados['cliente_escolha']['itens_selecionados'] ?? []) as $item) {
@@ -134,11 +156,11 @@ function dadosPdfProposta(array $proposta): array
         }
         foreach (preg_split('/\r\n|\r|\n/', $itensTextoH) as $linha) {
             $linha = trim($linha);
-            if ($linha !== '') $itensH[] = $linha;
+            if ($linha !== '') $itensH[] = formatarItemRico($linha);
         }
         foreach (($dados['itens_personalizados']['heritage'] ?? []) as $item) {
             if (!empty($item['nome']) && (($item['incluido'] ?? '1') !== '0')) {
-                $itensH[] = $item['nome'] . (!empty($item['descricao']) ? ': ' . $item['descricao'] : '');
+                $itensH[] = formatarItemRico($item['nome'] . (!empty($item['descricao']) ? ': ' . $item['descricao'] : ''));
             }
         }
         $planosAtivos[] = [
@@ -160,11 +182,11 @@ function dadosPdfProposta(array $proposta): array
         }
         foreach (preg_split('/\r\n|\r|\n/', $itensTextoC) as $linha) {
             $linha = trim($linha);
-            if ($linha !== '') $itensC[] = $linha;
+            if ($linha !== '') $itensC[] = formatarItemRico($linha);
         }
         foreach (($dados['itens_personalizados']['cinematic'] ?? []) as $item) {
             if (!empty($item['nome']) && (($item['incluido'] ?? '1') !== '0')) {
-                $itensC[] = $item['nome'] . (!empty($item['descricao']) ? ': ' . $item['descricao'] : '');
+                $itensC[] = formatarItemRico($item['nome'] . (!empty($item['descricao']) ? ': ' . $item['descricao'] : ''));
             }
         }
         $planosAtivos[] = [
@@ -186,11 +208,11 @@ function dadosPdfProposta(array $proposta): array
         }
         foreach (preg_split('/\r\n|\r|\n/', $itensTextoE) as $linha) {
             $linha = trim($linha);
-            if ($linha !== '') $itensE[] = $linha;
+            if ($linha !== '') $itensE[] = formatarItemRico($linha);
         }
         foreach (($dados['itens_personalizados']['essencial'] ?? []) as $item) {
             if (!empty($item['nome']) && (($item['incluido'] ?? '1') !== '0')) {
-                $itensE[] = $item['nome'] . (!empty($item['descricao']) ? ': ' . $item['descricao'] : '');
+                $itensE[] = formatarItemRico($item['nome'] . (!empty($item['descricao']) ? ': ' . $item['descricao'] : ''));
             }
         }
         $planosAtivos[] = [

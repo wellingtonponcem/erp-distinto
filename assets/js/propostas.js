@@ -333,7 +333,8 @@ async function exportPdfTemplate(config, values) {
                     .replace(/&lt;b&gt;/g, '<b>')
                     .replace(/&lt;\/b&gt;/g, '</b>')
                     .replace(/&lt;strong&gt;/g, '<strong>')
-                    .replace(/&lt;\/strong&gt;/g, '</strong>');
+                    .replace(/&lt;\/strong&gt;/g, '</strong>')
+                    .replace(/\n/g, '<br>');
                 element.innerHTML = safeText;
             }
 

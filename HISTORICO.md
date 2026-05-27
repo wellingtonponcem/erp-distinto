@@ -21,8 +21,10 @@ Melhorias no ERP Distinto, com foco na consistência visual entre a proposta web
   - O alinhamento vertical padrão agora é o **Topo** (`flex-start`), impedindo que o texto fique empurrado para a parte inferior ("lá embaixo") na caixa de texto por padrão no editor, no preview e na exportação final.
 - **Textos Completos e Ricos dos Pacotes (Heritage, Cinematic, Essencial)**:
   - Adicionados fallbacks com os textos ricos padrão completos nos pacotes em `includes/pdf_templates.php`, garantindo consistência total com os benefícios exibidos na proposta web e no banco.
-  - Atualizados os dados mockados no editor `pdf_template_editor.php` (`values` e `planosMockados`) para simularem os textos reais ricos em toda a sua extensão na pré-visualização.
+  - Implementada a função PHP `formatarItemRico($linha)` em `includes/pdf_templates.php` para automaticamente formatar cada item do pacote como uma lista com a bolinha `• ` no início e o título (texto antes do caractere `:`) em **negrito** e a descrição regular.
+  - Atualizados os dados mockados no editor `pdf_template_editor.php` (`values` e `planosMockados`) para simularem os textos reais ricos com as bolinhas e tags `<b>` em toda a sua extensão na pré-visualização.
   - Implementada a função PHP `obterBeneficiosTexto()` no início de `proposta_nova.php` e `proposta_editar.php` para carregar e formatar os benefícios completos do banco separados por quebra de linha (`\n`), injetando com `json_encode` no Alpine de forma 100% segura contra erros de sintaxe JS.
+  - Ajustadas as funções `fieldPreview` em `pdf_template_editor.php` e a função de renderização `exportPdfTemplate` em `assets/js/propostas.js` para converterem quebras de linha `\n` em `<br>` ao injetarem no HTML, garantindo espaçamento e separação perfeita entre os itens.
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.

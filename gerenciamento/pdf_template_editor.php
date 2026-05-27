@@ -308,11 +308,11 @@ function pdfTemplateEditor() {
             experiencias_distintas_texto: 'Na Distinto, nao comecamos com ideias soltas. Comecamos com clareza.\n\nDesenhamos tres caminhos estrategicos para que a historia de <b>Igor & Gabriela</b> seja preservada com a forca e a verdade que merecem.\n\nApresentamos nossas propostas de investimento. Cada uma delas foi pensada para transformar o seu casamento em uma experiencia totalmente nova, onde a nossa perspectiva artistica garante que todas as variaveis do dia ganhem o mais bonito sentido.\n\nEscolham o caminho que melhor se conecta com o sonho de voces.\n\n<b>Nossa meta e uma so: arrepiar.</b>',
             pacote_escolhido: 'Experiencia Heritage',
             valor_total: 'R$ 7.900,00',
-            itens_inclusos: 'Cobertura Documental Completa: Presença ilimitada no evento. Do making of à última música, sem limite de horas.\nO Álbum Heritage: Álbum luxo panorâmico no tamanho 25x30cm (aberto 25x60cm), com papel fotográfico de alta gramatura e laminação especial.\nRéplicas para a Família (Presente): Inclusão de 02 Mini Álbuns réplicas, ideais para presentear os pais com a mesma qualidade do álbum principal.\nProdução Cinematográfica 4K: Filme completo (8 a 12 min) com áudio dos votos e trilha sonora licenciada.\nImagens Aéreas (Drone): Perspectivas cinematográficas para contextualizar o local do seu "sim".\nEcossistema Digital e Físico: Galeria online vitalícia, e pen drive personalizado.',
+            itens_inclusos: '• <b>Cobertura Documental Completa:</b> Presença ilimitada no evento. Do making of à última música, sem limite de horas.\n• <b>O Álbum Heritage:</b> Álbum luxo panorâmico no tamanho 25x30cm (aberto 25x60cm), com papel fotográfico de alta gramatura e laminação especial.\n• <b>Réplicas para a Família (Presente):</b> Inclusão de 02 Mini Álbuns réplicas, ideais para presentear os pais com a mesma qualidade do álbum principal.\n• <b>Produção Cinematográfica 4K:</b> Filme completo (8 a 12 min) com áudio dos votos e trilha sonora licenciada.\n• <b>Imagens Aéreas (Drone):</b> Perspectivas cinematográficas para contextualizar o local do seu "sim".\n• <b>Ecossistema Digital e Físico:</b> Galeria online vitalícia, e pen drive personalizado.',
             condicoes_pagamento: 'Entrada de 20% + saldo parcelado em até 6x',
             pacote_nome: 'Experiencia Heritage',
             pacote_valor: 'R$ 7.900,00',
-            pacote_itens: 'Cobertura Documental Completa: Presença ilimitada no evento. Do making of à última música, sem limite de horas.\nO Álbum Heritage: Álbum luxo panorâmico no tamanho 25x30cm (aberto 25x60cm), com papel fotográfico de alta gramatura e laminação especial.\nRéplicas para a Família (Presente): Inclusão de 02 Mini Álbuns réplicas, ideais para presentear os pais com a mesma qualidade do álbum principal.\nProdução Cinematográfica 4K: Filme completo (8 a 12 min) com áudio dos votos e trilha sonora licenciada.\nImagens Aéreas (Drone): Perspectivas cinematográficas para contextualizar o local do seu "sim".\nEcossistema Digital e Físico: Galeria online vitalícia, e pen drive personalizado.',
+            pacote_itens: '• <b>Cobertura Documental Completa:</b> Presença ilimitada no evento. Do making of à última música, sem limite de horas.\n• <b>O Álbum Heritage:</b> Álbum luxo panorâmico no tamanho 25x30cm (aberto 25x60cm), com papel fotográfico de alta gramatura e laminação especial.\n• <b>Réplicas para a Família (Presente):</b> Inclusão de 02 Mini Álbuns réplicas, ideais para presentear os pais com a mesma qualidade do álbum principal.\n• <b>Produção Cinematográfica 4K:</b> Filme completo (8 a 12 min) com áudio dos votos e trilha sonora licenciada.\n• <b>Imagens Aéreas (Drone):</b> Perspectivas cinematográficas para contextualizar o local do seu "sim".\n• <b>Ecossistema Digital e Físico:</b> Galeria online vitalícia, e pen drive personalizado.',
             pacote_condicoes: 'Entrada de 20% + Saldo parcelado em ate 6x',
             pacote_foto: '/imagens-proposta-casamento/foto-section-07.png'
         },
@@ -320,21 +320,21 @@ function pdfTemplateEditor() {
             {
                 pacote_nome: 'Experiencia Heritage',
                 pacote_valor: 'R$ 7.900,00',
-                pacote_itens: 'Cobertura Documental Completa: Presença ilimitada no evento. Do making of à última música, sem limite de horas.\nO Álbum Heritage: Álbum luxo panorâmico no tamanho 25x30cm (aberto 25x60cm), com papel fotográfico de alta gramatura e laminação especial.\nRéplicas para a Família (Presente): Inclusão de 02 Mini Álbuns réplicas, ideais para presentear os pais com a mesma qualidade do álbum principal.\nProdução Cinematográfica 4K: Filme completo (8 a 12 min) com áudio dos votos e trilha sonora licenciada.\nImagens Aéreas (Drone): Perspectivas cinematográficas para contextualizar o local do seu "sim".\nEcossistema Digital e Físico: Galeria online vitalícia, e pen drive personalizado.',
+                pacote_itens: '• <b>Cobertura Documental Completa:</b> Presença ilimitada no evento. Do making of à última música, sem limite de horas.\n• <b>O Álbum Heritage:</b> Álbum luxo panorâmico no tamanho 25x30cm (aberto 25x60cm), com papel fotográfico de alta gramatura e laminação especial.\n• <b>Réplicas para a Família (Presente):</b> Inclusão de 02 Mini Álbuns réplicas, ideais para presentear os pais com a mesma qualidade do álbum principal.\n• <b>Produção Cinematográfica 4K:</b> Filme completo (8 a 12 min) com áudio dos votos e trilha sonora licenciada.\n• <b>Imagens Aéreas (Drone):</b> Perspectivas cinematográficas para contextualizar o local do seu "sim".\n• <b>Ecossistema Digital e Físico:</b> Galeria online vitalícia, e pen drive personalizado.',
                 pacote_condicoes: 'Entrada de 20% + Saldo parcelado em ate 6x',
                 pacote_foto: '/imagens-proposta-casamento/foto-section-07.png'
             },
             {
                 pacote_nome: 'Experiencia Cinematic',
                 pacote_valor: 'R$ 4.500,00',
-                pacote_itens: 'Fotografia de Evento (8h): Cobertura focada na essência e na espontaneidade dos convidados.\nSessão Engagement (Pré-Wedding): Ensaio de até 3h para conexão do casal com a lente antes do grande dia.\nShort Film de Cinema: Filme dinâmico (5 a 7 min) com os melhores momentos da cerimônia e recepção.\nSocial Content (Story Maker): Entrega de conteúdo vertical pronto para redes sociais. Seus convidados acompanham os bastidores em tempo real.\nMaking Of Completo: Registro da preparação da noiva e do noivo, capturando a expectativa e os detalhes.\nBônus: Vídeo Save-the-Date incluso para o anúncio oficial.',
+                pacote_itens: '• <b>Fotografia de Evento (8h):</b> Cobertura focada na essência e na espontaneidade dos convidados.\n• <b>Sessão Engagement (Pré-Wedding):</b> Ensaio de até 3h para conexão do casal com a lente antes do grande dia.\n• <b>Short Film de Cinema:</b> Filme dinâmico (5 a 7 min) com os melhores momentos da cerimônia e recepção.\n• <b>Social Content (Story Maker):</b> Entrega de conteúdo vertical pronto para redes sociais. Seus convidados acompanham os bastidores em tempo real.\n• <b>Making Of Completo:</b> Registro da preparação da noiva e do noivo, capturando a expectativa e os detalhes.\n• <b>Bônus:</b> Vídeo Save-the-Date incluso para o anúncio oficial.',
                 pacote_condicoes: 'Entrada de 20% + Saldo parcelado em ate 6x',
                 pacote_foto: '/imagens-proposta-casamento/foto-section-08.png'
             },
             {
                 pacote_nome: 'Registro Essencial',
                 pacote_valor: 'R$ 2.800,00',
-                pacote_itens: 'Fotografia de Cerimônia (4h): Cobertura pontual focada no protocolo religioso e fotos protocolares de família.\nEscopo Limitado: Plano focado em registros estáticos. Não inclui vídeo, drone, cobertura de preparativos ou ensaio externo.\nEntrega Digital: Acesso à galeria online exclusiva para download das fotos editadas.',
+                pacote_itens: '• <b>Fotografia de Cerimônia (4h):</b> Cobertura pontual focada no protocolo religioso e fotos protocolares de família.\n• <b>Escopo Limitado:</b> Plano focado em registros estáticos. Não inclui vídeo, drone, cobertura de preparativos ou ensaio externo.\n• <b>Entrega Digital:</b> Acesso à galeria online exclusiva para download das fotos editadas.',
                 pacote_condicoes: 'Entrada de 25% + Saldo parcelado em ate 5x',
                 pacote_foto: '/imagens-proposta-casamento/foto-section-09.png'
             }
@@ -361,7 +361,8 @@ function pdfTemplateEditor() {
             return window.crypto?.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2);
         },
         fieldPreview(field) {
-            return field.text || this.values[field.key] || '{{' + field.key + '}}';
+            const raw = field.text || this.values[field.key] || '{{' + field.key + '}}';
+            return String(raw).replace(/\n/g, '<br>');
         },
         fieldStyle(field) {
             const size = Math.max(1, (field.size || 18) * this.stageScale);
