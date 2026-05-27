@@ -30,6 +30,9 @@ Melhorias no ERP Distinto, com foco na consistência visual entre a proposta web
 - **Campo Dinâmico de Condição Especial e Resolução de Imagens Quebradas**:
   - Incluído o campo `condicao_especial` no PDF, nos planos e nas seções `$camposPorSessao` do editor, com dados mockados.
   - Corrigido o bug de imagens quebradas nos mockups dos pacotes (`pacote_foto`) no palco do editor envolvendo os caminhos estáticos com a função PHP `raizUrl()`. Isso garante que o servidor resolva os caminhos corretamente mesmo rodando em subpastas no Apache/Nginx.
+- **Resolução do Bug de Reatividade do Dropdown nas Páginas de Pacotes (Página 8/9)**:
+  - Adicionado o atributo `:key="page.id"` no bloco principal de propriedades da página ativa no editor `pdf_template_editor.php`. Isso força o Alpine.js a destruir e recriar o painel lateral quando o usuário muda de página, evitando que o estado físico anterior do checkbox de pacotes "contamine" a nova página.
+  - Implementada a normalização estrita de `page.is_pacote` para booleanos nativos no JS (`true`/`false`) no método `init()` do Alpine e no momento de criar novas páginas em `uploadPage()`. Isso resolve a falha em que tipos inconsistentes vindos do banco de dados (ex: `"1"`, `"0"`, `1` ou `0`) confundiam o binding do Alpine.js e ocultavam o dropdown nas páginas 8 e 9.
 - **Suporte Completo a Adicionais (Upgrades)**:
   - Adicionado suporte a upgrades dinâmicos no PDF e no editor, mapeando os adicionais disponíveis no banco de dados (`servicos` categoria `wedding` tipo `servico`).
   - Criado o campo `itens_adicionais` para a página de investimento final (`05`) contendo apenas os upgrades selecionados pelo cliente (ou fallback do plano).

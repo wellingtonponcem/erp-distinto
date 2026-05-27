@@ -193,7 +193,7 @@ include __DIR__ . '/../includes/layout/head.php';
                     <input type="file" x-ref="replaceUpload" class="hidden" accept="image/png,image/jpeg,image/webp" @change="replacePage($event)">
                     
                     <template x-if="page">
-                        <div class="mt-4 p-3 bg-zinc-850 border border-zinc-700 rounded-xl space-y-3">
+                        <div :key="page.id" class="mt-4 p-3 bg-zinc-850 border border-zinc-700 rounded-xl space-y-3">
                             <label class="flex items-center gap-2 text-xs font-black text-zinc-300 cursor-pointer">
                                 <input type="checkbox" x-model="page.is_pacote" @change="if(!page.is_pacote) page.plano_id = ''"> Página de Pacotes
                             </label>
@@ -456,6 +456,8 @@ function pdfTemplateEditor() {
             if (!this.template.config) this.template.config = { pages: [] };
             if (!this.template.config.pages) this.template.config.pages = [];
             this.template.config.pages.forEach(page => {
+                page.is_pacote = page.is_pacote === true || page.is_pacote === 1 || page.is_pacote === '1' || page.is_pacote === 'true';
+                if (!page.plano_id) page.plano_id = '';
                 (page.fields || []).forEach(field => {
                     if (field.font && field.font.includes(',')) {
                         field.font = field.font.split(',')[0].replace(/["']/g, '').trim();
@@ -624,7 +626,7 @@ function pdfTemplateEditor() {
             if (!file) return;
             try {
                 const url = await this.uploadImage(file);
-                this.template.config.pages.push({ id: this.newId(), image: url, fields: [] });
+                this.template.config.pages.push({ id: this.newId(), image: url, fields: [], is_pacote: false, plano_id: '' });
                 this.currentPage = this.template.config.pages.length - 1;
                 this.selectedField = null;
                 this.$nextTick(() => this.updateStageScale());
