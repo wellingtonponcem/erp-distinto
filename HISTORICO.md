@@ -25,6 +25,10 @@ Melhorias no ERP Distinto, com foco na consistência visual entre a proposta web
   - Atualizados os dados mockados no editor `pdf_template_editor.php` (`values` e `planosMockados`) para simularem os textos reais ricos com as bolinhas e tags `<b>` em toda a sua extensão na pré-visualização.
   - Implementada a função PHP `obterBeneficiosTexto()` no início de `proposta_nova.php` e `proposta_editar.php` para carregar e formatar os benefícios completos do banco separados por quebra de linha (`\n`), injetando com `json_encode` no Alpine de forma 100% segura contra erros de sintaxe JS.
   - Ajustadas as funções `fieldPreview` em `pdf_template_editor.php` e a função de renderização `exportPdfTemplate` em `assets/js/propostas.js` para converterem quebras de linha `\n` em `<br>` ao injetarem no HTML, garantindo espaçamento e separação perfeita entre os itens.
+- **Campo Dinâmico de Condição Especial (`condicao_especial`)**:
+  - Incluído o campo `condicao_especial` nos dados de retorno da proposta do PDF e no array de dados de cada plano individual em `includes/pdf_templates.php`.
+  - Adicionado o campo à lista `$camposPorSessao` sob as seções `05 - Pacotes e investimento` e `08 - Pagina Dinamica de Pacote` em `pdf_template_editor.php` para torná-lo posicionável no template.
+  - Atualizados os dados mockados no Alpine de `pdf_template_editor.php` (`values` e `planosMockados`) para simularem as condições especiais de teste da proposta.
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.

@@ -169,7 +169,8 @@ function dadosPdfProposta(array $proposta): array
             'pacote_valor' => formatarValorPdf($dados['valor_heritage'] ?? 7900),
             'pacote_itens' => implode("\n", array_unique($itensH)),
             'pacote_condicoes' => $dados['condicoes_heritage_cinematic'] ?? 'Entrada de 20% + Saldo parcelado em até 6x',
-            'pacote_foto' => raizUrl('/imagens-proposta-casamento/foto-section-07.png')
+            'pacote_foto' => raizUrl('/imagens-proposta-casamento/foto-section-07.png'),
+            'condicao_especial' => $dados['condicao_especial'] ?? '',
         ];
     }
     
@@ -195,7 +196,8 @@ function dadosPdfProposta(array $proposta): array
             'pacote_valor' => formatarValorPdf($dados['valor_cinematic'] ?? 4500),
             'pacote_itens' => implode("\n", array_unique($itensC)),
             'pacote_condicoes' => $dados['condicoes_heritage_cinematic'] ?? 'Entrada de 20% + Saldo parcelado em até 6x',
-            'pacote_foto' => raizUrl('/imagens-proposta-casamento/foto-section-08.png')
+            'pacote_foto' => raizUrl('/imagens-proposta-casamento/foto-section-08.png'),
+            'condicao_especial' => $dados['condicao_especial'] ?? '',
         ];
     }
     
@@ -221,7 +223,8 @@ function dadosPdfProposta(array $proposta): array
             'pacote_valor' => formatarValorPdf($dados['valor_essencial'] ?? 2800),
             'pacote_itens' => implode("\n", array_unique($itensE)),
             'pacote_condicoes' => $dados['condicoes_essencial'] ?? 'Entrada de 25% + Saldo parcelado em até 5x',
-            'pacote_foto' => raizUrl('/imagens-proposta-casamento/foto-section-09.png')
+            'pacote_foto' => raizUrl('/imagens-proposta-casamento/foto-section-09.png'),
+            'condicao_especial' => $dados['condicao_especial'] ?? '',
         ];
     }
 
@@ -244,6 +247,7 @@ function dadosPdfProposta(array $proposta): array
         'mensagem_pessoal' => $mensagemPessoal,
         'prazo_previas' => $dados['prazo_previas'] ?? '',
         'prazo_final' => $dados['prazo_final'] ?? '',
+        'condicao_especial' => $dados['condicao_especial'] ?? '',
         'planos' => $planosAtivos,
     ];
 }
