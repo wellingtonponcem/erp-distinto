@@ -23,7 +23,7 @@ if ($id) {
     $stmt = $db->prepare("SELECT * FROM pdf_templates WHERE id = ?");
     $stmt->execute([$id]);
     $row = $stmt->fetch();
-    if (!$row) die('Template não encontrado.');
+    if (!$row) die('Template nao encontrado.');
     $template = [
         'id' => $row['id'],
         'nome' => $row['nome'],
@@ -40,9 +40,6 @@ $camposDisponiveis = [
     'mensagem_pessoal', 'prazo_previas', 'prazo_final'
 ];
 
-$stmtPropostas = $db->query("SELECT id, cliente_nome, tipo FROM propostas ORDER BY created_at DESC LIMIT 50");
-$propostasPreview = $stmtPropostas->fetchAll();
-
 $tituloPagina = 'Editor de Template PDF';
 include __DIR__ . '/../includes/layout/head.php';
 ?>
@@ -55,6 +52,7 @@ include __DIR__ . '/../includes/layout/head.php';
     .pdf-field { position: absolute; min-width: 40px; min-height: 24px; border: 1px dashed rgba(255,255,255,.65); background: rgba(0,0,0,.18); cursor: move; white-space: pre-wrap; overflow: hidden; padding: 4px; }
     .pdf-field.active { outline: 2px solid #38bdf8; border-color: #38bdf8; }
     .prop-label { display:block; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; color:#71717a; margin-bottom:6px; }
+    .editor-error { border: 1px solid rgba(239,68,68,.3); background: rgba(239,68,68,.08); color: #fca5a5; border-radius: 10px; padding: 10px 12px; font-size: 12px; font-weight: 700; }
 </style>
 
 <div id="app-wrapper" x-data="pdfTemplateEditor()" x-init="init()">
@@ -63,15 +61,17 @@ include __DIR__ . '/../includes/layout/head.php';
         <div class="mb-5 flex items-center justify-between gap-4">
             <div>
                 <h1 class="page-title text-2xl">Editor de Template PDF</h1>
-                <p class="page-subtitle text-zinc-500">Use imagens do Canva como fundo e posicione os campos dinâmicos.</p>
+                <p class="page-subtitle text-zinc-500">Use imagens do Canva como fundo e posicione os campos dinamicos.</p>
             </div>
             <div class="flex gap-2">
-                <button type="button" @click="preview()" class="btn">Pré-visualizar</button>
+                <button type="button" @click="preview()" class="btn">Pre-visualizar</button>
                 <button type="button" @click="save()" class="btn btn-primary">Salvar</button>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+        <div x-show="error" x-text="error" class="editor-error mb-4"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
             <div>
                 <label class="prop-label">Nome</label>
                 <input class="input" x-model="template.nome">
@@ -88,33 +88,24 @@ include __DIR__ . '/../includes/layout/head.php';
             <label class="flex items-center gap-2 pt-7 text-sm font-bold text-zinc-700">
                 <input type="checkbox" x-model="template.ativo"> Template ativo
             </label>
-            <div>
-                <label class="prop-label">Preview com proposta</label>
-                <select class="input" x-model="previewProposta">
-                    <option value="">Dados fictícios</option>
-                    <?php foreach ($propostasPreview as $p): ?>
-                        <option value="<?= $p['id'] ?>"><?= sanitizar($p['cliente_nome'] . ' - ' . $p['tipo']) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
         </div>
 
         <div class="pdf-editor-shell">
             <aside class="card p-4 overflow-auto">
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-sm font-black">Páginas</h2>
-                    <button type="button" @click="$refs.upload.click()" class="text-xs font-bold">Adicionar</button>
-                    <input type="file" x-ref="upload" class="hidden" accept="image/*" @change="uploadPage($event)">
+                    <h2 class="text-sm font-black">Paginas</h2>
+                    <button type="button" @click="$refs.upload.click()" class="text-xs font-bold" :disabled="uploading" x-text="uploading ? 'Enviando...' : 'Adicionar'"></button>
+                    <input type="file" x-ref="upload" class="hidden" accept="image/png,image/jpeg,image/webp" @change="uploadPage($event)">
                 </div>
                 <template x-for="(page, index) in template.config.pages" :key="page.id">
                     <button type="button" @click="currentPage = index; selectedField = null" class="w-full text-left p-3 rounded-lg mb-2 border" :class="currentPage === index ? 'border-zinc-900 bg-zinc-100' : 'border-zinc-200'">
-                        <span class="text-xs font-black" x-text="'Página ' + (index + 1)"></span>
+                        <span class="text-xs font-black" x-text="'Pagina ' + (index + 1)"></span>
                     </button>
                 </template>
                 <div class="mt-4 space-y-2">
-                    <button type="button" @click="$refs.replaceUpload.click()" class="btn w-full" :disabled="!page">Substituir imagem</button>
-                    <button type="button" @click="removePage()" class="btn w-full text-red-500" :disabled="!page">Remover pÃ¡gina</button>
-                    <input type="file" x-ref="replaceUpload" class="hidden" accept="image/*" @change="replacePage($event)">
+                    <button type="button" @click="$refs.replaceUpload.click()" class="btn w-full" :disabled="!page || uploading">Substituir imagem</button>
+                    <button type="button" @click="removePage()" class="btn w-full text-red-500" :disabled="!page || uploading">Remover pagina</button>
+                    <input type="file" x-ref="replaceUpload" class="hidden" accept="image/png,image/jpeg,image/webp" @change="replacePage($event)">
                 </div>
             </aside>
 
@@ -133,7 +124,7 @@ include __DIR__ . '/../includes/layout/head.php';
                         </template>
                     </div>
                 </template>
-                <div x-show="!page" class="text-center text-zinc-500 py-20">Adicione uma página para começar.</div>
+                <div x-show="!page" class="text-center text-zinc-500 py-20">Adicione uma pagina para comecar.</div>
             </section>
 
             <aside class="card p-4 overflow-auto">
@@ -141,7 +132,7 @@ include __DIR__ . '/../includes/layout/head.php';
                 <template x-if="selectedField">
                     <div class="space-y-4">
                         <div>
-                            <label class="prop-label">Campo dinâmico</label>
+                            <label class="prop-label">Campo dinamico</label>
                             <select class="input" x-model="selectedField.key">
                                 <?php foreach ($camposDisponiveis as $campo): ?>
                                     <option value="<?= $campo ?>"><?= $campo ?></option>
@@ -182,23 +173,32 @@ function pdfTemplateEditor() {
         template: <?= json_encode($template, JSON_UNESCAPED_UNICODE) ?>,
         currentPage: 0,
         selectedField: null,
-        previewProposta: '',
+        uploading: false,
+        error: '',
         values: {
             nome_casal: 'Igor & Gabriela',
-            pacote_escolhido: 'Experiência Heritage',
+            pacote_escolhido: 'Experiencia Heritage',
             valor_total: 'R$ 7.900,00',
-            itens_inclusos: 'Cobertura documental\nÁlbum\nDrone',
+            itens_inclusos: 'Cobertura documental\nAlbum\nDrone',
             condicoes_pagamento: 'Entrada de 20% + saldo parcelado'
         },
         get page() { return this.template.config.pages[this.currentPage] || null; },
-        init() { if (!this.template.config.pages) this.template.config.pages = []; },
-        fieldPreview(field) { return field.text || this.values[field.key] || '{{' + field.key + '}}'; },
+        init() {
+            if (!this.template.config) this.template.config = { pages: [] };
+            if (!this.template.config.pages) this.template.config.pages = [];
+        },
+        newId() {
+            return window.crypto?.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2);
+        },
+        fieldPreview(field) {
+            return field.text || this.values[field.key] || '{{' + field.key + '}}';
+        },
         fieldStyle(field) {
             return `left:${field.x}%;top:${field.y}%;width:${field.w}%;height:${field.h}%;font-family:${field.font};font-size:${field.size}px;color:${field.color};font-weight:${field.weight};text-align:${field.align};line-height:${field.lineHeight || 1.25};`;
         },
         addField() {
             if (!this.page) return;
-            const field = { id: crypto.randomUUID(), key: 'nome_casal', text: '', x: 10, y: 10, w: 25, h: 8, font: 'Montserrat, Arial, sans-serif', size: 24, color: '#111111', weight: '700', align: 'left', lineHeight: 1.25 };
+            const field = { id: this.newId(), key: 'nome_casal', text: '', x: 10, y: 10, w: 25, h: 8, font: 'Montserrat, Arial, sans-serif', size: 24, color: '#111111', weight: '700', align: 'left', lineHeight: 1.25 };
             this.page.fields.push(field);
             this.selectedField = field;
         },
@@ -207,32 +207,55 @@ function pdfTemplateEditor() {
             this.page.fields = this.page.fields.filter(f => f.id !== this.selectedField.id);
             this.selectedField = null;
         },
+        async parseJsonResponse(response) {
+            const text = await response.text();
+            try {
+                return JSON.parse(text);
+            } catch (error) {
+                throw new Error(text ? text.slice(0, 300) : `Resposta invalida do servidor (${response.status})`);
+            }
+        },
+        async uploadImage(file) {
+            this.error = '';
+            this.uploading = true;
+            try {
+                const form = new FormData();
+                form.append('imagem', file);
+                const res = await fetch('<?= raizUrl('/api/pdf-templates/upload-page.php') ?>', { method: 'POST', body: form });
+                const data = await this.parseJsonResponse(res);
+                if (!res.ok || !data.success) throw new Error(data.erro || 'Falha no upload.');
+                return data.url;
+            } finally {
+                this.uploading = false;
+            }
+        },
         async uploadPage(event) {
             const file = event.target.files[0];
-            if (!file) return;
-            const form = new FormData();
-            form.append('imagem', file);
-            const res = await fetch('<?= raizUrl('/api/pdf-templates/upload-page.php') ?>', { method: 'POST', body: form });
-            const data = await res.json();
-            if (!data.success) return alert(data.erro || 'Falha no upload.');
-            this.template.config.pages.push({ id: crypto.randomUUID(), image: data.url, fields: [] });
-            this.currentPage = this.template.config.pages.length - 1;
             event.target.value = '';
+            if (!file) return;
+            try {
+                const url = await this.uploadImage(file);
+                this.template.config.pages.push({ id: this.newId(), image: url, fields: [] });
+                this.currentPage = this.template.config.pages.length - 1;
+                this.selectedField = null;
+            } catch (error) {
+                this.error = error.message || 'Falha no upload.';
+                alert(this.error);
+            }
         },
         async replacePage(event) {
-            if (!this.page) return;
             const file = event.target.files[0];
-            if (!file) return;
-            const form = new FormData();
-            form.append('imagem', file);
-            const res = await fetch('<?= raizUrl('/api/pdf-templates/upload-page.php') ?>', { method: 'POST', body: form });
-            const data = await res.json();
-            if (!data.success) return alert(data.erro || 'Falha no upload.');
-            this.page.image = data.url;
             event.target.value = '';
+            if (!this.page || !file) return;
+            try {
+                this.page.image = await this.uploadImage(file);
+            } catch (error) {
+                this.error = error.message || 'Falha no upload.';
+                alert(this.error);
+            }
         },
         removePage() {
-            if (!this.page || !confirm('Remover esta pÃ¡gina do template?')) return;
+            if (!this.page || !confirm('Remover esta pagina do template?')) return;
             this.template.config.pages.splice(this.currentPage, 1);
             this.currentPage = Math.max(0, this.currentPage - 1);
             this.selectedField = null;
@@ -255,19 +278,25 @@ function pdfTemplateEditor() {
             window.addEventListener('mouseup', up);
         },
         async save() {
-            const res = await fetch('<?= raizUrl('/api/pdf-templates/save.php') ?>', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(this.template)
-            });
-            const data = await res.json();
-            if (!data.success) return alert(data.erro || 'Falha ao salvar.');
-            this.template.id = data.id;
-            history.replaceState(null, '', '<?= raizUrl('/gerenciamento/pdf_template_editor.php?id=') ?>' + data.id);
-            alert('Template salvo.');
+            this.error = '';
+            try {
+                const res = await fetch('<?= raizUrl('/api/pdf-templates/save.php') ?>', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(this.template)
+                });
+                const data = await this.parseJsonResponse(res);
+                if (!res.ok || !data.success) throw new Error(data.erro || 'Falha ao salvar.');
+                this.template.id = data.id;
+                history.replaceState(null, '', '<?= raizUrl('/gerenciamento/pdf_template_editor.php?id=') ?>' + data.id);
+                alert('Template salvo.');
+            } catch (error) {
+                this.error = error.message || 'Falha ao salvar.';
+                alert(this.error);
+            }
         },
         preview() {
-            if (!this.template.config.pages.length) return alert('Adicione pelo menos uma pÃ¡gina.');
+            if (!this.template.config.pages.length) return alert('Adicione pelo menos uma pagina.');
             const win = window.open('', '_blank');
             if (!win) return alert('Permita pop-ups para visualizar o template.');
             const esc = (value) => String(value || '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
@@ -280,8 +309,6 @@ function pdfTemplateEditor() {
             }).join('');
             win.document.write(`<!doctype html><html><head><title>Preview PDF</title><style>body{margin:0;background:#222;font-family:Arial,sans-serif}.page{position:relative;width:1123px;height:794px;margin:24px auto;background:#fff;overflow:hidden}.page img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}@media print{@page{size:A4 landscape;margin:0}body{background:#fff}.page{margin:0;width:297mm;height:210mm;page-break-after:always}}</style></head><body>${pages}</body></html>`);
             win.document.close();
-            return;
-            alert('Pré-visualização: use os campos sobre a imagem. A exportação real aplica esses dados na proposta.');
         }
     }
 }

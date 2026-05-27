@@ -6,7 +6,7 @@ require_once __DIR__ . '/../../includes/pdf_templates.php';
 
 $slug = $_GET['slug'] ?? '';
 if (!$slug) {
-    responderJson(['erro' => 'Slug obrigatório'], 422);
+    responderJson(['erro' => 'Slug obrigatorio'], 422);
 }
 
 $db = Database::get();
@@ -15,7 +15,7 @@ $stmt->execute([$slug]);
 $proposta = $stmt->fetch();
 
 if (!$proposta) {
-    responderJson(['erro' => 'Proposta não encontrada'], 404);
+    responderJson(['erro' => 'Proposta nao encontrada'], 404);
 }
 
 $template = templatePdfAtivo($db, $proposta['tipo']);

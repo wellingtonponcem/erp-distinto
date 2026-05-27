@@ -22,7 +22,7 @@ include __DIR__ . '/../includes/layout/head.php';
     <main id="main-content" class="content-sheet">
         <div class="app-topbar">
             <div class="top-nav">
-                <a href="<?= raizUrl('/dashboard.php') ?>">Visão Geral</a>
+                <a href="<?= raizUrl('/dashboard.php') ?>">Visao Geral</a>
                 <a href="#" class="active">Templates PDF</a>
             </div>
         </div>
@@ -48,7 +48,7 @@ include __DIR__ . '/../includes/layout/head.php';
                         <?php endif; ?>
                     </div>
                     <h2 class="text-base font-black text-zinc-900 dark:text-white"><?= sanitizar($tpl['nome']) ?></h2>
-                    <p class="text-xs text-zinc-500 mt-2">Editar páginas, campos e estilos.</p>
+                    <p class="text-xs text-zinc-500 mt-2">Editar paginas, campos e estilos.</p>
                 </a>
             <?php endforeach; ?>
         </div>

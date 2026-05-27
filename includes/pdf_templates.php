@@ -69,8 +69,8 @@ function dadosPdfProposta(array $proposta): array
     }
 
     $nomesPlano = [
-        'heritage' => 'Experiência Heritage',
-        'cinematic' => 'Experiência Cinematic',
+        'heritage' => 'Experiencia Heritage',
+        'cinematic' => 'Experiencia Cinematic',
         'essencial' => 'Registro Essencial',
     ];
 

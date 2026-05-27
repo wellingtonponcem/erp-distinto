@@ -8,7 +8,7 @@ require_once __DIR__ . '/../../includes/pdf_templates.php';
 exigirAdmin();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    responderJson(['erro' => 'Método não permitido'], 405);
+    responderJson(['erro' => 'Metodo nao permitido'], 405);
 }
 
 $d = lerCorpo();
@@ -19,7 +19,7 @@ $ativo = !empty($d['ativo']) ? 1 : 0;
 $config = $d['config'] ?? ['pages' => []];
 
 if (!$nome || !in_array($tipo, ['casamento', '15anos', 'filmmaker', 'marketing'], true)) {
-    responderJson(['erro' => 'Nome e tipo são obrigatórios'], 422);
+    responderJson(['erro' => 'Nome e tipo sao obrigatorios'], 422);
 }
 
 $db = Database::get();
