@@ -76,7 +76,8 @@ try {
             'itens_json' => $pkg['beneficios_json'],
             'show_boudoir' => ($dados["include_boudoir_{$id}"] ?? $dados['include_boudoir'] ?? false) !== false,
             'show_prewedding' => ($dados["include_prewedding_{$id}"] ?? $dados['include_prewedding'] ?? false) !== false,
-            'extra_upgrades' => $dados['upgrades'][$id] ?? []
+            'extra_upgrades' => $dados['upgrades'][$id] ?? [],
+            'custom_items' => $dados['itens_personalizados'][$id] ?? []
         ];
     }
 } catch (Exception $e) {
@@ -101,7 +102,7 @@ $itensHeritage = $dados['itens_heritage'] ?? "Cobertura Documental Completa: Pre
 $itensCinematic = $dados['itens_cinematic'] ?? "Cobertura Cinematográfica 8h: Foco narrativo e estético.\nSessão Engagement (Pré-Wedding): Ensaio externo com fotos e vídeo.\nShort Film: Filme de 4 a 6 minutos.\nSocial Content Kit: Material otimizado para Instagram.\nMaking Of Completo: Registro dos preparativos do casal.\nBônus: Pendrive de luxo com arquivos em alta resolução.";
 $itensEssencial = $dados['itens_essencial'] ?? "Cobertura Fotográfica 6h: Foco no essencial do evento.\nGaleria Online: Entrega digital em alta resolução.\nEdição Especial: Curadoria de fotos com tratamento Distinto.\nEntrega em até 45 dias.";
 
-$precoUnicoAtivo = !empty($dados['preco_unico_ativo']);
+$precoUnicoAtivo = false;
 $precoUnicoTitulo = trim($dados['preco_unico_titulo'] ?? 'Proposta Consolidada') ?: 'Proposta Consolidada';
 $precoUnicoValor = $dados['preco_unico_valor'] ?? '';
 $precoUnicoItens = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $dados['preco_unico_itens'] ?? ''))));
@@ -109,6 +110,11 @@ $atualizacoesVersao = array_values(array_filter(array_map('trim', preg_split('/\
 $andamentoProposta = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $dados['andamento_proposta'] ?? ''))));
 $mostrarAndamentoCliente = !empty($dados['mostrar_andamento_cliente']);
 $versaoProposta = trim($dados['versao_proposta'] ?? '');
+$itensPersonalizados = [
+    'heritage' => $dados['itens_personalizados']['heritage'] ?? [],
+    'cinematic' => $dados['itens_personalizados']['cinematic'] ?? [],
+    'essencial' => $dados['itens_personalizados']['essencial'] ?? [],
+];
 
 // Formatação de Moeda Helper
 if (!function_exists('fmt')) {
@@ -119,6 +125,22 @@ if (!function_exists('fmt')) {
         if (is_numeric($valor))
             return 'R$ ' . number_format($valor, 2, ',', '.');
         return $valor;
+    }
+}
+
+if (!function_exists('renderItensPersonalizadosCasamento')) {
+    function renderItensPersonalizadosCasamento(array $itens): void
+    {
+        foreach ($itens as $item) {
+            if (empty($item['nome']) || (($item['incluido'] ?? '1') === '0')) {
+                continue;
+            }
+            $descricao = !empty($item['descricao']) ? ': ' . $item['descricao'] : '';
+            echo '<li style="margin-bottom: 10px; position: relative; padding-left: 20px;">';
+            echo '<span style="position: absolute; left: 0; color: #1a1a1a;">•</span>';
+            echo '<strong>' . htmlspecialchars($item['nome']) . '</strong>' . htmlspecialchars($descricao);
+            echo '</li>';
+        }
     }
 }
 ?>
@@ -1184,6 +1206,7 @@ if (!function_exists('fmt')) {
                             <?= $linha ?>
                         </li>
                     <?php endforeach; ?>
+                    <?php renderItensPersonalizadosCasamento($itensPersonalizados['heritage'] ?? []); ?>
                 </ul>
                 <p style="font-style: italic; color: #333; font-size: 1.1rem; margin-bottom: 25px;">
                     Investimento: <?= $dados['valor_heritage'] ? fmt($dados['valor_heritage']) : 'R$ 7.900,00' ?>
@@ -1253,6 +1276,7 @@ if (!function_exists('fmt')) {
                             <?= $linha ?>
                         </li>
                     <?php endforeach; ?>
+                    <?php renderItensPersonalizadosCasamento($itensPersonalizados['cinematic'] ?? []); ?>
                 </ul>
 
                 <p style="font-style: italic; color: #333; font-size: 1.1rem; margin-bottom: 25px;">
@@ -1356,6 +1380,7 @@ if (!function_exists('fmt')) {
                             <?= $linha ?>
                         </li>
                     <?php endforeach; ?>
+                    <?php renderItensPersonalizadosCasamento($itensPersonalizados['essencial'] ?? []); ?>
                 </ul>
                 <p style="font-style: italic; color: #333; font-size: 1.1rem; margin-bottom: 25px;">
                     Investimento: <?= $dados['valor_essencial'] ? fmt($dados['valor_essencial']) : 'R$ 2.800,00' ?>
@@ -1774,7 +1799,8 @@ if (!function_exists('fmt')) {
                     showPrewedding: <?= $p['show_prewedding'] ? 'true' : 'false' ?>,
                     valorBoudoir: <?= (float)($dados['valor_boudoir'] ?: 500) ?>,
                     valorPrewedding: <?= (float)($dados['valor_prewedding'] ?: 1100) ?>,
-                    extraUpgrades: <?= json_encode($p['extra_upgrades']) ?>
+                    extraUpgrades: <?= json_encode($p['extra_upgrades']) ?>,
+                    customItems: <?= json_encode($p['custom_items'] ?? [], JSON_UNESCAPED_UNICODE) ?>
                 };
                 <?php endforeach; ?>
 
@@ -1834,6 +1860,13 @@ if (!function_exists('fmt')) {
                     }
 
                     // 3. Outros Serviços Dinâmicos do Plano (do banco)
+                    if (Array.isArray(plan.customItems)) {
+                        plan.customItems.forEach((item, idx) => {
+                            if (!item || !item.nome || String(item.incluido ?? '1') === '0') return;
+                            renderRow(container, `custom_${idx}`, item.nome, Number(item.valor || 0), false, item.descricao || '');
+                        });
+                    }
+
                     Object.entries(plan.servicos).forEach(([sId, status]) => {
                         const s = allServices[sId];
                         if (!s) return;
@@ -1841,7 +1874,7 @@ if (!function_exists('fmt')) {
                     });
                 }
 
-                function renderRow(container, id, nome, valor, isOptional) {
+                function renderRow(container, id, nome, valor, isOptional, descricao = '') {
                     const div = document.createElement('div');
                     div.className = 'service-item-row';
                     div.style = `display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.02); margin-bottom: 10px; transition: all 0.3s; ${!isOptional ? 'opacity: 0.8;' : ''}`;
@@ -1921,7 +1954,7 @@ if (!function_exists('fmt')) {
                     container.appendChild(div);
                 }
 
-                window.sendWhatsApp = function () {
+                window.sendWhatsApp = async function () {
                     if (!selectedPlan) return;
 
                     const plan = planPresets[selectedPlan];
@@ -1952,6 +1985,21 @@ if (!function_exists('fmt')) {
 
                     msg += `\n*INVESTIMENTO TOTAL:* ${fmt(total)}\n`;
                     msg += `\nAguardo o retorno para os próximos passos!`;
+
+                    try {
+                        await fetch('<?= raizUrl('/api/propostas/escolher-plano.php') ?>', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                slug: '<?= addslashes($proposta['slug']) ?>',
+                                plano_id: selectedPlan,
+                                extras: Object.entries(activeUpgrades).filter(([, active]) => active).map(([id]) => id),
+                                condicoes: plan.condicoes
+                            })
+                        });
+                    } catch (error) {
+                        console.warn('Nao foi possivel registrar a escolha automaticamente.', error);
+                    }
 
                     const encodedMsg = encodeURIComponent(msg);
                     const url = `https://wa.me/5527988586935?text=${encodedMsg}`;

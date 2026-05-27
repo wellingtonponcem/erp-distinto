@@ -209,14 +209,11 @@ $dadosJson = json_encode([
     'itens_essencial' => $d['itens_essencial'] ?? '',
     'valor_boudoir' => $d['valor_boudoir'] ?? '',
     'valor_prewedding' => $d['valor_prewedding'] ?? '',
-    'preco_unico_ativo' => isset($d['preco_unico_ativo']),
-    'preco_unico_titulo' => $d['preco_unico_titulo'] ?? 'Proposta Consolidada',
-    'preco_unico_valor' => $d['preco_unico_valor'] ?? '',
-    'preco_unico_itens' => $d['preco_unico_itens'] ?? '',
     'atualizacoes_versao' => $d['atualizacoes_versao'] ?? '',
     'andamento_proposta' => $d['andamento_proposta'] ?? '',
     'mostrar_andamento_cliente' => isset($d['mostrar_andamento_cliente']),
     'versao_proposta' => $d['versao_proposta'] ?? 'v1',
+    'itens_personalizados' => $d['itens_personalizados'] ?? ['heritage' => [], 'cinematic' => [], 'essencial' => []],
     'mensagem_pessoal' => $d['mensagem_pessoal'] ?? '',
     'prazo_previas' => $d['prazo_previas'] ?? '',
     'prazo_final' => $d['prazo_final'] ?? '',
@@ -266,9 +263,6 @@ if ($d['tipo'] === 'marketing') {
 }
 
 $valorTotal = !empty($d['valor_total']) ? (float)str_replace(['.', ','], ['', '.'], $d['valor_total']) : 0.00;
-if (!empty($d['preco_unico_ativo']) && !empty($d['preco_unico_valor'])) {
-    $valorTotal = (float)str_replace(['.', ','], ['', '.'], $d['preco_unico_valor']);
-}
 
 $stmt->execute([
     $id,

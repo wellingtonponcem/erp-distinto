@@ -145,14 +145,11 @@ $dadosJson = json_encode([
     'itens_essencial' => $d['itens_essencial'] ?? ($dadosAntigos['itens_essencial'] ?? ''),
     'valor_boudoir' => $d['valor_boudoir'] ?? ($dadosAntigos['valor_boudoir'] ?? ''),
     'valor_prewedding' => $d['valor_prewedding'] ?? ($dadosAntigos['valor_prewedding'] ?? ''),
-    'preco_unico_ativo' => isset($d['preco_unico_ativo']),
-    'preco_unico_titulo' => $d['preco_unico_titulo'] ?? ($dadosAntigos['preco_unico_titulo'] ?? 'Proposta Consolidada'),
-    'preco_unico_valor' => $d['preco_unico_valor'] ?? ($dadosAntigos['preco_unico_valor'] ?? ''),
-    'preco_unico_itens' => $d['preco_unico_itens'] ?? ($dadosAntigos['preco_unico_itens'] ?? ''),
     'atualizacoes_versao' => $d['atualizacoes_versao'] ?? ($dadosAntigos['atualizacoes_versao'] ?? ''),
     'andamento_proposta' => $d['andamento_proposta'] ?? ($dadosAntigos['andamento_proposta'] ?? ''),
     'mostrar_andamento_cliente' => isset($d['mostrar_andamento_cliente']),
     'versao_proposta' => $d['versao_proposta'] ?? ($dadosAntigos['versao_proposta'] ?? 'v1'),
+    'itens_personalizados' => $d['itens_personalizados'] ?? ($dadosAntigos['itens_personalizados'] ?? ['heritage' => [], 'cinematic' => [], 'essencial' => []]),
     'mensagem_pessoal' => $d['mensagem_pessoal'] ?? ($dadosAntigos['mensagem_pessoal'] ?? ''),
     'prazo_previas' => $d['prazo_previas'] ?? ($dadosAntigos['prazo_previas'] ?? ''),
     'prazo_final' => $d['prazo_final'] ?? ($dadosAntigos['prazo_final'] ?? ''),
@@ -195,9 +192,6 @@ $stmt = $db->prepare("UPDATE propostas SET
                       WHERE id = ?");
 
 $valorTotal = !empty($d['valor_total']) ? (float)str_replace(['.', ','], ['', '.'], $d['valor_total']) : $propostaAtual['valor_total'];
-if (!empty($d['preco_unico_ativo']) && !empty($d['preco_unico_valor'])) {
-    $valorTotal = (float)str_replace(['.', ','], ['', '.'], $d['preco_unico_valor']);
-}
 $status = $d['status'] ?? $propostaAtual['status'];
 
 $stmt->execute([

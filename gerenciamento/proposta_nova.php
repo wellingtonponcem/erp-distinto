@@ -345,8 +345,10 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                             // Mapear para as flags existentes para manter compatibilidade
                             $flag = 'show' . (strpos($slug, 'heritage') !== false ? 'Heritage' : (strpos($slug, 'cinematic') !== false ? 'Cinematic' : 'Essencial'));
                             $valVar = 'valor' . (strpos($slug, 'heritage') !== false ? 'Heritage' : (strpos($slug, 'cinematic') !== false ? 'Cinematic' : 'Essencial'));
+                            $baseVar = 'base' . (strpos($slug, 'heritage') !== false ? 'Heritage' : (strpos($slug, 'cinematic') !== false ? 'Cinematic' : 'Essencial'));
                             $itensVar = 'itens' . (strpos($slug, 'heritage') !== false ? 'Heritage' : (strpos($slug, 'cinematic') !== false ? 'Cinematic' : 'Essencial'));
                             $color = strpos($slug, 'heritage') !== false ? 'amber-500' : (strpos($slug, 'cinematic') !== false ? 'blue-500' : 'zinc-400');
+                            $pkgId = strpos($slug, 'heritage') !== false ? 'heritage' : (strpos($slug, 'cinematic') !== false ? 'cinematic' : 'essencial');
                         ?>
                         <div class="card-plan p-5 rounded-2xl bg-zinc-50/30 border-zinc-100" :class="<?= $flag ?> ? 'card-plan-active' : 'opacity-60'">
                             <div class="flex items-center justify-between mb-4">
@@ -365,13 +367,52 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4" x-show="<?= $flag ?>" x-collapse>
                                 <div class="md:col-span-1">
-                                    <label class="label-premium">Valor (R$)</label>
-                                    <input type="text" name="valor_<?= strtolower($flag) ?>" class="input font-bold text-zinc-900" x-model="<?= $valVar ?>" placeholder="<?= number_format($pkg['preco_venda'], 2, ',', '.') ?>">
+                                    <label class="label-premium">Valor base (R$)</label>
+                                    <input type="number" step="0.01" class="input font-bold text-zinc-900" x-model="<?= $baseVar ?>" @input="recalcularPacote('<?= $pkgId ?>')" placeholder="<?= number_format($pkg['preco_venda'], 2, '.', '') ?>">
+                                    <input type="hidden" name="valor_<?= strtolower(str_replace('show', '', $flag)) ?>" :value="<?= $valVar ?>">
+                                    <p class="text-[10px] text-zinc-500 mt-1">Final: <span x-text="formatCurrency(<?= $valVar ?>)"></span></p>
                                 </div>
                                 <div class="md:col-span-3">
                                     <label class="label-premium">Itens inclusos</label>
                                     <textarea name="itens_<?= strtolower($flag) ?>" class="input text-xs leading-relaxed" x-model="<?= $itensVar ?>" rows="2"></textarea>
                                 </div>
+                            </div>
+
+                            <div class="mt-6 pt-4 border-t border-zinc-100/50" x-show="<?= $flag ?>" x-collapse>
+                                <div class="flex items-center justify-between mb-4">
+                                    <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Itens editaveis do pacote</p>
+                                    <button type="button" @click="adicionarItemPersonalizado('<?= $pkgId ?>')" class="text-[10px] bg-white/10 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-white/20 transition-all flex items-center gap-1">
+                                        <i data-lucide="plus" class="w-3 h-3"></i> Adicionar item
+                                    </button>
+                                </div>
+                                <template x-for="(item, idx) in itensPersonalizados.<?= $pkgId ?>" :key="idx">
+                                    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 p-4 rounded-2xl upgrade-card mb-3">
+                                        <input type="hidden" :name="'itens_personalizados[<?= $pkgId ?>]['+idx+'][incluido]'" :value="item.incluido ? '1' : '0'">
+                                        <div class="md:col-span-3">
+                                            <label class="label-premium">Item</label>
+                                            <input type="text" :name="'itens_personalizados[<?= $pkgId ?>]['+idx+'][nome]'" class="input text-xs" x-model="item.nome" placeholder="Album, drone...">
+                                        </div>
+                                        <div class="md:col-span-4">
+                                            <label class="label-premium">Descricao</label>
+                                            <input type="text" :name="'itens_personalizados[<?= $pkgId ?>]['+idx+'][descricao]'" class="input text-xs" x-model="item.descricao" placeholder="Detalhe do item">
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="label-premium">Preco</label>
+                                            <input type="number" step="0.01" :name="'itens_personalizados[<?= $pkgId ?>]['+idx+'][valor]'" class="input text-xs font-bold" x-model="item.valor" @input="recalcularPacote('<?= $pkgId ?>')">
+                                        </div>
+                                        <div class="md:col-span-2 flex items-end">
+                                            <label class="flex items-center gap-2 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+                                                <input type="checkbox" x-model="item.incluido" @change="recalcularPacote('<?= $pkgId ?>')" class="w-4 h-4 rounded border-zinc-300">
+                                                Incluso
+                                            </label>
+                                        </div>
+                                        <div class="md:col-span-1 flex items-end justify-end">
+                                            <button type="button" @click="removerItemPersonalizado('<?= $pkgId ?>', idx)" class="bg-red-500/10 text-red-400 p-2 rounded-lg hover:bg-red-500/20 transition-colors">
+                                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </template>
                             </div>
 
                             <!-- Upgrades dentro do pacote -->
@@ -417,35 +458,11 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         <?php endforeach; ?>
 
                         <div class="border-t border-zinc-100/50 pt-8 mt-8">
-                            <h4 class="text-[11px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-6">Revisao e proposta consolidada</h4>
+                            <h4 class="text-[11px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-6">Andamento da proposta</h4>
                             <div class="space-y-6">
-                                <label class="flex items-center justify-between p-4 rounded-2xl upgrade-card cursor-pointer">
-                                    <div class="flex flex-col">
-                                        <span class="text-[11px] font-bold text-zinc-100">Usar preco unico nesta proposta</span>
-                                        <span class="text-[9px] text-zinc-500">Substitui as opcoes por um investimento consolidado.</span>
-                                    </div>
-                                    <div class="switch">
-                                        <input type="checkbox" name="preco_unico_ativo" x-model="precoUnicoAtivo">
-                                        <span class="slider"></span>
-                                    </div>
-                                </label>
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" x-show="precoUnicoAtivo" x-collapse>
-                                    <div class="form-group">
-                                        <label class="label-premium">Titulo do pacote</label>
-                                        <input type="text" name="preco_unico_titulo" class="input" x-model="precoUnicoTitulo" placeholder="Proposta Consolidada">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="label-premium">Valor unico (R$)</label>
-                                        <input type="number" step="0.01" name="preco_unico_valor" class="input font-bold" x-model="precoUnicoValor" placeholder="0,00">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="label-premium">Versao</label>
-                                        <input type="text" name="versao_proposta" class="input" x-model="versaoProposta" placeholder="v2">
-                                    </div>
-                                    <div class="md:col-span-3 form-group">
-                                        <label class="label-premium">Itens inclusos no preco unico</label>
-                                        <textarea name="preco_unico_itens" class="input text-xs leading-relaxed" x-model="precoUnicoItens" rows="4" placeholder="Album para os clientes&#10;Captacao por drone&#10;Cobertura fotografica do evento"></textarea>
-                                    </div>
+                                <div class="form-group">
+                                    <label class="label-premium">Versao</label>
+                                    <input type="text" name="versao_proposta" class="input" x-model="versaoProposta" placeholder="v2">
                                 </div>
                                 <div class="form-group">
                                     <label class="label-premium">Ajustes apos alinhamento</label>
@@ -774,18 +791,22 @@ document.addEventListener('alpine:init', () => {
         includeBoudoir: true,
         includePrewedding: true,
 
-        valorHeritage: '<?= number_format($heritagePkg['preco_venda'] ?? 7900, 2, ',', '.') ?>',
+        valorHeritage: <?= (float)($heritagePkg['preco_venda'] ?? 7900) ?>,
+        baseHeritage: '<?= number_format($heritagePkg['preco_venda'] ?? 7900, 2, '.', '') ?>',
         itensHeritage: `<?= $heritagePkg['beneficios_json'] ?? '' ?>`,
-        valorCinematic: '<?= number_format($cinematicPkg['preco_venda'] ?? 4500, 2, ',', '.') ?>',
+        valorCinematic: <?= (float)($cinematicPkg['preco_venda'] ?? 4500) ?>,
+        baseCinematic: '<?= number_format($cinematicPkg['preco_venda'] ?? 4500, 2, '.', '') ?>',
         itensCinematic: `<?= $cinematicPkg['beneficios_json'] ?? '' ?>`,
-        valorEssencial: '<?= number_format($essencialPkg['preco_venda'] ?? 2800, 2, ',', '.') ?>',
+        valorEssencial: <?= (float)($essencialPkg['preco_venda'] ?? 2800) ?>,
+        baseEssencial: '<?= number_format($essencialPkg['preco_venda'] ?? 2800, 2, '.', '') ?>',
         itensEssencial: `<?= $essencialPkg['beneficios_json'] ?? '' ?>`,
         valorBoudoir: '',
         valorPrewedding: '',
-        precoUnicoAtivo: false,
-        precoUnicoTitulo: 'Proposta Consolidada',
-        precoUnicoValor: '',
-        precoUnicoItens: 'Album para os clientes\nCaptacao por drone',
+        itensPersonalizados: {
+            heritage: [],
+            cinematic: [],
+            essencial: []
+        },
         atualizacoesVersao: 'Inclusao de 1 album para os clientes.\nInclusao de captacao por drone.\nConsolidacao do investimento em um valor unico.',
         andamentoProposta: '',
         mostrarAndamentoCliente: true,
@@ -830,6 +851,35 @@ document.addEventListener('alpine:init', () => {
         removerServico(index) {
             this.servicosSelecionados.splice(index, 1);
             this.recalcularTotal();
+        },
+
+        formatCurrency(valor) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(parseFloat(valor || 0));
+        },
+
+        adicionarItemPersonalizado(pacote) {
+            this.itensPersonalizados[pacote].push({ nome: '', descricao: '', valor: 0, incluido: true });
+            this.recalcularPacote(pacote);
+            this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
+        },
+
+        removerItemPersonalizado(pacote, index) {
+            this.itensPersonalizados[pacote].splice(index, 1);
+            this.recalcularPacote(pacote);
+        },
+
+        recalcularPacote(pacote) {
+            const mapa = {
+                heritage: ['baseHeritage', 'valorHeritage'],
+                cinematic: ['baseCinematic', 'valorCinematic'],
+                essencial: ['baseEssencial', 'valorEssencial']
+            };
+            const [baseKey, totalKey] = mapa[pacote];
+            const base = parseFloat(String(this[baseKey] || 0).replace(',', '.')) || 0;
+            const extras = (this.itensPersonalizados[pacote] || []).reduce((acc, item) => {
+                return acc + (item.incluido ? (parseFloat(String(item.valor || 0).replace(',', '.')) || 0) : 0);
+            }, 0);
+            this[totalKey] = Math.round((base + extras) * 100) / 100;
         },
 
         atualizarDadosServico(index) {
