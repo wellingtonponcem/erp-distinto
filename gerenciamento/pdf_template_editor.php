@@ -47,18 +47,21 @@ $camposPorSessao = [
     '03 - Visao e missao' => [
         'visao_ia' => 'Texto de visao gerado por IA',
     ],
-    '04 - Pacotes e investimento' => [
+    '04 - Experiencias distintas' => [
+        'experiencias_distintas_texto' => 'Texto completo da sessao',
+    ],
+    '05 - Pacotes e investimento' => [
         'pacote_escolhido' => 'Pacote escolhido',
         'valor_total' => 'Valor total',
         'itens_inclusos' => 'Itens inclusos',
         'condicoes_pagamento' => 'Condicoes de pagamento',
     ],
-    '05 - Prazos e validade' => [
+    '06 - Prazos e validade' => [
         'prazo_previas' => 'Prazo de previas',
         'prazo_final' => 'Prazo final',
         'validade_proposta' => 'Validade da proposta',
     ],
-    '06 - Andamento da negociacao' => [
+    '07 - Andamento da negociacao' => [
         'andamento_proposta' => 'Historico/andamento',
     ],
     '99 - Dados gerais' => [
@@ -89,6 +92,9 @@ include __DIR__ . '/../includes/layout/head.php';
     .pdf-resize-handle.s { left: 50%; bottom: -6px; transform: translateX(-50%); cursor: ns-resize; }
     .pdf-resize-handle.sw { left: -6px; bottom: -6px; cursor: nesw-resize; }
     .pdf-resize-handle.w { left: -6px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
+    .pdf-guide { position: absolute; background: #22c55e; pointer-events: none; z-index: 4; box-shadow: 0 0 12px rgba(34,197,94,.7); }
+    .pdf-guide.v { top: 0; bottom: 0; width: 1px; }
+    .pdf-guide.h { left: 0; right: 0; height: 1px; }
     .prop-label { display:block; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; color:#71717a; margin-bottom:6px; }
     .editor-error { border: 1px solid rgba(239,68,68,.3); background: rgba(239,68,68,.08); color: #fca5a5; border-radius: 10px; padding: 10px 12px; font-size: 12px; font-weight: 700; }
 </style>
@@ -151,6 +157,9 @@ include __DIR__ . '/../includes/layout/head.php';
                 <template x-if="page">
                     <div class="pdf-page-stage" x-ref="stage">
                         <img :src="page.image">
+                        <template x-for="(guide, index) in guides" :key="'guide-' + index">
+                            <div class="pdf-guide" :class="guide.type" :style="guideStyle(guide)"></div>
+                        </template>
                         <template x-for="field in page.fields" :key="field.id">
                             <div class="pdf-field"
                                  :class="{ active: selectedField && selectedField.id === field.id }"
@@ -237,6 +246,7 @@ function pdfTemplateEditor() {
         uploading: false,
         zoom: 1,
         stageScale: 1,
+        guides: [],
         error: '',
         fontOptions: [
             'Outfit', 'Montserrat', 'Playfair Display', 'Cormorant Garamond',
@@ -250,6 +260,7 @@ function pdfTemplateEditor() {
             saudacao_casal: 'Ola, Igor & Gabriela!',
             mensagem_pessoal: 'A gente sabe que fotografia e muito mais do que so apertar um botao. Nosso trabalho e capturar o que voces sentem um pelo outro, de um jeito que pareca real e sem poses forcadas.',
             visao_ia: 'Uma leitura sensivel da historia do casal, transformando o dia em memoria visual com verdade, beleza e intencao.',
+            experiencias_distintas_texto: 'Na Distinto, nao comecamos com ideias soltas. Comecamos com clareza.\n\nDesenhamos tres caminhos estrategicos para que a historia de Igor & Gabriela seja preservada com a forca e a verdade que merecem.\n\nApresentamos nossas propostas de investimento. Cada uma delas foi pensada para transformar o seu casamento em uma experiencia totalmente nova, onde a nossa perspectiva artistica garante que todas as variaveis do dia ganhem o mais bonito sentido.\n\nEscolham o caminho que melhor se conecta com o sonho de voces.\n\nNossa meta e uma so: arrepiar.',
             pacote_escolhido: 'Experiencia Heritage',
             valor_total: 'R$ 7.900,00',
             itens_inclusos: 'Cobertura documental\nAlbum\nDrone',
@@ -286,6 +297,67 @@ function pdfTemplateEditor() {
         updateStageScale() {
             if (!this.$refs.stage) return;
             this.stageScale = Math.max(0.1, this.$refs.stage.getBoundingClientRect().width / 960);
+        },
+        guideStyle(guide) {
+            return guide.type === 'v' ? `left:${guide.pos}%;` : `top:${guide.pos}%;`;
+        },
+        clearGuides() {
+            this.guides = [];
+        },
+        snapRect(rect, field) {
+            const threshold = 0.7;
+            const guides = [];
+            const targetsX = [{ pos: 0 }, { pos: 50 }, { pos: 100 }];
+            const targetsY = [{ pos: 0 }, { pos: 50 }, { pos: 100 }];
+
+            (this.page?.fields || []).forEach(other => {
+                if (!field || other.id === field.id) return;
+                const ox = Number(other.x) || 0;
+                const oy = Number(other.y) || 0;
+                const ow = Number(other.w) || 0;
+                const oh = Number(other.h) || 0;
+                targetsX.push({ pos: ox }, { pos: ox + ow / 2 }, { pos: ox + ow });
+                targetsY.push({ pos: oy }, { pos: oy + oh / 2 }, { pos: oy + oh });
+            });
+
+            let x = rect.x;
+            let y = rect.y;
+            const w = rect.w;
+            const h = rect.h;
+            let bestX = null;
+            let bestY = null;
+            const edgesX = [{ edge: 'left', pos: x }, { edge: 'center', pos: x + w / 2 }, { edge: 'right', pos: x + w }];
+            const edgesY = [{ edge: 'top', pos: y }, { edge: 'middle', pos: y + h / 2 }, { edge: 'bottom', pos: y + h }];
+
+            targetsX.forEach(target => edgesX.forEach(edge => {
+                const dist = Math.abs(edge.pos - target.pos);
+                if (dist <= threshold && (!bestX || dist < bestX.dist)) bestX = { dist, target: target.pos, edge: edge.edge };
+            }));
+            targetsY.forEach(target => edgesY.forEach(edge => {
+                const dist = Math.abs(edge.pos - target.pos);
+                if (dist <= threshold && (!bestY || dist < bestY.dist)) bestY = { dist, target: target.pos, edge: edge.edge };
+            }));
+
+            if (bestX) {
+                if (bestX.edge === 'left') x = bestX.target;
+                if (bestX.edge === 'center') x = bestX.target - w / 2;
+                if (bestX.edge === 'right') x = bestX.target - w;
+                guides.push({ type: 'v', pos: Math.max(0, Math.min(100, bestX.target)) });
+            }
+            if (bestY) {
+                if (bestY.edge === 'top') y = bestY.target;
+                if (bestY.edge === 'middle') y = bestY.target - h / 2;
+                if (bestY.edge === 'bottom') y = bestY.target - h;
+                guides.push({ type: 'h', pos: Math.max(0, Math.min(100, bestY.target)) });
+            }
+
+            this.guides = guides;
+            return {
+                x: Math.max(0, Math.min(100 - w, x)),
+                y: Math.max(0, Math.min(100 - h, y)),
+                w,
+                h
+            };
         },
         usedFonts() {
             const fonts = new Set();
@@ -392,12 +464,19 @@ function pdfTemplateEditor() {
             const startY = event.clientY;
             const startField = { x: field.x, y: field.y };
             const move = (e) => {
-                field.x = Math.max(0, Math.min(100 - field.w, startField.x + ((e.clientX - startX) / rect.width) * 100));
-                field.y = Math.max(0, Math.min(100 - field.h, startField.y + ((e.clientY - startY) / rect.height) * 100));
+                const next = this.snapRect({
+                    x: Math.max(0, Math.min(100 - field.w, startField.x + ((e.clientX - startX) / rect.width) * 100)),
+                    y: Math.max(0, Math.min(100 - field.h, startField.y + ((e.clientY - startY) / rect.height) * 100)),
+                    w: Number(field.w) || 20,
+                    h: Number(field.h) || 8
+                }, field);
+                field.x = Math.round(next.x * 100) / 100;
+                field.y = Math.round(next.y * 100) / 100;
             };
             const up = () => {
                 window.removeEventListener('mousemove', move);
                 window.removeEventListener('mouseup', up);
+                this.clearGuides();
             };
             window.addEventListener('mousemove', move);
             window.addEventListener('mouseup', up);
@@ -443,10 +522,13 @@ function pdfTemplateEditor() {
                     h = minH;
                 }
 
-                x = Math.max(0, Math.min(100 - w, x));
-                y = Math.max(0, Math.min(100 - h, y));
                 w = Math.max(minW, Math.min(100 - x, w));
                 h = Math.max(minH, Math.min(100 - y, h));
+                const snapped = this.snapRect({ x, y, w, h }, field);
+                x = snapped.x;
+                y = snapped.y;
+                w = snapped.w;
+                h = snapped.h;
 
                 field.x = Math.round(x * 100) / 100;
                 field.y = Math.round(y * 100) / 100;
@@ -456,6 +538,7 @@ function pdfTemplateEditor() {
             const up = () => {
                 window.removeEventListener('mousemove', move);
                 window.removeEventListener('mouseup', up);
+                this.clearGuides();
             };
             window.addEventListener('mousemove', move);
             window.addEventListener('mouseup', up);

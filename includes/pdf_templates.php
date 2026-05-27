@@ -68,6 +68,11 @@ function dadosPdfProposta(array $proposta): array
     if ($mensagemPessoal === '') {
         $mensagemPessoal = $mensagemPadrao;
     }
+    $experienciasDistintasTexto = "Na Distinto, nao comecamos com ideias soltas. Comecamos com clareza.\n\n"
+        . "Desenhamos tres caminhos estrategicos para que a historia de {$nomeCasal} seja preservada com a forca e a verdade que merecem.\n\n"
+        . "Apresentamos nossas propostas de investimento. Cada uma delas foi pensada para transformar o seu casamento em uma experiencia totalmente nova, onde a nossa perspectiva artistica garante que todas as variaveis do dia ganhem o mais bonito sentido.\n\n"
+        . "Escolham o caminho que melhor se conecta com o sonho de voces.\n\n"
+        . "Nossa meta e uma so: arrepiar.";
 
     $planoId = $dados['cliente_escolha']['plano_id'] ?? '';
     if (!$planoId) {
@@ -110,6 +115,7 @@ function dadosPdfProposta(array $proposta): array
         'saudacao_casal' => $saudacaoCasal,
         'data_casamento' => !empty($dados['data_casamento']) ? formatarData($dados['data_casamento']) : '',
         'visao_ia' => $dados['secoes']['visao'] ?? '',
+        'experiencias_distintas_texto' => $experienciasDistintasTexto,
         'pacote_escolhido' => $nomesPlano[$planoId] ?? '',
         'valor_total' => formatarValorPdf($dados['cliente_escolha']['valor_total'] ?? $proposta['valor_total'] ?? 0),
         'itens_inclusos' => implode("\n", array_unique($itens)),
