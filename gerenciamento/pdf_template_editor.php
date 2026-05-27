@@ -329,6 +329,8 @@ include __DIR__ . '/../includes/layout/head.php';
         </div>
     </main>
 </div>
+
+<script>
 function pdfTemplateEditor() {
     return {
         template: <?= json_encode($template, JSON_UNESCAPED_UNICODE) ?>,
