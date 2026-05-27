@@ -272,9 +272,10 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
 
                     <!-- Campos movidos de Informações Básicas -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 pb-8 border-b border-zinc-100/50">
+                        <input type="hidden" name="modo_cliente" value="lead" :disabled="tipoProposta !== 'casamento'">
                         <div class="form-group" x-show="tipoProposta !== 'casamento'">
                             <label class="label-premium">Selecione o Cliente</label>
-                            <select name="cliente_id" id="cliente_id_casamento" class="input" :required="tipoProposta === 'casamento'" :disabled="tipoProposta !== 'casamento'">
+                            <select name="cliente_id" id="cliente_id_casamento" class="input" disabled>
                                 <option value="">Selecione um cliente...</option>
                                 <?php foreach ($clientes as $c): ?>
                                     <option value="<?= $c['id'] ?>"><?= sanitizar($c['nome']) ?></option>
@@ -338,6 +339,12 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         </div>
                     </div>
                     
+                    <div class="form-group mb-8 pb-8 border-b border-zinc-100/50">
+                        <label class="label-premium">Briefing do casal para IA</label>
+                        <textarea name="briefing" class="input text-xs leading-relaxed" x-model="briefingCasal" rows="4" placeholder="Conte a historia do casal, estilo do casamento, prioridades, preferencias, referencias e qualquer detalhe emocional que deve aparecer nos textos variaveis."></textarea>
+                        <p class="text-[10px] text-zinc-500 mt-2">Esse briefing alimenta a IA. Se a mensagem pessoal ficar em branco, ela sera gerada a partir daqui.</p>
+                    </div>
+
                     <div class="space-y-6">
                     <div class="space-y-6">
                         <?php foreach ($weddingPackages as $pkg): 
@@ -515,7 +522,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div class="md:col-span-2">
                                 <label class="label">Mensagem Pessoal (Página 02)</label>
-                                <textarea name="mensagem_pessoal" class="input text-xs" x-model="mensagemPessoal" rows="3"></textarea>
+                                <textarea name="mensagem_pessoal" class="input text-xs" x-model="mensagemPessoal" rows="3" placeholder="Opcional. Deixe em branco para a IA gerar usando o briefing do casal."></textarea>
                             </div>
                             <div>
                                 <label class="label">Validade da Proposta (Dias)</label>
@@ -807,6 +814,12 @@ document.addEventListener('alpine:init', () => {
             cinematic: [],
             essencial: []
         },
+        upgrades: {
+            heritage: {},
+            cinematic: {},
+            essencial: {}
+        },
+        briefingCasal: '',
         atualizacoesVersao: 'Inclusao de 1 album para os clientes.\nInclusao de captacao por drone.\nConsolidacao do investimento em um valor unico.',
         andamentoProposta: '',
         mostrarAndamentoCliente: true,
@@ -816,7 +829,7 @@ document.addEventListener('alpine:init', () => {
         condicoesEssencial: 'Entrada de 25% + Saldo parcelado em até 5x (dependendo do pacote selecionado)',
         
         // Novos campos dinâmicos para Proposta de Casamento
-        mensagemPessoal: 'Na Distinto, entendemos que o nosso papel vai muito além de apertar um botão: nossa missão é registrar histórias de amor com autenticidade e emoção.',
+        mensagemPessoal: '',
         prazoPrevias: '48 horas',
         prazoFinal: '60 dias úteis',
         validadeProposta: '7',
@@ -1044,7 +1057,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 resultadoDiv.classList.remove('hidden');
                 resultadoDiv.scrollIntoView({ behavior: 'smooth' });
             } else {
-                alert('Erro: ' + (result.error || 'Falha ao gerar proposta.'));
+                alert('Erro: ' + (result.erro || result.error || 'Falha ao gerar proposta.'));
             }
         } catch (error) {
             console.error(error);

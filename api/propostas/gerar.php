@@ -169,6 +169,14 @@ try {
 }
 
 // 5. Salvar no Banco
+$mensagemPessoal = trim($d['mensagem_pessoal'] ?? '');
+if (($d['tipo'] ?? '') === 'casamento' && trim($d['briefing'] ?? '') !== '' && !empty($secoes['visao']) && !str_starts_with($secoes['visao'], 'Erro')) {
+    $mensagemPadrao = 'Na Distinto, entendemos que o nosso papel';
+    if ($mensagemPessoal === '' || str_starts_with($mensagemPessoal, $mensagemPadrao)) {
+        $mensagemPessoal = trim($secoes['visao']);
+    }
+}
+
 $responsavel = contatoResponsavel([
     'tipo' => $d['tipo'],
     'contato_tipo' => $d['contato_tipo'] ?? 'noiva',
@@ -214,7 +222,7 @@ $dadosJson = json_encode([
     'mostrar_andamento_cliente' => isset($d['mostrar_andamento_cliente']),
     'versao_proposta' => $d['versao_proposta'] ?? 'v1',
     'itens_personalizados' => $d['itens_personalizados'] ?? ['heritage' => [], 'cinematic' => [], 'essencial' => []],
-    'mensagem_pessoal' => $d['mensagem_pessoal'] ?? '',
+    'mensagem_pessoal' => $mensagemPessoal,
     'prazo_previas' => $d['prazo_previas'] ?? '',
     'prazo_final' => $d['prazo_final'] ?? '',
     'validade_proposta' => $d['validade_proposta'] ?? '',
