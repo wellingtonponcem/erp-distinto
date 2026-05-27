@@ -270,7 +270,7 @@ async function exportPdfTemplate(config, values) {
         img.style.inset = '0';
         img.style.width = '100%';
         img.style.height = '100%';
-        img.style.objectFit = 'cover';
+        img.style.objectFit = 'contain';
         pageEl.appendChild(img);
 
         (page.fields || []).forEach(field => {
