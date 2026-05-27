@@ -176,6 +176,9 @@ if (($d['tipo'] ?? '') === 'casamento' && trim($d['briefing'] ?? '') !== '' && !
         $mensagemPessoal = trim($secoes['visao']);
     }
 }
+if (($d['tipo'] ?? '') === 'casamento' && $mensagemPessoal === '') {
+    $mensagemPessoal = 'A gente sabe que fotografia é muito mais do que só apertar um botão. Nosso trabalho é capturar o que vocês sentem um pelo outro, de um jeito que pareça real e sem poses forçadas.';
+}
 
 $responsavel = contatoResponsavel([
     'tipo' => $d['tipo'],

@@ -14,7 +14,11 @@ $primeiroNomeNoivo = explode(' ', trim($nomeNoivo))[0];
 $saudacaoCasal = "Olá, " . (($primeiroNomeNoivo && $primeiroNomeNoiva) ? "{$primeiroNomeNoivo} & {$primeiroNomeNoiva}" : $proposta['cliente_nome']) . "!";
 
 // Novas Variáveis Dinâmicas
-$mensagemPessoal = $dados['mensagem_pessoal'] ?? 'A gente sabe que fotografia é muito mais do que só apertar um botão. Nosso trabalho é capturar o que vocês sentem um pelo outro, de um jeito que pareça real e sem poses forçadas.';
+$mensagemPessoalPadrao = 'A gente sabe que fotografia é muito mais do que só apertar um botão. Nosso trabalho é capturar o que vocês sentem um pelo outro, de um jeito que pareça real e sem poses forçadas.';
+$mensagemPessoal = trim($dados['mensagem_pessoal'] ?? '');
+if ($mensagemPessoal === '') {
+    $mensagemPessoal = $mensagemPessoalPadrao;
+}
 $prazoPrevias = $dados['prazo_previas'] ?? '48 horas';
 $prazoFinal = $dados['prazo_final'] ?? '60 dias úteis';
 $validadeProposta = $dados['validade_proposta'] ?? '7';
