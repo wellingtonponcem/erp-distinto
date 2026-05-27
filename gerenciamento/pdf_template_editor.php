@@ -178,7 +178,7 @@ include __DIR__ . '/../includes/layout/head.php';
                                  :style="fieldStyle(field)"
                                  @mousedown.prevent="startDrag($event, field)"
                                  @click.stop="selectedField = field">
-                                <div class="pdf-field-text">
+                                <div class="pdf-field-text" :style="'display:flex; flex-direction:column; justify-content:' + (field.valign || 'flex-start') + ';'">
                                     <template x-if="field.key === 'pacote_foto'">
                                         <img :src="fieldPreview(field)" style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;">
                                     </template>
@@ -260,8 +260,18 @@ include __DIR__ . '/../includes/layout/head.php';
                         <div class="grid grid-cols-2 gap-3">
                             <div><label class="prop-label">Peso</label><select class="input" x-model="selectedField.weight"><option value="400">Normal</option><option value="700">Negrito</option><option value="900">Black</option></select></div>
                             <div>
-                                <label class="prop-label">Alinhamento</label>
+                                <label class="prop-label">Alinhamento Horiz.</label>
                                 <select class="input" x-model="selectedField.align"><option value="left">Esquerda</option><option value="center">Centro</option><option value="right">Direita</option></select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="prop-label">Alinhamento Vert.</label>
+                                <select class="input" x-model="selectedField.valign">
+                                    <option value="flex-start">Topo</option>
+                                    <option value="center">Centro</option>
+                                    <option value="flex-end">Base</option>
+                                </select>
                             </div>
                         </div>
                         <button type="button" @click="removeField()" class="btn w-full text-red-500">Remover campo</button>
@@ -298,11 +308,11 @@ function pdfTemplateEditor() {
             experiencias_distintas_texto: 'Na Distinto, nao comecamos com ideias soltas. Comecamos com clareza.\n\nDesenhamos tres caminhos estrategicos para que a historia de <b>Igor & Gabriela</b> seja preservada com a forca e a verdade que merecem.\n\nApresentamos nossas propostas de investimento. Cada uma delas foi pensada para transformar o seu casamento em uma experiencia totalmente nova, onde a nossa perspectiva artistica garante que todas as variaveis do dia ganhem o mais bonito sentido.\n\nEscolham o caminho que melhor se conecta com o sonho de voces.\n\n<b>Nossa meta e uma so: arrepiar.</b>',
             pacote_escolhido: 'Experiencia Heritage',
             valor_total: 'R$ 7.900,00',
-            itens_inclusos: 'Cobertura documental\nAlbum\nDrone',
-            condicoes_pagamento: 'Entrada de 20% + saldo parcelado',
+            itens_inclusos: 'Cobertura Documental Completa: Presença ilimitada no evento. Do making of à última música, sem limite de horas.\nO Álbum Heritage: Álbum luxo panorâmico no tamanho 25x30cm (aberto 25x60cm), com papel fotográfico de alta gramatura e laminação especial.\nRéplicas para a Família (Presente): Inclusão de 02 Mini Álbuns réplicas, ideais para presentear os pais com a mesma qualidade do álbum principal.\nProdução Cinematográfica 4K: Filme completo (8 a 12 min) com áudio dos votos e trilha sonora licenciada.\nImagens Aéreas (Drone): Perspectivas cinematográficas para contextualizar o local do seu "sim".\nEcossistema Digital e Físico: Galeria online vitalícia, e pen drive personalizado.',
+            condicoes_pagamento: 'Entrada de 20% + saldo parcelado em até 6x',
             pacote_nome: 'Experiencia Heritage',
             pacote_valor: 'R$ 7.900,00',
-            pacote_itens: 'Cobertura documental\nAlbum master de luxo\nDrone profissional\nEnsaio pre-wedding',
+            pacote_itens: 'Cobertura Documental Completa: Presença ilimitada no evento. Do making of à última música, sem limite de horas.\nO Álbum Heritage: Álbum luxo panorâmico no tamanho 25x30cm (aberto 25x60cm), com papel fotográfico de alta gramatura e laminação especial.\nRéplicas para a Família (Presente): Inclusão de 02 Mini Álbuns réplicas, ideais para presentear os pais com a mesma qualidade do álbum principal.\nProdução Cinematográfica 4K: Filme completo (8 a 12 min) com áudio dos votos e trilha sonora licenciada.\nImagens Aéreas (Drone): Perspectivas cinematográficas para contextualizar o local do seu "sim".\nEcossistema Digital e Físico: Galeria online vitalícia, e pen drive personalizado.',
             pacote_condicoes: 'Entrada de 20% + Saldo parcelado em ate 6x',
             pacote_foto: '/imagens-proposta-casamento/foto-section-07.png'
         },
@@ -310,21 +320,21 @@ function pdfTemplateEditor() {
             {
                 pacote_nome: 'Experiencia Heritage',
                 pacote_valor: 'R$ 7.900,00',
-                pacote_itens: 'Cobertura documental\nAlbum master de luxo\nDrone profissional\nEnsaio pre-wedding',
+                pacote_itens: 'Cobertura Documental Completa: Presença ilimitada no evento. Do making of à última música, sem limite de horas.\nO Álbum Heritage: Álbum luxo panorâmico no tamanho 25x30cm (aberto 25x60cm), com papel fotográfico de alta gramatura e laminação especial.\nRéplicas para a Família (Presente): Inclusão de 02 Mini Álbuns réplicas, ideais para presentear os pais com a mesma qualidade do álbum principal.\nProdução Cinematográfica 4K: Filme completo (8 a 12 min) com áudio dos votos e trilha sonora licenciada.\nImagens Aéreas (Drone): Perspectivas cinematográficas para contextualizar o local do seu "sim".\nEcossistema Digital e Físico: Galeria online vitalícia, e pen drive personalizado.',
                 pacote_condicoes: 'Entrada de 20% + Saldo parcelado em ate 6x',
                 pacote_foto: '/imagens-proposta-casamento/foto-section-07.png'
             },
             {
                 pacote_nome: 'Experiencia Cinematic',
                 pacote_valor: 'R$ 4.500,00',
-                pacote_itens: 'Cobertura documental\nShort film (video)\nAlbum standard\nMaking of',
+                pacote_itens: 'Fotografia de Evento (8h): Cobertura focada na essência e na espontaneidade dos convidados.\nSessão Engagement (Pré-Wedding): Ensaio de até 3h para conexão do casal com a lente antes do grande dia.\nShort Film de Cinema: Filme dinâmico (5 a 7 min) com os melhores momentos da cerimônia e recepção.\nSocial Content (Story Maker): Entrega de conteúdo vertical pronto para redes sociais. Seus convidados acompanham os bastidores em tempo real.\nMaking Of Completo: Registro da preparação da noiva e do noivo, capturando a expectativa e os detalhes.\nBônus: Vídeo Save-the-Date incluso para o anúncio oficial.',
                 pacote_condicoes: 'Entrada de 20% + Saldo parcelado em ate 6x',
                 pacote_foto: '/imagens-proposta-casamento/foto-section-08.png'
             },
             {
                 pacote_nome: 'Registro Essencial',
                 pacote_valor: 'R$ 2.800,00',
-                pacote_itens: 'Cobertura documental esssencial do casamento.',
+                pacote_itens: 'Fotografia de Cerimônia (4h): Cobertura pontual focada no protocolo religioso e fotos protocolares de família.\nEscopo Limitado: Plano focado em registros estáticos. Não inclui vídeo, drone, cobertura de preparativos ou ensaio externo.\nEntrega Digital: Acesso à galeria online exclusiva para download das fotos editadas.',
                 pacote_condicoes: 'Entrada de 25% + Saldo parcelado em ate 5x',
                 pacote_foto: '/imagens-proposta-casamento/foto-section-09.png'
             }
@@ -660,7 +670,7 @@ function pdfTemplateEditor() {
                         .replace(/&lt;\/strong&gt;/g, '</strong>')
                         .replace(/\n/g, '<br>');
                     
-                    return `<div style="position:absolute;left:${field.x || 0}%;top:${field.y || 0}%;width:${field.w || 20}%;height:${field.h || 8}%;font-family:${esc(field.font || 'Arial')};font-size:${field.size || 18}px;color:${esc(field.color || '#111')};font-weight:${esc(field.weight || '400')};text-align:${esc(field.align || 'left')};line-height:${field.lineHeight || 1.25};text-transform:${field.transform || 'none'};white-space:pre-wrap;overflow:hidden;">${text}</div>`;
+                    return `<div style="position:absolute;left:${field.x || 0}%;top:${field.y || 0}%;width:${field.w || 20}%;height:${field.h || 8}%;font-family:${esc(field.font || 'Arial')};font-size:${field.size || 18}px;color:${esc(field.color || '#111')};font-weight:${esc(field.weight || '400')};text-align:${esc(field.align || 'left')};line-height:${field.lineHeight || 1.25};text-transform:${field.transform || 'none'};display:flex;flex-direction:column;justify-content:${field.valign || 'flex-start'};white-space:pre-wrap;overflow:hidden;">${text}</div>`;
                 }).join('');
                 
                 return `<section class="page"><img src="${esc(page.image)}">${fields}</section>`;

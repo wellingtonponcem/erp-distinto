@@ -45,6 +45,27 @@ $servicosJson = json_encode($servicos);
 $weddingPackages = array_filter($servicos, fn($s) => $s['categoria'] === 'wedding' && $s['tipo'] === 'plano');
 $weddingUpgrades = array_filter($servicos, fn($s) => $s['categoria'] === 'wedding' && $s['tipo'] === 'servico');
 
+$heritagePkg = array_values(array_filter($weddingPackages, fn($s) => strpos(strtolower($s['nome']), 'heritage') !== false))[0] ?? null;
+$cinematicPkg = array_values(array_filter($weddingPackages, fn($s) => strpos(strtolower($s['nome']), 'cinematic') !== false))[0] ?? null;
+$essencialPkg = array_values(array_filter($weddingPackages, fn($s) => strpos(strtolower($s['nome']), 'essencial') !== false))[0] ?? null;
+
+if (!function_exists('obterBeneficiosTexto')) {
+    function obterBeneficiosTexto($pkg) {
+        if (!$pkg || empty($pkg['beneficios_json'])) {
+            return '';
+        }
+        $arr = json_decode($pkg['beneficios_json'], true);
+        if (is_array($arr)) {
+            return implode("\n", $arr);
+        }
+        return $pkg['beneficios_json'];
+    }
+}
+
+$beneficiosH = obterBeneficiosTexto($heritagePkg);
+$beneficiosC = obterBeneficiosTexto($cinematicPkg);
+$beneficiosE = obterBeneficiosTexto($essencialPkg);
+
 $tituloPagina = 'Editar Proposta - ' . $proposta['cliente_nome'];
 include __DIR__ . '/../includes/layout/head.php';
 ?>
@@ -694,13 +715,13 @@ document.addEventListener('alpine:init', () => {
         condicaoEspecial: '',
         valorHeritage: '',
         baseHeritage: '',
-        itensHeritage: 'Cobertura Documental, Álbum Heritage, Réplicas, Filme 4K, Drone, Ecossistema Digital',
+        itensHeritage: <?= json_encode($beneficiosH) ?>,
         valorCinematic: '',
         baseCinematic: '',
-        itensCinematic: 'Fotografia 8h, Sessão Engagement, Short Film, Social Content, Making Of, Bônus',
+        itensCinematic: <?= json_encode($beneficiosC) ?>,
         valorEssencial: '',
         baseEssencial: '',
-        itensEssencial: 'Cobertura Fotográfica Essencial',
+        itensEssencial: <?= json_encode($beneficiosE) ?>,
         valorBoudoir: '',
         valorPrewedding: '',
         itensPersonalizados: { heritage: [], cinematic: [], essencial: [] },
@@ -762,13 +783,13 @@ document.addEventListener('alpine:init', () => {
             this.condicaoEspecial = dados.condicao_especial || '';
             this.valorHeritage = dados.valor_heritage || '';
             this.baseHeritage = this.calcularBasePacote('heritage', this.valorHeritage, dados.itens_personalizados);
-            this.itensHeritage = dados.itens_heritage || 'Cobertura Documental, Álbum Heritage, Réplicas, Filme 4K, Drone, Ecossistema Digital';
+            this.itensHeritage = dados.itens_heritage || <?= json_encode($beneficiosH) ?>;
             this.valorCinematic = dados.valor_cinematic || '';
             this.baseCinematic = this.calcularBasePacote('cinematic', this.valorCinematic, dados.itens_personalizados);
-            this.itensCinematic = dados.itens_cinematic || 'Fotografia 8h, Sessão Engagement, Short Film, Social Content, Making Of, Bônus';
+            this.itensCinematic = dados.itens_cinematic || <?= json_encode($beneficiosC) ?>;
             this.valorEssencial = dados.valor_essencial || '';
             this.baseEssencial = this.calcularBasePacote('essencial', this.valorEssencial, dados.itens_personalizados);
-            this.itensEssencial = dados.itens_essencial || 'Cobertura Fotográfica Essencial';
+            this.itensEssencial = dados.itens_essencial || <?= json_encode($beneficiosE) ?>;
             this.itensPersonalizados = this.normalizarItensPersonalizados(dados.itens_personalizados || {});
             this.atualizacoesVersao = dados.atualizacoes_versao || 'Inclusao de 1 album para os clientes.\nInclusao de captacao por drone.\nConsolidacao do investimento em um valor unico.';
             this.andamentoProposta = dados.andamento_proposta || '';

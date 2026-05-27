@@ -87,13 +87,30 @@ function dadosPdfProposta(array $proposta): array
         'essencial' => 'Registro Essencial',
     ];
 
+    $itensHeritageDefault = "Cobertura Documental Completa: Presença ilimitada no evento. Do making of à última música, sem limite de horas.\nO Álbum Heritage: Álbum luxo panorâmico no tamanho 25x30cm (aberto 25x60cm), com papel fotográfico de alta gramatura e laminação especial.\nRéplicas para a Família (Presente): Inclusão de 02 Mini Álbuns réplicas, ideais para presentear os pais com a mesma qualidade do álbum principal.\nProdução Cinematográfica 4K: Filme completo (8 a 12 min) com áudio dos votos e trilha sonora licenciada.\nImagens Aéreas (Drone): Perspectivas cinematográficas para contextualizar o local do seu \"sim\".\nEcossistema Digital e Físico: Galeria online vitalícia, e pen drive personalizado.";
+    $itensCinematicDefault = "Fotografia de Evento (8h): Cobertura focada na essência e na espontaneidade dos convidados.\nSessão Engagement (Pré-Wedding): Ensaio de até 3h para conexão do casal com a lente antes do grande dia.\nShort Film de Cinema: Filme dinâmico (5 a 7 min) com os melhores momentos da cerimônia e recepção.\nSocial Content (Story Maker): Entrega de conteúdo vertical pronto para redes sociais. Seus convidados acompanham os bastidores em tempo real.\nMaking Of Completo: Registro da preparação da noiva e do noivo, capturando a expectativa e os detalhes.\nBônus: Vídeo Save-the-Date incluso para o anúncio oficial.";
+    $itensEssencialDefault = "Fotografia de Cerimônia (4h): Cobertura pontual focada no protocolo religioso e fotos protocolares de família.\nEscopo Limitado: Plano focado em registros estáticos. Não inclui vídeo, drone, cobertura de preparativos ou ensaio externo.\nEntrega Digital: Acesso à galeria online exclusiva para download das fotos editadas.";
+
     $itens = [];
-    $itensTexto = [
-        'heritage' => $dados['itens_heritage'] ?? '',
-        'cinematic' => $dados['itens_cinematic'] ?? '',
-        'essencial' => $dados['itens_essencial'] ?? '',
-    ];
-    foreach (preg_split('/\r\n|\r|\n/', $itensTexto[$planoId] ?? '') as $linha) {
+    $itensTextoVal = '';
+    if ($planoId === 'heritage') {
+        $itensTextoVal = trim($dados['itens_heritage'] ?? '');
+        if ($itensTextoVal === '') {
+            $itensTextoVal = $itensHeritageDefault;
+        }
+    } elseif ($planoId === 'cinematic') {
+        $itensTextoVal = trim($dados['itens_cinematic'] ?? '');
+        if ($itensTextoVal === '') {
+            $itensTextoVal = $itensCinematicDefault;
+        }
+    } elseif ($planoId === 'essencial') {
+        $itensTextoVal = trim($dados['itens_essencial'] ?? '');
+        if ($itensTextoVal === '') {
+            $itensTextoVal = $itensEssencialDefault;
+        }
+    }
+
+    foreach (preg_split('/\r\n|\r|\n/', $itensTextoVal) as $linha) {
         $linha = trim($linha);
         if ($linha !== '') $itens[] = $linha;
     }
@@ -111,7 +128,10 @@ function dadosPdfProposta(array $proposta): array
     // Heritage
     if (($dados['show_heritage'] ?? true) !== false) {
         $itensH = [];
-        $itensTextoH = $dados['itens_heritage'] ?? '';
+        $itensTextoH = trim($dados['itens_heritage'] ?? '');
+        if ($itensTextoH === '') {
+            $itensTextoH = $itensHeritageDefault;
+        }
         foreach (preg_split('/\r\n|\r|\n/', $itensTextoH) as $linha) {
             $linha = trim($linha);
             if ($linha !== '') $itensH[] = $linha;
@@ -134,7 +154,10 @@ function dadosPdfProposta(array $proposta): array
     // Cinematic
     if (($dados['show_cinematic'] ?? true) !== false) {
         $itensC = [];
-        $itensTextoC = $dados['itens_cinematic'] ?? '';
+        $itensTextoC = trim($dados['itens_cinematic'] ?? '');
+        if ($itensTextoC === '') {
+            $itensTextoC = $itensCinematicDefault;
+        }
         foreach (preg_split('/\r\n|\r|\n/', $itensTextoC) as $linha) {
             $linha = trim($linha);
             if ($linha !== '') $itensC[] = $linha;
@@ -157,7 +180,10 @@ function dadosPdfProposta(array $proposta): array
     // Essencial
     if (($dados['show_essencial'] ?? true) !== false) {
         $itensE = [];
-        $itensTextoE = $dados['itens_essencial'] ?? '';
+        $itensTextoE = trim($dados['itens_essencial'] ?? '');
+        if ($itensTextoE === '') {
+            $itensTextoE = $itensEssencialDefault;
+        }
         foreach (preg_split('/\r\n|\r|\n/', $itensTextoE) as $linha) {
             $linha = trim($linha);
             if ($linha !== '') $itensE[] = $linha;

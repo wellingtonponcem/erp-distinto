@@ -34,6 +34,23 @@ $heritagePkg = array_values(array_filter($weddingPackages, fn($s) => strpos(strt
 $cinematicPkg = array_values(array_filter($weddingPackages, fn($s) => strpos(strtolower($s['nome']), 'cinematic') !== false))[0] ?? null;
 $essencialPkg = array_values(array_filter($weddingPackages, fn($s) => strpos(strtolower($s['nome']), 'essencial') !== false))[0] ?? null;
 
+if (!function_exists('obterBeneficiosTexto')) {
+    function obterBeneficiosTexto($pkg) {
+        if (!$pkg || empty($pkg['beneficios_json'])) {
+            return '';
+        }
+        $arr = json_decode($pkg['beneficios_json'], true);
+        if (is_array($arr)) {
+            return implode("\n", $arr);
+        }
+        return $pkg['beneficios_json'];
+    }
+}
+
+$beneficiosH = obterBeneficiosTexto($heritagePkg);
+$beneficiosC = obterBeneficiosTexto($cinematicPkg);
+$beneficiosE = obterBeneficiosTexto($essencialPkg);
+
 include __DIR__ . '/../includes/layout/head.php';
 ?>
 
@@ -800,13 +817,13 @@ document.addEventListener('alpine:init', () => {
 
         valorHeritage: <?= (float)($heritagePkg['preco_venda'] ?? 7900) ?>,
         baseHeritage: '<?= number_format($heritagePkg['preco_venda'] ?? 7900, 2, '.', '') ?>',
-        itensHeritage: `<?= $heritagePkg['beneficios_json'] ?? '' ?>`,
+        itensHeritage: <?= json_encode($beneficiosH) ?>,
         valorCinematic: <?= (float)($cinematicPkg['preco_venda'] ?? 4500) ?>,
         baseCinematic: '<?= number_format($cinematicPkg['preco_venda'] ?? 4500, 2, '.', '') ?>',
-        itensCinematic: `<?= $cinematicPkg['beneficios_json'] ?? '' ?>`,
+        itensCinematic: <?= json_encode($beneficiosC) ?>,
         valorEssencial: <?= (float)($essencialPkg['preco_venda'] ?? 2800) ?>,
         baseEssencial: '<?= number_format($essencialPkg['preco_venda'] ?? 2800, 2, '.', '') ?>',
-        itensEssencial: `<?= $essencialPkg['beneficios_json'] ?? '' ?>`,
+        itensEssencial: <?= json_encode($beneficiosE) ?>,
         valorBoudoir: '',
         valorPrewedding: '',
         itensPersonalizados: {

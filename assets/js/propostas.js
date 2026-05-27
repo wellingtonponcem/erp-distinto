@@ -352,6 +352,12 @@ async function exportPdfTemplate(config, values) {
             element.style.lineHeight = field.lineHeight || 1.25;
             element.style.whiteSpace = 'pre-wrap';
             element.style.overflow = 'hidden';
+            
+            // Alinhamento vertical flexbox
+            element.style.display = 'flex';
+            element.style.flexDirection = 'column';
+            element.style.justifyContent = field.valign || 'flex-start';
+            
             pageEl.appendChild(element);
         });
 

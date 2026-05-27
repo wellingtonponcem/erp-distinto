@@ -16,6 +16,13 @@ Melhorias no ERP Distinto, com foco na consistência visual entre a proposta web
   - Adicionado card informativo de instrução na barra lateral quando o campo `pacote_foto` for selecionado.
 - **Formato do Texto (Maiúsculas / Normal)**:
   - Adicionada a propriedade `transform` (`none`/`uppercase`) nos campos dinâmicos do editor de templates para que o usuário possa escolher se o texto deve ficar em caixa alta ou normal.
+- **Alinhamento Vertical do Texto**:
+  - Adicionada a propriedade `valign` (`flex-start`/`center`/`flex-end`) nos campos do editor de templates para que o usuário controle o alinhamento vertical dentro da caixa cinza.
+  - O alinhamento vertical padrão agora é o **Topo** (`flex-start`), impedindo que o texto fique empurrado para a parte inferior ("lá embaixo") na caixa de texto por padrão no editor, no preview e na exportação final.
+- **Textos Completos e Ricos dos Pacotes (Heritage, Cinematic, Essencial)**:
+  - Adicionados fallbacks com os textos ricos padrão completos nos pacotes em `includes/pdf_templates.php`, garantindo consistência total com os benefícios exibidos na proposta web e no banco.
+  - Atualizados os dados mockados no editor `pdf_template_editor.php` (`values` e `planosMockados`) para simularem os textos reais ricos em toda a sua extensão na pré-visualização.
+  - Implementada a função PHP `obterBeneficiosTexto()` no início de `proposta_nova.php` e `proposta_editar.php` para carregar e formatar os benefícios completos do banco separados por quebra de linha (`\n`), injetando com `json_encode` no Alpine de forma 100% segura contra erros de sintaxe JS.
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.
