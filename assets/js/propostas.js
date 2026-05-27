@@ -218,8 +218,9 @@ window.exportPDF = async function() {
 window.exportPDF = async function() {
     window.hideExportModal();
 
-    if (typeof html2canvas === 'undefined' || !window.jspdf?.jsPDF) {
-        alert('Bibliotecas de exportação PDF não carregadas. Recarregue a página e tente novamente.');
+    const JsPDF = window.jspdf?.jsPDF || window.jsPDF;
+    if (typeof html2canvas === 'undefined' || !JsPDF) {
+        alert('Bibliotecas de exportação PDF não carregadas. Recarregue a página com Ctrl+F5 e tente novamente.');
         return;
     }
 
@@ -259,7 +260,7 @@ window.exportPDF = async function() {
         .trim()
         .slice(0, 90) || 'proposta-comercial';
 
-    const pdf = new window.jspdf.jsPDF({
+    const pdf = new JsPDF({
         orientation: 'landscape',
         unit: 'mm',
         format: 'a4',

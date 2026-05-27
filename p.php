@@ -108,6 +108,8 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
 
     <!-- Bibliotecas Externas -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body class="type-<?= $tipo ?>">
@@ -262,7 +264,7 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
         <?php endif; ?>
 
     </script>
-    <script src="<?= raizUrl('/assets/js/propostas.js') ?>?v=pdf-html2pdf-2"></script>
+    <script src="<?= raizUrl('/assets/js/propostas.js') ?>?v=pdf-canvas-3"></script>
 
     <?php if ($tipo === 'casamento'): ?>
     <?php
