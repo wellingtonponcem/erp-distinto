@@ -57,6 +57,31 @@ try {
 } catch (Exception $e) {}
 
 // PLANOS E SERVIÇOS (DINÂMICOS DO BANCO)
+if (!function_exists('valorMonetarioCasamento')) {
+    function valorMonetarioCasamento($valor, float $fallback = 0): float
+    {
+        if ($valor === null || $valor === '') {
+            return $fallback;
+        }
+
+        if (is_numeric($valor)) {
+            $numero = (float)$valor;
+            return $numero > 0 ? $numero : $fallback;
+        }
+
+        $normalizado = str_replace(['R$', ' '], '', (string)$valor);
+        if (str_contains($normalizado, ',') && str_contains($normalizado, '.')) {
+            $normalizado = str_replace('.', '', $normalizado);
+            $normalizado = str_replace(',', '.', $normalizado);
+        } elseif (str_contains($normalizado, ',')) {
+            $normalizado = str_replace(',', '.', $normalizado);
+        }
+
+        $numero = is_numeric($normalizado) ? (float)$normalizado : 0;
+        return $numero > 0 ? $numero : $fallback;
+    }
+}
+
 $planosWedding = [];
 try {
     $dbPkg = Database::get();
@@ -70,7 +95,7 @@ try {
         $planosWedding[] = [
             'id' => $id,
             'nome' => $pkg['nome'],
-            'preco_venda' => (float)($dados["valor_{$id}"] ?? $pkg['preco_venda']),
+            'preco_venda' => valorMonetarioCasamento($dados["valor_{$id}"] ?? null, (float)$pkg['preco_venda']),
             'descricao' => $pkg['subtitulo'] ?? $pkg['descricao'],
             'prazo_minimo' => $pkg['prazo_minimo'] ?? 6,
             'itens_json' => $pkg['beneficios_json'],
