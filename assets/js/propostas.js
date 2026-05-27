@@ -371,16 +371,23 @@ async function exportPdfTemplate(config, values) {
 
     (config.pages || []).forEach(page => {
         if (page.is_pacote && values.planos && values.planos.length > 0) {
-            if (countPkgPages > 1) {
-                const plano = values.planos[pkgCounter] || null;
+            if (page.plano_id) {
+                const plano = values.planos.find(p => p.id === page.plano_id);
                 if (plano) {
                     renderSinglePage(page, plano);
                 }
-                pkgCounter++;
             } else {
-                values.planos.forEach(plano => {
-                    renderSinglePage(page, plano);
-                });
+                if (countPkgPages > 1) {
+                    const plano = values.planos[pkgCounter] || null;
+                    if (plano) {
+                        renderSinglePage(page, plano);
+                    }
+                    pkgCounter++;
+                } else {
+                    values.planos.forEach(plano => {
+                        renderSinglePage(page, plano);
+                    });
+                }
             }
         } else {
             renderSinglePage(page);

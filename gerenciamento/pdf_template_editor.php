@@ -33,6 +33,28 @@ if ($id) {
     ];
 }
 
+$planosOpcoes = [
+    ['id' => 'heritage', 'nome' => 'Experiencia Heritage'],
+    ['id' => 'cinematic', 'nome' => 'Experiencia Cinematic'],
+    ['id' => 'essencial', 'nome' => 'Registro Essencial'],
+];
+try {
+    $stmtPlanos = $db->query("SELECT id, nome FROM servicos WHERE categoria = 'wedding' AND tipo = 'plano' AND ativo = 1");
+    $planosBanco = $stmtPlanos->fetchAll(PDO::FETCH_ASSOC);
+    if (!empty($planosBanco)) {
+        $planosOpcoes = [];
+        foreach ($planosBanco as $plano) {
+            $slugPlano = strpos(strtolower($plano['nome']), 'essencial') !== false ? 'essencial' : (strpos(strtolower($plano['nome']), 'cinematic') !== false ? 'cinematic' : 'heritage');
+            $planosOpcoes[] = [
+                'id' => $slugPlano,
+                'nome' => $plano['nome']
+            ];
+        }
+    }
+} catch (Exception $e) {
+    // Silencia erros se a tabela nao existir
+}
+
 $camposPorSessao = [
     '01 - Capa' => [
         'nome_casal' => 'Nome do casal',
@@ -152,19 +174,41 @@ include __DIR__ . '/../includes/layout/head.php';
                     <button type="button" @click="$refs.upload.click()" class="text-xs font-bold" :disabled="uploading" x-text="uploading ? 'Enviando...' : 'Adicionar'"></button>
                     <input type="file" x-ref="upload" class="hidden" accept="image/png,image/jpeg,image/webp" @change="uploadPage($event)">
                 </div>
-                <template x-for="(page, index) in template.config.pages" :key="page.id">
-                    <button type="button" @click="currentPage = index; selectedField = null" class="w-full text-left p-3 rounded-lg mb-2 border" :class="currentPage === index ? 'border-zinc-900 bg-zinc-100' : 'border-zinc-200'">
-                        <span class="text-xs font-black" x-text="'Pagina ' + (index + 1)"></span>
-                    </button>
-                </template>
+                <div class="space-y-2">
+                    <template x-for="(page, index) in template.config.pages" :key="page.id">
+                        <div class="flex items-center gap-1 p-1 bg-zinc-900/5 dark:bg-white/5 rounded-xl">
+                            <button type="button" @click="currentPage = index; selectedField = null" class="flex-1 text-left p-3 rounded-lg border text-ellipsis overflow-hidden whitespace-nowrap" :class="currentPage === index ? 'border-zinc-900 bg-zinc-100 text-zinc-950 font-bold dark:border-white dark:bg-zinc-800 dark:text-white' : 'border-transparent text-zinc-500 hover:text-zinc-800'">
+                                <span class="text-xs font-black" x-text="'Pagina ' + (index + 1) + (page.is_pacote ? (page.plano_id ? ' (' + obterNomePlano(page.plano_id) + ')' : ' (Pacotes)') : '')"></span>
+                            </button>
+                            <div class="flex flex-col gap-0.5">
+                                <button type="button" @click.stop="movePageUp(index)" class="p-1 text-[9px] border border-zinc-700 rounded bg-zinc-800 text-zinc-300 hover:bg-zinc-700" :disabled="index === 0">▲</button>
+                                <button type="button" @click.stop="movePageDown(index)" class="p-1 text-[9px] border border-zinc-700 rounded bg-zinc-800 text-zinc-300 hover:bg-zinc-700" :disabled="index === template.config.pages.length - 1">▼</button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
                 <div class="mt-4 space-y-2">
                     <button type="button" @click="$refs.replaceUpload.click()" class="btn w-full" :disabled="!page || uploading">Substituir imagem</button>
                     <button type="button" @click="removePage()" class="btn w-full text-red-500" :disabled="!page || uploading">Remover pagina</button>
                     <input type="file" x-ref="replaceUpload" class="hidden" accept="image/png,image/jpeg,image/webp" @change="replacePage($event)">
+                    
                     <template x-if="page">
-                        <label class="flex items-center gap-2 text-xs font-black mt-4 text-zinc-700 bg-zinc-100 p-2 rounded-lg cursor-pointer">
-                            <input type="checkbox" x-model="page.is_pacote"> Página de Pacotes
-                        </label>
+                        <div class="mt-4 p-3 bg-zinc-850 border border-zinc-700 rounded-xl space-y-3">
+                            <label class="flex items-center gap-2 text-xs font-black text-zinc-300 cursor-pointer">
+                                <input type="checkbox" x-model="page.is_pacote" @change="if(!page.is_pacote) page.plano_id = ''"> Página de Pacotes
+                            </label>
+                            <template x-if="page.is_pacote">
+                                <div>
+                                    <label class="prop-label" style="font-size: 9px;">Vincular ao Pacote</label>
+                                    <select class="input text-xs" x-model="page.plano_id" style="padding: 4px 8px; height: 32px;">
+                                        <option value="">(Rotativo / Sequencial)</option>
+                                        <template x-for="p in planosOpcoes" :key="p.id">
+                                            <option :value="p.id" x-text="p.nome"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                            </template>
+                        </div>
                     </template>
                 </div>
             </aside>
@@ -285,11 +329,10 @@ include __DIR__ . '/../includes/layout/head.php';
         </div>
     </main>
 </div>
-
-<script>
 function pdfTemplateEditor() {
     return {
         template: <?= json_encode($template, JSON_UNESCAPED_UNICODE) ?>,
+        planosOpcoes: <?= json_encode($planosOpcoes, JSON_UNESCAPED_UNICODE) ?>,
         currentPage: 0,
         selectedField: null,
         uploading: false,
@@ -325,6 +368,7 @@ function pdfTemplateEditor() {
         },
         planosMockados: [
             {
+                id: 'heritage',
                 pacote_nome: 'Experiencia Heritage',
                 pacote_escolhido: 'Experiencia Heritage',
                 pacote_valor: 'R$ 7.900,00',
@@ -339,11 +383,12 @@ function pdfTemplateEditor() {
                 condicao_especial: '(Condição especial p/ amigos lagoinha)'
             },
             {
+                id: 'cinematic',
                 pacote_nome: 'Experiencia Cinematic',
                 pacote_escolhido: 'Experiencia Cinematic',
                 pacote_valor: 'R$ 4.500,00',
                 valor_total: 'R$ 4.500,00',
-                pacote_itens: '• <b>Fotografia de Evento (8h):</b> Cobertura focada na essência e na espontaneidade dos convidados.\n• <b>Sessão Engagement (Pré-Wedding):</b> Ensaio de até 3h para conexão do casal com a lente antes do grande dia.\n• <b>Short Film de Cinema:</b> Filme dinâmico (5 a 7 min) com os melhores momentos da cerimônia e recepção.\n• <b>Social Content (Story Maker):</b> Entrega de conteúdo vertical pronto para redes sociais. Seus convidados acompanham os bastidores em tempo real.\n• <b>Making Of Completo:</b> Registro da preparação da noiva e do noivo, capturando a expectativa e os detalhes.\n• <b>Bônus:</b> Vídeo Save-the-Date incluso para o anúncio oficial.',
+                pacote_itens: '• <b>Fotografia de Evento (8h):</b> Cobertura focada na essência e na espontaneidade dos convidados.\n• <b>Sessão Engagement (Pré-Wedding):</b> Ensaio de até 3h para conexão do casal com a lente antes do grande dia.\n• <b>Short Film de Cinema:</b> Filme dinâmico (5 a 7 min) com os melhores momentos da cerimônia e recepção.\n• <b>Social Content (Story Maker):</b> Entrega de conteúdo vertical pronto para redes sociais. Seus convidados acompanham os bastidores em tempo real.\n• <b>Making Of Completo:</b> Registro da preparação da noiva e do noivo, capturando a expectation e os detalhes.\n• <b>Bônus:</b> Vídeo Save-the-Date incluso para o anúncio oficial.',
                 itens_inclusos: '• <b>Fotografia de Evento (8h):</b> Cobertura focada na essência e na espontaneidade dos convidados.\n• <b>Sessão Engagement (Pré-Wedding):</b> Ensaio de até 3h para conexão do casal com a lente antes do grande dia.\n• <b>Short Film de Cinema:</b> Filme dinâmico (5 a 7 min) com os melhores momentos da cerimônia e recepção.\n• <b>Social Content (Story Maker):</b> Entrega de conteúdo vertical pronto para redes sociais. Seus convidados acompanham os bastidores em tempo real.\n• <b>Making Of Completo:</b> Registro da preparação da noiva e do noivo, capturando a expectativa e os detalhes.\n• <b>Bônus:</b> Vídeo Save-the-Date incluso para o anúncio oficial.',
                 pacote_adicionais: '• <b>Boudoir da Noiva:</b> R$ 500,00\n• <b>Ensaio Pré-Wedding:</b> R$ 1.100,00',
                 itens_adicionais: '• <b>Boudoir da Noiva:</b> R$ 500,00\n• <b>Ensaio Pré-Wedding:</b> R$ 1.100,00',
@@ -353,6 +398,7 @@ function pdfTemplateEditor() {
                 condicao_especial: '(10% de desconto na entrada para contratos até 05/04/2026)'
             },
             {
+                id: 'essencial',
                 pacote_nome: 'Registro Essencial',
                 pacote_escolhido: 'Registro Essencial',
                 pacote_valor: 'R$ 2.800,00',
@@ -370,6 +416,10 @@ function pdfTemplateEditor() {
         get page() { return this.template.config.pages[this.currentPage] || null; },
         get currentPackageMock() {
             if (!this.page || !this.page.is_pacote) return this.planosMockados[0];
+            if (this.page.plano_id) {
+                const mock = this.planosMockados.find(p => p.id === this.page.plano_id);
+                if (mock) return mock;
+            }
             let countPkgPages = this.template.config.pages.filter(p => p.is_pacote).length;
             if (countPkgPages > 1) {
                 let pkgPagesSoFar = this.template.config.pages.slice(0, this.currentPage + 1).filter(p => p.is_pacote);
@@ -377,6 +427,28 @@ function pdfTemplateEditor() {
                 return this.planosMockados[pkgIndex] || this.planosMockados[0];
             }
             return this.planosMockados[0];
+        },
+        obterNomePlano(id) {
+            const op = this.planosOpcoes.find(p => p.id === id);
+            return op ? op.nome : id;
+        },
+        movePageUp(index) {
+            if (index <= 0) return;
+            const pages = this.template.config.pages;
+            const temp = pages[index];
+            pages[index] = pages[index - 1];
+            pages[index - 1] = temp;
+            this.currentPage = index - 1;
+            this.selectedField = null;
+        },
+        movePageDown(index) {
+            const pages = this.template.config.pages;
+            if (index >= pages.length - 1) return;
+            const temp = pages[index];
+            pages[index] = pages[index + 1];
+            pages[index + 1] = temp;
+            this.currentPage = index + 1;
+            this.selectedField = null;
         },
         init() {
             if (!this.template.config) this.template.config = { pages: [] };
@@ -730,16 +802,23 @@ function pdfTemplateEditor() {
 
             this.template.config.pages.forEach(page => {
                 if (page.is_pacote) {
-                    if (countPkgPages > 1) {
-                        const plano = this.planosMockados[pkgCounter] || null;
+                    if (page.plano_id) {
+                        const plano = this.planosMockados.find(p => p.id === page.plano_id);
                         if (plano) {
                             pagesHtml.push(renderPage(page, plano));
                         }
-                        pkgCounter++;
                     } else {
-                        this.planosMockados.forEach(plano => {
-                            pagesHtml.push(renderPage(page, plano));
-                        });
+                        if (countPkgPages > 1) {
+                            const plano = this.planosMockados[pkgCounter] || null;
+                            if (plano) {
+                                pagesHtml.push(renderPage(page, plano));
+                            }
+                            pkgCounter++;
+                        } else {
+                            this.planosMockados.forEach(plano => {
+                                pagesHtml.push(renderPage(page, plano));
+                            });
+                        }
                     }
                 } else {
                     pagesHtml.push(renderPage(page));
