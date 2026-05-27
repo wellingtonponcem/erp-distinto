@@ -145,6 +145,44 @@ function dadosPdfProposta(array $proposta): array
         if ($item) $itens[] = '+ ' . $item;
     }
 
+    // Obter upgrades dinâmicos do banco
+    $upgradesDisponiveis = [];
+    try {
+        $db = Database::get();
+        $stmtServicos = $db->query("SELECT id, nome, preco_venda FROM servicos WHERE categoria = 'wedding' AND tipo = 'servico' AND ativo = 1");
+        if ($stmtServicos) {
+            $upgradesDisponiveis = $stmtServicos->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        }
+    } catch (Exception $e) {
+        // Silencia exceções se tabela de servicos não existir
+    }
+
+    $obterAdicionaisPacote = function(string $pkgId, array $dados, array $upgradesDisponiveis) {
+        $adicionais = [];
+        // 1. Boudoir
+        $incBoudoir = $dados["include_boudoir_{$pkgId}"] ?? $dados['include_boudoir'] ?? false;
+        if ($incBoudoir) {
+            $val = formatarValorPdf($dados['valor_boudoir'] ?? 500);
+            $adicionais[] = "• <b>Boudoir da Noiva:</b> {$val}";
+        }
+        // 2. Prewedding
+        $incPrewedding = $dados["include_prewedding_{$pkgId}"] ?? $dados['include_prewedding'] ?? false;
+        if ($incPrewedding) {
+            $val = formatarValorPdf($dados['valor_prewedding'] ?? 1100);
+            $adicionais[] = "• <b>Ensaio Pré-Wedding:</b> {$val}";
+        }
+        // 3. Dynamic Upgrades
+        $pkgUpgrades = $dados['upgrades'][$pkgId] ?? [];
+        foreach ($upgradesDisponiveis as $upg) {
+            $upgId = $upg['id'] ?? '';
+            if ($upgId && !empty($pkgUpgrades[$upgId])) {
+                $val = formatarValorPdf($upg['preco_venda'] ?? 0);
+                $adicionais[] = "• <b>{$upg['nome']}:</b> {$val}";
+            }
+        }
+        return implode("\n", $adicionais);
+    };
+
     $planosAtivos = [];
     
     // Heritage
@@ -171,6 +209,7 @@ function dadosPdfProposta(array $proposta): array
             'pacote_condicoes' => $dados['condicoes_heritage_cinematic'] ?? 'Entrada de 20% + Saldo parcelado em até 6x',
             'pacote_foto' => raizUrl('/imagens-proposta-casamento/foto-section-07.png'),
             'condicao_especial' => $dados['condicao_especial'] ?? '',
+            'pacote_adicionais' => $obterAdicionaisPacote('heritage', $dados, $upgradesDisponiveis),
         ];
     }
     
@@ -198,6 +237,7 @@ function dadosPdfProposta(array $proposta): array
             'pacote_condicoes' => $dados['condicoes_heritage_cinematic'] ?? 'Entrada de 20% + Saldo parcelado em até 6x',
             'pacote_foto' => raizUrl('/imagens-proposta-casamento/foto-section-08.png'),
             'condicao_especial' => $dados['condicao_especial'] ?? '',
+            'pacote_adicionais' => $obterAdicionaisPacote('cinematic', $dados, $upgradesDisponiveis),
         ];
     }
     
@@ -225,7 +265,34 @@ function dadosPdfProposta(array $proposta): array
             'pacote_condicoes' => $dados['condicoes_essencial'] ?? 'Entrada de 25% + Saldo parcelado em até 5x',
             'pacote_foto' => raizUrl('/imagens-proposta-casamento/foto-section-09.png'),
             'condicao_especial' => $dados['condicao_especial'] ?? '',
+            'pacote_adicionais' => $obterAdicionaisPacote('essencial', $dados, $upgradesDisponiveis),
         ];
+    }
+
+    $itensAdicionais = [];
+    if (!empty($dados['cliente_escolha']['itens_selecionados'])) {
+        foreach ($dados['cliente_escolha']['itens_selecionados'] as $item) {
+            if (!$item) continue;
+            $valStr = '';
+            if (strpos(strtolower($item), 'boudoir') !== false) {
+                $valStr = ': ' . formatarValorPdf($dados['valor_boudoir'] ?? 500);
+            } elseif (strpos(strtolower($item), 'pre-wedding') !== false || strpos(strtolower($item), 'pre wedding') !== false) {
+                $valStr = ': ' . formatarValorPdf($dados['valor_prewedding'] ?? 1100);
+            } else {
+                foreach ($upgradesDisponiveis as $upg) {
+                    if (strcasecmp(trim($upg['nome'] ?? ''), trim($item)) === 0) {
+                        $valStr = ': ' . formatarValorPdf($upg['preco_venda'] ?? 0);
+                        break;
+                    }
+                }
+            }
+            $itensAdicionais[] = "• <b>{$item}</b>{$valStr}";
+        }
+    } else {
+        $fallbackAgs = $obterAdicionaisPacote($planoId, $dados, $upgradesDisponiveis);
+        if ($fallbackAgs !== '') {
+            $itensAdicionais = explode("\n", $fallbackAgs);
+        }
     }
 
     return [
@@ -241,6 +308,7 @@ function dadosPdfProposta(array $proposta): array
         'pacote_escolhido' => $nomesPlano[$planoId] ?? '',
         'valor_total' => formatarValorPdf($dados['cliente_escolha']['valor_total'] ?? $proposta['valor_total'] ?? 0),
         'itens_inclusos' => implode("\n", array_unique($itens)),
+        'itens_adicionais' => implode("\n", array_unique($itensAdicionais)),
         'condicoes_pagamento' => $dados['cliente_escolha']['condicoes'] ?? ($planoId === 'essencial' ? ($dados['condicoes_essencial'] ?? '') : ($dados['condicoes_heritage_cinematic'] ?? '')),
         'validade_proposta' => $dados['validade_proposta'] ?? '',
         'andamento_proposta' => $dados['andamento_proposta'] ?? '',

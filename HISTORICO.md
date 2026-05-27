@@ -28,6 +28,11 @@ Melhorias no ERP Distinto, com foco na consistência visual entre a proposta web
 - **Campo Dinâmico de Condição Especial e Resolução de Imagens Quebradas**:
   - Incluído o campo `condicao_especial` no PDF, nos planos e nas seções `$camposPorSessao` do editor, com dados mockados.
   - Corrigido o bug de imagens quebradas nos mockups dos pacotes (`pacote_foto`) no palco do editor envolvendo os caminhos estáticos com a função PHP `raizUrl()`. Isso garante que o servidor resolva os caminhos corretamente mesmo rodando em subpastas no Apache/Nginx.
+- **Suporte Completo a Adicionais (Upgrades)**:
+  - Adicionado suporte a upgrades dinâmicos no PDF e no editor, mapeando os adicionais disponíveis no banco de dados (`servicos` categoria `wedding` tipo `servico`).
+  - Criado o campo `itens_adicionais` para a página de investimento final (`05`) contendo apenas os upgrades selecionados pelo cliente (ou fallback do plano).
+  - Criado o campo `pacote_adicionais` para as páginas individuais de pacotes (`08`) listando os upgrades ativados para cada pacote.
+  - Atualizados os dados de preview mockados no editor para exibir e renderizar perfeitamente esses campos no palco e no preview.
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.
