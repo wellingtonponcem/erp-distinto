@@ -565,7 +565,7 @@ body.on-dark .fixed-section-title h2 {
 
 .export-options {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 20px;
     margin-bottom: 30px;
 }
@@ -633,6 +633,64 @@ body.on-dark .fixed-section-title h2 {
 
 .btn-cancel-export:hover {
     color: #fff;
+}
+
+.pdf-export-stage {
+    position: absolute;
+    top: 0;
+    left: -10000px;
+    width: 297mm;
+    min-height: 210mm;
+    background: #fff;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.pdf-export-stage .proposal-wrapper,
+.pdf-export-stage .wedding-proposal {
+    width: 297mm !important;
+    height: auto !important;
+    overflow: visible !important;
+    scroll-snap-type: none !important;
+    background: #fff;
+}
+
+.pdf-export-stage .proposal-page,
+.pdf-export-stage .slide {
+    width: 297mm !important;
+    height: 210mm !important;
+    min-height: 210mm !important;
+    max-height: 210mm !important;
+    margin: 0 !important;
+    scroll-snap-align: none !important;
+    overflow: hidden !important;
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+    box-sizing: border-box !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
+
+.pdf-export-stage .pdf-export-break {
+    page-break-after: always !important;
+    break-after: page !important;
+}
+
+.pdf-export-stage .page-content {
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+}
+
+.pdf-export-stage .no-print,
+.pdf-export-stage .proposal-frame,
+.pdf-export-stage .fixed-section-title,
+.pdf-export-stage .export-modal,
+.pdf-export-stage #slide-pacote,
+.pdf-export-stage #plan-modal {
+    display: none !important;
 }
 
 /* --- REGRAS DE IMPRESSÃO (PDF) --- */

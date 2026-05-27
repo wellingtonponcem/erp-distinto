@@ -213,20 +213,14 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
     <div id="export-modal" class="export-modal no-print" style="display: none;">
         <div class="export-modal-content">
             <h3>Exportar Proposta</h3>
-            <p>Escolha o formato de visualização para o PDF:</p>
+            <p>Cada seção da proposta será exportada como uma página A4 em paisagem.</p>
             
             <div class="export-options">
-                <button onclick="window.exportPDF('horizontal')" class="export-option">
+                <button onclick="window.exportPDF()" class="export-option">
                     <div class="option-preview horizontal">
                         <div class="mac-screen"></div>
                     </div>
-                    <span>Horizontal (Mac M1)</span>
-                </button>
-                <button onclick="window.exportPDF('vertical')" class="export-option">
-                    <div class="option-preview vertical">
-                        <div class="phone-screen"></div>
-                    </div>
-                    <span>Vertical (Mobile)</span>
+                    <span>Exportar em paisagem</span>
                 </button>
             </div>
             
