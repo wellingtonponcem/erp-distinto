@@ -343,9 +343,8 @@ async function exportPdfTemplate(config, values) {
             element.style.width = `${field.w || 20}%`;
             element.style.height = `${field.h || 8}%`;
             element.style.fontFamily = field.font || 'Arial, sans-serif';
-            
-            const fontScale = field.scale || 1;
-            element.style.fontSize = `${(field.size || 18) * fontScale * 0.63}px`;
+            element.style.fontSize = `${(field.size || 18) * 0.63}px`;
+            element.style.textTransform = field.transform || 'none';
             
             element.style.color = field.color || '#111';
             element.style.fontWeight = field.weight || '400';

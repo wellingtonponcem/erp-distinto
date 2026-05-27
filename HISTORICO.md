@@ -8,10 +8,14 @@ Melhorias no ERP Distinto, com foco na consistência visual entre a proposta web
   - Ajustado o texto padrão de `experiencias_distintas_texto` em `includes/pdf_templates.php` e no editor `pdf_template_editor.php` para incluir o nome do casal e a última frase em negrito usando a tag `<b>`.
   - Atualizado o editor `pdf_template_editor.php` (no palco do Alpine.js com `x-html` e na janela de `preview`) para permitir a renderização de tags `<b>` e `<strong>` com segurança.
   - Modificado o arquivo `assets/js/propostas.js` na função `exportPdfTemplate` para interpretar tags HTML básicas de negrito (`<b>` e `<strong>`) utilizando `innerHTML` em vez de `textContent`, após sanitização.
-
-## Planejado (Nova Fase)
-- **Upscaling de Fontes**: Adicionar a propriedade de escala individual `scale` aos campos de texto no editor e renderizadores.
-- **Páginas Dinâmicas de Pacotes**: Multiplicar automaticamente as páginas de pacotes no PDF com base nos planos ativos na proposta, mapeando inclusive a foto ilustrativa correspondente (`pacote_foto`).
+- **Páginas Dinâmicas de Pacotes Sequenciais**:
+  - Multiplica automaticamente as páginas de pacotes no PDF com base nos planos ativos na proposta de forma sequencial (Heritage, Cinematic e Essencial), mapeando as fotos correspondentes (`pacote_foto`).
+  - Adicionado o **terceiro plano mockado** (Registro Essencial) na lista de planos de teste do editor para que o preview simule fielmente as 3 páginas completas.
+- **Usabilidade Simplificada de Foto**:
+  - Criado o botão direto **"Adicionar Foto do Pacote"** no painel do editor para inserir o campo de imagem dinâmico instantaneamente.
+  - Adicionado card informativo de instrução na barra lateral quando o campo `pacote_foto` for selecionado.
+- **Formato do Texto (Maiúsculas / Normal)**:
+  - Adicionada a propriedade `transform` (`none`/`uppercase`) nos campos dinâmicos do editor de templates para que o usuário possa escolher se o texto deve ficar em caixa alta ou normal.
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.

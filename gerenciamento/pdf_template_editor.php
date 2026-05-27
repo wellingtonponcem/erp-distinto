@@ -206,9 +206,16 @@ include __DIR__ . '/../includes/layout/head.php';
             </section>
 
             <aside class="card p-4 overflow-auto">
-                <button type="button" @click="addField()" class="btn btn-primary w-full mb-4" :disabled="!page">Adicionar campo</button>
+                <button type="button" @click="addField()" class="btn btn-primary w-full mb-2" :disabled="!page">Adicionar campo de texto</button>
+                <button type="button" @click="addPhotoField()" class="btn w-full mb-4 bg-zinc-800 text-white hover:bg-zinc-700 font-bold border border-zinc-700" :disabled="!page">Adicionar Foto do Pacote</button>
                 <template x-if="selectedField">
                     <div class="space-y-4">
+                        <template x-if="selectedField.key === 'pacote_foto'">
+                            <div class="p-3 bg-blue-500/10 border border-blue-500/30 rounded-xl text-xs text-blue-400 font-medium leading-relaxed mb-2">
+                                <i data-lucide="info" class="w-4 h-4 inline-block mr-1 align-middle"></i>
+                                Este campo é uma <strong>Foto Dinâmica do Pacote</strong>. Ele exibirá a imagem correspondente a cada plano em sequência no PDF.
+                            </div>
+                        </template>
                         <div>
                             <label class="prop-label">Campo dinamico</label>
                             <select class="input" x-model="selectedField.key">
@@ -241,7 +248,13 @@ include __DIR__ . '/../includes/layout/head.php';
                                 </select>
                             </div>
                             <div><label class="prop-label">Tamanho</label><input type="number" class="input" x-model.number="selectedField.size"></div>
-                            <div><label class="prop-label">Upscaling Fonte</label><input type="number" step="0.1" class="input" placeholder="Ex: 1.0" x-model.number="selectedField.scale"></div>
+                            <div>
+                                <label class="prop-label">Formato do texto</label>
+                                <select class="input" x-model="selectedField.transform">
+                                    <option value="none">Normal</option>
+                                    <option value="uppercase">Maiúsculas</option>
+                                </select>
+                            </div>
                             <div><label class="prop-label">Cor</label><input type="color" class="input h-10" x-model="selectedField.color"></div>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
@@ -307,6 +320,13 @@ function pdfTemplateEditor() {
                 pacote_itens: 'Cobertura documental\nShort film (video)\nAlbum standard\nMaking of',
                 pacote_condicoes: 'Entrada de 20% + Saldo parcelado em ate 6x',
                 pacote_foto: '/imagens-proposta-casamento/foto-section-08.png'
+            },
+            {
+                pacote_nome: 'Registro Essencial',
+                pacote_valor: 'R$ 2.800,00',
+                pacote_itens: 'Cobertura documental esssencial do casamento.',
+                pacote_condicoes: 'Entrada de 25% + Saldo parcelado em ate 5x',
+                pacote_foto: '/imagens-proposta-casamento/foto-section-09.png'
             }
         ],
         get page() { return this.template.config.pages[this.currentPage] || null; },
@@ -334,9 +354,8 @@ function pdfTemplateEditor() {
             return field.text || this.values[field.key] || '{{' + field.key + '}}';
         },
         fieldStyle(field) {
-            const fontScale = field.scale || 1;
-            const size = Math.max(1, (field.size || 18) * fontScale * this.stageScale);
-            return `left:${field.x}%;top:${field.y}%;width:${field.w}%;height:${field.h}%;font-family:${field.font};font-size:${size}px;color:${field.color};font-weight:${field.weight};text-align:${field.align};line-height:${field.lineHeight || 1.25};`;
+            const size = Math.max(1, (field.size || 18) * this.stageScale);
+            return `left:${field.x}%;top:${field.y}%;width:${field.w}%;height:${field.h}%;font-family:${field.font};font-size:${size}px;color:${field.color};font-weight:${field.weight};text-align:${field.align};line-height:${field.lineHeight || 1.25};text-transform:${field.transform || 'none'};`;
         },
         updateStageScale() {
             if (!this.$refs.stage) return;
@@ -432,6 +451,12 @@ function pdfTemplateEditor() {
             if (!this.page) return;
             const field = { id: this.newId(), key: 'nome_casal', text: '', x: 10, y: 10, w: 25, h: 8, font: 'Montserrat', size: 24, color: '#111111', weight: '700', align: 'left', lineHeight: 1.25 };
             this.loadGoogleFont(field.font);
+            this.page.fields.push(field);
+            this.selectedField = field;
+        },
+        addPhotoField() {
+            if (!this.page) return;
+            const field = { id: this.newId(), key: 'pacote_foto', text: '', x: 20, y: 20, w: 40, h: 40, font: 'Montserrat', size: 18, color: '#111111', weight: '400', align: 'left', lineHeight: 1.25 };
             this.page.fields.push(field);
             this.selectedField = field;
         },
@@ -635,10 +660,7 @@ function pdfTemplateEditor() {
                         .replace(/&lt;\/strong&gt;/g, '</strong>')
                         .replace(/\n/g, '<br>');
                     
-                    const fontScale = field.scale || 1;
-                    const scaledSize = (field.size || 18) * fontScale;
-                    
-                    return `<div style="position:absolute;left:${field.x || 0}%;top:${field.y || 0}%;width:${field.w || 20}%;height:${field.h || 8}%;font-family:${esc(field.font || 'Arial')};font-size:${scaledSize}px;color:${esc(field.color || '#111')};font-weight:${esc(field.weight || '400')};text-align:${esc(field.align || 'left')};line-height:${field.lineHeight || 1.25};white-space:pre-wrap;overflow:hidden;">${text}</div>`;
+                    return `<div style="position:absolute;left:${field.x || 0}%;top:${field.y || 0}%;width:${field.w || 20}%;height:${field.h || 8}%;font-family:${esc(field.font || 'Arial')};font-size:${field.size || 18}px;color:${esc(field.color || '#111')};font-weight:${esc(field.weight || '400')};text-align:${esc(field.align || 'left')};line-height:${field.lineHeight || 1.25};text-transform:${field.transform || 'none'};white-space:pre-wrap;overflow:hidden;">${text}</div>`;
                 }).join('');
                 
                 return `<section class="page"><img src="${esc(page.image)}">${fields}</section>`;
