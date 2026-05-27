@@ -76,8 +76,19 @@ include __DIR__ . '/../includes/layout/head.php';
     .pdf-stage-wrap { overflow: auto; background: #0b0b0b; border-radius: 12px; padding: 18px; }
     .pdf-page-stage { position: relative; width: calc(100% * var(--editor-zoom, 1)); min-width: 720px; aspect-ratio: 16 / 9; margin: 0 auto; background: #fff; box-shadow: 0 24px 80px rgba(0,0,0,.35); overflow: hidden; }
     .pdf-page-stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; user-select: none; pointer-events: none; }
-    .pdf-field { position: absolute; min-width: 40px; min-height: 24px; border: 1px dashed rgba(255,255,255,.65); background: rgba(0,0,0,.18); cursor: move; white-space: pre-wrap; overflow: hidden; padding: 4px; }
+    .pdf-field { position: absolute; min-width: 40px; min-height: 24px; border: 1px dashed rgba(255,255,255,.65); background: rgba(0,0,0,.18); cursor: move; white-space: pre-wrap; overflow: visible; padding: 4px; }
+    .pdf-field-text { width: 100%; height: 100%; overflow: hidden; pointer-events: none; }
     .pdf-field.active { outline: 2px solid #38bdf8; border-color: #38bdf8; }
+    .pdf-resize-handle { position: absolute; width: 10px; height: 10px; background: #38bdf8; border: 2px solid #020617; border-radius: 999px; display: none; z-index: 5; }
+    .pdf-field.active .pdf-resize-handle { display: block; }
+    .pdf-resize-handle.nw { left: -6px; top: -6px; cursor: nwse-resize; }
+    .pdf-resize-handle.n { left: 50%; top: -6px; transform: translateX(-50%); cursor: ns-resize; }
+    .pdf-resize-handle.ne { right: -6px; top: -6px; cursor: nesw-resize; }
+    .pdf-resize-handle.e { right: -6px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
+    .pdf-resize-handle.se { right: -6px; bottom: -6px; cursor: nwse-resize; }
+    .pdf-resize-handle.s { left: 50%; bottom: -6px; transform: translateX(-50%); cursor: ns-resize; }
+    .pdf-resize-handle.sw { left: -6px; bottom: -6px; cursor: nesw-resize; }
+    .pdf-resize-handle.w { left: -6px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
     .prop-label { display:block; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; color:#71717a; margin-bottom:6px; }
     .editor-error { border: 1px solid rgba(239,68,68,.3); background: rgba(239,68,68,.08); color: #fca5a5; border-radius: 10px; padding: 10px 12px; font-size: 12px; font-weight: 700; }
 </style>
@@ -145,8 +156,20 @@ include __DIR__ . '/../includes/layout/head.php';
                                  :class="{ active: selectedField && selectedField.id === field.id }"
                                  :style="fieldStyle(field)"
                                  @mousedown.prevent="startDrag($event, field)"
-                                 @click.stop="selectedField = field"
-                                 x-text="fieldPreview(field)">
+                                 @click.stop="selectedField = field">
+                                <div class="pdf-field-text" x-text="fieldPreview(field)"></div>
+                                <template x-if="selectedField && selectedField.id === field.id">
+                                    <div>
+                                        <span class="pdf-resize-handle nw" @mousedown.stop.prevent="startResize($event, field, 'nw')"></span>
+                                        <span class="pdf-resize-handle n" @mousedown.stop.prevent="startResize($event, field, 'n')"></span>
+                                        <span class="pdf-resize-handle ne" @mousedown.stop.prevent="startResize($event, field, 'ne')"></span>
+                                        <span class="pdf-resize-handle e" @mousedown.stop.prevent="startResize($event, field, 'e')"></span>
+                                        <span class="pdf-resize-handle se" @mousedown.stop.prevent="startResize($event, field, 'se')"></span>
+                                        <span class="pdf-resize-handle s" @mousedown.stop.prevent="startResize($event, field, 's')"></span>
+                                        <span class="pdf-resize-handle sw" @mousedown.stop.prevent="startResize($event, field, 'sw')"></span>
+                                        <span class="pdf-resize-handle w" @mousedown.stop.prevent="startResize($event, field, 'w')"></span>
+                                    </div>
+                                </template>
                             </div>
                         </template>
                     </div>
@@ -371,6 +394,64 @@ function pdfTemplateEditor() {
             const move = (e) => {
                 field.x = Math.max(0, Math.min(100 - field.w, startField.x + ((e.clientX - startX) / rect.width) * 100));
                 field.y = Math.max(0, Math.min(100 - field.h, startField.y + ((e.clientY - startY) / rect.height) * 100));
+            };
+            const up = () => {
+                window.removeEventListener('mousemove', move);
+                window.removeEventListener('mouseup', up);
+            };
+            window.addEventListener('mousemove', move);
+            window.addEventListener('mouseup', up);
+        },
+        startResize(event, field, handle) {
+            this.selectedField = field;
+            const rect = this.$refs.stage.getBoundingClientRect();
+            const startX = event.clientX;
+            const startY = event.clientY;
+            const start = {
+                x: Number(field.x) || 0,
+                y: Number(field.y) || 0,
+                w: Number(field.w) || 20,
+                h: Number(field.h) || 8
+            };
+            const minW = 2;
+            const minH = 2;
+            const move = (e) => {
+                const dx = ((e.clientX - startX) / rect.width) * 100;
+                const dy = ((e.clientY - startY) / rect.height) * 100;
+                let x = start.x;
+                let y = start.y;
+                let w = start.w;
+                let h = start.h;
+
+                if (handle.includes('e')) w = start.w + dx;
+                if (handle.includes('s')) h = start.h + dy;
+                if (handle.includes('w')) {
+                    x = start.x + dx;
+                    w = start.w - dx;
+                }
+                if (handle.includes('n')) {
+                    y = start.y + dy;
+                    h = start.h - dy;
+                }
+
+                if (w < minW) {
+                    if (handle.includes('w')) x = start.x + start.w - minW;
+                    w = minW;
+                }
+                if (h < minH) {
+                    if (handle.includes('n')) y = start.y + start.h - minH;
+                    h = minH;
+                }
+
+                x = Math.max(0, Math.min(100 - w, x));
+                y = Math.max(0, Math.min(100 - h, y));
+                w = Math.max(minW, Math.min(100 - x, w));
+                h = Math.max(minH, Math.min(100 - y, h));
+
+                field.x = Math.round(x * 100) / 100;
+                field.y = Math.round(y * 100) / 100;
+                field.w = Math.round(w * 100) / 100;
+                field.h = Math.round(h * 100) / 100;
             };
             const up = () => {
                 window.removeEventListener('mousemove', move);
