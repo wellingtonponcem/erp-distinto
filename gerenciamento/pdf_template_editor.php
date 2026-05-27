@@ -317,7 +317,7 @@ function pdfTemplateEditor() {
             pacote_valor: 'R$ 7.900,00',
             pacote_itens: '• <b>Cobertura Documental Completa:</b> Presença ilimitada no evento. Do making of à última música, sem limite de horas.\n• <b>O Álbum Heritage:</b> Álbum luxo panorâmico no tamanho 25x30cm (aberto 25x60cm), com papel fotográfico de alta gramatura e laminação especial.\n• <b>Réplicas para a Família (Presente):</b> Inclusão de 02 Mini Álbuns réplicas, ideais para presentear os pais com a mesma qualidade do álbum principal.\n• <b>Produção Cinematográfica 4K:</b> Filme completo (8 a 12 min) com áudio dos votos e trilha sonora licenciada.\n• <b>Imagens Aéreas (Drone):</b> Perspectivas cinematográficas para contextualizar o local do seu "sim".\n• <b>Ecossistema Digital e Físico:</b> Galeria online vitalícia, e pen drive personalizado.',
             pacote_condicoes: 'Entrada de 20% + Saldo parcelado em ate 6x',
-            pacote_foto: '/imagens-proposta-casamento/foto-section-07.png'
+            pacote_foto: '<?= raizUrl('/imagens-proposta-casamento/foto-section-07.png') ?>'
         },
         planosMockados: [
             {
@@ -325,7 +325,7 @@ function pdfTemplateEditor() {
                 pacote_valor: 'R$ 7.900,00',
                 pacote_itens: '• <b>Cobertura Documental Completa:</b> Presença ilimitada no evento. Do making of à última música, sem limite de horas.\n• <b>O Álbum Heritage:</b> Álbum luxo panorâmico no tamanho 25x30cm (aberto 25x60cm), com papel fotográfico de alta gramatura e laminação especial.\n• <b>Réplicas para a Família (Presente):</b> Inclusão de 02 Mini Álbuns réplicas, ideais para presentear os pais com a mesma qualidade do álbum principal.\n• <b>Produção Cinematográfica 4K:</b> Filme completo (8 a 12 min) com áudio dos votos e trilha sonora licenciada.\n• <b>Imagens Aéreas (Drone):</b> Perspectivas cinematográficas para contextualizar o local do seu "sim".\n• <b>Ecossistema Digital e Físico:</b> Galeria online vitalícia, e pen drive personalizado.',
                 pacote_condicoes: 'Entrada de 20% + Saldo parcelado em ate 6x',
-                pacote_foto: '/imagens-proposta-casamento/foto-section-07.png',
+                pacote_foto: '<?= raizUrl('/imagens-proposta-casamento/foto-section-07.png') ?>',
                 condicao_especial: '(Condição especial p/ amigos lagoinha)'
             },
             {
@@ -333,7 +333,7 @@ function pdfTemplateEditor() {
                 pacote_valor: 'R$ 4.500,00',
                 pacote_itens: '• <b>Fotografia de Evento (8h):</b> Cobertura focada na essência e na espontaneidade dos convidados.\n• <b>Sessão Engagement (Pré-Wedding):</b> Ensaio de até 3h para conexão do casal com a lente antes do grande dia.\n• <b>Short Film de Cinema:</b> Filme dinâmico (5 a 7 min) com os melhores momentos da cerimônia e recepção.\n• <b>Social Content (Story Maker):</b> Entrega de conteúdo vertical pronto para redes sociais. Seus convidados acompanham os bastidores em tempo real.\n• <b>Making Of Completo:</b> Registro da preparação da noiva e do noivo, capturando a expectativa e os detalhes.\n• <b>Bônus:</b> Vídeo Save-the-Date incluso para o anúncio oficial.',
                 pacote_condicoes: 'Entrada de 20% + Saldo parcelado em ate 6x',
-                pacote_foto: '/imagens-proposta-casamento/foto-section-08.png',
+                pacote_foto: '<?= raizUrl('/imagens-proposta-casamento/foto-section-08.png') ?>',
                 condicao_especial: '(10% de desconto na entrada para contratos até 05/04/2026)'
             },
             {
@@ -341,7 +341,7 @@ function pdfTemplateEditor() {
                 pacote_valor: 'R$ 2.800,00',
                 pacote_itens: '• <b>Fotografia de Cerimônia (4h):</b> Cobertura pontual focada no protocolo religioso e fotos protocolares de família.\n• <b>Escopo Limitado:</b> Plano focado em registros estáticos. Não inclui vídeo, drone, cobertura de preparativos ou ensaio externo.\n• <b>Entrega Digital:</b> Acesso à galeria online exclusiva para download das fotos editadas.',
                 pacote_condicoes: 'Entrada de 25% + Saldo parcelado em ate 5x',
-                pacote_foto: '/imagens-proposta-casamento/foto-section-09.png',
+                pacote_foto: '<?= raizUrl('/imagens-proposta-casamento/foto-section-09.png') ?>',
                 condicao_especial: ''
             }
         ],
