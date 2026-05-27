@@ -33,11 +33,38 @@ if ($id) {
     ];
 }
 
-$camposDisponiveis = [
-    'cliente_nome', 'titulo_proposta', 'nome_casal', 'nome_noivo', 'nome_noiva',
-    'data_casamento', 'pacote_escolhido', 'valor_total', 'itens_inclusos',
-    'condicoes_pagamento', 'validade_proposta', 'andamento_proposta',
-    'mensagem_pessoal', 'prazo_previas', 'prazo_final'
+$camposPorSessao = [
+    '01 - Capa' => [
+        'nome_casal' => 'Nome do casal',
+        'nome_noivo' => 'Nome do noivo',
+        'nome_noiva' => 'Nome da noiva',
+        'data_casamento' => 'Data do casamento',
+    ],
+    '02 - O registro do que voces estao construindo' => [
+        'saudacao_casal' => 'Saudacao: Ola, casal',
+        'mensagem_pessoal' => 'Texto principal da sessao',
+    ],
+    '03 - Visao e missao' => [
+        'visao_ia' => 'Texto de visao gerado por IA',
+    ],
+    '04 - Pacotes e investimento' => [
+        'pacote_escolhido' => 'Pacote escolhido',
+        'valor_total' => 'Valor total',
+        'itens_inclusos' => 'Itens inclusos',
+        'condicoes_pagamento' => 'Condicoes de pagamento',
+    ],
+    '05 - Prazos e validade' => [
+        'prazo_previas' => 'Prazo de previas',
+        'prazo_final' => 'Prazo final',
+        'validade_proposta' => 'Validade da proposta',
+    ],
+    '06 - Andamento da negociacao' => [
+        'andamento_proposta' => 'Historico/andamento',
+    ],
+    '99 - Dados gerais' => [
+        'cliente_nome' => 'Nome do cliente',
+        'titulo_proposta' => 'Titulo da proposta',
+    ],
 ];
 
 $tituloPagina = 'Editor de Template PDF';
@@ -134,8 +161,12 @@ include __DIR__ . '/../includes/layout/head.php';
                         <div>
                             <label class="prop-label">Campo dinamico</label>
                             <select class="input" x-model="selectedField.key">
-                                <?php foreach ($camposDisponiveis as $campo): ?>
-                                    <option value="<?= $campo ?>"><?= $campo ?></option>
+                                <?php foreach ($camposPorSessao as $sessao => $campos): ?>
+                                    <optgroup label="<?= sanitizar($sessao) ?>">
+                                        <?php foreach ($campos as $campo => $label): ?>
+                                            <option value="<?= $campo ?>"><?= sanitizar($label) ?> (<?= $campo ?>)</option>
+                                        <?php endforeach; ?>
+                                    </optgroup>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -193,6 +224,9 @@ function pdfTemplateEditor() {
         ],
         values: {
             nome_casal: 'Igor & Gabriela',
+            saudacao_casal: 'Ola, Igor & Gabriela!',
+            mensagem_pessoal: 'A gente sabe que fotografia e muito mais do que so apertar um botao. Nosso trabalho e capturar o que voces sentem um pelo outro, de um jeito que pareca real e sem poses forcadas.',
+            visao_ia: 'Uma leitura sensivel da historia do casal, transformando o dia em memoria visual com verdade, beleza e intencao.',
             pacote_escolhido: 'Experiencia Heritage',
             valor_total: 'R$ 7.900,00',
             itens_inclusos: 'Cobertura documental\nAlbum\nDrone',

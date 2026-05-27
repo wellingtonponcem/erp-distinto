@@ -60,6 +60,14 @@ function dadosPdfProposta(array $proposta): array
     $nomeNoivo = trim($dados['nome_noivo'] ?? '');
     $nomeNoiva = trim($dados['nome_noiva'] ?? '');
     $nomeCasal = ($nomeNoivo && $nomeNoiva) ? "{$nomeNoivo} & {$nomeNoiva}" : ($proposta['cliente_nome'] ?? '');
+    $primeiroNoivo = $nomeNoivo ? explode(' ', $nomeNoivo)[0] : '';
+    $primeiraNoiva = $nomeNoiva ? explode(' ', $nomeNoiva)[0] : '';
+    $saudacaoCasal = 'Ola, ' . (($primeiroNoivo && $primeiraNoiva) ? "{$primeiroNoivo} & {$primeiraNoiva}" : $nomeCasal) . '!';
+    $mensagemPadrao = 'A gente sabe que fotografia e muito mais do que so apertar um botao. Nosso trabalho e capturar o que voces sentem um pelo outro, de um jeito que pareca real e sem poses forcadas.';
+    $mensagemPessoal = trim($dados['mensagem_pessoal'] ?? '');
+    if ($mensagemPessoal === '') {
+        $mensagemPessoal = $mensagemPadrao;
+    }
 
     $planoId = $dados['cliente_escolha']['plano_id'] ?? '';
     if (!$planoId) {
@@ -99,14 +107,16 @@ function dadosPdfProposta(array $proposta): array
         'nome_casal' => $nomeCasal,
         'nome_noivo' => $nomeNoivo,
         'nome_noiva' => $nomeNoiva,
+        'saudacao_casal' => $saudacaoCasal,
         'data_casamento' => !empty($dados['data_casamento']) ? formatarData($dados['data_casamento']) : '',
+        'visao_ia' => $dados['secoes']['visao'] ?? '',
         'pacote_escolhido' => $nomesPlano[$planoId] ?? '',
         'valor_total' => formatarValorPdf($dados['cliente_escolha']['valor_total'] ?? $proposta['valor_total'] ?? 0),
         'itens_inclusos' => implode("\n", array_unique($itens)),
         'condicoes_pagamento' => $dados['cliente_escolha']['condicoes'] ?? ($planoId === 'essencial' ? ($dados['condicoes_essencial'] ?? '') : ($dados['condicoes_heritage_cinematic'] ?? '')),
         'validade_proposta' => $dados['validade_proposta'] ?? '',
         'andamento_proposta' => $dados['andamento_proposta'] ?? '',
-        'mensagem_pessoal' => $dados['mensagem_pessoal'] ?? '',
+        'mensagem_pessoal' => $mensagemPessoal,
         'prazo_previas' => $dados['prazo_previas'] ?? '',
         'prazo_final' => $dados['prazo_final'] ?? '',
     ];
