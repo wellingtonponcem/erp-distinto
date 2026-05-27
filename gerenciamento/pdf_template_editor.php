@@ -1,0 +1,290 @@
+<?php
+require_once __DIR__ . '/../config/env.php';
+require_once __DIR__ . '/../config/auth.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/helpers.php';
+require_once __DIR__ . '/../includes/pdf_templates.php';
+
+exigirAdmin();
+
+$db = Database::get();
+garantirTabelasPdfTemplates($db);
+
+$id = $_GET['id'] ?? '';
+$template = [
+    'id' => $id ?: gerarId(),
+    'nome' => 'Novo template',
+    'tipo' => 'casamento',
+    'ativo' => 1,
+    'config' => ['pages' => []],
+];
+
+if ($id) {
+    $stmt = $db->prepare("SELECT * FROM pdf_templates WHERE id = ?");
+    $stmt->execute([$id]);
+    $row = $stmt->fetch();
+    if (!$row) die('Template não encontrado.');
+    $template = [
+        'id' => $row['id'],
+        'nome' => $row['nome'],
+        'tipo' => $row['tipo'],
+        'ativo' => (int)$row['ativo'],
+        'config' => json_decode($row['config_json'] ?? '{}', true) ?: ['pages' => []],
+    ];
+}
+
+$camposDisponiveis = [
+    'cliente_nome', 'titulo_proposta', 'nome_casal', 'nome_noivo', 'nome_noiva',
+    'data_casamento', 'pacote_escolhido', 'valor_total', 'itens_inclusos',
+    'condicoes_pagamento', 'validade_proposta', 'andamento_proposta',
+    'mensagem_pessoal', 'prazo_previas', 'prazo_final'
+];
+
+$stmtPropostas = $db->query("SELECT id, cliente_nome, tipo FROM propostas ORDER BY created_at DESC LIMIT 50");
+$propostasPreview = $stmtPropostas->fetchAll();
+
+$tituloPagina = 'Editor de Template PDF';
+include __DIR__ . '/../includes/layout/head.php';
+?>
+
+<style>
+    .pdf-editor-shell { display: grid; grid-template-columns: 240px minmax(0, 1fr) 320px; gap: 16px; min-height: calc(100vh - 120px); }
+    .pdf-stage-wrap { overflow: auto; background: #0b0b0b; border-radius: 12px; padding: 24px; }
+    .pdf-page-stage { position: relative; width: min(100%, 960px); aspect-ratio: 297 / 210; margin: 0 auto; background: #222; box-shadow: 0 24px 80px rgba(0,0,0,.35); overflow: hidden; }
+    .pdf-page-stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; user-select: none; pointer-events: none; }
+    .pdf-field { position: absolute; min-width: 40px; min-height: 24px; border: 1px dashed rgba(255,255,255,.65); background: rgba(0,0,0,.18); cursor: move; white-space: pre-wrap; overflow: hidden; padding: 4px; }
+    .pdf-field.active { outline: 2px solid #38bdf8; border-color: #38bdf8; }
+    .prop-label { display:block; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; color:#71717a; margin-bottom:6px; }
+</style>
+
+<div id="app-wrapper" x-data="pdfTemplateEditor()" x-init="init()">
+    <?php include __DIR__ . '/../includes/layout/sidebar.php'; ?>
+    <main id="main-content" class="content-sheet">
+        <div class="mb-5 flex items-center justify-between gap-4">
+            <div>
+                <h1 class="page-title text-2xl">Editor de Template PDF</h1>
+                <p class="page-subtitle text-zinc-500">Use imagens do Canva como fundo e posicione os campos dinâmicos.</p>
+            </div>
+            <div class="flex gap-2">
+                <button type="button" @click="preview()" class="btn">Pré-visualizar</button>
+                <button type="button" @click="save()" class="btn btn-primary">Salvar</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+            <div>
+                <label class="prop-label">Nome</label>
+                <input class="input" x-model="template.nome">
+            </div>
+            <div>
+                <label class="prop-label">Tipo</label>
+                <select class="input" x-model="template.tipo">
+                    <option value="casamento">Casamento</option>
+                    <option value="15anos">15 Anos</option>
+                    <option value="filmmaker">Filmmaker</option>
+                    <option value="marketing">Marketing</option>
+                </select>
+            </div>
+            <label class="flex items-center gap-2 pt-7 text-sm font-bold text-zinc-700">
+                <input type="checkbox" x-model="template.ativo"> Template ativo
+            </label>
+            <div>
+                <label class="prop-label">Preview com proposta</label>
+                <select class="input" x-model="previewProposta">
+                    <option value="">Dados fictícios</option>
+                    <?php foreach ($propostasPreview as $p): ?>
+                        <option value="<?= $p['id'] ?>"><?= sanitizar($p['cliente_nome'] . ' - ' . $p['tipo']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
+
+        <div class="pdf-editor-shell">
+            <aside class="card p-4 overflow-auto">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-sm font-black">Páginas</h2>
+                    <button type="button" @click="$refs.upload.click()" class="text-xs font-bold">Adicionar</button>
+                    <input type="file" x-ref="upload" class="hidden" accept="image/*" @change="uploadPage($event)">
+                </div>
+                <template x-for="(page, index) in template.config.pages" :key="page.id">
+                    <button type="button" @click="currentPage = index; selectedField = null" class="w-full text-left p-3 rounded-lg mb-2 border" :class="currentPage === index ? 'border-zinc-900 bg-zinc-100' : 'border-zinc-200'">
+                        <span class="text-xs font-black" x-text="'Página ' + (index + 1)"></span>
+                    </button>
+                </template>
+                <div class="mt-4 space-y-2">
+                    <button type="button" @click="$refs.replaceUpload.click()" class="btn w-full" :disabled="!page">Substituir imagem</button>
+                    <button type="button" @click="removePage()" class="btn w-full text-red-500" :disabled="!page">Remover pÃ¡gina</button>
+                    <input type="file" x-ref="replaceUpload" class="hidden" accept="image/*" @change="replacePage($event)">
+                </div>
+            </aside>
+
+            <section class="pdf-stage-wrap">
+                <template x-if="page">
+                    <div class="pdf-page-stage" x-ref="stage">
+                        <img :src="page.image">
+                        <template x-for="field in page.fields" :key="field.id">
+                            <div class="pdf-field"
+                                 :class="{ active: selectedField && selectedField.id === field.id }"
+                                 :style="fieldStyle(field)"
+                                 @mousedown.prevent="startDrag($event, field)"
+                                 @click.stop="selectedField = field"
+                                 x-text="fieldPreview(field)">
+                            </div>
+                        </template>
+                    </div>
+                </template>
+                <div x-show="!page" class="text-center text-zinc-500 py-20">Adicione uma página para começar.</div>
+            </section>
+
+            <aside class="card p-4 overflow-auto">
+                <button type="button" @click="addField()" class="btn btn-primary w-full mb-4" :disabled="!page">Adicionar campo</button>
+                <template x-if="selectedField">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="prop-label">Campo dinâmico</label>
+                            <select class="input" x-model="selectedField.key">
+                                <?php foreach ($camposDisponiveis as $campo): ?>
+                                    <option value="<?= $campo ?>"><?= $campo ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="prop-label">Texto fixo opcional</label>
+                            <textarea class="input" rows="2" x-model="selectedField.text"></textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div><label class="prop-label">X %</label><input type="number" class="input" x-model.number="selectedField.x"></div>
+                            <div><label class="prop-label">Y %</label><input type="number" class="input" x-model.number="selectedField.y"></div>
+                            <div><label class="prop-label">Largura %</label><input type="number" class="input" x-model.number="selectedField.w"></div>
+                            <div><label class="prop-label">Altura %</label><input type="number" class="input" x-model.number="selectedField.h"></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div><label class="prop-label">Fonte</label><input class="input" x-model="selectedField.font"></div>
+                            <div><label class="prop-label">Tamanho</label><input type="number" class="input" x-model.number="selectedField.size"></div>
+                            <div><label class="prop-label">Cor</label><input type="color" class="input h-10" x-model="selectedField.color"></div>
+                            <div><label class="prop-label">Peso</label><select class="input" x-model="selectedField.weight"><option value="400">Normal</option><option value="700">Negrito</option><option value="900">Black</option></select></div>
+                        </div>
+                        <div>
+                            <label class="prop-label">Alinhamento</label>
+                            <select class="input" x-model="selectedField.align"><option value="left">Esquerda</option><option value="center">Centro</option><option value="right">Direita</option></select>
+                        </div>
+                        <button type="button" @click="removeField()" class="btn w-full text-red-500">Remover campo</button>
+                    </div>
+                </template>
+            </aside>
+        </div>
+    </main>
+</div>
+
+<script>
+function pdfTemplateEditor() {
+    return {
+        template: <?= json_encode($template, JSON_UNESCAPED_UNICODE) ?>,
+        currentPage: 0,
+        selectedField: null,
+        previewProposta: '',
+        values: {
+            nome_casal: 'Igor & Gabriela',
+            pacote_escolhido: 'Experiência Heritage',
+            valor_total: 'R$ 7.900,00',
+            itens_inclusos: 'Cobertura documental\nÁlbum\nDrone',
+            condicoes_pagamento: 'Entrada de 20% + saldo parcelado'
+        },
+        get page() { return this.template.config.pages[this.currentPage] || null; },
+        init() { if (!this.template.config.pages) this.template.config.pages = []; },
+        fieldPreview(field) { return field.text || this.values[field.key] || '{{' + field.key + '}}'; },
+        fieldStyle(field) {
+            return `left:${field.x}%;top:${field.y}%;width:${field.w}%;height:${field.h}%;font-family:${field.font};font-size:${field.size}px;color:${field.color};font-weight:${field.weight};text-align:${field.align};line-height:${field.lineHeight || 1.25};`;
+        },
+        addField() {
+            if (!this.page) return;
+            const field = { id: crypto.randomUUID(), key: 'nome_casal', text: '', x: 10, y: 10, w: 25, h: 8, font: 'Montserrat, Arial, sans-serif', size: 24, color: '#111111', weight: '700', align: 'left', lineHeight: 1.25 };
+            this.page.fields.push(field);
+            this.selectedField = field;
+        },
+        removeField() {
+            if (!this.page || !this.selectedField) return;
+            this.page.fields = this.page.fields.filter(f => f.id !== this.selectedField.id);
+            this.selectedField = null;
+        },
+        async uploadPage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const form = new FormData();
+            form.append('imagem', file);
+            const res = await fetch('<?= raizUrl('/api/pdf-templates/upload-page.php') ?>', { method: 'POST', body: form });
+            const data = await res.json();
+            if (!data.success) return alert(data.erro || 'Falha no upload.');
+            this.template.config.pages.push({ id: crypto.randomUUID(), image: data.url, fields: [] });
+            this.currentPage = this.template.config.pages.length - 1;
+            event.target.value = '';
+        },
+        async replacePage(event) {
+            if (!this.page) return;
+            const file = event.target.files[0];
+            if (!file) return;
+            const form = new FormData();
+            form.append('imagem', file);
+            const res = await fetch('<?= raizUrl('/api/pdf-templates/upload-page.php') ?>', { method: 'POST', body: form });
+            const data = await res.json();
+            if (!data.success) return alert(data.erro || 'Falha no upload.');
+            this.page.image = data.url;
+            event.target.value = '';
+        },
+        removePage() {
+            if (!this.page || !confirm('Remover esta pÃ¡gina do template?')) return;
+            this.template.config.pages.splice(this.currentPage, 1);
+            this.currentPage = Math.max(0, this.currentPage - 1);
+            this.selectedField = null;
+        },
+        startDrag(event, field) {
+            this.selectedField = field;
+            const rect = this.$refs.stage.getBoundingClientRect();
+            const startX = event.clientX;
+            const startY = event.clientY;
+            const startField = { x: field.x, y: field.y };
+            const move = (e) => {
+                field.x = Math.max(0, Math.min(100 - field.w, startField.x + ((e.clientX - startX) / rect.width) * 100));
+                field.y = Math.max(0, Math.min(100 - field.h, startField.y + ((e.clientY - startY) / rect.height) * 100));
+            };
+            const up = () => {
+                window.removeEventListener('mousemove', move);
+                window.removeEventListener('mouseup', up);
+            };
+            window.addEventListener('mousemove', move);
+            window.addEventListener('mouseup', up);
+        },
+        async save() {
+            const res = await fetch('<?= raizUrl('/api/pdf-templates/save.php') ?>', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(this.template)
+            });
+            const data = await res.json();
+            if (!data.success) return alert(data.erro || 'Falha ao salvar.');
+            this.template.id = data.id;
+            history.replaceState(null, '', '<?= raizUrl('/gerenciamento/pdf_template_editor.php?id=') ?>' + data.id);
+            alert('Template salvo.');
+        },
+        preview() {
+            if (!this.template.config.pages.length) return alert('Adicione pelo menos uma pÃ¡gina.');
+            const win = window.open('', '_blank');
+            if (!win) return alert('Permita pop-ups para visualizar o template.');
+            const esc = (value) => String(value || '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
+            const pages = this.template.config.pages.map(page => {
+                const fields = (page.fields || []).map(field => {
+                    const text = esc(field.text || this.values[field.key] || '{{' + field.key + '}}').replace(/\n/g, '<br>');
+                    return `<div style="position:absolute;left:${field.x || 0}%;top:${field.y || 0}%;width:${field.w || 20}%;height:${field.h || 8}%;font-family:${esc(field.font || 'Arial')};font-size:${field.size || 18}px;color:${esc(field.color || '#111')};font-weight:${esc(field.weight || '400')};text-align:${esc(field.align || 'left')};line-height:${field.lineHeight || 1.25};white-space:pre-wrap;overflow:hidden;">${text}</div>`;
+                }).join('');
+                return `<section class="page"><img src="${esc(page.image)}">${fields}</section>`;
+            }).join('');
+            win.document.write(`<!doctype html><html><head><title>Preview PDF</title><style>body{margin:0;background:#222;font-family:Arial,sans-serif}.page{position:relative;width:1123px;height:794px;margin:24px auto;background:#fff;overflow:hidden}.page img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}@media print{@page{size:A4 landscape;margin:0}body{background:#fff}.page{margin:0;width:297mm;height:210mm;page-break-after:always}}</style></head><body>${pages}</body></html>`);
+            win.document.close();
+            return;
+            alert('Pré-visualização: use os campos sobre a imagem. A exportação real aplica esses dados na proposta.');
+        }
+    }
+}
+</script>
+
+<?php include __DIR__ . '/../includes/layout/footer.php'; ?>

@@ -231,6 +231,7 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
     </div>
 
     <script>
+        window.PROPOSTA_SLUG = <?= json_encode($slug) ?>;
         // Inicializar ícones
         lucide.createIcons();
 

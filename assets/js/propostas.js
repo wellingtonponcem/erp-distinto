@@ -135,7 +135,7 @@ window.exportPDFLegacyPrintDisabled = function(orientation) {
     }, 500);
 };
 
-window.exportPDF = async function() {
+window.exportCurrentProposalPDFHtml2pdf = async function() {
     window.hideExportModal();
 
     if (typeof html2pdf === 'undefined') {
@@ -215,7 +215,125 @@ window.exportPDF = async function() {
     }
 };
 
+window.exportCurrentProposalPDF = window.exportCurrentProposalPDFHtml2pdf;
+
 window.exportPDF = async function() {
+    if (!window.PROPOSTA_SLUG) {
+        return window.exportCurrentProposalPDF();
+    }
+
+    try {
+        const response = await fetch(`/api/pdf-templates/data.php?slug=${encodeURIComponent(window.PROPOSTA_SLUG)}`);
+        const payload = await response.json();
+        if (payload.template?.config?.pages?.length) {
+            return exportPdfTemplate(payload.template.config, payload.values || {});
+        }
+    } catch (error) {
+        console.warn('Template PDF indisponível, usando exportação da proposta web.', error);
+    }
+
+    return window.exportCurrentProposalPDF();
+};
+
+async function exportPdfTemplate(config, values) {
+    window.hideExportModal();
+
+    const JsPDF = window.jspdf?.jsPDF || window.jsPDF;
+    if (typeof html2canvas === 'undefined' || !JsPDF) {
+        alert('Bibliotecas de exportação PDF não carregadas. Recarregue a página com Ctrl+F5 e tente novamente.');
+        return;
+    }
+
+    const trigger = document.querySelector('.btn-export-top');
+    const originalTriggerHTML = trigger ? trigger.innerHTML : '';
+    if (trigger) {
+        trigger.innerHTML = '<span>Gerando...</span>';
+        trigger.disabled = true;
+    }
+
+    const stage = document.createElement('div');
+    stage.className = 'pdf-export-stage pdf-template-export';
+
+    (config.pages || []).forEach(page => {
+        const pageEl = document.createElement('section');
+        pageEl.className = 'pdf-export-page';
+        pageEl.style.position = 'relative';
+        pageEl.style.width = '297mm';
+        pageEl.style.height = '210mm';
+        pageEl.style.overflow = 'hidden';
+        pageEl.style.background = '#fff';
+
+        const img = document.createElement('img');
+        img.src = page.image;
+        img.crossOrigin = 'anonymous';
+        img.style.position = 'absolute';
+        img.style.inset = '0';
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        pageEl.appendChild(img);
+
+        (page.fields || []).forEach(field => {
+            const div = document.createElement('div');
+            div.textContent = field.text || values[field.key] || '';
+            div.style.position = 'absolute';
+            div.style.left = `${field.x || 0}%`;
+            div.style.top = `${field.y || 0}%`;
+            div.style.width = `${field.w || 20}%`;
+            div.style.height = `${field.h || 8}%`;
+            div.style.fontFamily = field.font || 'Arial, sans-serif';
+            div.style.fontSize = `${field.size || 18}px`;
+            div.style.color = field.color || '#111';
+            div.style.fontWeight = field.weight || '400';
+            div.style.textAlign = field.align || 'left';
+            div.style.lineHeight = field.lineHeight || 1.25;
+            div.style.whiteSpace = 'pre-wrap';
+            div.style.overflow = 'hidden';
+            pageEl.appendChild(div);
+        });
+
+        stage.appendChild(pageEl);
+    });
+
+    document.body.appendChild(stage);
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    const pages = Array.from(stage.querySelectorAll('.pdf-export-page'));
+    const pdf = new JsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4', compress: true });
+    const filenameBase = (document.title || 'proposta-comercial').replace(/[\\/:*?"<>|]+/g, '-').slice(0, 90);
+
+    try {
+        for (let index = 0; index < pages.length; index += 1) {
+            const canvas = await html2canvas(pages[index], {
+                scale: 2,
+                useCORS: true,
+                allowTaint: false,
+                backgroundColor: '#ffffff',
+                width: pages[index].offsetWidth,
+                height: pages[index].offsetHeight,
+                windowWidth: pages[index].offsetWidth,
+                windowHeight: pages[index].offsetHeight,
+                scrollX: 0,
+                scrollY: 0
+            });
+            if (index > 0) pdf.addPage('a4', 'landscape');
+            pdf.addImage(canvas.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, 297, 210, undefined, 'FAST');
+        }
+        pdf.save(`${filenameBase}.pdf`);
+    } catch (error) {
+        console.error('Erro ao exportar template PDF:', error);
+        alert('Não foi possível gerar o PDF pelo template.');
+    } finally {
+        stage.remove();
+        if (trigger) {
+            trigger.innerHTML = originalTriggerHTML;
+            trigger.disabled = false;
+            if (window.lucide) lucide.createIcons();
+        }
+    }
+}
+
+window.exportCurrentProposalPDF = async function() {
     window.hideExportModal();
 
     const JsPDF = window.jspdf?.jsPDF || window.jsPDF;
