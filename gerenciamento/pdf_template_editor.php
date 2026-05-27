@@ -79,8 +79,8 @@ include __DIR__ . '/../includes/layout/head.php';
     .pdf-stage-wrap { overflow: auto; background: #0b0b0b; border-radius: 12px; padding: 18px; }
     .pdf-page-stage { position: relative; width: calc(100% * var(--editor-zoom, 1)); min-width: 720px; aspect-ratio: 16 / 9; margin: 0 auto; background: #fff; box-shadow: 0 24px 80px rgba(0,0,0,.35); overflow: hidden; }
     .pdf-page-stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; user-select: none; pointer-events: none; }
-    .pdf-field { position: absolute; min-width: 40px; min-height: 24px; border: 1px dashed rgba(255,255,255,.65); background: rgba(0,0,0,.18); cursor: move; white-space: pre-wrap; overflow: visible; padding: 4px; }
-    .pdf-field-text { width: 100%; height: 100%; overflow: hidden; pointer-events: none; }
+    .pdf-field { position: absolute; min-width: 40px; min-height: 24px; border: 1px dashed rgba(255,255,255,.65); background: rgba(0,0,0,.18); cursor: move; white-space: pre-wrap; overflow: visible; padding: 0; }
+    .pdf-field-text { position: absolute; inset: 0; padding: 4px; overflow: hidden; pointer-events: none; }
     .pdf-field.active { outline: 2px solid #38bdf8; border-color: #38bdf8; }
     .pdf-resize-handle { position: absolute; width: 10px; height: 10px; background: #38bdf8; border: 2px solid #020617; border-radius: 999px; display: none; z-index: 5; }
     .pdf-field.active .pdf-resize-handle { display: block; }
