@@ -45,9 +45,9 @@ include __DIR__ . '/../includes/layout/head.php';
 ?>
 
 <style>
-    .pdf-editor-shell { display: grid; grid-template-columns: 240px minmax(0, 1fr) 320px; gap: 16px; min-height: calc(100vh - 120px); }
-    .pdf-stage-wrap { overflow: auto; background: #0b0b0b; border-radius: 12px; padding: 24px; }
-    .pdf-page-stage { position: relative; width: min(100%, 960px); aspect-ratio: 16 / 9; margin: 0 auto; background: #fff; box-shadow: 0 24px 80px rgba(0,0,0,.35); overflow: hidden; }
+    .pdf-editor-shell { display: grid; grid-template-columns: 220px minmax(0, 1fr) 300px; gap: 16px; min-height: calc(100vh - 120px); }
+    .pdf-stage-wrap { overflow: auto; background: #0b0b0b; border-radius: 12px; padding: 18px; }
+    .pdf-page-stage { position: relative; width: calc(100% * var(--editor-zoom, 1)); min-width: 720px; aspect-ratio: 16 / 9; margin: 0 auto; background: #fff; box-shadow: 0 24px 80px rgba(0,0,0,.35); overflow: hidden; }
     .pdf-page-stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; user-select: none; pointer-events: none; }
     .pdf-field { position: absolute; min-width: 40px; min-height: 24px; border: 1px dashed rgba(255,255,255,.65); background: rgba(0,0,0,.18); cursor: move; white-space: pre-wrap; overflow: hidden; padding: 4px; }
     .pdf-field.active { outline: 2px solid #38bdf8; border-color: #38bdf8; }
@@ -109,7 +109,7 @@ include __DIR__ . '/../includes/layout/head.php';
                 </div>
             </aside>
 
-            <section class="pdf-stage-wrap">
+            <section class="pdf-stage-wrap" :style="'--editor-zoom:' + zoom" @wheel="handleStageWheel($event)">
                 <template x-if="page">
                     <div class="pdf-page-stage" x-ref="stage">
                         <img :src="page.image">
@@ -150,7 +150,14 @@ include __DIR__ . '/../includes/layout/head.php';
                             <div><label class="prop-label">Altura %</label><input type="number" class="input" x-model.number="selectedField.h"></div>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
-                            <div><label class="prop-label">Fonte</label><input class="input" x-model="selectedField.font"></div>
+                            <div>
+                                <label class="prop-label">Fonte</label>
+                                <select class="input" x-model="selectedField.font" @change="loadGoogleFont(selectedField.font)">
+                                    <template x-for="font in fontOptions" :key="font">
+                                        <option :value="font" x-text="font"></option>
+                                    </template>
+                                </select>
+                            </div>
                             <div><label class="prop-label">Tamanho</label><input type="number" class="input" x-model.number="selectedField.size"></div>
                             <div><label class="prop-label">Cor</label><input type="color" class="input h-10" x-model="selectedField.color"></div>
                             <div><label class="prop-label">Peso</label><select class="input" x-model="selectedField.weight"><option value="400">Normal</option><option value="700">Negrito</option><option value="900">Black</option></select></div>
@@ -174,7 +181,15 @@ function pdfTemplateEditor() {
         currentPage: 0,
         selectedField: null,
         uploading: false,
+        zoom: 1,
         error: '',
+        fontOptions: [
+            'Outfit', 'Montserrat', 'Playfair Display', 'Cormorant Garamond',
+            'Libre Baskerville', 'Lora', 'Merriweather', 'Poppins',
+            'Inter', 'Roboto', 'Open Sans', 'Raleway', 'Nunito Sans',
+            'Cinzel', 'Bodoni Moda', 'Great Vibes', 'Parisienne',
+            'Dancing Script', 'Sacramento'
+        ],
         values: {
             nome_casal: 'Igor & Gabriela',
             pacote_escolhido: 'Experiencia Heritage',
@@ -186,6 +201,17 @@ function pdfTemplateEditor() {
         init() {
             if (!this.template.config) this.template.config = { pages: [] };
             if (!this.template.config.pages) this.template.config.pages = [];
+            this.template.config.pages.forEach(page => {
+                (page.fields || []).forEach(field => {
+                    if (field.font && field.font.includes(',')) {
+                        field.font = field.font.split(',')[0].replace(/["']/g, '').trim();
+                    }
+                    if (field.font && !this.fontOptions.includes(field.font)) {
+                        this.fontOptions.push(field.font);
+                    }
+                });
+            });
+            this.usedFonts().forEach(font => this.loadGoogleFont(font));
         },
         newId() {
             return window.crypto?.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2);
@@ -196,9 +222,35 @@ function pdfTemplateEditor() {
         fieldStyle(field) {
             return `left:${field.x}%;top:${field.y}%;width:${field.w}%;height:${field.h}%;font-family:${field.font};font-size:${field.size}px;color:${field.color};font-weight:${field.weight};text-align:${field.align};line-height:${field.lineHeight || 1.25};`;
         },
+        usedFonts() {
+            const fonts = new Set();
+            this.template.config.pages.forEach(page => {
+                (page.fields || []).forEach(field => {
+                    if (field.font) fonts.add(field.font);
+                });
+            });
+            return Array.from(fonts);
+        },
+        googleFontUrl(fonts) {
+            const families = [...new Set(fonts.filter(Boolean))]
+                .map(font => 'family=' + encodeURIComponent(font).replace(/%20/g, '+') + ':wght@400;500;600;700;800;900')
+                .join('&');
+            return families ? 'https://fonts.googleapis.com/css2?' + families + '&display=swap' : '';
+        },
+        loadGoogleFont(font) {
+            if (!font) return;
+            const id = 'google-font-' + font.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            if (document.getElementById(id)) return;
+            const link = document.createElement('link');
+            link.id = id;
+            link.rel = 'stylesheet';
+            link.href = this.googleFontUrl([font]);
+            document.head.appendChild(link);
+        },
         addField() {
             if (!this.page) return;
-            const field = { id: this.newId(), key: 'nome_casal', text: '', x: 10, y: 10, w: 25, h: 8, font: 'Montserrat, Arial, sans-serif', size: 24, color: '#111111', weight: '700', align: 'left', lineHeight: 1.25 };
+            const field = { id: this.newId(), key: 'nome_casal', text: '', x: 10, y: 10, w: 25, h: 8, font: 'Montserrat', size: 24, color: '#111111', weight: '700', align: 'left', lineHeight: 1.25 };
+            this.loadGoogleFont(field.font);
             this.page.fields.push(field);
             this.selectedField = field;
         },
@@ -260,6 +312,12 @@ function pdfTemplateEditor() {
             this.currentPage = Math.max(0, this.currentPage - 1);
             this.selectedField = null;
         },
+        handleStageWheel(event) {
+            if (!event.altKey) return;
+            event.preventDefault();
+            const delta = event.deltaY > 0 ? -0.08 : 0.08;
+            this.zoom = Math.max(0.45, Math.min(2.5, Math.round((this.zoom + delta) * 100) / 100));
+        },
         startDrag(event, field) {
             this.selectedField = field;
             const rect = this.$refs.stage.getBoundingClientRect();
@@ -279,6 +337,7 @@ function pdfTemplateEditor() {
         },
         async save() {
             this.error = '';
+            this.usedFonts().forEach(font => this.loadGoogleFont(font));
             try {
                 const res = await fetch('<?= raizUrl('/api/pdf-templates/save.php') ?>', {
                     method: 'POST',
@@ -300,6 +359,7 @@ function pdfTemplateEditor() {
             const win = window.open('', '_blank');
             if (!win) return alert('Permita pop-ups para visualizar o template.');
             const esc = (value) => String(value || '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
+            const fontLink = this.googleFontUrl(this.usedFonts());
             const pages = this.template.config.pages.map(page => {
                 const fields = (page.fields || []).map(field => {
                     const text = esc(field.text || this.values[field.key] || '{{' + field.key + '}}').replace(/\n/g, '<br>');
@@ -307,7 +367,7 @@ function pdfTemplateEditor() {
                 }).join('');
                 return `<section class="page"><img src="${esc(page.image)}">${fields}</section>`;
             }).join('');
-            win.document.write(`<!doctype html><html><head><title>Preview PDF</title><style>body{margin:0;background:#222;font-family:Arial,sans-serif}.page{position:relative;width:960px;height:540px;margin:24px auto;background:#fff;overflow:hidden}.page img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}@media print{@page{size:160mm 90mm;margin:0}body{background:#fff}.page{margin:0;width:160mm;height:90mm;page-break-after:always}}</style></head><body>${pages}</body></html>`);
+            win.document.write(`<!doctype html><html><head><title>Preview PDF</title>${fontLink ? `<link rel="stylesheet" href="${esc(fontLink)}">` : ''}<style>body{margin:0;background:#222;font-family:Arial,sans-serif}.page{position:relative;width:960px;height:540px;margin:24px auto;background:#fff;overflow:hidden}.page img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}@media print{@page{size:160mm 90mm;margin:0}body{background:#fff}.page{margin:0;width:160mm;height:90mm;page-break-after:always}}</style></head><body>${pages}</body></html>`);
             win.document.close();
         }
     }

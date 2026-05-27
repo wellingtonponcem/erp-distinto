@@ -235,6 +235,41 @@ window.exportPDF = async function() {
     return window.exportCurrentProposalPDF();
 };
 
+function googleFontUrlForPdfTemplate(fonts) {
+    const families = [...new Set((fonts || []).filter(Boolean))]
+        .map(font => 'family=' + encodeURIComponent(font).replace(/%20/g, '+') + ':wght@400;500;600;700;800;900')
+        .join('&');
+    return families ? 'https://fonts.googleapis.com/css2?' + families + '&display=swap' : '';
+}
+
+async function loadGoogleFontsForPdfTemplate(config) {
+    const fonts = [];
+    (config.pages || []).forEach(page => {
+        (page.fields || []).forEach(field => {
+            if (field.font) fonts.push(field.font);
+        });
+    });
+
+    const url = googleFontUrlForPdfTemplate(fonts);
+    if (!url) return;
+
+    const id = 'pdf-template-google-fonts';
+    let link = document.getElementById(id);
+    if (!link) {
+        link = document.createElement('link');
+        link.id = id;
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
+    }
+    link.href = url;
+
+    if (document.fonts?.ready) {
+        await document.fonts.ready;
+    } else {
+        await new Promise(resolve => setTimeout(resolve, 500));
+    }
+}
+
 async function exportPdfTemplate(config, values) {
     window.hideExportModal();
 
@@ -250,6 +285,8 @@ async function exportPdfTemplate(config, values) {
         trigger.innerHTML = '<span>Gerando...</span>';
         trigger.disabled = true;
     }
+
+    await loadGoogleFontsForPdfTemplate(config);
 
     const stage = document.createElement('div');
     stage.className = 'pdf-export-stage pdf-template-export';
