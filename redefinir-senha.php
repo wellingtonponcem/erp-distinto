@@ -86,15 +86,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $hash = password_hash($senha, PASSWORD_DEFAULT);
             $db->beginTransaction();
 
-            $stmtUser = $db->prepare("UPDATE users SET senha = ? WHERE id = ?");
-            $stmtUser->execute([$hash, $resetRow['user_id']]);
+            $stmtUser = $db->prepare("UPDATE users SET senha = ? WHERE LOWER(email) = LOWER(?)");
+            $stmtUser->execute([$hash, $resetRow['email']]);
 
             if ($stmtUser->rowCount() < 1) {
-                throw new RuntimeException('Usuario do token nao encontrado para atualizar senha.');
+                throw new RuntimeException('Nenhum usuario encontrado para atualizar senha pelo e-mail do token.');
             }
 
-            $db->prepare("UPDATE password_reset_tokens SET used_at = CURRENT_TIMESTAMP WHERE user_id = ? AND used_at IS NULL")
-               ->execute([$resetRow['user_id']]);
+            $db->prepare("
+                UPDATE password_reset_tokens
+                SET used_at = CURRENT_TIMESTAMP
+                WHERE used_at IS NULL
+                  AND user_id IN (SELECT id FROM users WHERE LOWER(email) = LOWER(?))
+            ")->execute([$resetRow['email']]);
 
             $db->commit();
             $mensagem = 'Senha redefinida com sucesso. Voce ja pode entrar com a nova senha.';
