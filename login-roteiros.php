@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($email && $senha) {
         $db   = Database::get();
-        $stmt = $db->prepare('SELECT * FROM users WHERE email = ? LIMIT 1');
+        $stmt = $db->prepare('SELECT * FROM users WHERE LOWER(TRIM(email)) = LOWER(TRIM(?)) LIMIT 1');
         $stmt->execute([$email]);
         $user = $stmt->fetch();
 

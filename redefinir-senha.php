@@ -86,18 +86,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $hash = password_hash($senha, PASSWORD_DEFAULT);
             $db->beginTransaction();
 
-            $stmtUser = $db->prepare("UPDATE users SET senha = ? WHERE LOWER(email) = LOWER(?)");
+            $stmtUser = $db->prepare("UPDATE users SET senha = ? WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))");
             $stmtUser->execute([$hash, $resetRow['email']]);
 
             if ($stmtUser->rowCount() < 1) {
                 throw new RuntimeException('Nenhum usuario encontrado para atualizar senha pelo e-mail do token.');
             }
 
+            $stmtCheck = $db->prepare("SELECT senha FROM users WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))");
+            $stmtCheck->execute([$resetRow['email']]);
+            $senhasAtualizadas = $stmtCheck->fetchAll(PDO::FETCH_COLUMN);
+            $senhaConfirmada = $senhasAtualizadas !== [];
+            foreach ($senhasAtualizadas as $senhaBanco) {
+                if (!password_verify($senha, $senhaBanco)) {
+                    $senhaConfirmada = false;
+                    break;
+                }
+            }
+
+            if (!$senhaConfirmada) {
+                throw new RuntimeException('Senha gravada nao confere com a nova senha informada.');
+            }
+
             $db->prepare("
                 UPDATE password_reset_tokens
                 SET used_at = CURRENT_TIMESTAMP
                 WHERE used_at IS NULL
-                  AND user_id IN (SELECT id FROM users WHERE LOWER(email) = LOWER(?))
+                  AND user_id IN (SELECT id FROM users WHERE LOWER(TRIM(email)) = LOWER(TRIM(?)))
             ")->execute([$resetRow['email']]);
 
             $db->commit();
