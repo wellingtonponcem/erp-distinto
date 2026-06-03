@@ -20,7 +20,7 @@ try {
 
 // Função para simular o fluxo de reset
 function testarFluxoReset(string $email, string $senhaNova): array {
-    global $db;
+    $db = Database::get();
     
     $resultado = [
         'email' => $email,
