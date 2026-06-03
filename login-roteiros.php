@@ -173,6 +173,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit" class="btn">Acessar roteiros →</button>
         </form>
 
+        <div class="footer-link" style="margin-top:1rem;">
+            <a href="<?= raizUrl('/esqueci-senha.php') ?>">Esqueci minha senha</a>
+        </div>
+
         <div class="footer-link">
             Não tem uma conta? <a href="registro.php">Criar agora →</a>
         </div>

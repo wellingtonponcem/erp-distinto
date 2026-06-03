@@ -404,7 +404,7 @@ REGRAS CRÍTICAS:
     // GERAÇÃO DE ROTEIROS — Groq
     // =========================================================================
 
-    public static function gerarRoteiro(string $briefing = '', string $userId = ''): array
+    public static function gerarRoteiro(string $briefing = '', string $userId = '', string $clienteId = ''): array
     {
         $conhecimento = self::getBaseConhecimento($userId);
         $exemplos     = self::getMelhoresRoteiros($userId);
@@ -414,9 +414,19 @@ REGRAS CRÍTICAS:
         if ($userId) {
             try {
                 $db = Database::get();
-                $stmt = $db->prepare("SELECT persona, estilo, tom_voz FROM roteiros_config_usuario WHERE user_id = ?");
-                $stmt->execute([$userId]);
-                $v = $stmt->fetch();
+                if ($clienteId !== '') {
+                    $stmt = $db->prepare("SELECT persona, estilo, tom_voz FROM roteiros_config_cliente WHERE user_id = ? AND cliente_id = ? LIMIT 1");
+                    $stmt->execute([$userId, $clienteId]);
+                    $v = $stmt->fetch();
+                } else {
+                    $v = null;
+                }
+
+                if (!$v) {
+                    $stmt = $db->prepare("SELECT persona, estilo, tom_voz FROM roteiros_config_usuario WHERE user_id = ?");
+                    $stmt->execute([$userId]);
+                    $v = $stmt->fetch();
+                }
                 if ($v) {
                     $vozEstilo = "### IDENTIDADE DO AUTOR (OBRIGATÓRIO SEGUIR):\n";
                     if ($v['persona']) $vozEstilo .= "Persona: {$v['persona']}\n";

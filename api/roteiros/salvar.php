@@ -23,7 +23,7 @@ try {
     $db = Database::get();
 
     // Auto-migração: Garantir que todas as colunas novas existam
-    $cols = ["gancho", "quebra_crenca", "desenvolvimento", "conexao", "fechamento", "cta", "intencao", "tema", "numero", "score", "likes", "comentarios", "shares", "reposts", "salvamentos"];
+    $cols = ["gancho", "quebra_crenca", "desenvolvimento", "conexao", "fechamento", "cta", "intencao", "tema", "numero", "score", "likes", "comentarios", "shares", "reposts", "salvamentos", "cliente_id"];
     foreach ($cols as $c) {
         try { $db->exec("ALTER TABLE roteiros ADD COLUMN IF NOT EXISTS $c TEXT"); } catch(Exception $e) {}
     }
@@ -46,7 +46,7 @@ try {
             titulo = ?, gancho = ?, quebra_crenca = ?, desenvolvimento = ?,
             conexao = ?, fechamento = ?, cta = ?, tags = ?, status = ?,
             likes = ?, comentarios = ?, shares = ?, reposts = ?, salvamentos = ?, score = ?,
-            intencao = ?, tema = ?, updated_at = CURRENT_TIMESTAMP
+            intencao = ?, tema = ?, cliente_id = ?, updated_at = CURRENT_TIMESTAMP
             WHERE id = ? AND user_id = ?");
 
         $stmt->execute([
@@ -54,7 +54,7 @@ try {
             $d['desenvolvimento'] ?? '', $d['conexao'] ?? '', $d['fechamento'] ?? '',
             $d['cta'] ?? '', $d['tags'] ?? '', $d['status'] ?? 'pendente',
             $likes, $comentarios, $shares, $reposts, $salvamentos, $score,
-            $d['intencao'] ?? '', $d['tema'] ?? '',
+            $d['intencao'] ?? '', $d['tema'] ?? '', $d['cliente_id'] ?? null,
             $d['id'], $userId
         ]);
 
@@ -80,15 +80,15 @@ try {
 
         $stmt = $db->prepare("INSERT INTO roteiros
             (titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, tags, formato, status,
-            likes, comentarios, shares, reposts, salvamentos, score, numero, intencao, tema, user_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id");
+            likes, comentarios, shares, reposts, salvamentos, score, numero, intencao, tema, cliente_id, user_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id");
 
         $stmt->execute([
             $d['titulo'], $d['gancho'] ?? '', $d['quebra_crenca'] ?? '',
             $d['desenvolvimento'] ?? '', $d['conexao'] ?? '', $d['fechamento'] ?? '',
             $d['cta'] ?? '', $d['tags'] ?? '', $d['formato'] ?? '', $d['status'] ?? 'pendente',
             $likes, $comentarios, $shares, $reposts, $salvamentos, $score,
-            $prox, $d['intencao'] ?? '', $d['tema'] ?? '', $userId
+            $prox, $d['intencao'] ?? '', $d['tema'] ?? '', $d['cliente_id'] ?? null, $userId
         ]);
         $script_id = $stmt->fetchColumn();
     }

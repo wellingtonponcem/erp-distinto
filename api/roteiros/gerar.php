@@ -34,7 +34,7 @@ if (!$limite['ok']) {
 }
 
 try {
-    $roteiro = IARoteiros::gerarRoteiro($d['briefing'] ?? '', $usuario['id']);
+    $roteiro = IARoteiros::gerarRoteiro($d['briefing'] ?? '', $usuario['id'], $d['cliente_id'] ?? '');
     
     responderJson([
         'success' => true, 

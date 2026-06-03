@@ -80,6 +80,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 Entrar
             </button>
         </form>
+        <div style="text-align:center; margin-top:16px;">
+            <a href="<?= raizUrl('/esqueci-senha.php') ?>" style="color:#a78bfa; text-decoration:none; font-size:13px; font-weight:600;">Esqueci minha senha</a>
+        </div>
     </div>
 
     <div style="text-align:center; margin-top:20px;">
