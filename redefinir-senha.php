@@ -9,6 +9,40 @@ $mensagem = '';
 $tokenValido = false;
 $resetRow = null;
 
+function garantirEstruturaResetSenha(PDO $db): void {
+    $db->exec("CREATE TABLE IF NOT EXISTS password_reset_tokens (
+        id VARCHAR(36) PRIMARY KEY,
+        user_id VARCHAR(255) NOT NULL,
+        token_hash VARCHAR(64) NOT NULL,
+        expires_at TIMESTAMP NOT NULL,
+        used_at TIMESTAMP NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )");
+
+    $isMysql = (DB_PORT == 3306);
+
+    if ($isMysql) {
+        $stmt = $db->query("SHOW COLUMNS FROM users LIKE 'senha'");
+        $col = $stmt->fetch(PDO::FETCH_ASSOC);
+        $type = strtolower($col['Type'] ?? '');
+        if ($type !== '' && preg_match('/varchar\((\d+)\)/', $type, $m) && (int)$m[1] < 255) {
+            $db->exec("ALTER TABLE users MODIFY senha VARCHAR(255) NOT NULL");
+        }
+    } else {
+        $stmt = $db->query("
+            SELECT data_type, character_maximum_length
+            FROM information_schema.columns
+            WHERE table_name = 'users' AND column_name = 'senha'
+            LIMIT 1
+        ");
+        $col = $stmt->fetch(PDO::FETCH_ASSOC);
+        $max = (int)($col['character_maximum_length'] ?? 0);
+        if ($col && $col['data_type'] !== 'text' && ($max > 0 && $max < 255)) {
+            $db->exec("ALTER TABLE users ALTER COLUMN senha TYPE VARCHAR(255)");
+        }
+    }
+}
+
 function buscarTokenReset(PDO $db, string $token): ?array {
     if ($token === '') return null;
 
@@ -30,6 +64,7 @@ function buscarTokenReset(PDO $db, string $token): ?array {
 
 try {
     $db = Database::get();
+    garantirEstruturaResetSenha($db);
     $resetRow = buscarTokenReset($db, $token);
     $tokenValido = (bool)$resetRow;
 } catch (Exception $e) {
@@ -51,11 +86,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $hash = password_hash($senha, PASSWORD_DEFAULT);
             $db->beginTransaction();
 
-            $db->prepare("UPDATE users SET senha = ? WHERE id = ?")
-               ->execute([$hash, $resetRow['user_id']]);
+            $stmtUser = $db->prepare("UPDATE users SET senha = ? WHERE id = ?");
+            $stmtUser->execute([$hash, $resetRow['user_id']]);
 
-            $db->prepare("UPDATE password_reset_tokens SET used_at = CURRENT_TIMESTAMP WHERE id = ?")
-               ->execute([$resetRow['id']]);
+            if ($stmtUser->rowCount() < 1) {
+                throw new RuntimeException('Usuario do token nao encontrado para atualizar senha.');
+            }
 
             $db->prepare("UPDATE password_reset_tokens SET used_at = CURRENT_TIMESTAMP WHERE user_id = ? AND used_at IS NULL")
                ->execute([$resetRow['user_id']]);
@@ -65,6 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tokenValido = false;
         } catch (Exception $e) {
             if ($db->inTransaction()) $db->rollBack();
+            error_log('Erro ao redefinir senha: ' . $e->getMessage());
             $erro = 'Nao foi possivel redefinir a senha agora. Tente novamente.';
         }
     }
