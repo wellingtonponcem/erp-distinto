@@ -4,12 +4,19 @@
  * Testa: 1) Se senha está sendo atualizada, 2) Se redirecionamento funciona, 3) Se login funciona
  */
 
-require_once __DIR__ . '/config/env.php';
-require_once __DIR__ . '/config/auth.php';
-require_once __DIR__ . '/config/database.php';
-require_once __DIR__ . '/includes/helpers.php';
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
 
 header('Content-Type: text/html; charset=UTF-8');
+
+try {
+    require_once __DIR__ . '/config/env.php';
+    require_once __DIR__ . '/config/auth.php';
+    require_once __DIR__ . '/config/database.php';
+    require_once __DIR__ . '/includes/helpers.php';
+} catch (Exception $e) {
+    die("ERRO ao carregar arquivos: " . $e->getMessage());
+}
 
 // Função para simular o fluxo de reset
 function testarFluxoReset(string $email, string $senhaNova): array {
