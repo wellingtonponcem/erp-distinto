@@ -90,7 +90,7 @@ $db = Database::get();
         </tr>
         <?php
         try {
-            $stmt = $db->prepare("SELECT id, email, nome, senha, created_at, updated_at FROM users WHERE email = 'jeaneponcemsm@gmail.com'");
+            $stmt = $db->prepare("SELECT id, email, nome, senha FROM users WHERE email = 'jeaneponcemsm@gmail.com'");
             $stmt->execute();
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             
@@ -99,8 +99,6 @@ $db = Database::get();
                 echo "<tr><td>Email</td><td>" . htmlspecialchars($user['email']) . "</td></tr>";
                 echo "<tr><td>Nome</td><td>" . htmlspecialchars($user['nome']) . "</td></tr>";
                 echo "<tr><td>Hash Senha</td><td>" . htmlspecialchars($user['senha']) . "</td></tr>";
-                echo "<tr><td>Criado Em</td><td>" . ($user['created_at'] ?? 'N/A') . "</td></tr>";
-                echo "<tr><td>Atualizado Em</td><td>" . ($user['updated_at'] ?? 'N/A') . "</td></tr>";
             }
         } catch (Exception $e) {
             echo "<tr><td colspan='2'>❌ Erro: " . htmlspecialchars($e->getMessage()) . "</td></tr>";
@@ -110,20 +108,38 @@ $db = Database::get();
 
     <h2>3️⃣ Diagnóstico</h2>
     <div class="info-box">
-        <p><strong>O que aconteceu:</strong></p>
+        <p><strong>🔴 ACHEI O PROBLEMA!</strong></p>
         <ul>
             <li>✅ Usuário existe no banco</li>
-            <li>❌ A senha <code>!@190118!</code> NÃO bate com o hash armazenado</li>
-            <li>⚠️ Verifique se Jeane digitou a senha corretamente ao fazer reset</li>
+            <li>⚠️ <strong>TOKEN ATIVO SEM USAR</strong> criado em 2026-06-03 15:40:19</li>
+            <li>❌ A senha <code>!@190118!</code> NÃO bate com o hash no banco</li>
         </ul>
-    </div>
-
-    <div class="action-box">
-        <p><strong>🔧 Opções:</strong></p>
+        
+        <p><strong>Cenários possíveis:</strong></p>
         <ol>
-            <li>Peça para Jeane fazer o reset de senha novamente e anotar exatamente qual senha ela digitou</li>
-            <li>Teste a senha que ela colocou durante o reset (pode ser diferente de !@190118!)</li>
-            <li>Verifique se há espaços em branco extras na senha</li>
+            <li>
+                <strong>Jeane clicou no link de reset, mas NÃO completou:</strong>
+                <ul>
+                    <li>Abriu o formulário</li>
+                    <li>Digitou a nova senha</li>
+                    <li>Mas algo deu errado antes de salvar</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Jeane completou o reset, mas a senha digitada foi DIFERENTE:</strong>
+                <ul>
+                    <li>Ela digitou uma senha no reset (não sabemos qual)</li>
+                    <li>Agora está tentando com <code>!@190118!</code></li>
+                    <li>Como são diferentes, o login falha</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Erro no fluxo de redirecionamento:</strong>
+                <ul>
+                    <li>A senha foi atualizada corretamente</li>
+                    <li>Mas o token não foi marcado como "usado"</li>
+                </ul>
+            </li>
         </ol>
     </div>
 
