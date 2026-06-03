@@ -117,6 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ")->execute([$resetRow['user_id']]);
 
             $db->commit();
+            error_log("✓ RESET SUCESSO: Email={$resetRow['email']}, User_id={$resetRow['user_id']}");
             deslogarUsuario();
             header('Location: ' . raizUrl('/login-roteiros.php?senha_redefinida=1'));
             exit;

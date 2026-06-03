@@ -23,13 +23,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $db->prepare('SELECT * FROM users WHERE LOWER(TRIM(email)) = LOWER(TRIM(?)) LIMIT 1');
         $stmt->execute([$email]);
         $user = $stmt->fetch();
+        
+        error_log("LOGIN ATTEMPT: email={$email}, user_found=" . ($user ? 'yes' : 'no') . 
+                  ($user ? ", user_id={$user['id']}, senha_length=" . strlen($user['senha']) : ""));
 
         if ($user && password_verify($senha, $user['senha'])) {
+            error_log("LOGIN SUCCESS: email={$email}, user_id={$user['id']}");
             logarUsuario($user);
             header('Location: ' . raizUrl('/roteiros/index.php'));
             exit;
+        } else if ($user) {
+            error_log("LOGIN FAILED (password_verify false): email={$email}, user_id={$user['id']}");
         }
     }
+    error_log("LOGIN ERROR: email={$email}, user_found=" . ($user ? 'yes' : 'no') . ", senha_provided=" . ($senha ? 'yes' : 'no'));
     $erro = 'E-mail ou senha incorretos.';
 }
 ?>
