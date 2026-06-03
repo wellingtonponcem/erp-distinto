@@ -11,7 +11,7 @@ if (estaAutenticado()) {
 }
 
 $erro = '';
-$mensagem = isset($_GET['senha_redefinida'])
+$mensagem = ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['senha_redefinida']))
     ? 'Senha redefinida com sucesso. Entre com a nova senha.'
     : '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

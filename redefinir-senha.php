@@ -87,15 +87,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $hash = password_hash($senha, PASSWORD_DEFAULT);
             $db->beginTransaction();
 
-            $stmtUser = $db->prepare("UPDATE users SET senha = ? WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))");
-            $stmtUser->execute([$hash, $resetRow['email']]);
+            $stmtUser = $db->prepare("UPDATE users SET senha = ? WHERE id = ?");
+            $stmtUser->execute([$hash, $resetRow['user_id']]);
 
             if ($stmtUser->rowCount() < 1) {
-                throw new RuntimeException('Nenhum usuario encontrado para atualizar senha pelo e-mail do token.');
+                throw new RuntimeException('Nenhum usuario encontrado para atualizar senha pelo token.');
             }
 
-            $stmtCheck = $db->prepare("SELECT senha FROM users WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))");
-            $stmtCheck->execute([$resetRow['email']]);
+            $stmtCheck = $db->prepare("SELECT senha FROM users WHERE id = ?");
+            $stmtCheck->execute([$resetRow['user_id']]);
             $senhasAtualizadas = $stmtCheck->fetchAll(PDO::FETCH_COLUMN);
             $senhaConfirmada = $senhasAtualizadas !== [];
             foreach ($senhasAtualizadas as $senhaBanco) {
@@ -113,8 +113,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 UPDATE password_reset_tokens
                 SET used_at = CURRENT_TIMESTAMP
                 WHERE used_at IS NULL
-                  AND user_id IN (SELECT id FROM users WHERE LOWER(TRIM(email)) = LOWER(TRIM(?)))
-            ")->execute([$resetRow['email']]);
+                  AND user_id = ?
+            ")->execute([$resetRow['user_id']]);
 
             $db->commit();
             deslogarUsuario();
