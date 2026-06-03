@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $db = Database::get();
             garantirTabelaResetSenha($db);
 
-            $stmt = $db->prepare("SELECT id, nome, email FROM users WHERE LOWER(email) = LOWER(?) LIMIT 1");
+            $stmt = $db->prepare("SELECT id, nome, email FROM users WHERE LOWER(TRIM(email)) = LOWER(TRIM(?)) LIMIT 1");
             $stmt->execute([$email]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 

@@ -11,6 +11,9 @@ if (estaAutenticado()) {
 }
 
 $erro = '';
+$mensagem = isset($_GET['senha_redefinida'])
+    ? 'Senha redefinida com sucesso. Entre com a nova senha.'
+    : '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $senha = trim($_POST['senha'] ?? '');
@@ -138,6 +141,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-bottom: 1.5rem;
             text-align: center;
         }
+        .sucesso-msg {
+            background: rgba(232,255,71,0.08);
+            border: 1px solid rgba(232,255,71,0.25);
+            color: var(--accent);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
         .footer-link {
             text-align: center;
             margin-top: 2rem;
@@ -156,6 +169,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <?php if ($erro): ?>
         <div class="erro-msg"><?= $erro ?></div>
+        <?php endif; ?>
+        <?php if ($mensagem): ?>
+        <div class="sucesso-msg"><?= sanitizar($mensagem) ?></div>
         <?php endif; ?>
 
         <form method="POST" action="">

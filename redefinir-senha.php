@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/config/env.php';
+require_once __DIR__ . '/config/auth.php';
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/includes/helpers.php';
 
@@ -116,8 +117,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ")->execute([$resetRow['email']]);
 
             $db->commit();
-            $mensagem = 'Senha redefinida com sucesso. Voce ja pode entrar com a nova senha.';
-            $tokenValido = false;
+            deslogarUsuario();
+            header('Location: ' . raizUrl('/login-roteiros.php?senha_redefinida=1'));
+            exit;
         } catch (Exception $e) {
             if ($db->inTransaction()) $db->rollBack();
             error_log('Erro ao redefinir senha: ' . $e->getMessage());
