@@ -263,7 +263,7 @@ Conteúdo:
     // MEMÓRIA — consolidação com Groq
     // =========================================================================
 
-    private static function getBaseConhecimento(string $userId = ''): string
+    private static function getBaseConhecimento(string $userId = '', string $clienteId = ''): string
     {
         try {
             $db = Database::get();
@@ -274,16 +274,31 @@ Conteúdo:
                 $stmt = $db->query("SELECT conteudo FROM roteiros_memoria LIMIT 1");
             }
             $memoria = $stmt->fetchColumn();
-            if ($memoria) return $memoria;
+
+            if ($memoria && $clienteId === '') return $memoria;
+
+            $base = $memoria ?: '';
 
             if ($userId) {
-                $stmt = $db->prepare("SELECT texto_extraido FROM roteiros_conhecimento WHERE ativo = TRUE AND user_id = ?");
-                $stmt->execute([$userId]);
+                if ($clienteId !== '') {
+                    $stmt = $db->prepare("
+                        SELECT texto_extraido
+                        FROM roteiros_conhecimento
+                        WHERE ativo = TRUE
+                          AND user_id = ?
+                          AND (cliente_id IS NULL OR cliente_id = '' OR cliente_id = ?)
+                    ");
+                    $stmt->execute([$userId, $clienteId]);
+                } else {
+                    $stmt = $db->prepare("SELECT texto_extraido FROM roteiros_conhecimento WHERE ativo = TRUE AND user_id = ?");
+                    $stmt->execute([$userId]);
+                }
             } else {
                 $stmt = $db->query("SELECT texto_extraido FROM roteiros_conhecimento WHERE ativo = TRUE");
             }
             $textos = $stmt->fetchAll(PDO::FETCH_COLUMN);
-            return implode("\n\n---\n\n", $textos);
+            $fontes = implode("\n\n---\n\n", array_filter($textos));
+            return trim($base . ($base && $fontes ? "\n\n--- FONTES COMPLEMENTARES ---\n\n" : '') . $fontes);
         } catch (Exception $e) {
             return "";
         }
@@ -406,7 +421,7 @@ REGRAS CRÍTICAS:
 
     public static function gerarRoteiro(string $briefing = '', string $userId = '', string $clienteId = ''): array
     {
-        $conhecimento = self::getBaseConhecimento($userId);
+        $conhecimento = self::getBaseConhecimento($userId, $clienteId);
         $exemplos     = self::getMelhoresRoteiros($userId);
         
         // Buscar Voz & Estilo do usuário

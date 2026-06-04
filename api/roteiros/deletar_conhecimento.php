@@ -23,15 +23,22 @@ if (empty($d['id'])) {
 
 try {
     $db = Database::get();
+    $usuario = usuarioAtual();
+    $userId = function_exists('roteirosUserId') ? roteirosUserId($usuario) : $usuario['id'];
+    if (($usuario['sistema_origem'] ?? '') === 'distinto' && function_exists('normalizarRoteirosDistinto')) normalizarRoteirosDistinto($db);
     
     // Primeiro pegamos o caminho do arquivo para deletar se necessário
-    $stmt = $db->prepare("SELECT caminho_arquivo FROM roteiros_conhecimento WHERE id = ?");
-    $stmt->execute([$d['id']]);
+    $stmt = $db->prepare("SELECT caminho_arquivo FROM roteiros_conhecimento WHERE id = ? AND user_id = ?");
+    $stmt->execute([$d['id'], $userId]);
     $arquivo = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    if (!$arquivo) {
+        responderJson(['success' => false, 'error' => 'Fonte nao encontrada.'], 404);
+    }
+
     // Deleta do banco
-    $stmt = $db->prepare("DELETE FROM roteiros_conhecimento WHERE id = ?");
-    $stmt->execute([$d['id']]);
+    $stmt = $db->prepare("DELETE FROM roteiros_conhecimento WHERE id = ? AND user_id = ?");
+    $stmt->execute([$d['id'], $userId]);
 
     // Deleta arquivo físico se existir
     if ($arquivo && !empty($arquivo['caminho_arquivo'])) {
@@ -41,7 +48,7 @@ try {
 
     // RECONSTRUÇÃO DA MEMÓRIA
     // Como uma fonte foi removida, precisamos refazer a memória mestra com o que sobrou
-    IARoteiros::reconstruirMemoria();
+    IARoteiros::reconstruirMemoria($userId);
 
     responderJson(['success' => true]);
 

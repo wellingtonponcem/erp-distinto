@@ -18,9 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $d       = lerCorpo();
 $usuario = usuarioAtual();
+$userId  = function_exists('roteirosUserId') ? roteirosUserId($usuario) : $usuario['id'];
 
 // Verificar limite antes de consumir tokens de IA
-$limite = verificarLimiteDiario($usuario['id']);
+$limite = verificarLimiteDiario($userId);
 if (!$limite['ok']) {
     $payloadErro = ['success' => false, 'paywall' => true, 'motivo' => $limite['motivo']];
     if ($limite['motivo'] === 'trial_expirado') {
@@ -34,7 +35,9 @@ if (!$limite['ok']) {
 }
 
 try {
-    $roteiro = IARoteiros::gerarRoteiro($d['briefing'] ?? '', $usuario['id'], $d['cliente_id'] ?? '');
+    $db = Database::get();
+    if (($usuario['sistema_origem'] ?? '') === 'distinto' && function_exists('normalizarRoteirosDistinto')) normalizarRoteirosDistinto($db);
+    $roteiro = IARoteiros::gerarRoteiro($d['briefing'] ?? '', $userId, $d['cliente_id'] ?? '');
     
     responderJson([
         'success' => true, 

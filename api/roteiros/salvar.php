@@ -17,10 +17,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $d       = lerCorpo();
 $usuario = usuarioAtual();
-$userId  = $usuario['id'];
+$userId  = function_exists('roteirosUserId') ? roteirosUserId($usuario) : $usuario['id'];
 
 try {
     $db = Database::get();
+    if (($usuario['sistema_origem'] ?? '') === 'distinto' && function_exists('normalizarRoteirosDistinto')) normalizarRoteirosDistinto($db);
 
     // Auto-migração: Garantir que todas as colunas novas existam
     $cols = ["gancho", "quebra_crenca", "desenvolvimento", "conexao", "fechamento", "cta", "intencao", "tema", "numero", "score", "likes", "comentarios", "shares", "reposts", "salvamentos", "cliente_id"];
@@ -99,6 +100,7 @@ try {
     $is_ia_generated = isset($d['is_ia_generated']) && $d['is_ia_generated'] === true;
 
     if (!$is_ia_generated) {
+        try { $db->exec("ALTER TABLE roteiros_conhecimento ADD COLUMN IF NOT EXISTS cliente_id VARCHAR(36) DEFAULT NULL"); } catch(Exception $e) {}
         $textoCompleto = trim(
             "Roteiro Escrito/Editado pelo Usuário (Aprender Voz e Estilo):\n\n" .
             "TÍTULO: {$d['titulo']}\n" .
@@ -118,11 +120,11 @@ try {
             $nomeArquivo = "📝 Roteiro: {$d['titulo']}";
 
             if ($fonte_id) {
-                $db->prepare("UPDATE roteiros_conhecimento SET texto_extraido = ?, sincronizado = FALSE, nome_arquivo = ? WHERE id = ? AND user_id = ?")
-                   ->execute([$textoCompleto, $nomeArquivo, $fonte_id, $userId]);
+                $db->prepare("UPDATE roteiros_conhecimento SET texto_extraido = ?, sincronizado = FALSE, nome_arquivo = ?, cliente_id = ? WHERE id = ? AND user_id = ?")
+                   ->execute([$textoCompleto, $nomeArquivo, $d['cliente_id'] ?? null, $fonte_id, $userId]);
             } else {
-                $db->prepare("INSERT INTO roteiros_conhecimento (nome_arquivo, caminho_arquivo, tipo_arquivo, texto_extraido, sincronizado, user_id) VALUES (?, ?, 'text', ?, FALSE, ?)")
-                   ->execute([$nomeArquivo, $caminho_interno, $textoCompleto, $userId]);
+                $db->prepare("INSERT INTO roteiros_conhecimento (nome_arquivo, caminho_arquivo, tipo_arquivo, texto_extraido, sincronizado, user_id, cliente_id) VALUES (?, ?, 'text', ?, FALSE, ?, ?)")
+                   ->execute([$nomeArquivo, $caminho_interno, $textoCompleto, $userId, $d['cliente_id'] ?? null]);
             }
         }
     }

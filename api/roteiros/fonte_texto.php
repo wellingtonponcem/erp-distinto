@@ -15,6 +15,9 @@ exigirAutenticacao();
 
 try {
     $db  = Database::get();
+    $usuario = usuarioAtual();
+    $userId = function_exists('roteirosUserId') ? roteirosUserId($usuario) : $usuario['id'];
+    if (($usuario['sistema_origem'] ?? '') === 'distinto' && function_exists('normalizarRoteirosDistinto')) normalizarRoteirosDistinto($db);
     $id  = $_GET['id'] ?? $_POST['id'] ?? '';
 
     if (empty($id)) {
@@ -24,8 +27,8 @@ try {
 
     // --- GET: buscar texto ---
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        $stmt = $db->prepare("SELECT id, nome_arquivo, tipo_arquivo, texto_extraido FROM roteiros_conhecimento WHERE id = ?");
-        $stmt->execute([$id]);
+        $stmt = $db->prepare("SELECT id, nome_arquivo, tipo_arquivo, texto_extraido FROM roteiros_conhecimento WHERE id = ? AND user_id = ?");
+        $stmt->execute([$id, $userId]);
         $fonte = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$fonte) {
@@ -41,8 +44,8 @@ try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $novoTexto = trim($_POST['texto'] ?? '');
 
-        $stmt = $db->prepare("UPDATE roteiros_conhecimento SET texto_extraido = ?, sincronizado = FALSE WHERE id = ?");
-        $stmt->execute([$novoTexto, $id]);
+        $stmt = $db->prepare("UPDATE roteiros_conhecimento SET texto_extraido = ?, sincronizado = FALSE WHERE id = ? AND user_id = ?");
+        $stmt->execute([$novoTexto, $id, $userId]);
 
         responderJson(['success' => true, 'message' => 'Texto atualizado. A fonte precisará ser sincronizada novamente.']);
         exit;

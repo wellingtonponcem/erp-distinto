@@ -17,15 +17,16 @@ try {
     $tag = $_GET['tag'] ?? null;
 
     $usuario = usuarioAtual();
+    $userId = function_exists('roteirosUserId') ? roteirosUserId($usuario) : $usuario['id'];
+    if (($usuario['sistema_origem'] ?? '') === 'distinto' && function_exists('normalizarRoteirosDistinto')) normalizarRoteirosDistinto($db);
     $query   = "SELECT id, numero, titulo, status, formato, score, created_at FROM roteiros WHERE user_id = ? ORDER BY created_at DESC";
 
     $stmt = $db->prepare($query);
-    $stmt->execute([$usuario['id']]);
+    $stmt->execute([$userId]);
     $roteiros = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Migração em tempo real: Popular números que estão como 0 ou nulos
     $scripts_sem_numero = array_filter($roteiros, fn($r) => !$r['numero']);
-    $userId = $usuario['id'];
     
     if (count($scripts_sem_numero) > 0) {
         foreach ($roteiros as &$r) {

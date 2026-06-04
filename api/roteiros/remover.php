@@ -20,9 +20,11 @@ if (empty($id)) {
 try {
     $db      = Database::get();
     $usuario = usuarioAtual();
+    $userId = function_exists('roteirosUserId') ? roteirosUserId($usuario) : $usuario['id'];
+    if (($usuario['sistema_origem'] ?? '') === 'distinto' && function_exists('normalizarRoteirosDistinto')) normalizarRoteirosDistinto($db);
 
     $stmt = $db->prepare("DELETE FROM roteiros WHERE id = ? AND user_id = ?");
-    $stmt->execute([$id, $usuario['id']]);
+    $stmt->execute([$id, $userId]);
 
     responderJson(['success' => true]);
 

@@ -16,7 +16,7 @@ ini_set('memory_limit', '1024M');
 
 $d       = lerCorpo();
 $usuario = usuarioAtual();
-$userId  = $usuario['id'];
+$userId  = function_exists('roteirosUserId') ? roteirosUserId($usuario) : $usuario['id'];
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     responderJson(['erro' => 'Método não permitido'], 405);
@@ -29,8 +29,9 @@ if (empty($id)) {
 }
 
 $db = Database::get();
-$stmt = $db->prepare("SELECT * FROM roteiros_conhecimento WHERE id = ?");
-$stmt->execute([$id]);
+if (($usuario['sistema_origem'] ?? '') === 'distinto' && function_exists('normalizarRoteirosDistinto')) normalizarRoteirosDistinto($db);
+$stmt = $db->prepare("SELECT * FROM roteiros_conhecimento WHERE id = ? AND user_id = ?");
+$stmt->execute([$id, $userId]);
 $fonte = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$fonte) {
@@ -73,15 +74,15 @@ try {
 
         // Salva o texto extraído de volta no banco para não reprocessar
         if (!empty($texto)) {
-            $db->prepare("UPDATE roteiros_conhecimento SET texto_extraido = ? WHERE id = ?")
-               ->execute([$texto, $id]);
+            $db->prepare("UPDATE roteiros_conhecimento SET texto_extraido = ? WHERE id = ? AND user_id = ?")
+               ->execute([$texto, $id, $userId]);
         }
     }
 
     // Se ainda não tem texto, marca como sincronizado mas sem contribuir à memória
     if (empty($texto)) {
-        $db->prepare("UPDATE roteiros_conhecimento SET sincronizado = TRUE WHERE id = ?")
-           ->execute([$id]);
+        $db->prepare("UPDATE roteiros_conhecimento SET sincronizado = TRUE WHERE id = ? AND user_id = ?")
+           ->execute([$id, $userId]);
         responderJson(['success' => true, 'sincronizado' => true, 'nova_memoria' => '', 'aviso' => 'Fonte sem conteúdo extraível.']);
         exit;
     }
@@ -90,11 +91,13 @@ try {
     $consolidou = IARoteiros::consolidarMemoria($texto, $userId);
 
     if ($consolidou) {
-        $db->prepare("UPDATE roteiros_conhecimento SET sincronizado = TRUE WHERE id = ?")
-           ->execute([$id]);
+        $db->prepare("UPDATE roteiros_conhecimento SET sincronizado = TRUE WHERE id = ? AND user_id = ?")
+           ->execute([$id, $userId]);
     }
 
-    $novaMemoria = $db->query("SELECT conteudo FROM roteiros_memoria LIMIT 1")->fetchColumn();
+    $stmtMem = $db->prepare("SELECT conteudo FROM roteiros_memoria WHERE user_id = ? LIMIT 1");
+    $stmtMem->execute([$userId]);
+    $novaMemoria = $stmtMem->fetchColumn();
 
     responderJson([
         'success'      => true,

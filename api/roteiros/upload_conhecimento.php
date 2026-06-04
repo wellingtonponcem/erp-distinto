@@ -25,7 +25,8 @@ if (empty($_FILES['arquivo'])) {
 }
 
 $usuario = usuarioAtual();
-$userId  = $usuario['id'];
+$userId  = function_exists('roteirosUserId') ? roteirosUserId($usuario) : $usuario['id'];
+$clienteId = trim((string)($_POST['cliente_id'] ?? ''));
 
 // Verificar limite de arquivos (50 por usuário)
 $limiteConhec = verificarLimiteConhecimento($userId);
@@ -74,14 +75,16 @@ if (move_uploaded_file($arquivo['tmp_name'], $targetPath)) {
         }
 
         $db = Database::get();
+        if (($usuario['sistema_origem'] ?? '') === 'distinto' && function_exists('normalizarRoteirosDistinto')) normalizarRoteirosDistinto($db);
 
         $db->exec("ALTER TABLE roteiros_conhecimento ADD COLUMN IF NOT EXISTS sincronizado BOOLEAN DEFAULT FALSE");
+        try { $db->exec("ALTER TABLE roteiros_conhecimento ADD COLUMN IF NOT EXISTS cliente_id VARCHAR(36) DEFAULT NULL"); } catch (Exception $e) {}
 
         $stmt = $db->prepare(
-            "INSERT INTO roteiros_conhecimento (nome_arquivo, caminho_arquivo, tipo_arquivo, texto_extraido, user_id)
-             VALUES (?, ?, ?, ?, ?) RETURNING id, nome_arquivo, tipo_arquivo, created_at, ativo"
+            "INSERT INTO roteiros_conhecimento (nome_arquivo, caminho_arquivo, tipo_arquivo, texto_extraido, user_id, cliente_id)
+             VALUES (?, ?, ?, ?, ?, ?) RETURNING id, nome_arquivo, tipo_arquivo, created_at, ativo"
         );
-        $stmt->execute([$arquivo['name'], $caminhoDb, $ext, $texto, $userId]);
+        $stmt->execute([$arquivo['name'], $caminhoDb, $ext, $texto, $userId, $clienteId ?: null]);
         $arquivo_salvo = $stmt->fetch(PDO::FETCH_ASSOC);
 
         // Consolidar memória do usuário

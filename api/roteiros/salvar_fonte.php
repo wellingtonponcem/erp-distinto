@@ -19,13 +19,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $d     = lerCorpo();
 $type  = $d['type']  ?? '';
 $value = $d['value'] ?? '';
+$clienteId = trim((string)($d['cliente_id'] ?? ''));
 
 if (!$type || !$value) {
     responderJson(['erro' => 'Dados incompletos'], 422);
 }
 
 $usuario = usuarioAtual();
-$userId  = $usuario['id'];
+$userId  = function_exists('roteirosUserId') ? roteirosUserId($usuario) : $usuario['id'];
 
 // Verificar limite de arquivos (50 por usuário)
 $limiteConhec = verificarLimiteConhecimento($userId);
@@ -43,6 +44,8 @@ set_time_limit(180);
 
 try {
     $db = Database::get();
+    if (($usuario['sistema_origem'] ?? '') === 'distinto' && function_exists('normalizarRoteirosDistinto')) normalizarRoteirosDistinto($db);
+    try { $db->exec("ALTER TABLE roteiros_conhecimento ADD COLUMN IF NOT EXISTS cliente_id VARCHAR(36) DEFAULT NULL"); } catch (Exception $e) {}
     $nome = "";
     $texto = "";
 
@@ -91,10 +94,10 @@ try {
     }
 
     $stmt = $db->prepare(
-        "INSERT INTO roteiros_conhecimento (nome_arquivo, caminho_arquivo, tipo_arquivo, texto_extraido, user_id)
-         VALUES (?, ?, ?, ?, ?) RETURNING id, nome_arquivo, tipo_arquivo, created_at, ativo"
+        "INSERT INTO roteiros_conhecimento (nome_arquivo, caminho_arquivo, tipo_arquivo, texto_extraido, user_id, cliente_id)
+         VALUES (?, ?, ?, ?, ?, ?) RETURNING id, nome_arquivo, tipo_arquivo, created_at, ativo"
     );
-    $stmt->execute([$nome, $type === 'url' ? $value : 'manual_entry', $type, $texto, $userId]);
+    $stmt->execute([$nome, $type === 'url' ? $value : 'manual_entry', $type, $texto, $userId, $clienteId ?: null]);
     $arquivo_salvo = $stmt->fetch(PDO::FETCH_ASSOC);
 
     // RECONSTRUÇÃO DA MEMÓRIA DO USUÁRIO

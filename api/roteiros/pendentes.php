@@ -14,6 +14,8 @@ try {
     $db = Database::get();
 
     $usuario = usuarioAtual();
+    $userId = function_exists('roteirosUserId') ? roteirosUserId($usuario) : $usuario['id'];
+    if (($usuario['sistema_origem'] ?? '') === 'distinto' && function_exists('normalizarRoteirosDistinto')) normalizarRoteirosDistinto($db);
 
     $stmt = $db->prepare(
         "SELECT id, numero, titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, intencao, tema, status, score
@@ -21,7 +23,7 @@ try {
          WHERE status = 'pendente' AND user_id = ?
          ORDER BY numero ASC NULLS LAST, created_at DESC"
     );
-    $stmt->execute([$usuario['id']]);
+    $stmt->execute([$userId]);
     $roteiros = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     responderJson([

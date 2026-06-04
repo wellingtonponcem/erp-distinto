@@ -21,13 +21,14 @@ ini_set('memory_limit', '512M');
 
 try {
     $usuario = usuarioAtual();
-    $userId  = $usuario['id'];
+    $userId  = function_exists('roteirosUserId') ? roteirosUserId($usuario) : $usuario['id'];
+    $db   = Database::get();
+    if (($usuario['sistema_origem'] ?? '') === 'distinto' && function_exists('normalizarRoteirosDistinto')) normalizarRoteirosDistinto($db);
 
     // Reconstrói o cérebro da IA para este usuário
     $sucesso = IARoteiros::reconstruirMemoria($userId);
 
     if ($sucesso === true) {
-        $db   = Database::get();
         $stmt = $db->prepare("SELECT conteudo FROM roteiros_memoria WHERE user_id = ? LIMIT 1");
         $stmt->execute([$userId]);
         $novaMemoria = $stmt->fetchColumn();

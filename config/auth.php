@@ -128,6 +128,87 @@ function usuarioAtual(): array {
     ];
 }
 
+function usuarioEhDistinto(?array $usuario = null): bool {
+    $usuario = $usuario ?? usuarioAtual();
+    return ($usuario['sistema_origem'] ?? '') === 'distinto';
+}
+
+function roteirosEquipeDistintoUserId(): string {
+    static $ownerId = null;
+
+    if ($ownerId !== null) {
+        return $ownerId;
+    }
+
+    try {
+        if (class_exists('Database')) {
+            $db = Database::get();
+            $stmt = $db->query("
+                SELECT id
+                FROM users
+                WHERE sistema_origem = 'distinto'
+                ORDER BY
+                    CASE WHEN LOWER(email) = 'faustinosdg@gmail.com' THEN 0 ELSE 1 END,
+                    CASE WHEN criado_em IS NULL THEN 1 ELSE 0 END,
+                    criado_em ASC,
+                    id ASC
+                LIMIT 1
+            ");
+            $id = $stmt->fetchColumn();
+            if ($id) {
+                $ownerId = (string)$id;
+                return $ownerId;
+            }
+        }
+    } catch (Exception $e) {}
+
+    $ownerId = '8f63b895d7c5ce2f37d4b68278cae976';
+    return $ownerId;
+}
+
+function roteirosUserId(array $usuario): string {
+    return usuarioEhDistinto($usuario)
+        ? roteirosEquipeDistintoUserId()
+        : (string)($usuario['id'] ?? '');
+}
+
+function normalizarRoteirosDistinto(PDO $db): void {
+    static $executado = false;
+    if ($executado) return;
+    $executado = true;
+
+    $ownerId = roteirosEquipeDistintoUserId();
+    $whereDistinto = "user_id IN (SELECT id FROM users WHERE sistema_origem = 'distinto') AND user_id <> ?";
+
+    try {
+        $db->prepare("
+            DELETE FROM roteiros_config_usuario
+            WHERE {$whereDistinto}
+              AND EXISTS (SELECT 1 FROM roteiros_config_usuario WHERE user_id = ?)
+        ")->execute([$ownerId, $ownerId]);
+    } catch (Exception $e) {}
+
+    try {
+        $db->prepare("
+            DELETE FROM roteiros_config_cliente c
+            WHERE c.user_id IN (SELECT id FROM users WHERE sistema_origem = 'distinto')
+              AND c.user_id <> ?
+              AND EXISTS (
+                  SELECT 1
+                  FROM roteiros_config_cliente owner_cfg
+                  WHERE owner_cfg.user_id = ?
+                    AND owner_cfg.cliente_id = c.cliente_id
+              )
+        ")->execute([$ownerId, $ownerId]);
+    } catch (Exception $e) {}
+
+    foreach (['roteiros_clientes', 'roteiros_conhecimento', 'roteiros_memoria', 'roteiros_config_usuario', 'roteiros_config_cliente', 'roteiros'] as $tabela) {
+        try {
+            $db->prepare("UPDATE {$tabela} SET user_id = ? WHERE {$whereDistinto}")->execute([$ownerId, $ownerId]);
+        } catch (Exception $e) {}
+    }
+}
+
 function logarUsuario(array $user): void {
     iniciarSessao();
     session_regenerate_id(true);
