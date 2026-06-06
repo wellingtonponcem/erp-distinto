@@ -10,6 +10,7 @@ $db = Database::get();
 
 // Auto-migração: adiciona colunas do Mercado Pago se ainda não existirem
 foreach ([
+    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS openrouter_api_key            TEXT",
     "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_access_token      TEXT",
     "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_public_key         TEXT",
     "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_webhook_secret     TEXT",
@@ -24,7 +25,7 @@ foreach ([
     try { $db->exec($sql); } catch (Exception $e) { /* ignora */ }
 }
 
-$config = $db->query("SELECT id, nome, cnpj, telefone, email, endereco, groq_api_key, gemini_api_key,
+$config = $db->query("SELECT id, nome, cnpj, telefone, email, endereco, groq_api_key, gemini_api_key, openrouter_api_key,
     mercadopago_access_token, mercadopago_public_key, mercadopago_webhook_secret,
     mercadopago_client_id, mercadopago_client_secret,
     mercadopago_test_access_token, mercadopago_test_public_key,
@@ -46,6 +47,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($_POST['gemini_api_key'])) {
         $campos[] = 'gemini_api_key';
         $vals[] = trim($_POST['gemini_api_key']);
+    }
+
+    if (!empty($_POST['openrouter_api_key'])) {
+        $campos[] = 'openrouter_api_key';
+        $vals[] = trim($_POST['openrouter_api_key']);
     }
 
     // Mercado Pago — campos sensíveis: só atualiza se enviado
@@ -110,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $db->prepare("UPDATE configuracao_empresa SET $sets WHERE id = ?");
     $stmt->execute($vals);
     $sucesso = 'Configurações salvas com sucesso!';
-    $config = $db->query("SELECT id, nome, cnpj, telefone, email, endereco, groq_api_key, gemini_api_key,
+    $config = $db->query("SELECT id, nome, cnpj, telefone, email, endereco, groq_api_key, gemini_api_key, openrouter_api_key,
         mercadopago_access_token, mercadopago_public_key, mercadopago_webhook_secret,
         mercadopago_client_id, mercadopago_client_secret,
         mercadopago_test_access_token, mercadopago_test_public_key,
@@ -183,6 +189,17 @@ include __DIR__ . '/includes/layout/head.php';
                     </label>
                     <input class="input" type="password" name="gemini_api_key" placeholder="<?= !empty($config['gemini_api_key']) ? '••••••••••••••••••••••••••••••••' : 'AIza...' ?>">
                     <p style="font-size:12px; color:#6b7280; margin-top:6px;">Essencial para Visão (OCR), leitura de imagens e PDFs.</p>
+                </div>
+
+                <div style="margin-bottom:24px;">
+                    <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>OpenRouter API Key</span>
+                        <?php if (!empty($config['openrouter_api_key'])): ?>
+                            <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Chave salva</span>
+                        <?php endif; ?>
+                    </label>
+                    <input class="input" type="password" name="openrouter_api_key" placeholder="<?= !empty($config['openrouter_api_key']) ? '••••••••••••••••••••••••••••••••' : 'sk-or-v1-...' ?>">
+                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">Usada para gerar roteiros com Qwen via OpenRouter e fallback gratuito.</p>
                 </div>
 
                 <!-- ── Seção Pagamento (Mercado Pago) ─────────────────────────── -->
@@ -362,6 +379,13 @@ include __DIR__ . '/includes/layout/head.php';
                     <?php $temGemini = !empty($config['gemini_api_key']) || !empty(GEMINI_API_KEY); ?>
                     <div style="color:<?= $temGemini ? '#10b981' : '#ef4444' ?>;">
                         <?= $temGemini ? '✓ Configurada' : '✗ Não configurada' ?>
+                    </div>
+                </div>
+                <div>
+                    <div style="color:#6b7280; margin-bottom:2px;">OpenRouter API Key</div>
+                    <?php $temOpenRouter = !empty($config['openrouter_api_key']) || (defined('OPENROUTER_API_KEY') && !empty(OPENROUTER_API_KEY)); ?>
+                    <div style="color:<?= $temOpenRouter ? '#10b981' : '#ef4444' ?>;">
+                        <?= $temOpenRouter ? '✓ Configurada' : '✗ Não configurada' ?>
                     </div>
                 </div>
                 <div>
