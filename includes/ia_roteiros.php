@@ -84,6 +84,52 @@ class IARoteiros
         return self::getGeminiKey() !== null;
     }
 
+    private static function extrairJson(string $texto): ?array
+    {
+        $json = trim(preg_replace('/```(?:json)?\s*|\s*```/', '', $texto));
+        $dados = json_decode($json, true);
+        if (is_array($dados)) return $dados;
+
+        $inicio = strpos($json, '{');
+        $fim = strrpos($json, '}');
+        if ($inicio === false || $fim === false || $fim <= $inicio) return null;
+
+        $trecho = substr($json, $inicio, $fim - $inicio + 1);
+        $dados = json_decode($trecho, true);
+        return is_array($dados) ? $dados : null;
+    }
+
+    private static function limparCampoRoteiro($valor, int $limite = 700): string
+    {
+        $texto = trim((string) $valor);
+        $texto = preg_replace('/^\s*#{1,6}\s*/m', '', $texto);
+        $texto = preg_replace('/\*\*(.*?)\*\*/s', '$1', $texto);
+        $texto = preg_replace('/^\s*[-*]\s+/m', '', $texto);
+        $texto = preg_replace('/\n{3,}/', "\n\n", $texto);
+
+        if (mb_strlen($texto) > $limite) {
+            $texto = rtrim(mb_substr($texto, 0, $limite), " \t\n\r\0\x0B.,;:") . '.';
+        }
+
+        return $texto;
+    }
+
+    private static function normalizarRoteiroGerado(array $dados): array
+    {
+        return [
+            'titulo' => self::limparCampoRoteiro($dados['titulo'] ?? 'Roteiro Gerado', 120),
+            'gancho' => self::limparCampoRoteiro($dados['gancho'] ?? '', 450),
+            'quebra_crenca' => self::limparCampoRoteiro($dados['quebra_crenca'] ?? '', 700),
+            'desenvolvimento' => self::limparCampoRoteiro($dados['desenvolvimento'] ?? '', 700),
+            'conexao' => self::limparCampoRoteiro($dados['conexao'] ?? '', 700),
+            'fechamento' => self::limparCampoRoteiro($dados['fechamento'] ?? '', 700),
+            'cta' => self::limparCampoRoteiro($dados['cta'] ?? '', 450),
+            'tags' => self::limparCampoRoteiro($dados['tags'] ?? 'marketing, autoridade, reels', 180),
+            'intencao' => self::limparCampoRoteiro($dados['intencao'] ?? 'CONSTRUIR AUTORIDADE', 80),
+            'tema' => self::limparCampoRoteiro($dados['tema'] ?? '', 120),
+        ];
+    }
+
     // ─── Groq ─────────────────────────────────────────────────────────────────
 
     public static function chamarGroq(array $mensagens, ?string $model = null, string $userId = '', string $operacao = 'Generativa')
@@ -147,7 +193,8 @@ class IARoteiros
             'model'       => $model,
             'messages'    => $mensagens,
             'temperature' => 0.8,
-            'max_tokens'  => 2200
+            'max_tokens'  => 2200,
+            'response_format' => ['type' => 'json_object']
         ], JSON_UNESCAPED_UNICODE);
 
         $referer = defined('APP_URL') ? APP_URL : 'https://wedistinto.com';
@@ -222,6 +269,7 @@ class IARoteiros
             'messages'       => $mensagens,
             'temperature'    => 0.8,
             'max_tokens'     => 2200,
+            'response_format' => ['type' => 'json_object'],
             'stream'         => true,
             'stream_options' => ['include_usage' => true]
         ], JSON_UNESCAPED_UNICODE);
@@ -634,7 +682,7 @@ REGRAS CRÍTICAS:
 
         $respostaRaw = self::chamarOpenRouterRoteiro([
             ['role' => 'system', 'content' => "Você é um Estrategista de Social Media e Roteirista de Elite.
-Crie roteiros de alto impacto baseados no contexto abaixo.
+Crie UM roteiro curto para Reels/TikTok, separado exatamente nos campos que a interface exibe.
 
 $vozEstilo
 ### BASE DE CONHECIMENTO:
@@ -643,30 +691,53 @@ $vozEstilo
 ### EXEMPLOS DE SUCESSO:
 " . ($exemplos ?: "Nenhum exemplo disponível. Crie algo inovador.") . "
 
+### CONTRATO DE SAÍDA OBRIGATÓRIO:
+Responda somente com um objeto JSON válido, sem texto antes ou depois.
+Use exatamente estas chaves: titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, tags, intencao, tema.
+
+### FORMATO ESPERADO:
+{
+  \"titulo\": \"título específico e curto\",
+  \"gancho\": \"1 frase forte para os 3 primeiros segundos\",
+  \"quebra_crenca\": \"1 parágrafo curto quebrando uma crença\",
+  \"desenvolvimento\": \"1 parágrafo curto desenvolvendo a ideia central\",
+  \"conexao\": \"1 parágrafo curto com analogia ou conexão emocional\",
+  \"fechamento\": \"1 parágrafo curto de fechamento impactante\",
+  \"cta\": \"1 frase objetiva de chamada para ação\",
+  \"tags\": \"3 a 5 tags separadas por vírgula\",
+  \"intencao\": \"intenção estratégica em caixa alta\",
+  \"tema\": \"tema específico do roteiro\"
+}
+
 ### REGRAS:
-1. Responda APENAS em JSON válido.
-2. Campos obrigatórios: titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta.
-3. NUNCA use emojis. Português do Brasil. " . ($vozEstilo ? "Siga rigorosamente a identidade do autor acima." : "Tom direto e focado em autoridade.")],
+1. Não use Markdown.
+2. Não use títulos como ###, numeração, timestamps, cenas, narração, bullets ou listas.
+3. Não coloque o roteiro inteiro em um único campo.
+4. Cada campo textual deve ter no máximo 450 caracteres.
+5. NUNCA use emojis. Português do Brasil.
+6. " . ($vozEstilo ? "Siga rigorosamente a identidade do autor acima." : "Tom direto e focado em autoridade.")],
             ['role' => 'user', 'content' => $briefing
                 ? "Gere um roteiro completo. Briefing: $briefing"
                 : "Gere um roteiro inédito seguindo o padrão dos exemplos de sucesso."]
         ], $userId);
 
-        $json  = preg_replace('/```json\n?|\n?```/', '', $respostaRaw);
-        $dados = json_decode(trim($json), true);
+        $dados = self::extrairJson($respostaRaw);
 
         if (!$dados || !isset($dados['titulo'])) {
             return [
                 'titulo'        => 'Roteiro Gerado',
-                'gancho'        => 'Gancho não gerado corretamente.',
-                'quebra_crenca' => $respostaRaw,
+                'gancho'        => 'Não foi possível gerar o gancho corretamente.',
+                'quebra_crenca' => 'A resposta da IA veio fora do formato esperado. Gere novamente o roteiro.',
                 'desenvolvimento' => '',
                 'conexao'       => '',
                 'fechamento'    => '',
-                'cta'           => ''
+                'cta'           => '',
+                'tags'          => 'marketing, autoridade, reels',
+                'intencao'      => 'CONSTRUIR AUTORIDADE',
+                'tema'          => ''
             ];
         }
 
-        return $dados;
+        return self::normalizarRoteiroGerado($dados);
     }
 }
