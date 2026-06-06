@@ -22,8 +22,12 @@ class IARoteiros
             $db = Database::get();
             
             // Buscar custo por 1k tokens
-            $colunaCusto = ($provider === 'groq') ? 'groq_custo_por_1k_tokens' : 'gemini_custo_por_1k_tokens';
-            $custo1k = (float) $db->query("SELECT $colunaCusto FROM configuracao_empresa WHERE id = 'principal' LIMIT 1")->fetchColumn();
+            if ($provider === 'openrouter') {
+                $custo1k = 0.0;
+            } else {
+                $colunaCusto = ($provider === 'groq') ? 'groq_custo_por_1k_tokens' : 'gemini_custo_por_1k_tokens';
+                $custo1k = (float) $db->query("SELECT $colunaCusto FROM configuracao_empresa WHERE id = 'principal' LIMIT 1")->fetchColumn();
+            }
             
             $totalTokens = $tokensIn + $tokensOut;
             $custoUsd = ($totalTokens / 1000) * $custo1k;
@@ -51,6 +55,14 @@ class IARoteiros
         $key = self::getConfig('groq_api_key');
         if (!$key) $key = defined('GROQ_API_KEY') ? GROQ_API_KEY : '';
         if (!$key || strpos($key, 'SUA_') === 0) return null;
+        return $key;
+    }
+
+    private static function getOpenRouterKey(): ?string
+    {
+        $key = self::getConfig('openrouter_api_key');
+        if (!$key) $key = defined('OPENROUTER_API_KEY') ? OPENROUTER_API_KEY : '';
+        if (!$key || strpos($key, 'SUA_') === 0 || strpos($key, '<') === 0) return null;
         return $key;
     }
 
@@ -119,6 +131,175 @@ class IARoteiros
 
         return $dados['choices'][0]['message']['content']
             ?? "Erro: resposta Groq sem conteúdo. Body: " . json_encode($dados);
+    }
+
+    // ─── OpenRouter ───────────────────────────────────────────────────────────
+
+    /**
+     * Chamada ao OpenRouter no formato compatível com Chat Completions.
+     */
+    public static function chamarOpenRouter(array $mensagens, string $model, string $userId = '', string $operacao = 'Gerar Roteiro'): string
+    {
+        $apiKey = self::getOpenRouterKey();
+        if (!$apiKey) return "Erro: OPENROUTER_API_KEY nao configurada.";
+
+        $payload = json_encode([
+            'model'       => $model,
+            'messages'    => $mensagens,
+            'temperature' => 0.8,
+            'max_tokens'  => 2200
+        ], JSON_UNESCAPED_UNICODE);
+
+        $referer = defined('APP_URL') ? APP_URL : 'https://wedistinto.com';
+
+        $ch = curl_init('https://openrouter.ai/api/v1/chat/completions');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => $payload,
+            CURLOPT_HTTPHEADER     => [
+                'Authorization: Bearer ' . $apiKey,
+                'Content-Type: application/json',
+                'HTTP-Referer: ' . $referer,
+                'X-Title: Meus Roteiros'
+            ],
+            CURLOPT_TIMEOUT => 90,
+        ]);
+
+        $resposta = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($resposta === false) {
+            return "Erro OpenRouter ($model): " . ($curlError ?: 'falha na chamada.');
+        }
+
+        if ($httpCode < 200 || $httpCode >= 300) {
+            return "Erro OpenRouter ($model HTTP $httpCode): " . substr((string) $resposta, 0, 500);
+        }
+
+        $dados = json_decode($resposta, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return "Erro: resposta OpenRouter ($model) nao e JSON valido. Body: " . substr($resposta, 0, 200);
+        }
+
+        if (isset($dados['usage'])) {
+            $tokensIn  = (int) ($dados['usage']['prompt_tokens'] ?? 0);
+            $tokensOut = (int) ($dados['usage']['completion_tokens'] ?? 0);
+            self::logarChamadaIA($userId, 'openrouter', $operacao . " ($model)", $tokensIn, $tokensOut);
+        }
+
+        return $dados['choices'][0]['message']['content']
+            ?? "Erro: resposta OpenRouter ($model) sem conteudo. Body: " . json_encode($dados);
+    }
+
+    public static function chamarOpenRouterRoteiro(array $mensagens, string $userId = ''): string
+    {
+        $principal = 'qwen/qwen3-next-80b-a3b-instruct:free';
+        $fallback  = 'openrouter/free';
+
+        $resposta = self::chamarOpenRouter($mensagens, $principal, $userId, 'Gerar Roteiro');
+        if (strpos($resposta, 'Erro') !== 0) {
+            return $resposta;
+        }
+
+        $respostaFallback = self::chamarOpenRouterStream($mensagens, $fallback, $userId, 'Gerar Roteiro Fallback');
+        if (strpos($respostaFallback, 'Erro') !== 0) {
+            return $respostaFallback;
+        }
+
+        return $resposta . "\n\nFallback: " . $respostaFallback;
+    }
+
+    public static function chamarOpenRouterStream(array $mensagens, string $model, string $userId = '', string $operacao = 'Gerar Roteiro Fallback'): string
+    {
+        $apiKey = self::getOpenRouterKey();
+        if (!$apiKey) return "Erro: OPENROUTER_API_KEY nao configurada.";
+
+        $payload = json_encode([
+            'model'          => $model,
+            'messages'       => $mensagens,
+            'temperature'    => 0.8,
+            'max_tokens'     => 2200,
+            'stream'         => true,
+            'stream_options' => ['include_usage' => true]
+        ], JSON_UNESCAPED_UNICODE);
+
+        $referer = defined('APP_URL') ? APP_URL : 'https://wedistinto.com';
+        $conteudo = '';
+        $buffer = '';
+        $tokensIn = 0;
+        $tokensOut = 0;
+
+        $ch = curl_init('https://openrouter.ai/api/v1/chat/completions');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => false,
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => $payload,
+            CURLOPT_HTTPHEADER     => [
+                'Authorization: Bearer ' . $apiKey,
+                'Content-Type: application/json',
+                'HTTP-Referer: ' . $referer,
+                'X-Title: Meus Roteiros'
+            ],
+            CURLOPT_TIMEOUT => 120,
+            CURLOPT_WRITEFUNCTION => function ($ch, string $chunk) use (&$buffer, &$conteudo, &$tokensIn, &$tokensOut) {
+                $buffer .= $chunk;
+
+                while (($pos = strpos($buffer, "\n")) !== false) {
+                    $line = trim(substr($buffer, 0, $pos));
+                    $buffer = substr($buffer, $pos + 1);
+
+                    if ($line === '' || strpos($line, 'data:') !== 0) {
+                        continue;
+                    }
+
+                    $data = trim(substr($line, 5));
+                    if ($data === '[DONE]') {
+                        continue;
+                    }
+
+                    $json = json_decode($data, true);
+                    if (!is_array($json)) {
+                        continue;
+                    }
+
+                    $delta = $json['choices'][0]['delta']['content'] ?? '';
+                    if ($delta !== '') {
+                        $conteudo .= $delta;
+                    }
+
+                    if (isset($json['usage'])) {
+                        $tokensIn = (int) ($json['usage']['prompt_tokens'] ?? 0);
+                        $tokensOut = (int) ($json['usage']['completion_tokens'] ?? 0);
+                    }
+                }
+
+                return strlen($chunk);
+            }
+        ]);
+
+        $ok = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($ok === false) {
+            return "Erro OpenRouter ($model): " . ($curlError ?: 'falha na chamada em stream.');
+        }
+
+        if ($httpCode < 200 || $httpCode >= 300) {
+            return "Erro OpenRouter ($model HTTP $httpCode): falha na chamada em stream.";
+        }
+
+        if ($tokensIn || $tokensOut) {
+            self::logarChamadaIA($userId, 'openrouter', $operacao . " ($model)", $tokensIn, $tokensOut);
+        }
+
+        return trim($conteudo) !== ''
+            ? $conteudo
+            : "Erro: resposta OpenRouter ($model) em stream sem conteudo.";
     }
 
     // ─── Gemini ───────────────────────────────────────────────────────────────
@@ -451,7 +632,7 @@ REGRAS CRÍTICAS:
             } catch (Exception $e) {}
         }
 
-        $respostaRaw = self::chamarGroq([
+        $respostaRaw = self::chamarOpenRouterRoteiro([
             ['role' => 'system', 'content' => "Você é um Estrategista de Social Media e Roteirista de Elite.
 Crie roteiros de alto impacto baseados no contexto abaixo.
 
@@ -469,7 +650,7 @@ $vozEstilo
             ['role' => 'user', 'content' => $briefing
                 ? "Gere um roteiro completo. Briefing: $briefing"
                 : "Gere um roteiro inédito seguindo o padrão dos exemplos de sucesso."]
-        ], null, $userId, 'Gerar Roteiro');
+        ], $userId);
 
         $json  = preg_replace('/```json\n?|\n?```/', '', $respostaRaw);
         $dados = json_decode(trim($json), true);
