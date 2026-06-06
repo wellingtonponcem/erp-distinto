@@ -193,8 +193,7 @@ class IARoteiros
             'model'       => $model,
             'messages'    => $mensagens,
             'temperature' => 0.8,
-            'max_tokens'  => 2200,
-            'response_format' => ['type' => 'json_object']
+            'max_tokens'  => 2200
         ], JSON_UNESCAPED_UNICODE);
 
         $referer = defined('APP_URL') ? APP_URL : 'https://wedistinto.com';
@@ -269,7 +268,6 @@ class IARoteiros
             'messages'       => $mensagens,
             'temperature'    => 0.8,
             'max_tokens'     => 2200,
-            'response_format' => ['type' => 'json_object'],
             'stream'         => true,
             'stream_options' => ['include_usage' => true]
         ], JSON_UNESCAPED_UNICODE);
@@ -717,25 +715,14 @@ Use exatamente estas chaves: titulo, gancho, quebra_crenca, desenvolvimento, con
 5. NUNCA use emojis. Português do Brasil.
 6. " . ($vozEstilo ? "Siga rigorosamente a identidade do autor acima." : "Tom direto e focado em autoridade.")],
             ['role' => 'user', 'content' => $briefing
-                ? "Gere um roteiro completo. Briefing: $briefing"
-                : "Gere um roteiro inédito seguindo o padrão dos exemplos de sucesso."]
+                ? "Gere o roteiro para este briefing: $briefing\n\nIMPORTANTE: responda somente com JSON válido começando com { e terminando com }. Não escreva explicações."
+                : "Gere um roteiro inédito seguindo o padrão dos exemplos de sucesso.\n\nIMPORTANTE: responda somente com JSON válido começando com { e terminando com }. Não escreva explicações."]
         ], $userId);
 
         $dados = self::extrairJson($respostaRaw);
 
         if (!$dados || !isset($dados['titulo'])) {
-            return [
-                'titulo'        => 'Roteiro Gerado',
-                'gancho'        => 'Não foi possível gerar o gancho corretamente.',
-                'quebra_crenca' => 'A resposta da IA veio fora do formato esperado. Gere novamente o roteiro.',
-                'desenvolvimento' => '',
-                'conexao'       => '',
-                'fechamento'    => '',
-                'cta'           => '',
-                'tags'          => 'marketing, autoridade, reels',
-                'intencao'      => 'CONSTRUIR AUTORIDADE',
-                'tema'          => ''
-            ];
+            throw new RuntimeException('A IA respondeu fora do formato esperado. Gere novamente o roteiro.');
         }
 
         return self::normalizarRoteiroGerado($dados);
