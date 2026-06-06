@@ -117,17 +117,24 @@ class IARoteiros
     private static function normalizarRoteiroGerado(array $dados): array
     {
         return [
-            'titulo' => self::limparCampoRoteiro($dados['titulo'] ?? 'Roteiro Gerado', 120),
-            'gancho' => self::limparCampoRoteiro($dados['gancho'] ?? '', 450),
-            'quebra_crenca' => self::limparCampoRoteiro($dados['quebra_crenca'] ?? '', 700),
-            'desenvolvimento' => self::limparCampoRoteiro($dados['desenvolvimento'] ?? '', 700),
-            'conexao' => self::limparCampoRoteiro($dados['conexao'] ?? '', 700),
-            'fechamento' => self::limparCampoRoteiro($dados['fechamento'] ?? '', 700),
-            'cta' => self::limparCampoRoteiro($dados['cta'] ?? '', 450),
+            'titulo' => self::limparCampoRoteiro($dados['titulo'] ?? 'Roteiro Gerado', 140),
+            'gancho' => self::limparCampoRoteiro($dados['gancho'] ?? '', 550),
+            'quebra_crenca' => self::limparCampoRoteiro($dados['quebra_crenca'] ?? '', 1200),
+            'desenvolvimento' => self::limparCampoRoteiro($dados['desenvolvimento'] ?? '', 1400),
+            'conexao' => self::limparCampoRoteiro($dados['conexao'] ?? '', 1200),
+            'fechamento' => self::limparCampoRoteiro($dados['fechamento'] ?? '', 900),
+            'cta' => self::limparCampoRoteiro($dados['cta'] ?? '', 650),
             'tags' => self::limparCampoRoteiro($dados['tags'] ?? 'marketing, autoridade, reels', 180),
             'intencao' => self::limparCampoRoteiro($dados['intencao'] ?? 'CONSTRUIR AUTORIDADE', 80),
             'tema' => self::limparCampoRoteiro($dados['tema'] ?? '', 120),
         ];
+    }
+
+    private static function scoreSql(string $coluna = 'score'): string
+    {
+        return (defined('DB_PORT') && (int)DB_PORT === 3306)
+            ? "COALESCE(CAST(NULLIF({$coluna}, '') AS DECIMAL(10,2)), 0)"
+            : "COALESCE(NULLIF({$coluna}::text, '')::numeric, 0)";
     }
 
     // ─── Groq ─────────────────────────────────────────────────────────────────
@@ -192,8 +199,8 @@ class IARoteiros
         $payload = json_encode([
             'model'       => $model,
             'messages'    => $mensagens,
-            'temperature' => 0.8,
-            'max_tokens'  => 2200
+            'temperature' => 0.75,
+            'max_tokens'  => 3600
         ], JSON_UNESCAPED_UNICODE);
 
         $referer = defined('APP_URL') ? APP_URL : 'https://wedistinto.com';
@@ -266,8 +273,8 @@ class IARoteiros
         $payload = json_encode([
             'model'          => $model,
             'messages'       => $mensagens,
-            'temperature'    => 0.8,
-            'max_tokens'     => 2200,
+            'temperature'    => 0.75,
+            'max_tokens'     => 3600,
             'stream'         => true,
             'stream_options' => ['include_usage' => true]
         ], JSON_UNESCAPED_UNICODE);
@@ -570,25 +577,55 @@ Conteúdo:
     {
         try {
             $db = Database::get();
+            $scoreSql = self::scoreSql();
             if ($userId) {
                 if ($clienteId !== '') {
-                    $stmt = $db->prepare("SELECT titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta FROM roteiros WHERE score > 0 AND user_id = ? AND cliente_id = ? ORDER BY score DESC LIMIT 3");
+                    $stmt = $db->prepare("
+                        SELECT titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, status, score, created_at
+                        FROM roteiros
+                        WHERE user_id = ?
+                          AND cliente_id = ?
+                          AND (
+                            COALESCE(titulo, '') <> ''
+                            OR COALESCE(gancho, '') <> ''
+                            OR COALESCE(quebra_crenca, '') <> ''
+                            OR COALESCE(desenvolvimento, '') <> ''
+                          )
+                        ORDER BY
+                          CASE
+                            WHEN LOWER(COALESCE(status, '')) IN ('aprovado', 'postado', 'gravado') THEN 0
+                            WHEN {$scoreSql} > 0 THEN 1
+                            ELSE 2
+                          END,
+                          {$scoreSql} DESC,
+                          created_at DESC
+                        LIMIT 9
+                    ");
                     $stmt->execute([$userId, $clienteId]);
                 } else {
-                    $stmt = $db->prepare("SELECT titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta FROM roteiros WHERE score > 0 AND user_id = ? ORDER BY score DESC LIMIT 3");
+                    $stmt = $db->prepare("SELECT titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, status, score FROM roteiros WHERE {$scoreSql} > 0 AND user_id = ? ORDER BY {$scoreSql} DESC LIMIT 5");
                     $stmt->execute([$userId]);
                 }
             } else {
-                $stmt = $db->query("SELECT titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta FROM roteiros WHERE score > 0 ORDER BY score DESC LIMIT 3");
+                $stmt = $db->query("SELECT titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, status, score FROM roteiros WHERE {$scoreSql} > 0 ORDER BY {$scoreSql} DESC LIMIT 5");
             }
             $roteiros = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $texto = "";
             foreach ($roteiros as $r) {
-                $texto .= "EXEMPLO DE ALTO SCORE:\n";
-                $texto .= "Título: {$r['titulo']}\nGancho: {$r['gancho']}\nConteúdo: {$r['quebra_crenca']} {$r['desenvolvimento']} {$r['conexao']}\nCTA: {$r['cta']}\n\n";
+                $status = $r['status'] ?? 'referencia';
+                $score = (string)($r['score'] ?? '0');
+                $texto .= "ROTEIRO ANTERIOR DO CLIENTE PARA IMITAR PADRAO (status {$status}, score {$score}):\n";
+                $texto .= "Titulo: {$r['titulo']}\n";
+                $texto .= "Gancho: {$r['gancho']}\n";
+                $texto .= "Quebra de crenca: {$r['quebra_crenca']}\n";
+                $texto .= "Desenvolvimento: {$r['desenvolvimento']}\n";
+                $texto .= "Conexao emocional: {$r['conexao']}\n";
+                $texto .= "Fechamento: {$r['fechamento']}\n";
+                $texto .= "CTA: {$r['cta']}\n\n";
             }
-            return $texto;
+            return mb_substr($texto, 0, 18000);
         } catch (Exception $e) {
+            error_log('IA Roteiros: falha ao buscar roteiros anteriores do cliente: ' . $e->getMessage());
             return "";
         }
     }
@@ -633,6 +670,7 @@ Conteúdo:
             $texto .= "Não use informações, nichos, exemplos ou bases de outros clientes.\n";
             return $texto;
         } catch (Exception $e) {
+            error_log('IA Roteiros: falha ao buscar contexto do cliente: ' . $e->getMessage());
             return '';
         }
     }
@@ -643,6 +681,7 @@ Conteúdo:
 
         try {
             $db = Database::get();
+            $scoreSql = self::scoreSql();
             $partes = [];
 
             $stmtRoteiros = $db->prepare("
@@ -651,20 +690,29 @@ Conteúdo:
                 WHERE user_id = ?
                   AND cliente_id = ?
                   AND (
-                    status IN ('aprovado', 'postado', 'gravado')
-                    OR COALESCE(score, 0) > 0
+                    LOWER(COALESCE(status, '')) IN ('aprovado', 'postado', 'gravado')
+                    OR {$scoreSql} > 0
+                    OR COALESCE(gancho, '') <> ''
+                    OR COALESCE(quebra_crenca, '') <> ''
+                    OR COALESCE(desenvolvimento, '') <> ''
                   )
                 ORDER BY
-                  CASE WHEN status = 'aprovado' THEN 0 ELSE 1 END,
-                  COALESCE(score, 0) DESC,
-                  updated_at DESC
-                LIMIT 5
+                  CASE WHEN LOWER(COALESCE(status, '')) = 'aprovado' THEN 0 ELSE 1 END,
+                  {$scoreSql} DESC,
+                  created_at DESC
+                LIMIT 9
             ");
             $stmtRoteiros->execute([$userId, $clienteId]);
             $roteiros = $stmtRoteiros->fetchAll(PDO::FETCH_ASSOC);
             foreach ($roteiros as $r) {
+                $statusNormalizado = strtolower((string)($r['status'] ?? ''));
+                $scoreNumerico = (float)($r['score'] ?? 0);
+                $rotulo = (in_array($statusNormalizado, ['aprovado', 'postado', 'gravado'], true) || $scoreNumerico > 0)
+                    ? 'ROTEIRO VALIDADO'
+                    : 'ROTEIRO ANTERIOR DO CLIENTE';
+
                 $partes[] =
-                    "ROTEIRO VALIDADO ({$r['status']}, score {$r['score']}):\n" .
+                    "{$rotulo} ({$r['status']}, score {$r['score']}):\n" .
                     "Título: {$r['titulo']}\n" .
                     "Gancho: {$r['gancho']}\n" .
                     "Corpo: " . trim(($r['quebra_crenca'] ?? '') . " " . ($r['desenvolvimento'] ?? '') . " " . ($r['conexao'] ?? '')) . "\n" .
@@ -716,6 +764,7 @@ Conteúdo:
             return "### APRENDIZADO EVOLUTIVO DO CLIENTE\nUse estes sinais para repetir padrões aprovados, evitar padrões recusados e incorporar ajustes manuais recorrentes.\n\n" .
                 mb_substr(implode("\n\n---\n\n", $partes), 0, 12000);
         } catch (Exception $e) {
+            error_log('IA Roteiros: falha ao buscar aprendizado do cliente: ' . $e->getMessage());
             return '';
         }
     }
@@ -847,9 +896,11 @@ REGRAS CRÍTICAS:
             } catch (Exception $e) {}
         }
 
-        $respostaRaw = self::chamarOpenRouterRoteiro([
+        $mensagensRoteiro = [
             ['role' => 'system', 'content' => "Você é um Estrategista de Social Media e Roteirista de Elite.
-Crie UM roteiro curto para Reels/TikTok, separado exatamente nos campos que a interface exibe.
+Crie UM roteiro completo para Reels/TikTok, separado exatamente nos campos que a interface exibe.
+O roteiro deve ter profundidade, nexo estrategico e densidade parecida com os melhores roteiros anteriores do cliente.
+Nao gere metaforas genericas, historias infantis ou exemplos aleatorios se isso nao estiver na base do cliente.
 
 $vozEstilo
 $contextoCliente
@@ -857,8 +908,8 @@ $aprendizadoCliente
 ### BASE DE CONHECIMENTO:
 " . ($conhecimento ?: ($clienteId !== '' ? "Nenhuma base específica cadastrada para este cliente. Use o perfil do cliente, o briefing e conhecimento geral de marketing. Não use informações de outros clientes." : "Nenhuma base cadastrada. Use seu conhecimento geral de marketing de alto nível.")) . "
 
-### EXEMPLOS DE SUCESSO:
-" . ($exemplos ?: "Nenhum exemplo disponível. Crie algo inovador.") . "
+### ROTEIROS ANTERIORES DO CLIENTE / EXEMPLOS DE SUCESSO:
+" . ($exemplos ?: "Nenhum exemplo disponivel para este cliente. Use a base individual, o perfil do cliente e o briefing com profundidade.") . "
 
 ### CONTRATO DE SAÍDA OBRIGATÓRIO:
 Responda somente com um objeto JSON válido, sem texto antes ou depois.
@@ -867,12 +918,12 @@ Use exatamente estas chaves: titulo, gancho, quebra_crenca, desenvolvimento, con
 ### FORMATO ESPERADO:
 {
   \"titulo\": \"título específico e curto\",
-  \"gancho\": \"1 frase forte para os 3 primeiros segundos\",
-  \"quebra_crenca\": \"1 parágrafo curto quebrando uma crença\",
-  \"desenvolvimento\": \"1 parágrafo curto desenvolvendo a ideia central\",
-  \"conexao\": \"1 parágrafo curto com analogia ou conexão emocional\",
-  \"fechamento\": \"1 parágrafo curto de fechamento impactante\",
-  \"cta\": \"1 frase objetiva de chamada para ação\",
+  \"gancho\": \"1 a 2 frases fortes para os 3 primeiros segundos\",
+  \"quebra_crenca\": \"1 paragrafo denso quebrando uma crenca real do publico\",
+  \"desenvolvimento\": \"1 a 2 paragrafos desenvolvendo a ideia central com raciocinio claro\",
+  \"conexao\": \"1 paragrafo com conexao emocional ou analogia pertinente ao universo do cliente\",
+  \"fechamento\": \"1 paragrafo de fechamento impactante conectando a ideia a promessa do conteudo\",
+  \"cta\": \"1 a 2 frases objetivas de chamada para acao\",
   \"tags\": \"3 a 5 tags separadas por vírgula\",
   \"intencao\": \"intenção estratégica em caixa alta\",
   \"tema\": \"tema específico do roteiro\"
@@ -882,15 +933,18 @@ Use exatamente estas chaves: titulo, gancho, quebra_crenca, desenvolvimento, con
 1. Não use Markdown.
 2. Não use títulos como ###, numeração, timestamps, cenas, narração, bullets ou listas.
 3. Não coloque o roteiro inteiro em um único campo.
-4. Cada campo textual deve ter no máximo 450 caracteres.
+4. Nao seja raso: quebra_crenca, desenvolvimento, conexao e fechamento precisam ter substancia. O roteiro completo deve parecer pronto para gravacao, nao um resumo.
 5. NUNCA use emojis. Português do Brasil.
 6. " . ($clienteId !== '' ? "Use o CONHECIMENTO GLOBAL apenas como metodologia/instrução de criação. Dados factuais sobre nicho, produto, mercado, oferta e público devem vir somente do CLIENTE SELECIONADO, da BASE INDIVIDUAL DO CLIENTE ou do briefing." : "Use a base geral disponível.") . "
 7. " . ($clienteId !== '' ? "É proibido assumir que informações de outro cliente, nicho ou mercado presentes no conhecimento global pertencem ao cliente selecionado." : "Mantenha coerência com a base geral.") . "
-8. " . ($vozEstilo ? "Siga rigorosamente a identidade do autor acima." : "Tom direto e focado em autoridade.")],
+8. Reaproveite padroes de estrutura, profundidade, tom e tipo de raciocinio dos roteiros anteriores do cliente, sem copiar literalmente.
+9. " . ($vozEstilo ? "Siga rigorosamente a identidade do autor acima." : "Tom direto e focado em autoridade.")],
             ['role' => 'user', 'content' => $briefing
                 ? "Gere o roteiro para este briefing: $briefing\n\nIMPORTANTE: responda somente com JSON válido começando com { e terminando com }. Não escreva explicações."
-                : "Gere um roteiro inédito seguindo o padrão dos exemplos de sucesso.\n\nIMPORTANTE: responda somente com JSON válido começando com { e terminando com }. Não escreva explicações."]
-        ], $userId);
+                : "Gere um roteiro inedito seguindo o padrao, profundidade e raciocinio dos roteiros anteriores do cliente.\n\nIMPORTANTE: responda somente com JSON valido comecando com { e terminando com }. Nao escreva explicacoes."]
+        ];
+
+        $respostaRaw = self::chamarOpenRouterRoteiro($mensagensRoteiro, $userId);
 
         $dados = self::extrairJson($respostaRaw);
 
@@ -898,6 +952,41 @@ Use exatamente estas chaves: titulo, gancho, quebra_crenca, desenvolvimento, con
             throw new RuntimeException('A IA respondeu fora do formato esperado. Gere novamente o roteiro.');
         }
 
-        return self::normalizarRoteiroGerado($dados);
+        $roteiro = self::normalizarRoteiroGerado($dados);
+        $densidade = mb_strlen(trim(
+            ($roteiro['quebra_crenca'] ?? '') . ' ' .
+            ($roteiro['desenvolvimento'] ?? '') . ' ' .
+            ($roteiro['conexao'] ?? '') . ' ' .
+            ($roteiro['fechamento'] ?? '')
+        ));
+
+        if ($densidade < 700) {
+            $mensagensRoteiro[] = ['role' => 'assistant', 'content' => $respostaRaw];
+            $mensagensRoteiro[] = [
+                'role' => 'user',
+                'content' => 'A resposta anterior ficou curta, rasa ou generica. Gere novamente em JSON valido, com mais profundidade estrategica, usando os roteiros anteriores do cliente como padrao de densidade. Nao use exemplos aleatorios fora da base individual do cliente.'
+            ];
+
+            $respostaRaw = self::chamarOpenRouterRoteiro($mensagensRoteiro, $userId);
+            $dados = self::extrairJson($respostaRaw);
+
+            if (!$dados || !isset($dados['titulo'])) {
+                throw new RuntimeException('A IA respondeu fora do formato esperado. Gere novamente o roteiro.');
+            }
+
+            $roteiro = self::normalizarRoteiroGerado($dados);
+            $densidade = mb_strlen(trim(
+                ($roteiro['quebra_crenca'] ?? '') . ' ' .
+                ($roteiro['desenvolvimento'] ?? '') . ' ' .
+                ($roteiro['conexao'] ?? '') . ' ' .
+                ($roteiro['fechamento'] ?? '')
+            ));
+
+            if ($densidade < 700) {
+                throw new RuntimeException('A IA gerou um roteiro curto demais mesmo apos revisao. Ajuste o briefing ou gere novamente.');
+            }
+        }
+
+        return $roteiro;
     }
 }
