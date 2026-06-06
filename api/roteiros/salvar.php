@@ -22,12 +22,24 @@ $userId  = function_exists('roteirosUserId') ? roteirosUserId($usuario) : $usuar
 try {
     $db = Database::get();
     if (($usuario['sistema_origem'] ?? '') === 'distinto' && function_exists('normalizarRoteirosDistinto')) normalizarRoteirosDistinto($db);
+    $db->exec("CREATE TABLE IF NOT EXISTS roteiros_feedback_historico (
+        id VARCHAR(32) PRIMARY KEY,
+        roteiro_id VARCHAR(32) NOT NULL,
+        user_id VARCHAR(32) NOT NULL,
+        cliente_id VARCHAR(36) NULL,
+        tipo VARCHAR(40) NOT NULL,
+        campo VARCHAR(80) NULL,
+        conteudo TEXT NOT NULL,
+        metadata TEXT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )");
 
     // Auto-migração: Garantir que todas as colunas novas existam
     $cols = ["gancho", "quebra_crenca", "desenvolvimento", "conexao", "fechamento", "cta", "intencao", "tema", "numero", "score", "likes", "comentarios", "shares", "reposts", "salvamentos", "cliente_id"];
     foreach ($cols as $c) {
         try { $db->exec("ALTER TABLE roteiros ADD COLUMN IF NOT EXISTS $c TEXT"); } catch(Exception $e) {}
     }
+    try { $db->exec("ALTER TABLE roteiros ADD COLUMN IF NOT EXISTS public_token VARCHAR(64)"); } catch(Exception $e) {}
     // Ajustar tipos numéricos (Postgres IF NOT EXISTS no ALTER é chatinho, então fazemos um a um)
     try { $db->exec("ALTER TABLE roteiros ALTER COLUMN numero TYPE INTEGER USING (numero::integer)"); } catch(Exception $e) {}
     try { $db->exec("ALTER TABLE roteiros ALTER COLUMN score TYPE FLOAT USING (score::float)"); } catch(Exception $e) {}
@@ -42,6 +54,10 @@ try {
     $score = ($likes * 1) + ($comentarios * 5) + ($shares * 10) + ($reposts * 15) + ($salvamentos * 20);
 
     if (!empty($d['id'])) {
+        $stmtAntes = $db->prepare("SELECT titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, status, score, cliente_id FROM roteiros WHERE id = ? AND user_id = ? LIMIT 1");
+        $stmtAntes->execute([$d['id'], $userId]);
+        $roteiroAntes = $stmtAntes->fetch(PDO::FETCH_ASSOC) ?: [];
+
         // UPDATE — garantir que o roteiro pertence ao usuário
         $stmt = $db->prepare("UPDATE roteiros SET
             titulo = ?, gancho = ?, quebra_crenca = ?, desenvolvimento = ?,
@@ -60,6 +76,39 @@ try {
         ]);
 
         $script_id = $d['id'];
+
+        $clienteHistorico = $d['cliente_id'] ?? ($roteiroAntes['cliente_id'] ?? null);
+        $camposTexto = ['titulo', 'gancho', 'quebra_crenca', 'desenvolvimento', 'conexao', 'fechamento', 'cta'];
+        foreach ($camposTexto as $campo) {
+            $antes = trim((string)($roteiroAntes[$campo] ?? ''));
+            $depois = trim((string)($d[$campo] ?? ''));
+            if ($antes !== $depois && $depois !== '') {
+                $stmtHist = $db->prepare("INSERT INTO roteiros_feedback_historico (id, roteiro_id, user_id, cliente_id, tipo, campo, conteudo, metadata) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmtHist->execute([
+                    gerarId(), $script_id, $userId, $clienteHistorico, 'ajuste_manual', $campo,
+                    "O campo foi ajustado manualmente para: " . mb_substr($depois, 0, 1200),
+                    json_encode(['antes' => mb_substr($antes, 0, 1200)], JSON_UNESCAPED_UNICODE)
+                ]);
+            }
+        }
+
+        if (($roteiroAntes['status'] ?? '') !== ($d['status'] ?? 'pendente')) {
+            $stmtHist = $db->prepare("INSERT INTO roteiros_feedback_historico (id, roteiro_id, user_id, cliente_id, tipo, campo, conteudo, metadata) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmtHist->execute([
+                gerarId(), $script_id, $userId, $clienteHistorico, 'status_manual', 'status',
+                "Status alterado para " . ($d['status'] ?? 'pendente') . ".",
+                json_encode(['antes' => $roteiroAntes['status'] ?? ''], JSON_UNESCAPED_UNICODE)
+            ]);
+        }
+
+        if ((float)($roteiroAntes['score'] ?? 0) !== (float)$score && $score > 0) {
+            $stmtHist = $db->prepare("INSERT INTO roteiros_feedback_historico (id, roteiro_id, user_id, cliente_id, tipo, campo, conteudo, metadata) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmtHist->execute([
+                gerarId(), $script_id, $userId, $clienteHistorico, 'metricas', 'score',
+                "Roteiro recebeu score {$score}. Likes: {$likes}; comentários: {$comentarios}; envios: {$shares}; reposts: {$reposts}; salvamentos: {$salvamentos}.",
+                json_encode(['score_anterior' => $roteiroAntes['score'] ?? 0], JSON_UNESCAPED_UNICODE)
+            ]);
+        }
     } else {
         // INSERT — verificar limite diário do trial antes de criar
         $limite = verificarLimiteDiario($userId);
@@ -80,18 +129,27 @@ try {
         $prox = $st->fetch(PDO::FETCH_ASSOC)['prox'];
 
         $stmt = $db->prepare("INSERT INTO roteiros
-            (titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, tags, formato, status,
+            (titulo, public_token, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, tags, formato, status,
             likes, comentarios, shares, reposts, salvamentos, score, numero, intencao, tema, cliente_id, user_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id");
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id");
 
         $stmt->execute([
-            $d['titulo'], $d['gancho'] ?? '', $d['quebra_crenca'] ?? '',
+            $d['titulo'], bin2hex(random_bytes(24)), $d['gancho'] ?? '', $d['quebra_crenca'] ?? '',
             $d['desenvolvimento'] ?? '', $d['conexao'] ?? '', $d['fechamento'] ?? '',
             $d['cta'] ?? '', $d['tags'] ?? '', $d['formato'] ?? '', $d['status'] ?? 'pendente',
             $likes, $comentarios, $shares, $reposts, $salvamentos, $score,
             $prox, $d['intencao'] ?? '', $d['tema'] ?? '', $d['cliente_id'] ?? null, $userId
         ]);
         $script_id = $stmt->fetchColumn();
+
+        if ($score > 0 || ($d['status'] ?? 'pendente') !== 'pendente') {
+            $stmtHist = $db->prepare("INSERT INTO roteiros_feedback_historico (id, roteiro_id, user_id, cliente_id, tipo, campo, conteudo, metadata) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmtHist->execute([
+                gerarId(), $script_id, $userId, $d['cliente_id'] ?? null, 'criacao_manual', null,
+                "Roteiro criado manualmente com status " . ($d['status'] ?? 'pendente') . " e score {$score}.",
+                null
+            ]);
+        }
     }
 
     // --- LOOP DE APRENDIZAGEM (VOZ DO USUÁRIO) ---

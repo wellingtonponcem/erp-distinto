@@ -19,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $d       = lerCorpo();
 $usuario = usuarioAtual();
 $userId  = function_exists('roteirosUserId') ? roteirosUserId($usuario) : $usuario['id'];
+$clienteId = trim((string)($d['cliente_id'] ?? ''));
 
 // Verificar limite antes de consumir tokens de IA
 $limite = verificarLimiteDiario($userId);
@@ -37,7 +38,20 @@ if (!$limite['ok']) {
 try {
     $db = Database::get();
     if (($usuario['sistema_origem'] ?? '') === 'distinto' && function_exists('normalizarRoteirosDistinto')) normalizarRoteirosDistinto($db);
-    $roteiro = IARoteiros::gerarRoteiro($d['briefing'] ?? '', $userId, $d['cliente_id'] ?? '');
+
+    if (($usuario['sistema_origem'] ?? '') === 'distinto') {
+        if ($clienteId === '') {
+            responderJson(['success' => false, 'error' => 'Selecione um cliente antes de gerar o roteiro.'], 422);
+        }
+
+        $stmtCliente = $db->prepare("SELECT id FROM roteiros_clientes WHERE id = ? AND user_id = ? LIMIT 1");
+        $stmtCliente->execute([$clienteId, $userId]);
+        if (!$stmtCliente->fetchColumn()) {
+            responderJson(['success' => false, 'error' => 'Cliente inválido para geração de roteiro.'], 422);
+        }
+    }
+
+    $roteiro = IARoteiros::gerarRoteiro($d['briefing'] ?? '', $userId, $clienteId);
     
     responderJson([
         'success' => true, 

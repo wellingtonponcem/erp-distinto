@@ -44,6 +44,32 @@ class Database {
                 self::$instance->exec($alterSql);
             }
 
+            $checkWorkspaceColSql = $isMysql
+                ? "SHOW COLUMNS FROM users LIKE 'roteiros_workspace_id'"
+                : "SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='roteiros_workspace_id'";
+
+            $stmtWorkspace = self::$instance->query($checkWorkspaceColSql);
+            if (!$stmtWorkspace->fetch()) {
+                self::$instance->exec("ALTER TABLE users ADD COLUMN roteiros_workspace_id VARCHAR(64)");
+            }
+
+            self::$instance->exec("CREATE TABLE IF NOT EXISTS roteiros_workspaces (
+                id VARCHAR(64) PRIMARY KEY,
+                nome VARCHAR(120) NOT NULL,
+                owner_user_id VARCHAR(32) NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )");
+
+            $stmtDistintoWorkspace = self::$instance->prepare("SELECT id FROM roteiros_workspaces WHERE id = ? LIMIT 1");
+            $stmtDistintoWorkspace->execute(['distinto']);
+            if (!$stmtDistintoWorkspace->fetch()) {
+                self::$instance->prepare("INSERT INTO roteiros_workspaces (id, nome) VALUES (?, ?)")
+                    ->execute(['distinto', 'Equipe Distinto']);
+            }
+
+            self::$instance->exec("UPDATE users SET roteiros_workspace_id = 'distinto' WHERE sistema_origem = 'distinto' AND (roteiros_workspace_id IS NULL OR roteiros_workspace_id = '')");
+
             // Garantir admin
             self::$instance->exec("UPDATE users SET nivel = 1 WHERE (email = 'faustinosdg@gmail.com' OR id = (SELECT id FROM (SELECT id FROM users ORDER BY " . ($isMysql ? "id" : "criado_em") . " ASC LIMIT 1) as t)) AND nivel != 1");
 

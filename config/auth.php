@@ -110,19 +110,13 @@ function usuarioAtual(): array {
     $id    = $_SESSION['user_id'] ?? '';
     $email = $_SESSION['user_email'] ?? '';
     
-    // Sincronização de contas: faustinosdg e jeaneponcem compartilham a mesma base
-    // Usamos o ID do faustinosdg como ID mestre para ambos.
-    $sharedEmails = ['faustinosdg@gmail.com', 'jeaneponcem13@gmail.com'];
-    if (in_array($email, $sharedEmails)) {
-        $id = '8f63b895d7c5ce2f37d4b68278cae976';
-    }
-
     return [
         'id'                  => $id,
         'nome'                => $_SESSION['user_nome'] ?? '',
         'email'               => $email,
         'nivel'               => $_SESSION['user_nivel'] ?? 0,
         'sistema_origem'      => $_SESSION['user_sistema_origem'] ?? 'distinto', 
+        'roteiros_workspace_id' => $_SESSION['user_roteiros_workspace_id'] ?? '',
         'subscription_status' => $_SESSION['user_subscription_status'] ?? 'trial',
         'subscription_plan'   => $_SESSION['user_subscription_plan'] ?? null,
     ];
@@ -133,43 +127,134 @@ function usuarioEhDistinto(?array $usuario = null): bool {
     return ($usuario['sistema_origem'] ?? '') === 'distinto';
 }
 
-function roteirosEquipeDistintoUserId(): string {
-    static $ownerId = null;
-
-    if ($ownerId !== null) {
-        return $ownerId;
+function roteirosWorkspaceId(array $usuario): string {
+    $workspaceId = trim((string)($usuario['roteiros_workspace_id'] ?? ''));
+    if ($workspaceId !== '') {
+        return $workspaceId;
     }
 
+    return usuarioEhDistinto($usuario)
+        ? 'distinto'
+        : (string)($usuario['id'] ?? '');
+}
+
+function garantirWorkspaceRoteiros(PDO $db): void {
+    static $executado = false;
+    if ($executado) return;
+    $executado = true;
+
     try {
-        if (class_exists('Database')) {
-            $db = Database::get();
-            $stmt = $db->query("
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS roteiros_workspaces (
+                id VARCHAR(64) PRIMARY KEY,
+                nome VARCHAR(120) NOT NULL,
+                owner_user_id VARCHAR(32) NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+    } catch (Exception $e) {}
+
+    try {
+        $db->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS roteiros_workspace_id VARCHAR(64)");
+    } catch (Exception $e) {}
+
+    try {
+        $stmt = $db->prepare("SELECT id FROM roteiros_workspaces WHERE id = ? LIMIT 1");
+        $stmt->execute(['distinto']);
+        if (!$stmt->fetchColumn()) {
+            $db->prepare("INSERT INTO roteiros_workspaces (id, nome) VALUES (?, ?)")
+                ->execute(['distinto', 'Equipe Distinto']);
+        }
+    } catch (Exception $e) {}
+
+    try {
+        $db->exec("
+            UPDATE users
+            SET roteiros_workspace_id = 'distinto'
+            WHERE sistema_origem = 'distinto'
+              AND (roteiros_workspace_id IS NULL OR roteiros_workspace_id = '')
+        ");
+    } catch (Exception $e) {}
+}
+
+function roteirosWorkspaceOwnerUserId(PDO $db, string $workspaceId, ?array $usuario = null): string {
+    static $cache = [];
+
+    $usuario = $usuario ?? usuarioAtual();
+    $fallbackUserId = (string)($usuario['id'] ?? '');
+
+    if ($workspaceId === '' || ($workspaceId !== 'distinto' && $workspaceId === $fallbackUserId)) {
+        return $fallbackUserId;
+    }
+
+    if (isset($cache[$workspaceId])) {
+        return $cache[$workspaceId];
+    }
+
+    garantirWorkspaceRoteiros($db);
+
+    try {
+        $stmt = $db->prepare("SELECT owner_user_id FROM roteiros_workspaces WHERE id = ? LIMIT 1");
+        $stmt->execute([$workspaceId]);
+        $ownerId = trim((string)$stmt->fetchColumn());
+        if ($ownerId !== '') {
+            $cache[$workspaceId] = $ownerId;
+            return $ownerId;
+        }
+    } catch (Exception $e) {}
+
+    try {
+        if ($workspaceId === 'distinto') {
+            $stmt = $db->prepare("
                 SELECT id
                 FROM users
-                WHERE sistema_origem = 'distinto'
+                WHERE roteiros_workspace_id = ?
+                   OR sistema_origem = 'distinto'
                 ORDER BY
-                    CASE WHEN LOWER(email) = 'faustinosdg@gmail.com' THEN 0 ELSE 1 END,
                     CASE WHEN criado_em IS NULL THEN 1 ELSE 0 END,
                     criado_em ASC,
                     id ASC
                 LIMIT 1
             ");
-            $id = $stmt->fetchColumn();
-            if ($id) {
-                $ownerId = (string)$id;
-                return $ownerId;
-            }
+            $stmt->execute([$workspaceId]);
+        } else {
+            $stmt = $db->prepare("SELECT id FROM users WHERE roteiros_workspace_id = ? ORDER BY id ASC LIMIT 1");
+            $stmt->execute([$workspaceId]);
+        }
+
+        $ownerId = trim((string)$stmt->fetchColumn());
+        if ($ownerId !== '') {
+            try {
+                $db->prepare("UPDATE roteiros_workspaces SET owner_user_id = ? WHERE id = ?")
+                    ->execute([$ownerId, $workspaceId]);
+            } catch (Exception $e) {}
+
+            $cache[$workspaceId] = $ownerId;
+            return $ownerId;
         }
     } catch (Exception $e) {}
 
-    $ownerId = '8f63b895d7c5ce2f37d4b68278cae976';
-    return $ownerId;
+    return $fallbackUserId;
+}
+
+function roteirosEquipeDistintoUserId(): string {
+    try {
+        $db = Database::get();
+        return roteirosWorkspaceOwnerUserId($db, 'distinto', usuarioAtual());
+    } catch (Exception $e) {}
+
+    $usuario = usuarioAtual();
+    return (string)($usuario['id'] ?? '');
 }
 
 function roteirosUserId(array $usuario): string {
-    return usuarioEhDistinto($usuario)
-        ? roteirosEquipeDistintoUserId()
-        : (string)($usuario['id'] ?? '');
+    try {
+        $db = Database::get();
+        return roteirosWorkspaceOwnerUserId($db, roteirosWorkspaceId($usuario), $usuario);
+    } catch (Exception $e) {
+        return (string)($usuario['id'] ?? '');
+    }
 }
 
 function normalizarRoteirosDistinto(PDO $db): void {
@@ -177,8 +262,20 @@ function normalizarRoteirosDistinto(PDO $db): void {
     if ($executado) return;
     $executado = true;
 
-    $ownerId = roteirosEquipeDistintoUserId();
-    $whereDistinto = "user_id IN (SELECT id FROM users WHERE sistema_origem = 'distinto') AND user_id <> ?";
+    garantirWorkspaceRoteiros($db);
+
+    $ownerId = roteirosWorkspaceOwnerUserId($db, 'distinto', usuarioAtual());
+    if ($ownerId === '') return;
+
+    $whereDistinto = "
+        user_id IN (
+            SELECT id
+            FROM users
+            WHERE roteiros_workspace_id = 'distinto'
+               OR sistema_origem = 'distinto'
+        )
+        AND user_id <> ?
+    ";
 
     try {
         $db->prepare("
@@ -191,7 +288,12 @@ function normalizarRoteirosDistinto(PDO $db): void {
     try {
         $db->prepare("
             DELETE FROM roteiros_config_cliente c
-            WHERE c.user_id IN (SELECT id FROM users WHERE sistema_origem = 'distinto')
+            WHERE c.user_id IN (
+                SELECT id
+                FROM users
+                WHERE roteiros_workspace_id = 'distinto'
+                   OR sistema_origem = 'distinto'
+            )
               AND c.user_id <> ?
               AND EXISTS (
                   SELECT 1
@@ -217,6 +319,7 @@ function logarUsuario(array $user): void {
     $_SESSION['user_email']               = $user['email'];
     $_SESSION['user_nivel']               = $user['nivel'] ?? 0;
     $_SESSION['user_sistema_origem']      = $user['sistema_origem'] ?? 'distinto';
+    $_SESSION['user_roteiros_workspace_id'] = $user['roteiros_workspace_id'] ?? (($user['sistema_origem'] ?? 'distinto') === 'distinto' ? 'distinto' : ($user['id'] ?? ''));
     $_SESSION['user_subscription_status'] = $user['subscription_status'] ?? 'trial';
     $_SESSION['user_subscription_plan']   = $user['subscription_plan'] ?? null;
 }

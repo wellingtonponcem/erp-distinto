@@ -494,6 +494,52 @@ Conteúdo:
     {
         try {
             $db = Database::get();
+            $clienteId = trim($clienteId);
+
+            if ($clienteId !== '') {
+                if (!$userId) return "";
+
+                $stmtMemoria = $db->prepare("SELECT conteudo FROM roteiros_memoria WHERE user_id = ? LIMIT 1");
+                $stmtMemoria->execute([$userId]);
+                $memoriaGlobal = trim((string)$stmtMemoria->fetchColumn());
+
+                $stmtGlobal = $db->prepare("
+                    SELECT texto_extraido
+                    FROM roteiros_conhecimento
+                    WHERE ativo = TRUE
+                      AND user_id = ?
+                      AND (cliente_id IS NULL OR cliente_id = '')
+                    ORDER BY created_at DESC
+                ");
+                $stmtGlobal->execute([$userId]);
+                $fontesGlobais = $stmtGlobal->fetchAll(PDO::FETCH_COLUMN);
+
+                $stmtCliente = $db->prepare("
+                    SELECT texto_extraido
+                    FROM roteiros_conhecimento
+                    WHERE ativo = TRUE
+                      AND user_id = ?
+                      AND cliente_id = ?
+                    ORDER BY created_at DESC
+                ");
+                $stmtCliente->execute([$userId, $clienteId]);
+                $fontesCliente = $stmtCliente->fetchAll(PDO::FETCH_COLUMN);
+
+                $blocos = [];
+                $global = trim(implode("\n\n---\n\n", array_filter(array_merge([$memoriaGlobal], $fontesGlobais))));
+                $cliente = trim(implode("\n\n---\n\n", array_filter($fontesCliente)));
+
+                if ($global !== '') {
+                    $blocos[] = "### CONHECIMENTO GLOBAL (METODOLOGIA E INSTRUÇÕES DE CRIAÇÃO)\nUse este bloco apenas para orientar estrutura, qualidade, tom estratégico e forma de criar roteiros. Não trate informações de nicho, produto, mercado ou cliente deste bloco como fatos sobre o cliente selecionado.\n\n" . $global;
+                }
+
+                if ($cliente !== '') {
+                    $blocos[] = "### BASE INDIVIDUAL DO CLIENTE (CONTEXTO FACTUAL DO CLIENTE SELECIONADO)\nUse este bloco para entender o cliente, mercado, oferta, público, diferenciais e temas permitidos.\n\n" . $cliente;
+                }
+
+                return trim(implode("\n\n---\n\n", $blocos));
+            }
+
             if ($userId) {
                 $stmt = $db->prepare("SELECT conteudo FROM roteiros_memoria WHERE user_id = ? LIMIT 1");
                 $stmt->execute([$userId]);
@@ -502,24 +548,13 @@ Conteúdo:
             }
             $memoria = $stmt->fetchColumn();
 
-            if ($memoria && $clienteId === '') return $memoria;
+            if ($memoria) return $memoria;
 
             $base = $memoria ?: '';
 
             if ($userId) {
-                if ($clienteId !== '') {
-                    $stmt = $db->prepare("
-                        SELECT texto_extraido
-                        FROM roteiros_conhecimento
-                        WHERE ativo = TRUE
-                          AND user_id = ?
-                          AND (cliente_id IS NULL OR cliente_id = '' OR cliente_id = ?)
-                    ");
-                    $stmt->execute([$userId, $clienteId]);
-                } else {
-                    $stmt = $db->prepare("SELECT texto_extraido FROM roteiros_conhecimento WHERE ativo = TRUE AND user_id = ?");
-                    $stmt->execute([$userId]);
-                }
+                $stmt = $db->prepare("SELECT texto_extraido FROM roteiros_conhecimento WHERE ativo = TRUE AND user_id = ?");
+                $stmt->execute([$userId]);
             } else {
                 $stmt = $db->query("SELECT texto_extraido FROM roteiros_conhecimento WHERE ativo = TRUE");
             }
@@ -531,13 +566,18 @@ Conteúdo:
         }
     }
 
-    private static function getMelhoresRoteiros(string $userId = ''): string
+    private static function getMelhoresRoteiros(string $userId = '', string $clienteId = ''): string
     {
         try {
             $db = Database::get();
             if ($userId) {
-                $stmt = $db->prepare("SELECT titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta FROM roteiros WHERE score > 0 AND user_id = ? ORDER BY score DESC LIMIT 3");
-                $stmt->execute([$userId]);
+                if ($clienteId !== '') {
+                    $stmt = $db->prepare("SELECT titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta FROM roteiros WHERE score > 0 AND user_id = ? AND cliente_id = ? ORDER BY score DESC LIMIT 3");
+                    $stmt->execute([$userId, $clienteId]);
+                } else {
+                    $stmt = $db->prepare("SELECT titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta FROM roteiros WHERE score > 0 AND user_id = ? ORDER BY score DESC LIMIT 3");
+                    $stmt->execute([$userId]);
+                }
             } else {
                 $stmt = $db->query("SELECT titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta FROM roteiros WHERE score > 0 ORDER BY score DESC LIMIT 3");
             }
@@ -550,6 +590,133 @@ Conteúdo:
             return $texto;
         } catch (Exception $e) {
             return "";
+        }
+    }
+
+    private static function getContextoCliente(string $userId = '', string $clienteId = ''): string
+    {
+        if (!$userId || !$clienteId) return '';
+
+        try {
+            $db = Database::get();
+            $stmt = $db->prepare("
+                SELECT
+                    c.nome,
+                    c.perfil,
+                    cfg.nicho,
+                    cfg.publico_alvo,
+                    cfg.palavras_usa,
+                    cfg.palavras_evita,
+                    cfg.frases_exemplo,
+                    cfg.ganchos_fav
+                FROM roteiros_clientes c
+                LEFT JOIN roteiros_config_cliente cfg
+                  ON cfg.cliente_id = c.id
+                 AND cfg.user_id = c.user_id
+                WHERE c.id = ?
+                  AND c.user_id = ?
+                LIMIT 1
+            ");
+            $stmt->execute([$clienteId, $userId]);
+            $cliente = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$cliente) return '';
+
+            $texto = "### CLIENTE SELECIONADO (USAR SOMENTE ESTE CONTEXTO):\n";
+            $texto .= "Cliente: " . trim((string)$cliente['nome']) . "\n";
+            if (!empty($cliente['perfil'])) $texto .= "Perfil: " . trim((string)$cliente['perfil']) . "\n";
+            if (!empty($cliente['nicho'])) $texto .= "Nicho: " . trim((string)$cliente['nicho']) . "\n";
+            if (!empty($cliente['publico_alvo'])) $texto .= "Público-alvo: " . trim((string)$cliente['publico_alvo']) . "\n";
+            if (!empty($cliente['palavras_usa'])) $texto .= "Palavras que usa: " . trim((string)$cliente['palavras_usa']) . "\n";
+            if (!empty($cliente['palavras_evita'])) $texto .= "Palavras que evita: " . trim((string)$cliente['palavras_evita']) . "\n";
+            if (!empty($cliente['frases_exemplo'])) $texto .= "Frases de exemplo: " . trim((string)$cliente['frases_exemplo']) . "\n";
+            if (!empty($cliente['ganchos_fav'])) $texto .= "Ganchos favoritos: " . trim((string)$cliente['ganchos_fav']) . "\n";
+            $texto .= "Não use informações, nichos, exemplos ou bases de outros clientes.\n";
+            return $texto;
+        } catch (Exception $e) {
+            return '';
+        }
+    }
+
+    private static function getAprendizadoCliente(string $userId = '', string $clienteId = ''): string
+    {
+        if (!$userId || !$clienteId) return '';
+
+        try {
+            $db = Database::get();
+            $partes = [];
+
+            $stmtRoteiros = $db->prepare("
+                SELECT titulo, gancho, quebra_crenca, desenvolvimento, conexao, fechamento, cta, status, score
+                FROM roteiros
+                WHERE user_id = ?
+                  AND cliente_id = ?
+                  AND (
+                    status IN ('aprovado', 'postado', 'gravado')
+                    OR COALESCE(score, 0) > 0
+                  )
+                ORDER BY
+                  CASE WHEN status = 'aprovado' THEN 0 ELSE 1 END,
+                  COALESCE(score, 0) DESC,
+                  updated_at DESC
+                LIMIT 5
+            ");
+            $stmtRoteiros->execute([$userId, $clienteId]);
+            $roteiros = $stmtRoteiros->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($roteiros as $r) {
+                $partes[] =
+                    "ROTEIRO VALIDADO ({$r['status']}, score {$r['score']}):\n" .
+                    "Título: {$r['titulo']}\n" .
+                    "Gancho: {$r['gancho']}\n" .
+                    "Corpo: " . trim(($r['quebra_crenca'] ?? '') . " " . ($r['desenvolvimento'] ?? '') . " " . ($r['conexao'] ?? '')) . "\n" .
+                    "Fechamento/CTA: " . trim(($r['fechamento'] ?? '') . " " . ($r['cta'] ?? ''));
+            }
+
+            try {
+                $stmtHist = $db->prepare("
+                    SELECT tipo, campo, conteudo, created_at
+                    FROM roteiros_feedback_historico
+                    WHERE user_id = ?
+                      AND cliente_id = ?
+                    ORDER BY created_at DESC
+                    LIMIT 12
+                ");
+                $stmtHist->execute([$userId, $clienteId]);
+                $historico = $stmtHist->fetchAll(PDO::FETCH_ASSOC);
+                foreach ($historico as $h) {
+                    $campo = $h['campo'] ? " ({$h['campo']})" : '';
+                    $partes[] = "SINAL DE APRENDIZADO {$h['tipo']}{$campo}: {$h['conteudo']}";
+                }
+            } catch (Exception $e) {}
+
+            try {
+                $stmtSug = $db->prepare("
+                    SELECT campo, texto_original, texto_sugerido, status
+                    FROM roteiros_sugestoes s
+                    INNER JOIN roteiros r ON r.id = s.roteiro_id
+                    WHERE r.user_id = ?
+                      AND r.cliente_id = ?
+                      AND s.status IN ('aceita', 'pendente')
+                    ORDER BY s.created_at DESC
+                    LIMIT 8
+                ");
+                $stmtSug->execute([$userId, $clienteId]);
+                $sugestoes = $stmtSug->fetchAll(PDO::FETCH_ASSOC);
+                foreach ($sugestoes as $s) {
+                    $partes[] =
+                        "SUGESTÃO DO CLIENTE ({$s['status']}, campo {$s['campo']}): trocar \"" .
+                        mb_substr((string)$s['texto_original'], 0, 240) .
+                        "\" por \"" .
+                        mb_substr((string)$s['texto_sugerido'], 0, 300) .
+                        "\"";
+                }
+            } catch (Exception $e) {}
+
+            if (empty($partes)) return '';
+
+            return "### APRENDIZADO EVOLUTIVO DO CLIENTE\nUse estes sinais para repetir padrões aprovados, evitar padrões recusados e incorporar ajustes manuais recorrentes.\n\n" .
+                mb_substr(implode("\n\n---\n\n", $partes), 0, 12000);
+        } catch (Exception $e) {
+            return '';
         }
     }
 
@@ -649,7 +816,9 @@ REGRAS CRÍTICAS:
     public static function gerarRoteiro(string $briefing = '', string $userId = '', string $clienteId = ''): array
     {
         $conhecimento = self::getBaseConhecimento($userId, $clienteId);
-        $exemplos     = self::getMelhoresRoteiros($userId);
+        $exemplos     = self::getMelhoresRoteiros($userId, $clienteId);
+        $contextoCliente = self::getContextoCliente($userId, $clienteId);
+        $aprendizadoCliente = self::getAprendizadoCliente($userId, $clienteId);
         
         // Buscar Voz & Estilo do usuário
         $vozEstilo = "";
@@ -683,8 +852,10 @@ REGRAS CRÍTICAS:
 Crie UM roteiro curto para Reels/TikTok, separado exatamente nos campos que a interface exibe.
 
 $vozEstilo
+$contextoCliente
+$aprendizadoCliente
 ### BASE DE CONHECIMENTO:
-" . ($conhecimento ?: "Nenhuma base cadastrada. Use seu conhecimento geral de marketing de alto nível.") . "
+" . ($conhecimento ?: ($clienteId !== '' ? "Nenhuma base específica cadastrada para este cliente. Use o perfil do cliente, o briefing e conhecimento geral de marketing. Não use informações de outros clientes." : "Nenhuma base cadastrada. Use seu conhecimento geral de marketing de alto nível.")) . "
 
 ### EXEMPLOS DE SUCESSO:
 " . ($exemplos ?: "Nenhum exemplo disponível. Crie algo inovador.") . "
@@ -713,7 +884,9 @@ Use exatamente estas chaves: titulo, gancho, quebra_crenca, desenvolvimento, con
 3. Não coloque o roteiro inteiro em um único campo.
 4. Cada campo textual deve ter no máximo 450 caracteres.
 5. NUNCA use emojis. Português do Brasil.
-6. " . ($vozEstilo ? "Siga rigorosamente a identidade do autor acima." : "Tom direto e focado em autoridade.")],
+6. " . ($clienteId !== '' ? "Use o CONHECIMENTO GLOBAL apenas como metodologia/instrução de criação. Dados factuais sobre nicho, produto, mercado, oferta e público devem vir somente do CLIENTE SELECIONADO, da BASE INDIVIDUAL DO CLIENTE ou do briefing." : "Use a base geral disponível.") . "
+7. " . ($clienteId !== '' ? "É proibido assumir que informações de outro cliente, nicho ou mercado presentes no conhecimento global pertencem ao cliente selecionado." : "Mantenha coerência com a base geral.") . "
+8. " . ($vozEstilo ? "Siga rigorosamente a identidade do autor acima." : "Tom direto e focado em autoridade.")],
             ['role' => 'user', 'content' => $briefing
                 ? "Gere o roteiro para este briefing: $briefing\n\nIMPORTANTE: responda somente com JSON válido começando com { e terminando com }. Não escreva explicações."
                 : "Gere um roteiro inédito seguindo o padrão dos exemplos de sucesso.\n\nIMPORTANTE: responda somente com JSON válido começando com { e terminando com }. Não escreva explicações."]
