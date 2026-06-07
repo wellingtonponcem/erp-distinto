@@ -86,76 +86,62 @@ class Database {
 
             // 5. Verifica tabela de histórico
             try {
-                $checkTableSql = $isMysql
-                    ? "SHOW TABLES LIKE 'propostas_historico'"
-                    : "SELECT 1 FROM information_schema.tables WHERE table_name='propostas_historico'";
-                    
-                $stmtH = self::$instance->query($checkTableSql);
-                if (!$stmtH->fetch()) {
-                    $createTableSql = $isMysql
-                        ? "CREATE TABLE propostas_historico (
-                            id INT AUTO_INCREMENT PRIMARY KEY,
-                            proposta_id VARCHAR(255) NOT NULL,
-                            user_id VARCHAR(255) NOT NULL,
-                            tipo VARCHAR(50) DEFAULT 'nota',
-                            conteudo TEXT NOT NULL,
-                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                          )"
-                        : "CREATE TABLE propostas_historico (
-                            id SERIAL PRIMARY KEY,
-                            proposta_id TEXT NOT NULL,
-                            user_id TEXT NOT NULL,
-                            tipo TEXT DEFAULT 'nota',
-                            conteudo TEXT NOT NULL,
-                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                          )";
-                    self::$instance->exec($createTableSql);
-                }
+                $createTableSql = $isMysql
+                    ? "CREATE TABLE IF NOT EXISTS propostas_historico (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        proposta_id VARCHAR(255) NOT NULL,
+                        user_id VARCHAR(255) NOT NULL,
+                        tipo VARCHAR(50) DEFAULT 'nota',
+                        conteudo TEXT NOT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                      )"
+                    : "CREATE TABLE IF NOT EXISTS propostas_historico (
+                        id SERIAL PRIMARY KEY,
+                        proposta_id TEXT NOT NULL,
+                        user_id TEXT NOT NULL,
+                        tipo TEXT DEFAULT 'nota',
+                        conteudo TEXT NOT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                      )";
+                self::$instance->exec($createTableSql);
             } catch (Exception $e) {}
 
             // 6. Verifica tabela de contratos
             try {
-                $checkContratosSql = $isMysql
-                    ? "SHOW TABLES LIKE 'contratos'"
-                    : "SELECT 1 FROM information_schema.tables WHERE table_name='contratos'";
-                    
-                $stmtC = self::$instance->query($checkContratosSql);
-                if (!$stmtC->fetch()) {
-                    $createContratosSql = $isMysql
-                        ? "CREATE TABLE contratos (
-                            id VARCHAR(32) PRIMARY KEY,
-                            proposta_id VARCHAR(32) NULL,
-                            cliente_id VARCHAR(32) NULL,
-                            cliente_nome VARCHAR(255) NOT NULL,
-                            titulo VARCHAR(255) NOT NULL,
-                            valor_total DECIMAL(10,2) NOT NULL,
-                            condicoes_pagamento TEXT NULL,
-                            data_contrato DATE NULL,
-                            local_contrato VARCHAR(255) NULL,
-                            status VARCHAR(50) DEFAULT 'rascunho',
-                            documento_assinatura_id VARCHAR(255) NULL,
-                            link_assinatura VARCHAR(512) NULL,
-                            dados_json TEXT NULL,
-                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                          )"
-                        : "CREATE TABLE contratos (
-                            id TEXT PRIMARY KEY,
-                            proposta_id TEXT NULL,
-                            cliente_id TEXT NULL,
-                            cliente_nome TEXT NOT NULL,
-                            titulo TEXT NOT NULL,
-                            valor_total NUMERIC(10,2) NOT NULL,
-                            condicoes_pagamento TEXT NULL,
-                            data_contrato DATE NULL,
-                            local_contrato TEXT NULL,
-                            status TEXT DEFAULT 'rascunho',
-                            documento_assinatura_id TEXT NULL,
-                            link_assinatura TEXT NULL,
-                            dados_json TEXT NULL,
-                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                          )";
-                    self::$instance->exec($createContratosSql);
-                }
+                $createContratosSql = $isMysql
+                    ? "CREATE TABLE IF NOT EXISTS contratos (
+                        id VARCHAR(32) PRIMARY KEY,
+                        proposta_id VARCHAR(32) NULL,
+                        cliente_id VARCHAR(32) NULL,
+                        cliente_nome VARCHAR(255) NOT NULL,
+                        titulo VARCHAR(255) NOT NULL,
+                        valor_total DECIMAL(10,2) NOT NULL,
+                        condicoes_pagamento TEXT NULL,
+                        data_contrato DATE NULL,
+                        local_contrato VARCHAR(255) NULL,
+                        status VARCHAR(50) DEFAULT 'rascunho',
+                        documento_assinatura_id VARCHAR(255) NULL,
+                        link_assinatura VARCHAR(512) NULL,
+                        dados_json TEXT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                      )"
+                    : "CREATE TABLE IF NOT EXISTS contratos (
+                        id TEXT PRIMARY KEY,
+                        proposta_id TEXT NULL,
+                        cliente_id TEXT NULL,
+                        cliente_nome TEXT NOT NULL,
+                        titulo TEXT NOT NULL,
+                        valor_total NUMERIC(10,2) NOT NULL,
+                        condicoes_pagamento TEXT NULL,
+                        data_contrato DATE NULL,
+                        local_contrato TEXT NULL,
+                        status TEXT DEFAULT 'rascunho',
+                        documento_assinatura_id TEXT NULL,
+                        link_assinatura TEXT NULL,
+                        dados_json TEXT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                      )";
+                self::$instance->exec($createContratosSql);
             } catch (Exception $e) {}
         } catch (Exception $e) {
             // Ignorar erros de migração geral
