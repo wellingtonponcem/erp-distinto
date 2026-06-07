@@ -1,4 +1,8 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once __DIR__ . '/../config/env.php';
 require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../config/database.php';
@@ -213,7 +217,7 @@ if (isset($_GET['proposta_id'])) {
     
     $stmtInsert = $db->prepare("
         INSERT INTO contratos (id, proposta_id, cliente_id, cliente_nome, titulo, valor_total, condicoes_pagamento, data_contrato, local_contrato, status, dados_json)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'rascunho', ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
     $stmtInsert->execute([
         $contratoId,
@@ -225,6 +229,7 @@ if (isset($_GET['proposta_id'])) {
         $condicoesPagamento,
         $dataContrato,
         $localContrato,
+        'rascunho',
         $dadosJson
     ]);
     
