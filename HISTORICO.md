@@ -4,6 +4,9 @@
 Melhorias no ERP Distinto, com foco na consistência visual entre a proposta web e a exportação do PDF via template.
 
 ## Alterações Recentes
+- **Correção da Integração com o Gemini (Erro 403)**:
+  - Corrigida a chave de API do Gemini no banco de dados Neon (que estava desativada por vazamento/leaked key) por uma chave ativa e funcional.
+  - Adicionado o fallback de leitura de chaves de API a partir da variável de ambiente do sistema (`getenv('GEMINI_API_KEY')`) em `includes/ia_propostas.php` e `includes/ia_roteiros.php` para maior robustez.
 - **Negrito no Editor de Template e Exportação PDF**:
   - Ajustado o texto padrão de `experiencias_distintas_texto` em `includes/pdf_templates.php` e no editor `pdf_template_editor.php` para incluir o nome do casal e a última frase em negrito usando a tag `<b>`.
   - Atualizado o editor `pdf_template_editor.php` (no palco do Alpine.js com `x-html` e na janela de `preview`) para permitir a renderização de tags `<b>` e `<strong>` com segurança.
@@ -33,11 +36,20 @@ Melhorias no ERP Distinto, com foco na consistência visual entre a proposta web
 - **Resolução do Bug de Reatividade do Dropdown nas Páginas de Pacotes (Página 8/9)**:
   - Adicionado o atributo `:key="page.id"` no bloco principal de propriedades da página ativa no editor `pdf_template_editor.php`. Isso força o Alpine.js a destruir e recriar o painel lateral quando o usuário muda de página, evitando que o estado físico anterior do checkbox de pacotes "contamine" a nova página.
   - Implementada a normalização estrita de `page.is_pacote` para booleanos nativos no JS (`true`/`false`) no método `init()` do Alpine e no momento de criar novas páginas em `uploadPage()`. Isso resolve a falha em que tipos inconsistentes vindos do banco de dados (ex: `"1"`, `"0"`, `1` ou `0`) confundiam o binding do Alpine.js e ocultavam o dropdown nas páginas 8 e 9.
+  - Botão "Adicionar Foto do Pacote" e cards de instrução no editor.
+- **Formato do Texto e Alinhamento Vertical**:
+  - Adicionadas propriedades `transform` e `valign` (padrão `flex-start`).
+- **Textos Completos e Ricos dos Pacotes**:
+  - Implementada função `formatarItemRico` e conversão de `\n` para `<br>`.
+- **Campo Dinâmico de Condição Especial e Resolução de Imagens**:
+  - Inclusão de `condicao_especial` e correção de caminhos com `raizUrl()`.
+- **Resolução do Bug de Reatividade do Dropdown**:
+  - Uso de `:key` no Alpine.js e normalização de `is_pacote` para booleanos.
 - **Suporte Completo a Adicionais (Upgrades)**:
-  - Adicionado suporte a upgrades dinâmicos no PDF e no editor, mapeando os adicionais disponíveis no banco de dados (`servicos` categoria `wedding` tipo `servico`).
-  - Criado o campo `itens_adicionais` para a página de investimento final (`05`) contendo apenas os upgrades selecionados pelo cliente (ou fallback do plano).
-  - Criado o campo `pacote_adicionais` para as páginas individuais de pacotes (`08`) listando os upgrades ativados para cada pacote.
-  - Atualizados os dados de preview mockados no editor para exibir e renderizar perfeitamente esses campos no palco e no preview.
+  - Mapeamento dinâmico de `itens_adicionais` e `pacote_adicionais`.
+- **Correção da Tela Preta na Proposta de Casamento**:
+  - Corrigido erro fatal por ausência do método `gerarMensagemWhatsApp` em `IAPropostas`.
+  - Implementado fallback robusto no método para garantir a renderização da proposta.
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.

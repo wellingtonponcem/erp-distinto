@@ -75,6 +75,7 @@ class IARoteiros
             $key = null;
         }
         if (!$key) $key = defined('GEMINI_API_KEY') ? GEMINI_API_KEY : '';
+        if (!$key) $key = getenv('GEMINI_API_KEY') ?: '';
         if (!$key || strpos($key, 'SUA_') === 0) return null;
         return $key;
     }

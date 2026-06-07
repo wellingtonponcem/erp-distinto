@@ -19,6 +19,7 @@ class IAPropostas
             $key = null;
         }
         if (!$key) $key = defined('GEMINI_API_KEY') ? GEMINI_API_KEY : '';
+        if (!$key) $key = getenv('GEMINI_API_KEY') ?: '';
         if (!$key || strpos($key, 'SUA_') === 0) return null;
         return $key;
     }
@@ -111,5 +112,37 @@ $propostaJson";
         $clean = preg_replace('/\s*```$/', '', $clean);
         
         return $clean;
+    }
+
+    /**
+     * Gera uma mensagem personalizada para o WhatsApp utilizando IA com fallback seguro.
+     */
+    public static function gerarMensagemWhatsApp(string $nomeNoivo, string $nomeNoiva, string $nomeCasal): string
+    {
+        $nomeNoivaSimples = explode(' ', trim($nomeNoiva))[0];
+        $nomeNoivoSimples = explode(' ', trim($nomeNoivo))[0];
+        $nomes = ($nomeNoivaSimples && $nomeNoivoSimples) ? "{$nomeNoivaSimples} e {$nomeNoivoSimples}" : $nomeCasal;
+        
+        $fallback = "Olá Wellington! Ficamos encantados com a proposta do nosso casamento ({$nomes}). Gostaríamos de conversar para alinhar os detalhes e dar o próximo passo! ✨";
+        
+        try {
+            $apiKey = self::getGeminiKey();
+            if (!$apiKey) {
+                return $fallback;
+            }
+            
+            $prompt = "Você é um assistente simpático e caloroso de um estúdio de fotografia e filmmaking de luxo para casamentos chamado Distinto.
+Gere uma mensagem curta, calorosa e engajadora que os noivos ($nomes) enviariam pelo WhatsApp para o estúdio para demonstrar interesse em fechar a proposta do casamento deles.
+A mensagem deve ser escrita na perspectiva dos noivos enviando para o estúdio.
+Exemplo de tom: 'Olá Wellington! Amamos a proposta comercial e a forma como vocês enxergam nosso casamento. Queremos conversar sobre os próximos passos! ✨'
+Retorne APENAS a mensagem direta, sem aspas, sem explicações e sem introduções.";
+
+            $resposta = self::chamarGemini([['text' => $prompt]]);
+            $resposta = trim(preg_replace('/^["\']|["\']$/', '', trim($resposta)));
+            
+            return $resposta ?: $fallback;
+        } catch (Exception $e) {
+            return $fallback;
+        }
     }
 }
