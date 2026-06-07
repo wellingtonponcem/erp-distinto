@@ -143,6 +143,46 @@ class Database {
                       )";
                 self::$instance->exec($createContratosSql);
             } catch (Exception $e) {}
+
+            // 7. Garante que todas as colunas existem na tabela de contratos (caso a tabela já existisse de forma incompleta)
+            try {
+                $colunasExistentes = [];
+                if ($isMysql) {
+                    $stmtCols = self::$instance->query("SHOW COLUMNS FROM contratos");
+                    while ($col = $stmtCols->fetch()) {
+                        $colunasExistentes[] = strtolower($col['Field'] ?? $col['field'] ?? '');
+                    }
+                } else {
+                    $stmtCols = self::$instance->prepare("SELECT column_name FROM information_schema.columns WHERE table_name = ?");
+                    $stmtCols->execute(['contratos']);
+                    $colunasExistentes = $stmtCols->fetchAll(PDO::FETCH_COLUMN);
+                    $colunasExistentes = array_map('strtolower', $colunasExistentes);
+                }
+                
+                if (!empty($colunasExistentes)) {
+                    $colunasNecessarias = [
+                        'proposta_id' => $isMysql ? "ALTER TABLE contratos ADD COLUMN proposta_id VARCHAR(32) NULL" : "ALTER TABLE contratos ADD COLUMN proposta_id TEXT NULL",
+                        'cliente_id' => $isMysql ? "ALTER TABLE contratos ADD COLUMN cliente_id VARCHAR(32) NULL" : "ALTER TABLE contratos ADD COLUMN cliente_id TEXT NULL",
+                        'cliente_nome' => $isMysql ? "ALTER TABLE contratos ADD COLUMN cliente_nome VARCHAR(255) NULL" : "ALTER TABLE contratos ADD COLUMN cliente_nome TEXT NULL",
+                        'titulo' => $isMysql ? "ALTER TABLE contratos ADD COLUMN titulo VARCHAR(255) NULL" : "ALTER TABLE contratos ADD COLUMN titulo TEXT NULL",
+                        'valor_total' => $isMysql ? "ALTER TABLE contratos ADD COLUMN valor_total DECIMAL(10,2) DEFAULT 0.00" : "ALTER TABLE contratos ADD COLUMN valor_total NUMERIC(10,2) DEFAULT 0.00",
+                        'condicoes_pagamento' => "ALTER TABLE contratos ADD COLUMN condicoes_pagamento TEXT NULL",
+                        'data_contrato' => "ALTER TABLE contratos ADD COLUMN data_contrato DATE NULL",
+                        'local_contrato' => $isMysql ? "ALTER TABLE contratos ADD COLUMN local_contrato VARCHAR(255) NULL" : "ALTER TABLE contratos ADD COLUMN local_contrato TEXT NULL",
+                        'status' => $isMysql ? "ALTER TABLE contratos ADD COLUMN status VARCHAR(50) DEFAULT 'rascunho'" : "ALTER TABLE contratos ADD COLUMN status TEXT DEFAULT 'rascunho'",
+                        'documento_assinatura_id' => $isMysql ? "ALTER TABLE contratos ADD COLUMN documento_assinatura_id VARCHAR(255) NULL" : "ALTER TABLE contratos ADD COLUMN documento_assinatura_id TEXT NULL",
+                        'link_assinatura' => $isMysql ? "ALTER TABLE contratos ADD COLUMN link_assinatura VARCHAR(512) NULL" : "ALTER TABLE contratos ADD COLUMN link_assinatura TEXT NULL",
+                        'dados_json' => "ALTER TABLE contratos ADD COLUMN dados_json TEXT NULL",
+                        'created_at' => "ALTER TABLE contratos ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+                    ];
+                    
+                    foreach ($colunasNecessarias as $colName => $alterSql) {
+                        if (!in_array(strtolower($colName), $colunasExistentes)) {
+                            self::$instance->exec($alterSql);
+                        }
+                    }
+                }
+            } catch (Exception $e) {}
         } catch (Exception $e) {
             // Ignorar erros de migração geral
         }
