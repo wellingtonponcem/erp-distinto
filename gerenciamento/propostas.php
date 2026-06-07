@@ -354,6 +354,9 @@ include __DIR__ . '/../includes/layout/head.php';
                     <button @click="if(window.innerWidth > 1024) { showModalEditar = true; editUrl = 'proposta_editar.php?id=' + contextMenu.item.id + '&layout=modal'; contextMenu.show = false } else { location.href = 'proposta_editar.php?id=' + contextMenu.item.id }">
                         <i data-lucide="edit-2" class="w-4 h-4"></i> Editar Dados
                     </button>
+                    <button @click="location.href = `contrato_gerar.php?proposta_id=${contextMenu.item.id}`; contextMenu.show = false">
+                        <i data-lucide="scroll" class="w-4 h-4"></i> Gerar Contrato
+                    </button>
                     <div class="relative group/submenu">
                         <button class="justify-between">
                             <span class="flex items-center gap-2"><i data-lucide="folder-input" class="w-4 h-4"></i> Mover para...</span>
@@ -558,6 +561,11 @@ include __DIR__ . '/../includes/layout/head.php';
                                 <button @click="if(window.innerWidth > 1024) { showModalEditar = true; editUrl = 'proposta_editar.php?id=' + selectedProposta.id + '&layout=modal'; modalResumoAberto = false } else { location.href = 'proposta_editar.php?id=' + selectedProposta.id }"
                                         class="w-12 h-12 rounded-2xl bg-zinc-800 text-zinc-400 flex items-center justify-center hover:bg-white hover:text-black transition-all">
                                     <i data-lucide="edit-3" class="w-5 h-5"></i>
+                                </button>
+                                <button @click="location.href = `contrato_gerar.php?proposta_id=${selectedProposta.id}`"
+                                        title="Gerar Contrato"
+                                        class="w-12 h-12 rounded-2xl bg-zinc-800 text-zinc-400 flex items-center justify-center hover:bg-white hover:text-black transition-all">
+                                    <i data-lucide="scroll" class="w-5 h-5"></i>
                                 </button>
                             </div>
                             

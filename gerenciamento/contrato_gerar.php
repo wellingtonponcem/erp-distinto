@@ -1,0 +1,670 @@
+<?php
+require_once __DIR__ . '/../config/env.php';
+require_once __DIR__ . '/../config/auth.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../includes/helpers.php';
+require_once __DIR__ . '/../includes/ia_propostas.php';
+
+exigirDistinto();
+$db = Database::get();
+
+$statusMessage = '';
+$errorMessage = '';
+$contrato = null;
+
+// Helper to convert date to Portuguese long format
+function dataExtenso(string $data): string {
+    $d = strtotime($data);
+    $meses = [
+        1 => 'janeiro', 2 => 'fevereiro', 3 => 'março', 4 => 'abril',
+        5 => 'maio', 6 => 'junho', 7 => 'julho', 8 => 'agosto',
+        9 => 'setembro', 10 => 'outubro', 11 => 'novembro', 12 => 'dezembro'
+    ];
+    return date('d', $d) . ' de ' . $meses[(int)date('m', $d)] . ' de ' . date('Y', $d);
+}
+
+// ---------------------------------------------------------
+// CRIAÇÃO E REDIRECIONAMENTO DE CONTRATO A PARTIR DA PROPOSTA
+// ---------------------------------------------------------
+if (isset($_GET['proposta_id'])) {
+    $propostaId = $_GET['proposta_id'];
+    
+    // Check if proposal exists
+    $stmtP = $db->prepare("SELECT * FROM propostas WHERE id = ?");
+    $stmtP->execute([$propostaId]);
+    $proposta = $stmtP->fetch();
+    
+    if (!$proposta) {
+        header('Location: ' . raizUrl('/gerenciamento/contratos.php?erro=Proposta não encontrada.'));
+        exit;
+    }
+    
+    // Check if contract already exists for this proposal
+    $stmtExist = $db->prepare("SELECT * FROM contratos WHERE proposta_id = ? LIMIT 1");
+    $stmtExist->execute([$propostaId]);
+    $contratoExistente = $stmtExist->fetch();
+    
+    if ($contratoExistente) {
+        if (($contratoExistente['status'] ?? 'rascunho') === 'rascunho') {
+            header('Location: ' . raizUrl('/gerenciamento/contrato_gerar.php?id=' . $contratoExistente['id']));
+            exit;
+        } else {
+            header('Location: ' . raizUrl('/gerenciamento/contrato_visualizar.php?id=' . $contratoExistente['id']));
+            exit;
+        }
+    }
+    
+    // Fetch associated client if available to pre-fill CPF/CNPJ and email
+    $cliente = null;
+    if (!empty($proposta['cliente_id'])) {
+        $stmtC = $db->prepare("SELECT * FROM clientes WHERE id = ?");
+        $stmtC->execute([$proposta['cliente_id']]);
+        $cliente = $stmtC->fetch();
+    }
+    
+    // Extract proposal dados_json
+    $dadosProposta = json_decode($proposta['dados_json'], true) ?: [];
+    
+    // Create new contract record
+    $contratoId = gerarId();
+    $clienteNome = $proposta['cliente_nome'];
+    $tituloContrato = "Contrato de Prestação de Serviços - " . $clienteNome;
+    $valorTotal = (float)$proposta['valor_total'];
+    $dataContrato = date('Y-m-d');
+    $localContrato = 'Vitória/ES';
+    
+    // Build default Payment Conditions text
+    $condicoesPagamento = 'À vista ou conforme parcelamento acordado.';
+    if ($proposta['tipo'] === 'casamento') {
+        $condicoesPagamento = $dadosProposta['condicoes_reserva'] ?? 'Conforme parcelamento em parcelas fixas.';
+        if (!empty($dadosProposta['condicoes_heritage_cinematic'])) {
+            $condicoesPagamento = $dadosProposta['condicoes_heritage_cinematic'];
+        } elseif (!empty($dadosProposta['condicoes_essencial'])) {
+            $condicoesPagamento = $dadosProposta['condicoes_essencial'];
+        }
+    }
+    
+    // Initialize Signatarios
+    $sig1 = [
+        'nome' => ($dadosProposta['nome_noiva'] ?? '') ?: ($cliente['nome'] ?? $clienteNome),
+        'cpf' => $cliente['cpf_cnpj'] ?? '',
+        'email' => $dadosProposta['email_contato'] ?? ($cliente['contato'] ?? ''),
+        'telefone' => $dadosProposta['whatsapp'] ?? '',
+        'endereco' => ''
+    ];
+    
+    $sig2 = [
+        'nome' => $dadosProposta['nome_noivo'] ?? '',
+        'cpf' => '',
+        'email' => '',
+        'telefone' => '',
+        'endereco' => ''
+    ];
+    
+    // Dynamic Anexo I generation via Gemini
+    $anexoTexto = '';
+    try {
+        $dadosProposta['cliente_nome'] = $proposta['cliente_nome'];
+        $dadosProposta['tipo'] = $proposta['tipo'];
+        $dadosProposta['titulo'] = $proposta['titulo'];
+        $dadosProposta['valor_total'] = $proposta['valor_total'];
+        $anexoTexto = IAPropostas::gerarAnexoI($dadosProposta);
+    } catch (Exception $e) {
+        $anexoTexto = '<h4>Anexo I - Descrição dos Serviços</h4><p>Erro ao gerar descrição automática: ' . $e->getMessage() . '</p>';
+    }
+    
+    // Build default Contract Body text
+    $dataContratoPorExtenso = dataExtenso($dataContrato);
+    $dataEvento = $dadosProposta['data_casamento'] ?? $dadosProposta['data_inicio'] ?? '';
+    
+    if ($proposta['tipo'] === 'casamento') {
+        $contratoTexto = "
+        <h3 style=\"text-align: center;\">CONTRATO DE PRESTAÇÃO DE SERVIÇOS — CASAMENTO</h3>
+        <p style=\"text-align: center;\"><strong>Nº " . date('Y') . "/" . substr($contratoId, 0, 4) . "</strong></p>
+
+        <p>Pelo presente instrumento particular, de um lado:</p>
+
+        <p><strong>CONTRATANTES:</strong><br>
+        <strong>" . ($sig1['nome'] ?: '[Nome da Noiva]') . "</strong>, portadora do CPF nº " . ($sig1['cpf'] ?: '[CPF da Noiva]') . ", e <strong>" . ($sig2['nome'] ?: '[Nome do Noivo]') . "</strong>, portador do CPF nº " . ($sig2['cpf'] ?: '[CPF do Noivo]') . ", doravante denominados simplesmente <strong>CONTRATANTES</strong>.</p>
+
+        <p><strong>CONTRATADA:</strong><br>
+        <strong>Distinto | Poncem Studio (Poncem Studio LTDA)</strong>, CNPJ 50.168.732/0001-63, com sede na Rod. do Sol nº 2780, sala 1307, Praia de Itaparica, Vila Velha-ES, CEP 29102-020, e-mail contato@wedistinto.com, doravante denominada <strong>CONTRATADA</strong>.</p>
+
+        <p>Firmam o presente contrato de prestação de serviços, mediante cláusulas e condições a seguir:</p>
+
+        <h4>CLÁUSULA PRIMEIRA – DO OBJETO</h4>
+        <p>1.1. A <strong>CONTRATADA</strong> prestará serviços profissionais de cobertura fotográfica e/ou produção audiovisual para o casamento dos <strong>CONTRATANTES</strong>, em conformidade com o detalhamento contido no Anexo I, que integra este instrumento.</p>
+
+        <h4>CLÁUSULA SEGUNDA – PRAZO E LOCAL</h4>
+        <p>2.1. A cobertura fotográfica e audiovisual do casamento civil ou cerimônia está prevista para a data de <strong>" . ($dataEvento ? date('d/m/Y', strtotime($dataEvento)) : '[Data do Casamento]') . "</strong>, a ser realizada em local determinado em comum acordo entre as partes.<br>
+        2.2. A duração padrão da cobertura será aquela descrita e especificada no Anexo I.</p>
+
+        <h4>CLÁUSULA TERCEIRA – VALOR E CONDIÇÕES DE PAGAMENTO</h4>
+        <p>3.1. Pela prestação dos serviços contratados, os <strong>CONTRATANTES</strong> pagarão à <strong>CONTRATADA</strong> a quantia total de <strong>R$ " . number_format($valorTotal, 2, ',', '.') . "</strong>, nas seguintes condições: " . htmlspecialchars($condicoesPagamento) . ".</p>
+
+        <h4>CLÁUSULA QUARTA – DA AUTORIZAÇÃO DE IMAGEM</h4>
+        <p>4.1. Os <strong>CONTRATANTES</strong> autorizam de forma expressa, irrevogável e gratuita a utilização de suas imagens capturadas durante os eventos e ensaios, para fins de divulgação de portfólio profissional da <strong>CONTRATADA</strong> em suas mídias digitais e redes sociais, pelo período de 2 anos.</p>
+
+        <h4>CLÁUSULA QUINTA – DAS OBRIGAÇÕES DAS PARTES</h4>
+        <p>5.1. <strong>DA CONTRATADA:</strong> Prestar os serviços contratados com zelo profissional, utilizando profissionais qualificados de sua inteira confiança e no estilo alinhado com o portfólio comercial da marca.<br>
+        5.2. <strong>DOS CONTRATANTES:</strong> Fornecer alimentação adequada para a equipe de captação caso o tempo total do evento exceda 4 horas, garantir o livre trânsito dos fotógrafos e cinegrafistas no local e efetuar os pagamentos rigorosamente em dia.</p>
+
+        <h4>CLÁUSULA SEXTA – RESCISÃO E MULTAS</h4>
+        <p>6.1. Em caso de cancelamento unilateral imotivado por parte dos <strong>CONTRATANTES</strong> com menos de 30 dias do evento, nenhum valor pago a título de sinal ou reserva será reembolsado. Em descumprimento de outras cláusulas deste contrato, incidirá multa penal de 10% sobre o valor remanescente do instrumento.</p>
+
+        <h4>CLÁUSULA SÉTIMA – DISPOSIÇÕES GERAIS E FORO</h4>
+        <p>7.1. O presente instrumento não gera vínculo de natureza empregatícia entre as partes contratantes.<br>
+        7.2. Fica eleito o foro da Comarca de Vitória/ES para dirimir quaisquer dúvidas decorrentes do presente contrato comercial.</p>
+
+        <p>Vitória/ES, " . $dataContratoPorExtenso . ".</p>
+        ";
+    } else {
+        // Marketing / Filmmaker / Corporate template
+        $contratoTexto = "
+        <h3 style=\"text-align: center;\">CONTRATO DE PRESTAÇÃO DE SERVIÇOS PROFISSIONAIS</h3>
+        <p style=\"text-align: center;\"><strong>Nº " . date('Y') . "/" . substr($contratoId, 0, 4) . "</strong></p>
+
+        <p>Pelo presente instrumento particular, de um lado:</p>
+
+        <p><strong>CONTRATANTE:</strong><br>
+        <strong>" . ($sig1['nome'] ?: '[Nome da Empresa / Cliente]') . "</strong>, inscrita sob CPF/CNPJ nº " . ($sig1['cpf'] ?: '[Documento]') . ", sediada/residente em [Endereço], representada por " . ($sig1['nome'] ?: '[Responsável]') . ", doravante denominada <strong>CONTRATANTE</strong>.</p>
+
+        <p><strong>CONTRATADA:</strong><br>
+        <strong>Distinto | Poncem Studio (Poncem Studio LTDA)</strong>, CNPJ 50.168.732/0001-63, com sede na Rod. do Sol nº 2780, sala 1307, Praia de Itaparica, Vila Velha-ES, CEP 29102-020, e-mail contato@wedistinto.com, doravante denominada <strong>CONTRATADA</strong>.</p>
+
+        <p>Firmam o presente contrato de prestação de serviços, mediante cláusulas e condições a seguir:</p>
+
+        <h4>CLÁUSULA PRIMEIRA – DO OBJETO</h4>
+        <p>1.1. O objeto deste contrato é a prestação de serviços de marketing digital, consultoria de posicionamento e/ou produção audiovisual para a <strong>CONTRATANTE</strong>, conforme especificações operacionais e prazos descritos no Anexo I.</p>
+
+        <h4>CLÁUSULA SEGUNDA – VIGÊNCIA</h4>
+        <p>2.1. O presente contrato terá vigência de <strong>" . ($dadosProposta['meses_contrato'] ?? 12) . " meses</strong>, com início em <strong>" . ($dadosProposta['data_inicio'] ? date('d/m/Y', strtotime($dadosProposta['data_inicio'])) : date('d/m/Y')) . "</strong>.</p>
+
+        <h4>CLÁUSULA TERCEIRA – VALOR E CONDIÇÕES DE PAGAMENTO</h4>
+        <p>3.1. Pela execução dos serviços, a <strong>CONTRATANTE</strong> pagará à <strong>CONTRATADA</strong> a quantia mensal/total de <strong>R$ " . number_format($valorTotal, 2, ',', '.') . "</strong>, nas seguintes condições: " . htmlspecialchars($condicoesPagamento) . ".</p>
+
+        <h4>CLÁUSULA QUARTA – DIREITOS AUTORAIS E PORTFÓLIO</h4>
+        <p>4.1. Fica expressamente reservado à <strong>CONTRATADA</strong> o direito de expor as peças criadas e campanhas veiculadas sob a marca da <strong>CONTRATANTE</strong> em seu próprio portfólio comercial, redes sociais e cases de marketing, respeitando a confidencialidade de dados econômicos internos.</p>
+
+        <h4>CLÁUSULA QUINTA – OBRIGAÇÕES DAS PARTES</h4>
+        <p>5.1. <strong>DA CONTRATADA:</strong> Executar as tarefas descritas no Anexo I com qualidade técnica, prestar contas mensais e manter sigilo absoluto sobre estratégias comerciais da Contratante.<br>
+        5.2. <strong>DO CONTRATANTE:</strong> Fornecer feedbacks operacionais em até 48 horas, fornecer senhas e acessos a contas de publicidade necessários e honrar o calendário de pagamentos.</p>
+
+        <h4>CLÁUSULA SEXTA – RESCISÃO ANTECIPADA</h4>
+        <p>6.1. Qualquer das partes poderá rescindir o contrato antes da vigência plena, mediante aviso prévio por escrito de 30 (trinta) dias. No caso de rescisão antecipada imotivada por iniciativa do Contratante, incidirá multa contratual de 10% sobre o saldo devedor remanescente das parcelas futuras.</p>
+
+        <h4>CLÁUSULA SÉTIMA – FORO</h4>
+        <p>7.1. Fica eleito o foro da Comarca de Vitória/ES para solucionar qualquer divergência oriunda deste instrumento comercial.</p>
+
+        <p>Vitória/ES, " . $dataContratoPorExtenso . ".</p>
+        ";
+    }
+    
+    // Save new draft contract
+    $dadosJson = json_encode([
+        'contrato_texto' => $contratoTexto,
+        'anexo_texto' => $anexoTexto,
+        'signatario_1' => $sig1,
+        'signatario_2' => $sig2,
+        'data_evento' => $dataEvento,
+        'local_evento' => '',
+        'vigencia_meses' => $dadosProposta['meses_contrato'] ?? ''
+    ], JSON_UNESCAPED_UNICODE);
+    
+    $stmtInsert = $db->prepare("
+        INSERT INTO contratos (id, proposta_id, cliente_id, cliente_nome, titulo, valor_total, condicoes_pagamento, data_contrato, local_contrato, status, dados_json)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'rascunho', ?)
+    ");
+    $stmtInsert->execute([
+        $contratoId,
+        $propostaId,
+        $proposta['cliente_id'],
+        $clienteNome,
+        $tituloContrato,
+        $valorTotal,
+        $condicoesPagamento,
+        $dataContrato,
+        $localContrato,
+        $dadosJson
+    ]);
+    
+    header('Location: ' . raizUrl('/gerenciamento/contrato_gerar.php?id=' . $contratoId));
+    exit;
+}
+
+// ---------------------------------------------------------
+// CARREGAR E ATUALIZAR DADOS DO CONTRATO
+// ---------------------------------------------------------
+$id = $_GET['id'] ?? '';
+if (!$id) {
+    header('Location: ' . raizUrl('/gerenciamento/contratos.php'));
+    exit;
+}
+
+$stmtContrato = $db->prepare("SELECT * FROM contratos WHERE id = ?");
+$stmtContrato->execute([$id]);
+$contrato = $stmtContrato->fetch();
+
+if (!$contrato) {
+    header('Location: ' . raizUrl('/gerenciamento/contratos.php?erro=Contrato não encontrado.'));
+    exit;
+}
+
+if (($contrato['status'] ?? 'rascunho') !== 'rascunho') {
+    header('Location: ' . raizUrl('/gerenciamento/contrato_visualizar.php?id=' . $contrato['id']));
+    exit;
+}
+
+$dadosJson = json_decode($contrato['dados_json'], true) ?: [];
+$sig1 = $dadosJson['signatario_1'] ?? ['nome' => '', 'cpf' => '', 'email' => '', 'telefone' => '', 'endereco' => ''];
+$sig2 = $dadosJson['signatario_2'] ?? ['nome' => '', 'cpf' => '', 'email' => '', 'telefone' => '', 'endereco' => ''];
+$dataEvento = $dadosJson['data_evento'] ?? '';
+$localEvento = $dadosJson['local_evento'] ?? '';
+$vigenciaMeses = $dadosJson['vigencia_meses'] ?? '';
+$contratoTexto = $dadosJson['contrato_texto'] ?? '';
+$anexoTexto = $dadosJson['anexo_texto'] ?? '';
+
+// Save / POST Action
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $titulo = sanitizar($_POST['titulo'] ?? $contrato['titulo']);
+    $valorTotal = (float)str_replace(['.', ','], ['', '.'], $_POST['valor_total'] ?? $contrato['valor_total']);
+    $condicoesPagamento = $_POST['condicoes_pagamento'] ?? '';
+    $dataContrato = $_POST['data_contrato'] ?? date('Y-m-d');
+    $localContrato = sanitizar($_POST['local_contrato'] ?? 'Vitória/ES');
+    
+    $sig1 = [
+        'nome' => sanitizar($_POST['sig1_nome'] ?? ''),
+        'cpf' => sanitizar($_POST['sig1_cpf'] ?? ''),
+        'email' => sanitizar($_POST['sig1_email'] ?? ''),
+        'telefone' => sanitizar($_POST['sig1_telefone'] ?? ''),
+        'endereco' => sanitizar($_POST['sig1_endereco'] ?? '')
+    ];
+    
+    $sig2 = [
+        'nome' => sanitizar($_POST['sig2_nome'] ?? ''),
+        'cpf' => sanitizar($_POST['sig2_cpf'] ?? ''),
+        'email' => sanitizar($_POST['sig2_email'] ?? ''),
+        'telefone' => sanitizar($_POST['sig2_telefone'] ?? ''),
+        'endereco' => sanitizar($_POST['sig2_endereco'] ?? '')
+    ];
+    
+    $dataEvento = $_POST['data_evento'] ?? '';
+    $localEvento = sanitizar($_POST['local_evento'] ?? '');
+    $vigenciaMeses = sanitizar($_POST['vigencia_meses'] ?? '');
+    $contratoTexto = $_POST['contrato_texto'] ?? '';
+    $anexoTexto = $_POST['anexo_texto'] ?? '';
+    
+    // Re-pack dados_json
+    $dadosJsonUpdated = json_encode([
+        'contrato_texto' => $contratoTexto,
+        'anexo_texto' => $anexoTexto,
+        'signatario_1' => $sig1,
+        'signatario_2' => $sig2,
+        'data_evento' => $dataEvento,
+        'local_evento' => $localEvento,
+        'vigencia_meses' => $vigenciaMeses
+    ], JSON_UNESCAPED_UNICODE);
+    
+    // Save to Database
+    $clienteNomeForm = $sig1['nome'];
+    if (!empty($sig2['nome'])) {
+        $clienteNomeForm .= ' & ' . $sig2['nome'];
+    }
+    
+    try {
+        $stmtUpdate = $db->prepare("
+            UPDATE contratos
+            SET cliente_nome = ?, titulo = ?, valor_total = ?, condicoes_pagamento = ?, data_contrato = ?, local_contrato = ?, dados_json = ?
+            WHERE id = ?
+        ");
+        $stmtUpdate->execute([
+            $clienteNomeForm,
+            $titulo,
+            $valorTotal,
+            $condicoesPagamento,
+            $dataContrato,
+            $localContrato,
+            $dadosJsonUpdated,
+            $id
+        ]);
+        
+        header('Location: ' . raizUrl('/gerenciamento/contrato_visualizar.php?id=' . $id));
+        exit;
+    } catch (Exception $e) {
+        $errorMessage = 'Erro ao salvar contrato: ' . $e->getMessage();
+    }
+}
+
+$tituloPagina = 'Editar Contrato';
+require_once __DIR__ . '/../includes/layout/head.php';
+?>
+<div id="app-wrapper" x-data="contratoGerarApp()">
+    <?php require_once __DIR__ . '/../includes/layout/sidebar.php'; ?>
+    <main id="main-content" class="content-sheet flex flex-col min-h-screen !bg-[#050505] !text-white">
+        <!-- Header -->
+        <div class="mb-8 flex items-center justify-between border-b border-white/5 pb-6">
+            <div>
+                <div class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-2">Comercial / Contratos</div>
+                <h1 class="text-3xl font-black tracking-tight text-white flex items-center gap-3">
+                    <i data-lucide="edit-3" class="w-8 h-8 text-zinc-400"></i>
+                    Editar Minuta de Contrato
+                </h1>
+                <p class="text-sm font-medium text-zinc-400 mt-1">Refine as cláusulas, preencha os dados dos signatários e use IA para otimizar os termos.</p>
+            </div>
+            
+            <a href="<?= raizUrl('/gerenciamento/contratos.php') ?>" class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-wider">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Voltar à Lista
+            </a>
+        </div>
+
+        <?php if ($errorMessage): ?>
+            <div class="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-bold flex items-center gap-3">
+                <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                <?= sanitizar($errorMessage) ?>
+            </div>
+        <?php endif; ?>
+
+        <!-- Form Layout -->
+        <form method="post" action="<?= raizUrl('/gerenciamento/contrato_gerar.php?id=' . $id) ?>" id="contrato-form">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Coluna 1 e 2: Editores de Texto e Cláusulas -->
+                <div class="lg:col-span-2 space-y-8">
+                    <!-- Editor do Contrato Principal -->
+                    <div class="bg-zinc-900/50 border border-white/5 rounded-[32px] p-8">
+                        <h2 class="text-lg font-bold text-white mb-6 flex items-center justify-between">
+                            <span class="flex items-center gap-2">
+                                <i data-lucide="file-text" class="w-5 h-5 opacity-50"></i>
+                                Corpo do Contrato
+                            </span>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500">Editável em HTML</span>
+                        </h2>
+                        
+                        <div class="space-y-2 prose prose-invert max-w-none text-black">
+                            <textarea id="contrato_texto" name="contrato_texto"><?= $contratoTexto ?></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Editor do Anexo I -->
+                    <div class="bg-zinc-900/50 border border-white/5 rounded-[32px] p-8">
+                        <h2 class="text-lg font-bold text-white mb-6 flex items-center justify-between">
+                            <span class="flex items-center gap-2">
+                                <i data-lucide="paperclip" class="w-5 h-5 opacity-50"></i>
+                                Anexo I - Descrição dos Serviços
+                            </span>
+                            
+                            <?php if ($contrato['proposta_id']): ?>
+                                <button type="button" @click="gerarAnexoIA()" :disabled="iaAnexoLoading" 
+                                        class="px-4 py-1.5 bg-zinc-800 text-zinc-200 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black active:scale-95 transition-all flex items-center gap-1.5 disabled:opacity-50">
+                                    <template x-if="!iaAnexoLoading">
+                                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                                    </template>
+                                    <template x-if="iaAnexoLoading">
+                                        <svg class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg>
+                                    </template>
+                                    <span x-text="iaAnexoLoading ? 'Gerando...' : 'Reescrever via IA'"></span>
+                                </button>
+                            <?php endif; ?>
+                        </h2>
+                        
+                        <div class="space-y-2 text-black">
+                            <textarea id="anexo_texto" name="anexo_texto"><?= $anexoTexto ?></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna 3: Metadados, Signatários e Copilot -->
+                <div class="space-y-8">
+                    <!-- Informações Gerais do Contrato -->
+                    <div class="bg-zinc-900/50 border border-white/5 rounded-[32px] p-8">
+                        <h2 class="text-md font-bold text-white mb-6 flex items-center gap-2">
+                            <i data-lucide="settings" class="w-4.5 h-4.5 opacity-50"></i>
+                            Geral e Financeiro
+                        </h2>
+                        
+                        <div class="space-y-4">
+                            <div class="space-y-1.5">
+                                <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Título Interno do Contrato</label>
+                                <input type="text" name="titulo" value="<?= sanitizar($contrato['titulo']) ?>" required
+                                       class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white focus:border-white transition-all outline-none">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-1.5">
+                                    <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Valor Total (R$)</label>
+                                    <input type="text" name="valor_total" value="<?= number_format($contrato['valor_total'], 2, ',', '.') ?>" required
+                                           class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white focus:border-white transition-all outline-none">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Data do Contrato</label>
+                                    <input type="date" name="data_contrato" value="<?= $contrato['data_contrato'] ?: date('Y-m-d') ?>" required
+                                           class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white focus:border-white transition-all outline-none">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-1.5">
+                                    <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Data do Evento/Início</label>
+                                    <input type="date" name="data_evento" value="<?= $dataEvento ?>"
+                                           class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white focus:border-white transition-all outline-none">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Cidade/UF Emissão</label>
+                                    <input type="text" name="local_contrato" value="<?= sanitizar($contrato['local_contrato'] ?: 'Vitória/ES') ?>" required
+                                           class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white focus:border-white transition-all outline-none">
+                                </div>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Condições de Pagamento</label>
+                                <textarea name="condicoes_pagamento" rows="3"
+                                          class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white focus:border-white transition-all outline-none resize-none"><?= sanitizar($contrato['condicoes_pagamento']) ?></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Signatários -->
+                    <div class="bg-zinc-900/50 border border-white/5 rounded-[32px] p-8">
+                        <h2 class="text-md font-bold text-white mb-6 flex items-center gap-2">
+                            <i data-lucide="users" class="w-4.5 h-4.5 opacity-50"></i>
+                            Dados de Assinatura (Signatários)
+                        </h2>
+                        
+                        <!-- Signatário 1 -->
+                        <div class="space-y-4 mb-6 pb-6 border-b border-white/5">
+                            <div class="text-[9px] font-black text-white uppercase tracking-widest">Signatário 1 (Noiva / Contratante)</div>
+                            
+                            <div class="space-y-2">
+                                <input type="text" name="sig1_nome" value="<?= sanitizar($sig1['nome']) ?>" placeholder="Nome Completo *" required
+                                       class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+                                <input type="text" name="sig1_cpf" value="<?= sanitizar($sig1['cpf']) ?>" placeholder="CPF / CNPJ *" required
+                                       class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+                                <input type="email" name="sig1_email" value="<?= sanitizar($sig1['email']) ?>" placeholder="E-mail de Assinatura *" required
+                                       class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+                                <input type="text" name="sig1_telefone" value="<?= sanitizar($sig1['telefone']) ?>" placeholder="WhatsApp / Telefone"
+                                       class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+                                <input type="text" name="sig1_endereco" value="<?= sanitizar($sig1['endereco']) ?>" placeholder="Endereço Residencial"
+                                       class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Signatário 2 (Casamentos) -->
+                        <div class="space-y-4">
+                            <div class="text-[9px] font-black text-white uppercase tracking-widest">Signatário 2 (Noivo / Opcional)</div>
+                            
+                            <div class="space-y-2">
+                                <input type="text" name="sig2_nome" value="<?= sanitizar($sig2['nome'] ?? '') ?>" placeholder="Nome Completo"
+                                       class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+                                <input type="text" name="sig2_cpf" value="<?= sanitizar($sig2['cpf'] ?? '') ?>" placeholder="CPF"
+                                       class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+                                <input type="email" name="sig2_email" value="<?= sanitizar($sig2['email'] ?? '') ?>" placeholder="E-mail de Assinatura"
+                                       class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+                                <input type="text" name="sig2_telefone" value="<?= sanitizar($sig2['telefone'] ?? '') ?>" placeholder="WhatsApp"
+                                       class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+                                <input type="text" name="sig2_endereco" value="<?= sanitizar($sig2['endereco'] ?? '') ?>" placeholder="Endereço Residencial"
+                                       class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Copilot Panel -->
+                    <div class="bg-white/5 border border-white/10 rounded-[32px] p-8 shadow-[0_0_50px_rgba(255,255,255,0.02)]">
+                        <h2 class="text-md font-bold text-white mb-4 flex items-center gap-2">
+                            <i data-lucide="sparkles" class="w-4.5 h-4.5 text-zinc-300"></i>
+                            IA Copilot de Contratos
+                        </h2>
+                        <p class="text-zinc-400 text-[11px] leading-relaxed mb-6">Selecione e copie um trecho do contrato, ou descreva abaixo a alteração contratual que deseja fazer. O Gemini otimizará as cláusulas para você.</p>
+                        
+                        <div class="space-y-4">
+                            <div class="space-y-1.5">
+                                <label class="text-[9px] font-black uppercase tracking-widest text-zinc-400">Texto Original da Cláusula</label>
+                                <textarea x-model="copilotTexto" rows="4" placeholder="Cole aqui o texto da cláusula que deseja ajustar..."
+                                          class="w-full bg-black/80 border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:border-white transition-all outline-none resize-none"></textarea>
+                            </div>
+
+                            <div class="space-y-1.5">
+                                <label class="text-[9px] font-black uppercase tracking-widest text-zinc-400">Instrução para a IA (Opcional)</label>
+                                <input type="text" x-model="copilotPrompt" placeholder="Ex: Adicionar 20% de juros moratórios..."
+                                       class="w-full bg-black/80 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:border-white transition-all outline-none">
+                            </div>
+
+                            <div class="flex gap-2">
+                                <button type="button" @click="copilotOtimizar()" :disabled="copilotLoading || !copilotTexto.trim()"
+                                        class="flex-1 bg-white text-black py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-zinc-200 active:scale-95 transition-all flex items-center justify-center gap-1 disabled:opacity-50">
+                                    <template x-if="!copilotLoading">
+                                        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                                    </template>
+                                    <span x-text="copilotLoading ? 'Refinando...' : 'Refinar Legal'"></span>
+                                </button>
+                            </div>
+
+                            <template x-if="copilotResultado">
+                                <div class="bg-black/40 border border-white/5 rounded-2xl p-4 mt-4 relative">
+                                    <div class="text-[8px] font-black uppercase tracking-widest text-emerald-500 mb-2">Resultado da IA</div>
+                                    <p class="text-[11px] text-zinc-300 leading-relaxed font-mono select-all" x-text="copilotResultado"></p>
+                                    <div class="text-[9px] text-zinc-500 mt-3 italic">Dica: copie e cole de volta no editor principal.</div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="w-full bg-white text-black h-14 rounded-2xl font-black text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-xl flex items-center justify-center gap-2">
+                        <i data-lucide="check" class="w-5 h-5"></i>
+                        Salvar e Visualizar Contrato
+                    </button>
+                </div>
+            </div>
+        </form>
+    </main>
+</div>
+
+<!-- Load CKEditor 5 from CDN -->
+<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+
+<script>
+function contratoGerarApp() {
+    return {
+        propostaId: <?= json_encode($contrato['proposta_id']) ?>,
+        contratoId: <?= json_encode($contrato['id']) ?>,
+        iaAnexoLoading: false,
+        copilotTexto: '',
+        copilotPrompt: '',
+        copilotResultado: '',
+        copilotLoading: false,
+        
+        gerarAnexoIA() {
+            if (!this.propostaId) return;
+            this.iaAnexoLoading = true;
+            
+            fetch('<?= raizUrl("/api/contratos/gerar_anexo.php") ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type: application/json'
+                },
+                body: JSON.stringify({ proposta_id: this.propostaId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.html) {
+                    if (window.anexoEditor) {
+                        window.anexoEditor.setData(data.html);
+                    } else {
+                        document.querySelector('#anexo_texto').value = data.html;
+                    }
+                } else {
+                    alert(data.erro || 'Falha ao gerar anexo.');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Erro de conexão ao gerar anexo.');
+            })
+            .finally(() => {
+                this.iaAnexoLoading = false;
+            });
+        },
+        
+        copilotOtimizar() {
+            if (!this.copilotTexto.trim()) return;
+            this.copilotLoading = true;
+            this.copilotResultado = '';
+            
+            const payload = {
+                texto: this.copilotTexto,
+                acao: this.copilotPrompt.trim() ? 'custom' : 'otimizar',
+                prompt: this.copilotPrompt
+            };
+            
+            fetch('<?= raizUrl("/api/contratos/copilot_ia.php") ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type: application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.resultado) {
+                    this.copilotResultado = data.resultado;
+                } else {
+                    alert(data.erro || 'Falha no Copilot.');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Erro de conexão com o Copilot.');
+            })
+            .finally(() => {
+                this.copilotLoading = false;
+            });
+        }
+    }
+}
+
+// Initialize CKEditor
+document.addEventListener('DOMContentLoaded', () => {
+    ClassicEditor
+        .create(document.querySelector('#contrato_texto'), {
+            toolbar: [ 'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo' ]
+        })
+        .then(editor => {
+            window.contratoEditor = editor;
+        })
+        .catch(err => {
+            console.warn('Falha ao inicializar CKEditor no contrato_texto', err);
+        });
+
+    ClassicEditor
+        .create(document.querySelector('#anexo_texto'), {
+            toolbar: [ 'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo' ]
+        })
+        .then(editor => {
+            window.anexoEditor = editor;
+        })
+        .catch(err => {
+            console.warn('Falha ao inicializar CKEditor no anexo_texto', err);
+        });
+});
+</script>
+
+<?php require_once __DIR__ . '/../includes/layout/footer.php'; ?>

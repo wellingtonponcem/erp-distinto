@@ -21,6 +21,9 @@ foreach ([
     "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_prod_access_token  TEXT",
     "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_prod_public_key    TEXT",
     "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS mercadopago_mode               VARCHAR(10) DEFAULT 'test'",
+    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS assinafy_api_key              TEXT",
+    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS assinafy_account_id           VARCHAR(64)",
+    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS assinafy_mode                 VARCHAR(10) DEFAULT 'test'",
 ] as $sql) {
     try { $db->exec($sql); } catch (Exception $e) { /* ignora */ }
 }
@@ -30,7 +33,8 @@ $config = $db->query("SELECT id, nome, cnpj, telefone, email, endereco, groq_api
     mercadopago_client_id, mercadopago_client_secret,
     mercadopago_test_access_token, mercadopago_test_public_key,
     mercadopago_prod_access_token, mercadopago_prod_public_key,
-    mercadopago_mode
+    mercadopago_mode,
+    assinafy_api_key, assinafy_account_id, assinafy_mode
     FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
 
 $sucesso = '';
@@ -53,6 +57,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $campos[] = 'openrouter_api_key';
         $vals[] = trim($_POST['openrouter_api_key']);
     }
+
+    if (!empty($_POST['assinafy_api_key'])) {
+        $campos[] = 'assinafy_api_key';
+        $vals[] = trim($_POST['assinafy_api_key']);
+    }
+
+    $campos[] = 'assinafy_account_id';
+    $vals[] = trim($_POST['assinafy_account_id'] ?? '');
+
+    $assinafyMode = in_array($_POST['assinafy_mode'] ?? '', ['test', 'prod']) ? $_POST['assinafy_mode'] : 'test';
+    $campos[] = 'assinafy_mode';
+    $vals[] = $assinafyMode;
 
     // Mercado Pago — campos sensíveis: só atualiza se enviado
     if (!empty($_POST['mercadopago_access_token'])) {
@@ -121,7 +137,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mercadopago_client_id, mercadopago_client_secret,
         mercadopago_test_access_token, mercadopago_test_public_key,
         mercadopago_prod_access_token, mercadopago_prod_public_key,
-        mercadopago_mode
+        mercadopago_mode,
+        assinafy_api_key, assinafy_account_id, assinafy_mode
         FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
 }
 
@@ -346,6 +363,38 @@ include __DIR__ . '/includes/layout/head.php';
                         </label>
                         <input class="input" type="password" name="mercadopago_client_secret"
                                placeholder="<?= !empty($config['mercadopago_client_secret']) ? '••••••••••••••••••••••••••••••••' : 'Client Secret da aplicação' ?>">
+                    </div>
+                </div>
+
+                <!-- ── Seção Assinatura Eletrônica (Assinafy) ─────────────────── -->
+                <div style="margin-bottom:8px; border-top:1px solid #334155; padding-top:20px;">
+                    <h3 style="font-size:15px; font-weight:600; color:#e2e8f0; margin-bottom:4px;">Assinatura Eletrônica — Assinafy</h3>
+                    <p style="font-size:12px; color:#6b7280; margin-bottom:14px;">
+                        Configuração para envio automático de contratos para assinatura. Plano gratuito de 100 documentos/mês.
+                    </p>
+                </div>
+
+                <div style="margin-bottom:16px;">
+                    <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>API Key (Token)</span>
+                        <?php if (!empty($config['assinafy_api_key'])): ?>
+                            <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Chave salva</span>
+                        <?php endif; ?>
+                    </label>
+                    <input class="input" type="password" name="assinafy_api_key" placeholder="<?= !empty($config['assinafy_api_key']) ? '••••••••••••••••••••••••••••••••' : 'Cole a chave da API do Assinafy' ?>">
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+                    <div>
+                        <label class="label">ID da Conta (Account ID)</label>
+                        <input class="input" type="text" name="assinafy_account_id" value="<?= sanitizar($config['assinafy_account_id'] ?? '') ?>" placeholder="ID da Conta no painel">
+                    </div>
+                    <div>
+                        <label class="label">Ambiente Ativo</label>
+                        <select class="input" name="assinafy_mode" style="cursor:pointer;">
+                            <option value="test" <?= ($config['assinafy_mode'] ?? 'test') === 'test' ? 'selected' : '' ?>>🧪 Sandbox (Testes)</option>
+                            <option value="prod" <?= ($config['assinafy_mode'] ?? 'test') === 'prod' ? 'selected' : '' ?>>🟢 Produção (Real)</option>
+                        </select>
                     </div>
                 </div>
 

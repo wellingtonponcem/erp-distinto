@@ -81,6 +81,10 @@ if ($usuario['sistema_origem'] !== 'distinto' || $isAreaRoteiros) {
             <i data-lucide="file-text" style="width:20px;height:20px; flex-shrink:0;"></i>
             <span class="nav-label hide-on-collapse transition-opacity">Propostas Web</span>
         </a>
+        <a href="<?= raizUrl('/gerenciamento/contratos.php') ?>" class="nav-link <?= menuAtivo('/gerenciamento/contratos') ?>">
+            <i data-lucide="scroll" style="width:20px;height:20px; flex-shrink:0;"></i>
+            <span class="nav-label hide-on-collapse transition-opacity">Contratos</span>
+        </a>
         <a href="<?= raizUrl('/gerenciamento/pdf_templates.php') ?>" class="nav-link <?= menuAtivo('/gerenciamento/pdf_templates') ?>">
             <i data-lucide="file-output" style="width:20px;height:20px; flex-shrink:0;"></i>
             <span class="nav-label hide-on-collapse transition-opacity">Templates PDF</span>

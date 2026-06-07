@@ -99,6 +99,49 @@ class Database {
                       )";
                 self::$instance->exec($createTableSql);
             }
+
+            // Verifica tabela de contratos
+            $checkContratosSql = $isMysql
+                ? "SHOW TABLES LIKE 'contratos'"
+                : "SELECT 1 FROM information_schema.tables WHERE table_name='contratos'";
+                
+            $stmtC = self::$instance->query($checkContratosSql);
+            if (!$stmtC->fetch()) {
+                $createContratosSql = $isMysql
+                    ? "CREATE TABLE contratos (
+                        id VARCHAR(32) PRIMARY KEY,
+                        proposta_id VARCHAR(32) NULL,
+                        cliente_id VARCHAR(32) NULL,
+                        cliente_nome VARCHAR(255) NOT NULL,
+                        titulo VARCHAR(255) NOT NULL,
+                        valor_total DECIMAL(10,2) NOT NULL,
+                        condicoes_pagamento TEXT NULL,
+                        data_contrato DATE NULL,
+                        local_contrato VARCHAR(255) NULL,
+                        status VARCHAR(50) DEFAULT 'rascunho',
+                        documento_assinatura_id VARCHAR(255) NULL,
+                        link_assinatura VARCHAR(512) NULL,
+                        dados_json TEXT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                      )"
+                    : "CREATE TABLE contratos (
+                        id TEXT PRIMARY KEY,
+                        proposta_id TEXT NULL,
+                        cliente_id TEXT NULL,
+                        cliente_nome TEXT NOT NULL,
+                        titulo TEXT NOT NULL,
+                        valor_total NUMERIC(10,2) NOT NULL,
+                        condicoes_pagamento TEXT NULL,
+                        data_contrato DATE NULL,
+                        local_contrato TEXT NULL,
+                        status TEXT DEFAULT 'rascunho',
+                        documento_assinatura_id TEXT NULL,
+                        link_assinatura TEXT NULL,
+                        dados_json TEXT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                      )";
+                self::$instance->exec($createContratosSql);
+            }
         } catch (Exception $e) {
             // Ignorar erros de migração silenciosamente
         }

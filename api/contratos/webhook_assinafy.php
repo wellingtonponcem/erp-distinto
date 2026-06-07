@@ -1,0 +1,114 @@
+<?php
+/**
+ * Webhook: Integração de Retorno Assinafy
+ * Recebe atualizações de status de documentos em tempo real e atualiza o banco de dados local.
+ */
+
+require_once __DIR__ . '/../../config/env.php';
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../includes/helpers.php';
+
+// Definir cabeçalho de resposta rápida para o webhook
+header('Content-Type: application/json');
+
+$d = lerCorpo();
+
+// Logger de Webhook para depuração/rastreamento
+try {
+    $db = Database::get();
+    
+    // Garantir tabela de logs de webhook existe
+    $db->exec("CREATE TABLE IF NOT EXISTS log_webhooks_assinafy (
+        id " . ((defined('DB_PORT') && (int)DB_PORT === 3306) ? "INT AUTO_INCREMENT PRIMARY KEY" : "INTEGER PRIMARY KEY AUTOINCREMENT") . ",
+        evento VARCHAR(100) NULL,
+        payload TEXT NULL,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )");
+    
+    $eventoRecebido = $d['event'] ?? $d['status'] ?? 'unknown';
+    $stmtLog = $db->prepare("INSERT INTO log_webhooks_assinafy (evento, payload) VALUES (?, ?)");
+    $stmtLog->execute([$eventoRecebido, json_encode($d, JSON_UNESCAPED_UNICODE)]);
+    
+} catch (Exception $e) {
+    // Silencioso para não travar a resposta do webhook se o log falhar
+}
+
+// Extrair ID do documento do Assinafy do payload
+$documentId = $d['document_id'] ?? $d['document']['id'] ?? $d['id'] ?? '';
+$event = $d['event'] ?? '';
+$status = $d['status'] ?? '';
+
+if (!$documentId) {
+    echo json_encode(['erro' => 'Document ID não fornecido no payload'], 400);
+    exit;
+}
+
+try {
+    // Buscar se o contrato existe no ERP
+    $stmtC = $db->prepare("SELECT * FROM contratos WHERE documento_assinatura_id = ?");
+    $stmtC->execute([$documentId]);
+    $contrato = $stmtC->fetch();
+    
+    if (!$contrato) {
+        // Retorna status 200 para que o Assinafy não fique repetindo a requisição desnecessariamente
+        echo json_encode(['success' => true, 'mensagem' => 'Documento não rastreado por este ERP. Log salvo.']);
+        exit;
+    }
+    
+    $novoStatus = null;
+    $mensagemHistorico = '';
+    
+    // Normalizar eventos de status de assinatura
+    // Assinafy costuma enviar 'document.completed', 'document.signed' ou 'completed', 'signed'
+    if (
+        strpos($event, 'completed') !== false || 
+        strpos($event, 'signed') !== false || 
+        $status === 'completed' || 
+        $status === 'signed' || 
+        $status === 'assinado'
+    ) {
+        $novoStatus = 'assinado';
+        $mensagemHistorico = "Contrato comercial assinado com sucesso por todas as partes (Assinafy).";
+    } elseif (
+        strpos($event, 'cancelled') !== false || 
+        strpos($event, 'rejected') !== false || 
+        $status === 'cancelled' || 
+        $status === 'rejected' || 
+        $status === 'cancelado'
+    ) {
+        $novoStatus = 'cancelado';
+        $mensagemHistorico = "Assinatura do contrato cancelada ou recusada no Assinafy.";
+    }
+    
+    if ($novoStatus) {
+        // Atualizar status do contrato
+        $stmtUpdate = $db->prepare("UPDATE contratos SET status = ? WHERE documento_assinatura_id = ?");
+        $stmtUpdate->execute([$novoStatus, $documentId]);
+        
+        // Se houver proposta vinculada, atualiza a proposta e o histórico dela
+        if (!empty($contrato['proposta_id'])) {
+            // Atualiza status da proposta para aceita (se assinado) ou rascunho (se cancelado)
+            $statusProposta = ($novoStatus === 'assinado') ? 'aceita' : 'rascunho';
+            $db->prepare("UPDATE propostas SET status = ? WHERE id = ?")
+               ->execute([$statusProposta, $contrato['proposta_id']]);
+               
+            // Gravar histórico de auditoria
+            $stmtHist = $db->prepare("
+                INSERT INTO propostas_historico (proposta_id, user_id, tipo, conteudo)
+                VALUES (?, 'webhook_assinafy', 'documento', ?)
+            ");
+            $stmtHist->execute([
+                $contrato['proposta_id'],
+                $mensagemHistorico
+            ]);
+        }
+        
+        echo json_encode(['success' => true, 'mensagem' => "Contrato atualizado para {$novoStatus} com sucesso."]);
+    } else {
+        echo json_encode(['success' => true, 'mensagem' => 'Evento recebido mas nenhuma transição de status foi necessária.']);
+    }
+    
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(['erro' => $e->getMessage()]);
+}
