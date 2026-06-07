@@ -106,6 +106,18 @@ class Database {
                 self::$instance->exec($createTableSql);
             } catch (Exception $e) {}
 
+            // 5.5. Resolução de conflito com tabelas legadas (se houver coluna 'inicio')
+            try {
+                $checkConflito = $isMysql
+                    ? "SHOW COLUMNS FROM contratos LIKE 'inicio'"
+                    : "SELECT 1 FROM information_schema.columns WHERE table_name='contratos' AND column_name='inicio'";
+                
+                $stmtConf = self::$instance->query($checkConflito);
+                if ($stmtConf && $stmtConf->fetch()) {
+                    self::$instance->exec("DROP TABLE contratos");
+                }
+            } catch (Exception $e) {}
+
             // 6. Verifica tabela de contratos
             try {
                 $createContratosSql = $isMysql
