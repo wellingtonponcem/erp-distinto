@@ -100,6 +100,8 @@ if ($isCasamento && !empty($contratoTexto)) {
     <p>4.2. O prazo de entrega do material final sera contado a partir da data de realizacao do evento, salvo disposicao em contrario prevista no Anexo I.</p>
     <p>4.3. A <strong>CONTRATADA</strong> nao se responsabiliza pela perda do material decorrente de caso fortuito ou forca maior, obrigando-se, entretanto, a manter backup de seguranca de todos os arquivos pelo prazo minimo de 90 (noventa) dias apos a entrega.</p>
 
+    <div class="page-break"></div>
+
     <h4>CLAUSULA QUINTA - DA AUTORIZACAO DE IMAGEM</h4>
     <p>5.1. Os <strong>CONTRATANTES</strong> autorizam de forma expressa, irrevogavel e gratuita a utilizacao de suas imagens capturadas durante os eventos e ensaios, para fins de divulgacao de portfolio profissional da <strong>CONTRATADA</strong> em suas midias digitais, redes sociais, site institucional e materiais promocionais, pelo periodo de 2 (dois) anos contados da data de realizacao do evento.</p>
     <p>5.2. A autorizacao prevista no item 5.1 abrange a reproducao, exibicao, publicacao e divulgacao das imagens em qualquer midia ou formato, desde que sem finalidade lucrativa direta e respeitando o decoro e a boa imagem dos CONTRATANTES.</p>
@@ -122,6 +124,8 @@ if ($isCasamento && !empty($contratoTexto)) {
     <p>8.1. A <strong>CONTRATADA</strong> podera ceder ou subcontratar total ou parcialmente os servicos objeto deste contrato a terceiros de sua confianca, mantendo-se como unica responsavel perante os CONTRATANTES pela fiel execucao do objeto contratado.</p>
     <p>8.2. Os <strong>CONTRATANTES</strong> nao poderao ceder ou transferir a terceiros os direitos e obrigacoes decorrentes deste contrato sem a previa e expressa autorizacao por escrito da CONTRATADA.</p>
 
+    <div class="page-break"></div>
+
     <h4>CLAUSULA NONA - DA RESCISAO CONTRATUAL E MULTAS</h4>
     <p>9.1. Em caso de cancelamento unilateral imotivado por parte dos <strong>CONTRATANTES</strong> com menos de 30 (trinta) dias da data do evento, nenhum valor pago a titulo de sinal ou reserva sera reembolsado, configurando-se como clausula penal de natureza compensatoria.</p>
     <p>9.2. Em caso de cancelamento com antecedencia superior a 30 (trinta) dias, os valores ja pagos serao devolvidos deduzindo-se o percentual de 20% (vinte por cento) a titulo de multa compensatoria pela reserva de data e custos administrativos ja incorridos.</p>
@@ -134,6 +138,8 @@ if ($isCasamento && !empty($contratoTexto)) {
     <p>10.3. Qualquer alteracao neste instrumento devera ser feita por escrito, mediante aditivo contratual assinado por ambas as partes.</p>
     <p>10.4. A tolerancia ao descumprimento de qualquer clausula ou condicao deste contrato nao constituira novacao ou precedente, nem afetara o exercicio posterior do direito pela parte inocente.</p>
     <p>10.5. As partes se comprometem a buscar uma solucao amigavel, por meio de negociacao direta, antes de recorrer a qualquer via judicial para resolucao de eventuais controversias.</p>
+
+    <div class="page-break"></div>
 
     <h4>CLAUSULA DECIMA PRIMEIRA - DO FORO</h4>
     <p>11.1. Fica eleito o foro da Comarca de Vitoria/ES para dirimir quaisquer duvidas ou controversias decorrentes do presente contrato, com expressa renuncia a qualquer outro, por mais privilegiado que seja.</p>
@@ -181,17 +187,17 @@ require_once __DIR__ . '/../includes/layout/head.php';
                     <button @click="enviarParaAssinatura()" class="px-6 py-2.5 bg-white text-black hover:bg-zinc-200 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-1.5 shadow-xl">
                         <i data-lucide="signature" class="w-4 h-4"></i> Enviar Assinatura
                     </button>
-
-                    <button @click="atualizarAnexo()" :disabled="loadingAnexo" class="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-white/10 text-zinc-200 rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5 disabled:opacity-50">
-                        <template x-if="!loadingAnexo">
-                            <i data-lucide="sparkles" class="w-4 h-4"></i>
-                        </template>
-                        <template x-if="loadingAnexo">
-                            <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg>
-                        </template>
-                        <span x-text="loadingAnexo ? 'Gerando...' : 'Anexo IA'"></span>
-                    </button>
                 <?php endif; ?>
+
+                <button @click="atualizarAnexo()" :disabled="loadingAnexo" class="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-white/10 text-zinc-200 rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5 disabled:opacity-50">
+                    <template x-if="!loadingAnexo">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    </template>
+                    <template x-if="loadingAnexo">
+                        <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg>
+                    </template>
+                    <span x-text="loadingAnexo ? 'Gerando...' : 'Anexo IA'">Anexo IA</span>
+                </button>
 
                 <button @click="exportarPDFLocal()" class="px-5 py-2.5 bg-zinc-850 hover:bg-zinc-700 border border-white/10 text-zinc-200 rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5">
                     <i data-lucide="download" class="w-4 h-4"></i> PDF
@@ -257,15 +263,12 @@ require_once __DIR__ . '/../includes/layout/head.php';
                 </div>
 
                 <!-- Page Break For Anexo I -->
-                <?php if (!empty($anexoTexto)): ?>
-                    <div class="page-break"></div>
-                    <div class="pdf-logo-wrapper pt-10">
-                        <img src="<?= raizUrl('/assets/logo-contrato.png') ?>" alt="Poncem Studio Logo" class="pdf-logo">
-                    </div>
-                    <div class="pdf-body text-justify">
-                        <?= $anexoTexto ?>
-                    </div>
-                <?php endif; ?>
+                <div class="page-break"></div>
+                <div class="pdf-logo-wrapper pt-10">
+                    <img src="<?= raizUrl('/assets/logo-contrato.png') ?>" alt="Poncem Studio Logo" class="pdf-logo">
+                </div>
+                <div class="pdf-body text-justify">
+                    <?= !empty($anexoTexto) ? $anexoTexto : '<h4>ANEXO I – DESCRIÇÃO DOS SERVIÇOS</h4><p class="p0">A descrição detalhada dos serviços será incluída após a definição do escopo do evento.</p>' ?>
             </div>
         </div>
 
