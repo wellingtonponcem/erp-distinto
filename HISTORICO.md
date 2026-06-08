@@ -6,10 +6,10 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
 ## Alterações Recentes
 
 - **Correção do Editor Visual de Contratos** *(jun/2026)*:
-  - `contrato_gerar.php` exibia HTML cru porque o CKEditor 5 tinha CDN descontinuada (`cdn.ckeditor.com`).
-  - Substituído por **Quill.js 2** (CDN `jsdelivr.net`, estável e gratuita) com toolbar visual.
-  - Editor exibe o texto do contrato com formatação (Sora font, negrito, listas, cabeçalhos) idêntica ao layout dos HTMLs de referência.
-  - Corrigido bug no header do fetch: `'Content-Type: application/json'` → `'Content-Type': 'application/json'`.
+  - `contrato_gerar.php` exibia HTML cru porque o CKEditor 5 tinha CDN descontinuada. Substituído por **Quill.js 2**.
+  - Corrigidos erros de sintaxe nos headers dos fetches (`'Content-Type: application/json'` -> `'Content-Type': 'application/json'`) que travavam o Alpine.js e deixavam os botões de ação e do anexo invisíveis (tracinhos pretos).
+  - Adicionado botão de submissão ("Salvar Minuta") de alta visibilidade no cabeçalho superior (header) da página para facilitar a navegação.
+  - Editor exibe o texto do contrato com formatação Sora font, negrito, listas e cabeçalhos.
   - Hidden inputs sincronizam o HTML gerado pelo Quill antes do submit.
 
 - **Integração da Escolha de Plano pelo Cliente (Casamento)** *(jun/2026)*:

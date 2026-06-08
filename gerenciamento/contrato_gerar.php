@@ -541,9 +541,14 @@ require_once __DIR__ . '/../includes/layout/head.php';
                 <p class="text-sm font-medium text-zinc-400 mt-1">Refine as cláusulas, preencha os dados dos signatários e use IA para otimizar os termos.</p>
             </div>
             
-            <a href="<?= raizUrl('/gerenciamento/contratos.php') ?>" class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-wider">
-                <i data-lucide="arrow-left" class="w-4 h-4"></i> Voltar à Lista
-            </a>
+            <div class="flex items-center gap-4">
+                <button type="submit" form="contrato-form" class="px-5 py-2.5 bg-white text-black hover:bg-zinc-200 active:scale-95 transition-all text-xs font-black uppercase tracking-widest rounded-xl flex items-center gap-2 cursor-pointer">
+                    <i data-lucide="check" class="w-4 h-4"></i> Salvar Minuta
+                </button>
+                <a href="<?= raizUrl('/gerenciamento/contratos.php') ?>" class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-wider">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Voltar à Lista
+                </a>
+            </div>
         </div>
 
         <?php if ($errorMessage): ?>
@@ -834,7 +839,7 @@ function contratoGerarApp() {
             fetch(<?= json_encode(raizUrl("/api/contratos/gerar_anexo.php")) ?>, {
                 method: 'POST',
                 headers: {
-                    'Content-Type: application/json'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ proposta_id: this.propostaId })
             })
@@ -898,7 +903,7 @@ function contratoGerarApp() {
             fetch(<?= json_encode(raizUrl("/api/contratos/copilot_ia.php")) ?>, {
                 method: 'POST',
                 headers: {
-                    'Content-Type: application/json'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(payload)
             })
