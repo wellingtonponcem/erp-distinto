@@ -378,7 +378,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'data_prewedding' => sanitizar($_POST['data_prewedding'] ?? ''),
         'tem_cartorio' => isset($_POST['tem_cartorio']) ? '1' : '',
         'local_cartorio' => sanitizar($_POST['local_cartorio'] ?? ''),
-        'tem_cerimonia' => isset($_        $clausula2Html = '<h4>CLÁUSULA SEGUNDA – PRAZO E LOCAL DE EXECUÇÃO DOS SERVIÇOS</h4>';
+        'tem_cerimonia' => isset($_POST['tem_cerimonia']) ? '1' : '',
+        'local_cerimonia' => sanitizar($_POST['local_cerimonia'] ?? ''),
+        'data_cerimonia' => sanitizar($_POST['data_cerimonia'] ?? '')
+    ];
+
+    // Regenerate full contract template for wedding contracts
+    if ($proposta && $proposta['tipo'] === 'casamento') {
+        $n = 1;
+        $clausula2Html = '<h4>CLÁUSULA SEGUNDA – PRAZO E LOCAL DE EXECUÇÃO DOS SERVIÇOS</h4>';
 
         if (!empty($locais['tem_prewedding'])) {
             $dataPw = !empty($locais['data_prewedding']) ? dataExtenso($locais['data_prewedding']) : 'data a ser definida em comum acordo';
