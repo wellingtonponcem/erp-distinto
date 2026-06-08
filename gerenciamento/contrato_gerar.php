@@ -378,15 +378,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'data_prewedding' => sanitizar($_POST['data_prewedding'] ?? ''),
         'tem_cartorio' => isset($_POST['tem_cartorio']) ? '1' : '',
         'local_cartorio' => sanitizar($_POST['local_cartorio'] ?? ''),
-        'tem_cerimonia' => isset($_POST['tem_cerimonia']) ? '1' : '',
-        'local_cerimonia' => sanitizar($_POST['local_cerimonia'] ?? ''),
-        'data_cerimonia' => sanitizar($_POST['data_cerimonia'] ?? '')
-    ];
-
-    // Regenerate full contract template for wedding contracts
-    if ($proposta && $proposta['tipo'] === 'casamento') {
-        $n = 1;
-        $clausula2Html = '<h4>CLAUSULA SEGUNDA - PRAZO E LOCAL DE EXECUCAO DOS SERVICOS</h4>';
+        'tem_cerimonia' => isset($_        $clausula2Html = '<h4>CLÁUSULA SEGUNDA – PRAZO E LOCAL DE EXECUÇÃO DOS SERVIÇOS</h4>';
 
         if (!empty($locais['tem_prewedding'])) {
             $dataPw = !empty($locais['data_prewedding']) ? dataExtenso($locais['data_prewedding']) : 'data a ser definida em comum acordo';
@@ -396,36 +388,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $localPw = htmlspecialchars($locais['local_prewedding']);
             }
             
-            $clausula2Html .= '<p>2.' . $n . '. Ensaio Pre-Wedding: Previsto para <strong>' . $dataPw . '</strong>, em ' . $localPw . '.</p>';
+            $clausula2Html .= '<p>2.' . $n . '. Ensaio Pré-Wedding: Previsto para <strong>' . $dataPw . '</strong>, em ' . $localPw . '.</p>';
             $n++;
         }
 
         if (!empty($locais['tem_cartorio'])) {
             $dataCt = !empty($dataEvento) ? dataExtenso($dataEvento) : 'data a ser definida em comum acordo';
             $localCt = !empty($locais['local_cartorio']) ? htmlspecialchars($locais['local_cartorio']) : 'a definir em comum acordo entre as partes';
-            $clausula2Html .= '<p>2.' . $n . '. Cerimonia Civil: Prevista para <strong>' . $dataCt . '</strong>, em ' . $localCt . '.</p>';
+            $clausula2Html .= '<p>2.' . $n . '. Cerimônia Civil: Prevista para <strong>' . $dataCt . '</strong>, em ' . $localCt . '.</p>';
             $n++;
         }
 
         if (!empty($locais['tem_cerimonia'])) {
             $dataCe = !empty($locais['data_cerimonia']) ? dataExtenso($locais['data_cerimonia']) : 'data a ser definida em comum acordo';
             $localCe = !empty($locais['local_cerimonia']) ? htmlspecialchars($locais['local_cerimonia']) : 'local a ser definido em comum acordo';
-            $clausula2Html .= '<p>2.' . $n . '. Cerimonia e Festa: Prevista para <strong>' . $dataCe . '</strong>, em ' . $localCe . '.</p>';
+            $clausula2Html .= '<p>2.' . $n . '. Cerimônia e Festa: Prevista para <strong>' . $dataCe . '</strong>, em ' . $localCe . '.</p>';
             $n++;
         }
 
         if ($n === 1) {
             $dataEv = !empty($dataEvento) ? dataExtenso($dataEvento) : 'data a ser definida em comum acordo';
-            $clausula2Html .= '<p>2.1. Os servicos serao executados na data de <strong>' . $dataEv . '</strong>, em local a definir em comum acordo entre as partes.</p>';
+            $clausula2Html .= '<p>2.1. Os serviços serão executados na data de <strong>' . $dataEv . '</strong>, em local a definir em comum acordo entre as partes.</p>';
             $n++;
         }
 
-        $clausula2Html .= '<p>2.' . $n . '. A duracao padrao da cobertura sera aquela descrita e especificada no Anexo I, podendo ser ajustada mediante comum acordo entre as partes.</p>';
+        $clausula2Html .= '<p>2.' . $n . '. A duração padrão da cobertura será aquela descrita e especificada no Anexo I, podendo ser ajustada mediante comum acordo entre as partes.</p>';
         $n++;
-        $clausula2Html .= '<p>2.' . $n . '. A CONTRATADA nao se responsabiliza por atrasos ou impossibilidade de execucao dos servicos decorrentes de condicoes climaticas adversas, falhas de energia eletrica no local do evento ou quaisquer outros fatores alheios a sua vontade, comprometendo-se, nestes casos, a remarcar a data mediante comum acordo com os CONTRATANTES.</p>';
+        $clausula2Html .= '<p>2.' . $n . '. A CONTRATADA não se responsabiliza por atrasos ou impossibilidade de execução dos serviços decorrentes de condições climáticas adversas, falhas de energia elétrica no local do evento ou quaisquer outros fatores alheios à sua vontade, comprometendo-se, nestes casos, a remarcar a data mediante comum acordo com os CONTRATANTES.</p>';
 
         $contratoTexto = '
-        <h3>CONTRATO DE PRESTACAO DE SERVICOS</h3>
+        <h3>CONTRATO DE PRESTAÇÃO DE SERVIÇOS</h3>
         <p class="pdf-subtitle">CASAMENTO</p>
         <p class="pdf-numero">N&ordm; ' . date('Y') . '/' . substr($contrato['id'], 0, 4) . '</p>
 
@@ -437,70 +429,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p class="p0"><strong>CONTRATADA:</strong><br>
         <strong>Distinto | Poncem Studio (Poncem Studio LTDA)</strong>, CNPJ 50.168.732/0001-63, com sede na Rod. do Sol n&ordm; 2780, sala 1307, Praia de Itaparica, Vila Velha-ES, CEP 29102-020, e-mail contato@wedistinto.com, doravante denominada <strong>CONTRATADA</strong>.</p>
 
-        <p class="p0">Firmam o presente contrato de prestacao de servicos, mediante clausulas e condicoes a seguir:</p>
+        <p class="p0">Firmam o presente contrato de prestação de serviços, mediante cláusulas e condições a seguir:</p>
 
-        <h4>CLAUSULA PRIMEIRA - DO OBJETO</h4>
-        <p>1.1. A <strong>CONTRATADA</strong> prestara servicos profissionais de cobertura fotografica e/ou producao audiovisual para o casamento dos <strong>CONTRATANTES</strong>, em conformidade com o detalhamento contido no Anexo I, que integra este instrumento.</p>
+        <h4>CLÁUSULA PRIMEIRA - DO OBJETO</h4>
+        <p>1.1. A <strong>CONTRATADA</strong> prestará serviços profissionais de cobertura fotográfica e/ou produção audiovisual para o casamento dos <strong>CONTRATANTES</strong>, em conformidade com o detalhamento contido no Anexo I, que integra este instrumento.</p>
 
         ' . $clausula2Html . '
 
-        <h4>CLAUSULA TERCEIRA - VALOR E CONDICOES DE PAGAMENTO</h4>
-        <p>3.1. Pela prestacao dos servicos contratados, os <strong>CONTRATANTES</strong> pagarao a <strong>CONTRATADA</strong> a quantia total de <strong>R$ ' . number_format($valorTotal, 2, ',', '.') . '</strong>, nas seguintes condicoes: ' . htmlspecialchars($condicoesPagamento) . '.</p>
-        <p>3.2. O pagamento sera efetuado conforme cronograma acordado entre as partes, podendo ser dividido em parcelas mensais, conforme discriminado na proposta comercial aceita pelos CONTRATANTES.</p>
-        <p>3.3. Em caso de atraso no pagamento de qualquer parcela, incidira multa de 2% (dois por cento) sobre o valor da parcela em atraso, bem como juros de mora de 1% (um por cento) ao mes e correcao monetaria pelo IPCA.</p>
+        <h4>CLÁUSULA TERCEIRA - VALOR E CONDIÇÕES DE PAGAMENTO</h4>
+        <p>3.1. Pela prestação dos serviços contratados, os <strong>CONTRATANTES</strong> pagarão à <strong>CONTRATADA</strong> a quantia total de <strong>R$ ' . number_format($valorTotal, 2, ',', '.') . '</strong>, nas seguintes condições: ' . htmlspecialchars($condicoesPagamento) . '.</p>
+        <p>3.2. O pagamento será efetuado conforme cronograma acordado entre as partes, podendo ser dividido em parcelas mensais, conforme discriminado na proposta comercial aceita pelos CONTRATANTES.</p>
+        <p>3.3. Em caso de atraso no pagamento de qualquer parcela, incidirá multa de 2% (dois por cento) sobre o valor da parcela em atraso, bem como juros de mora de 1% (um por cento) ao mês e correção monetária pelo IPCA.</p>
 
-        <h4>CLAUSULA QUARTA - DAS ENTREGAS</h4>
-        <p>4.1. A <strong>CONTRATADA</strong> entregara aos <strong>CONTRATANTES</strong> o material fotografico e/ou audiovisual devidamente editado, conforme especificacoes tecnicas e prazos estabelecidos no Anexo I, parte integrante deste instrumento.</p>
-        <p>4.2. O prazo de entrega do material final sera contado a partir da data de realizacao do evento, salvo disposicao em contrario prevista no Anexo I.</p>
-        <p>4.3. A <strong>CONTRATADA</strong> nao se responsabiliza pela perda do material decorrente de caso fortuito ou forca maior, obrigando-se, entretanto, a manter backup de seguranca de todos os arquivos pelo prazo minimo de 90 (noventa) dias apos a entrega.</p>
+        <h4>CLÁUSULA QUARTA - DAS ENTREGAS</h4>
+        <p>4.1. A <strong>CONTRATADA</strong> entregará aos <strong>CONTRATANTES</strong> o material fotográfico e/ou audiovisual devidamente editado, conforme especificações técnicas e prazos estabelecidos no Anexo I, parte integrante deste instrumento.</p>
+        <p>4.2. O prazo de entrega do material final será contado a partir da data de realização do evento, salvo disposição em contrário prevista no Anexo I.</p>
+        <p>4.3. A <strong>CONTRATADA</strong> não se responsabiliza pela perda do material decorrente de caso fortuito ou força maior, obrigando-se, entretanto, a manter backup de segurança de todos os arquivos pelo prazo mínimo de 90 (noventa) dias após a entrega.</p>
 
 
 
-        <h4>CLAUSULA QUINTA - DA AUTORIZACAO DE IMAGEM</h4>
-        <p>5.1. Os <strong>CONTRATANTES</strong> autorizam de forma expressa, irrevogavel e gratuita a utilizacao de suas imagens capturadas durante os eventos e ensaios, para fins de divulgacao de portfolio profissional da <strong>CONTRATADA</strong> em suas midias digitais, redes sociais, site institucional e materiais promocionais, pelo periodo de 2 (dois) anos contados da data de realizacao do evento.</p>
-        <p>5.2. A autorizacao prevista no item 5.1 abrange a reproducao, exibicao, publicacao e divulgacao das imagens em qualquer midia ou formato, desde que sem finalidade lucrativa direta e respeitando o decoro e a boa imagem dos CONTRATANTES.</p>
-        <p>5.3. Caso os <strong>CONTRATANTES</strong> desejem restringir a divulgacao de imagens especificas, deverao comunicar a <strong>CONTRATADA</strong> por escrito em ate 15 (quinze) dias apos a data do evento.</p>
+        <h4>CLÁUSULA QUINTA - DA AUTORIZAÇÃO DE IMAGEM</h4>
+        <p>5.1. Os <strong>CONTRATANTES</strong> autorizam de forma expressa, irrevogável e gratuita a utilização de suas imagens capturadas durante os eventos e ensaios, para fins de divulgação de portfólio profissional da <strong>CONTRATADA</strong> em suas mídias digitais, redes sociais, site institucional e materiais promocionais, pelo período de 2 (dois) anos contados da data de realização do evento.</p>
+        <p>5.2. A autorização prevista no item 5.1 abrange a reprodução, exibição, publicação e divulgação das imagens em qualquer mídia ou formato, desde que sem finalidade lucrativa direta e respeitando o decoro e a boa imagem dos CONTRATANTES.</p>
+        <p>5.3. Caso os <strong>CONTRATANTES</strong> desejem restringir a divulgação de imagens específicas, deverão comunicar a <strong>CONTRATADA</strong> por escrito em até 15 (quinze) dias após a data do evento.</p>
 
-        <h4>CLAUSULA SEXTA - DAS OBRIGACOES DA CONTRATADA</h4>
-        <p>6.1. Prestar os servicos contratados com zelo profissional, utilizando equipamentos adequados e profissionais qualificados de sua inteira confianca.<br>
-        6.2. Comparecer ao local do evento com antecedencia minima necessaria para preparacao e montagem dos equipamentos.<br>
-        6.3. Disponibilizar aos CONTRATANTES os contatos telefonicos e de WhatsApp da equipe escalada para o dia do evento.<br>
-        6.4. Manter sigilo absoluto sobre as informacoes pessoais e dados compartilhados pelos CONTRATANTES no âmbito da prestacao dos servicos.</p>
+        <h4>CLÁUSULA SEXTA - DAS OBRIGAÇÕES DA CONTRATADA</h4>
+        <p>6.1. Prestar os serviços contratados com zelo profissional, utilizando equipamentos adequados e profissionais qualificados de sua inteira confiança.<br>
+        6.2. Comparecer ao local do evento com antecedência mínima necessária para preparação e montagem dos equipamentos.<br>
+        6.3. Disponibilizar aos CONTRATANTES os contatos telefônicos e de WhatsApp da equipe escalada para o dia do evento.<br>
+        6.4. Manter sigilo absoluto sobre as informações pessoais e dados compartilhados pelos CONTRATANTES no âmbito da prestação dos serviços.</p>
 
-        <h4>CLAUSULA SETIMA - DAS OBRIGACOES DOS CONTRATANTES</h4>
-        <p>7.1. Fornecer alimentacao adequada para a equipe de captacao caso o tempo total do evento exceda 4 (quatro) horas.<br>
-        7.2. Garantir o livre transito dos fotografos e cinegrafistas no local do evento.<br>
+        <h4>CLÁUSULA SÉTIMA - DAS OBRIGAÇÕES DOS CONTRATANTES</h4>
+        <p>7.1. Fornecer alimentação adequada para a equipe de captação caso o tempo total do evento exceda 4 (quatro) horas.<br>
+        7.2. Garantir o livre trânsito dos fotógrafos e cinegrafistas no local do evento.<br>
         7.3. Efetuar os pagamentos rigorosamente em dia, conforme cronograma acordado.<br>
-        7.4. Disponibilizar os convites e credenciais necessarios para acesso da equipe aos locais dos eventos.<br>
-        7.5. Informar a <strong>CONTRATADA</strong> com antecedencia minima de 48 (quarenta e oito) horas sobre qualquer alteracao de horario ou local dos eventos.</p>
+        7.4. Disponibilizar os convites e credenciais necessários para acesso da equipe aos locais dos eventos.<br>
+        7.5. Informar a <strong>CONTRATADA</strong> com antecedência mínima de 48 (quarenta e oito) horas sobre qualquer alteração de horário ou local dos eventos.</p>
 
-        <h4>CLAUSULA OITAVA - DA CESSAO</h4>
-        <p>8.1. A <strong>CONTRATADA</strong> podera ceder ou subcontratar total ou parcialmente os servicos objeto deste contrato a terceiros de sua confianca, mantendo-se como unica responsavel perante os CONTRATANTES pela fiel execucao do objeto contratado.</p>
-        <p>8.2. Os <strong>CONTRATANTES</strong> nao poderao ceder ou transferir a terceiros os direitos e obrigacoes decorrentes deste contrato sem a previa e expressa autorizacao por escrito da CONTRATADA.</p>
-
-
-
-        <h4>CLAUSULA NONA - DA RESCISAO CONTRATUAL E MULTAS</h4>
-        <p>9.1. Em caso de cancelamento unilateral imotivado por parte dos <strong>CONTRATANTES</strong> com menos de 30 (trinta) dias da data do evento, nenhum valor pago a titulo de sinal ou reserva sera reembolsado, configurando-se como clausula penal de natureza compensatoria.</p>
-        <p>9.2. Em caso de cancelamento com antecedencia superior a 30 (trinta) dias, os valores ja pagos serao devolvidos deduzindo-se o percentual de 20% (vinte por cento) a titulo de multa compensatoria pela reserva de data e custos administrativos ja incorridos.</p>
-        <p>9.3. Em descumprimento de quaisquer outras clausulas deste contrato, incidira multa penal de 10% (dez por cento) sobre o valor remanescente do instrumento, sem prejuizo de perdas e danos.</p>
-        <p>9.4. A <strong>CONTRATADA</strong> podera rescindir o contrato de pleno direito caso os <strong>CONTRATANTES</strong> descumpram com as obrigacoes pecuniarias aqui assumidas, ficando autorizada a reter os valores eventualmente ja recebidos a titulo de indenizacao minima.</p>
-
-        <h4>CLAUSULA DECIMA - DISPOSICOES GERAIS</h4>
-        <p>10.1. O presente instrumento nao gera vinculo de natureza empregaticia entre as partes contratantes, nem solidariedade trabalhista ou previdenciaria.</p>
-        <p>10.2. As partes elegem o Anexo I como parte integrante e indissociavel deste contrato para todos os fins de direito.</p>
-        <p>10.3. Qualquer alteracao neste instrumento devera ser feita por escrito, mediante aditivo contratual assinado por ambas as partes.</p>
-        <p>10.4. A tolerancia ao descumprimento de qualquer clausula ou condicao deste contrato nao constituira novacao ou precedente, nem afetara o exercicio posterior do direito pela parte inocente.</p>
-        <p>10.5. As partes se comprometem a buscar uma solucao amigavel, por meio de negociacao direta, antes de recorrer a qualquer via judicial para resolucao de eventuais controversias.</p>
+        <h4>CLÁUSULA OITAVA - DA CESSÃO</h4>
+        <p>8.1. A <strong>CONTRATADA</strong> poderá ceder ou subcontratar total ou parcialmente os serviços objeto deste contrato a terceiros de sua confiança, mantendo-se como única responsável perante os CONTRATANTES pela fiel execução do objeto contratado.</p>
+        <p>8.2. Os <strong>CONTRATANTES</strong> não poderão ceder ou transferir a terceiros os direitos e obrigações decorrentes deste contrato sem a prévia e expressa autorização por escrito da CONTRATADA.</p>
 
 
 
-        <h4>CLAUSULA DECIMA PRIMEIRA - DO FORO</h4>
-        <p>11.1. Fica eleito o foro da Comarca de Vitoria/ES para dirimir quaisquer duvidas ou controversias decorrentes do presente contrato, com expressa renuncia a qualquer outro, por mais privilegiado que seja.</p>
+        <h4>CLÁUSULA NONA - DA RESCISÃO CONTRATUAL E MULTAS</h4>
+        <p>9.1. Em caso de cancelamento unilateral imotivado por parte dos <strong>CONTRATANTES</strong> com menos de 30 (trinta) dias da data do evento, nenhum valor pago a título de sinal ou reserva será reembolsado, configurando-se como cláusula penal de natureza compensatória.</p>
+        <p>9.2. Em caso de cancelamento com antecedência superior a 30 (trinta) dias, os valores já pagos serão devolvidos deduzindo-se o percentual de 20% (vinte por cento) a título de multa compensatória pela reserva de data e custos administrativos já incorridos.</p>
+        <p>9.3. Em descumprimento de quaisquer outras cláusulas deste contrato, incidirá multa penal de 10% (dez por cento) sobre o valor remanescente do instrumento, sem prejuízo de perdas e danos.</p>
+        <p>9.4. A <strong>CONTRATADA</strong> poderá rescindir o contrato de pleno direito caso os <strong>CONTRATANTES</strong> descumpram com as obrigações pecuniárias aqui assumidas, ficando autorizada a reter os valores eventualmente já recebidos a título de indenização mínima.</p>
+
+        <h4>CLÁUSULA DÉCIMA - DISPOSIÇÕES GERAIS</h4>
+        <p>10.1. O presente instrumento não gera vínculo de natureza empregatícia entre as partes contratantes, nem solidariedade trabalhista ou previdenciária.</p>
+        <p>10.2. As partes elegem o Anexo I como parte integrante e indissociável deste contrato para todos os fins de direito.</p>
+        <p>10.3. Qualquer alteração neste instrumento deverá ser feita por escrito, mediante aditivo contratual assinado por ambas as partes.</p>
+        <p>10.4. A tolerância ao descumprimento de qualquer cláusula ou condição deste contrato não constituirá novação ou precedente, nem afetará o exercício posterior do direito pela parte inocente.</p>
+        <p>10.5. As partes se comprometem a buscar uma solução amigável, por meio de negociação direta, antes de recorrer a qualquer via judicial para resolução de eventuais controvérsias.</p>
 
 
 
-        <p class="p-closing">Vitoria/ES, ' . $dataContratoPorExtenso . '.</p>
+        <h4>CLÁUSULA DÉCIMA PRIMEIRA - DO FORO</h4>
+        <p>11.1. Fica eleito o foro da Comarca de Vitória/ES para dirimir quaisquer dúvidas ou controvérsias decorrentes do presente contrato, com expressa renúncia a qualquer outro, por mais privilegiado que seja.</p>
+
+
+
+        <p class="p-closing">Vitória/ES, ' . $dataContratoPorExtenso . '.</p>
         ';
     }
     
@@ -683,9 +675,60 @@ require_once __DIR__ . '/../includes/layout/head.php';
                                 </div>
                             </div>
 
+                            <!-- Calculadora de Condições de Pagamento -->
+                            <div class="p-5 bg-black/40 border border-white/5 rounded-2xl space-y-4 mb-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="text-[10px] font-black uppercase tracking-widest text-zinc-400">Calculadora de Condições de Pagamento</div>
+                                    <span class="text-[8px] font-bold text-zinc-600">Cálculo Automático</span>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="space-y-1">
+                                        <label class="text-[8px] font-bold uppercase tracking-wider text-zinc-500">Sinal / Entrada (%)</label>
+                                        <input type="number" id="calc_sinal_pct" value="20" min="0" max="100" class="w-full bg-black/60 border border-white/5 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-white transition-colors">
+                                    </div>
+                                    <div class="space-y-1">
+                                        <label class="text-[8px] font-bold uppercase tracking-wider text-zinc-500">Vencimento do Sinal</label>
+                                        <input type="date" id="calc_sinal_data" value="<?= date('Y-m-d') ?>" class="w-full bg-black/60 border border-white/5 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-white transition-colors">
+                                    </div>
+                                </div>
+
+                                <div class="space-y-1">
+                                    <label class="text-[8px] font-bold uppercase tracking-wider text-zinc-500">Meio de Pagamento</label>
+                                    <select id="calc_meio" onchange="toggleMeioPagamento()" class="w-full bg-black/60 border border-white/5 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-white transition-colors">
+                                        <option value="Pix ou Boleto Bancário">Pix ou Boleto Bancário</option>
+                                        <option value="Pix">Pix</option>
+                                        <option value="Boleto Bancário">Boleto Bancário</option>
+                                        <option value="Cartão de Crédito">Cartão de Crédito</option>
+                                    </select>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-3">
+                                    <!-- Bloco do último pagamento (Pix/Boleto) -->
+                                    <div class="space-y-1 col-span-2" id="calc_ultimo_data_wrap">
+                                        <label class="text-[8px] font-bold uppercase tracking-wider text-zinc-500">Data do Último Pagamento</label>
+                                        <input type="date" id="calc_ultimo_data" value="<?= date('Y-m-d', strtotime('+5 months')) ?>" class="w-full bg-black/60 border border-white/5 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-white transition-colors">
+                                    </div>
+                                    
+                                    <!-- Bloco de parcelas (Cartão de Crédito) -->
+                                    <div class="space-y-1 col-span-2 hidden" id="calc_parcelas_wrap">
+                                        <label class="text-[8px] font-bold uppercase tracking-wider text-zinc-500">Qtd. de Parcelas (Cartão)</label>
+                                        <select id="calc_parcelas" class="w-full bg-black/60 border border-white/5 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-white transition-colors">
+                                            <?php for ($i = 1; $i <= 24; $i++): ?>
+                                                <option value="<?= $i ?>" <?= $i === 5 ? 'selected' : '' ?>><?= str_pad($i, 2, '0', STR_PAD_LEFT) ?> parcelas</option>
+                                            <?php endfor; ?>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <button type="button" onclick="calcularCondicoes()" class="w-full py-2.5 bg-zinc-800 hover:bg-white text-zinc-300 hover:text-black active:scale-95 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all cursor-pointer">
+                                    Calcular e Preencher Condições
+                                </button>
+                            </div>
+
                             <div class="space-y-1.5">
-                                <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Condições de Pagamento</label>
-                                <textarea name="condicoes_pagamento" rows="3"
+                                <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Condições de Pagamento (Texto do Contrato)</label>
+                                <textarea name="condicoes_pagamento" id="condicoes_pagamento" rows="4"
                                           class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white focus:border-white transition-all outline-none resize-none"><?= sanitizar($contrato['condicoes_pagamento']) ?></textarea>
                             </div>
                         </div>
@@ -1006,7 +1049,176 @@ document.addEventListener('DOMContentLoaded', () => {
         cbDefinir.addEventListener('change', togglePreweddingAdefinir);
     }
     togglePreweddingAdefinir();
+    
+    // Executar toggle do meio de pagamento da calculadora
+    if (typeof toggleMeioPagamento === 'function') {
+        toggleMeioPagamento();
+    }
 });
+
+function escreverValorPorExtenso(valor) {
+    if (valor === 0) return 'zero reais';
+    
+    let inteiro = Math.floor(valor);
+    let centavos = Math.round((valor - inteiro) * 100);
+    
+    let extensoInteiro = escreverNumero(inteiro) + (inteiro === 1 ? ' real' : ' reais');
+    let extensoCentavos = '';
+    
+    if (centavos > 0) {
+        extensoCentavos = ' e ' + escreverNumero(centavos) + (centavos === 1 ? ' centavo' : ' centavos');
+    }
+    
+    return extensoInteiro + extensoCentavos;
+}
+
+function escreverNumero(n) {
+    const unidades = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'];
+    const dezenas10 = ['dez', 'onze', 'doze', 'treze', 'catorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
+    const dezenas = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
+    const centenas = ['', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos'];
+    
+    if (n === 100) return 'cem';
+    if (n < 10) return unidades[n];
+    if (n >= 10 && n < 20) return dezenas10[n - 10];
+    if (n >= 20 && n < 100) {
+        let u = n % 10;
+        let d = Math.floor(n / 10);
+        return dezenas[d] + (u > 0 ? ' e ' + unidades[u] : '');
+    }
+    if (n >= 100 && n < 1000) {
+        let resto = n % 100;
+        let c = Math.floor(n / 100);
+        return centenas[c] + (resto > 0 ? ' e ' + escreverNumero(resto) : '');
+    }
+    if (n >= 1000 && n < 1000000) {
+        let mil = Math.floor(n / 1000);
+        let resto = n % 1000;
+        let extensoMil = (mil === 1 ? '' : escreverNumero(mil) + ' ') + 'mil';
+        return extensoMil + (resto > 0 ? (resto < 100 || resto % 100 === 0 ? ' e ' : ', ') + escreverNumero(resto) : '');
+    }
+    
+    return n.toString();
+}
+
+function escreverCardinal(n) {
+    const cardinais = ['', 'uma', 'duas', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove', 'dez', 'onze', 'doze', 'treze', 'catorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove', 'vinte', 'vinte e uma', 'vinte e duas', 'vinte e três', 'vinte e quatro'];
+    return cardinais[n] || n.toString();
+}
+
+function adicionarMeses(dataStr, meses) {
+    let partes = dataStr.split('-');
+    let ano = parseInt(partes[0]);
+    let mes = parseInt(partes[1]) - 1;
+    let dia = parseInt(partes[2]);
+    
+    let d = new Date(ano, mes + meses, dia);
+    let mesAlvo = (mes + meses) % 12;
+    if (mesAlvo < 0) mesAlvo += 12;
+    if (d.getMonth() !== mesAlvo) {
+        d.setDate(0);
+    }
+    
+    let anoResult = d.getFullYear();
+    let mesResult = (d.getMonth() + 1).toString().padStart(2, '0');
+    let diaResult = d.getDate().toString().padStart(2, '0');
+    
+    return `${diaResult}/${mesResult}/${anoResult}`;
+}
+
+function formatarMoeda(valor) {
+    return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+function toggleMeioPagamento() {
+    let meio = document.getElementById('calc_meio').value;
+    let ultimoWrap = document.getElementById('calc_ultimo_data_wrap');
+    let parcelasWrap = document.getElementById('calc_parcelas_wrap');
+    
+    if (meio === 'Cartão de Crédito') {
+        if (ultimoWrap) ultimoWrap.classList.add('hidden');
+        if (parcelasWrap) parcelasWrap.classList.remove('hidden');
+    } else {
+        if (ultimoWrap) ultimoWrap.classList.remove('hidden');
+        if (parcelasWrap) parcelasWrap.classList.add('hidden');
+    }
+}
+
+function calcularCondicoes() {
+    let totalInput = document.querySelector('[name="valor_total"]').value;
+    let total = parseFloat(totalInput.replace(/[^\d,]/g, '').replace(',', '.'));
+    
+    if (isNaN(total) || total <= 0) {
+        alert('Por favor, preencha o Valor Total do contrato.');
+        return;
+    }
+    
+    let sinalPct = parseInt(document.getElementById('calc_sinal_pct').value) || 0;
+    let sinalDataStr = document.getElementById('calc_sinal_data').value;
+    let meioPagamento = document.getElementById('calc_meio').value;
+    
+    if (!sinalDataStr) {
+        alert('Por favor, preencha a data do Sinal.');
+        return;
+    }
+    
+    let qtdParcelas = 1;
+    let primeiraParcelaDataStr = '';
+    
+    // Primeira parcela vence 1 mês após o sinal
+    let sinalSplit = sinalDataStr.split('-');
+    let sinalAno = parseInt(sinalSplit[0]);
+    let sinalMes = parseInt(sinalSplit[1]) - 1; // 0-indexed
+    let sinalDia = parseInt(sinalSplit[2]);
+    
+    let d1 = new Date(sinalAno, sinalMes + 1, sinalDia);
+    if (d1.getMonth() !== (sinalMes + 1) % 12) {
+        d1.setDate(0);
+    }
+    let p1Ano = d1.getFullYear();
+    let p1Mes = (d1.getMonth() + 1).toString().padStart(2, '0');
+    let p1Dia = d1.getDate().toString().padStart(2, '0');
+    primeiraParcelaDataStr = `${p1Ano}-${p1Mes}-${p1Dia}`;
+
+    if (meioPagamento === 'Cartão de Crédito') {
+        qtdParcelas = parseInt(document.getElementById('calc_parcelas').value) || 1;
+    } else {
+        // Pix ou Boleto: calcular quantidade de parcelas pela diferença de meses entre último pagamento e data do sinal
+        let ultimoDataStr = document.getElementById('calc_ultimo_data').value;
+        if (!ultimoDataStr) {
+            alert('Por favor, preencha a data do Último Pagamento.');
+            return;
+        }
+        
+        let dataSinal = new Date(sinalDataStr + 'T00:00:00');
+        let dataUltimo = new Date(ultimoDataStr + 'T00:00:00');
+        
+        let diffMeses = (dataUltimo.getFullYear() - dataSinal.getFullYear()) * 12 + (dataUltimo.getMonth() - dataSinal.getMonth());
+        qtdParcelas = Math.max(1, diffMeses);
+    }
+    
+    let sinalVal = total * (sinalPct / 100);
+    let saldoVal = total - sinalVal;
+    let parcelaVal = saldoVal / qtdParcelas;
+    
+    // Formatar data do sinal para exibição
+    let dataSinalFormated = `${sinalSplit[2]}/${sinalSplit[1]}/${sinalSplit[0]}`;
+    
+    let texto = `O valor total do presente contrato é de ${formatarMoeda(total)} (${escreverValorPorExtenso(total)}), que será adimplido pelo CONTRATANTE através de parcelamento direto, conforme as datas e valores especificados abaixo:\n\n`;
+    
+    if (sinalVal > 0) {
+        texto += `Sinal/Entrada (${sinalPct}%): ${formatarMoeda(sinalVal)} (${escreverValorPorExtenso(sinalVal)}) com vencimento em ${dataSinalFormated}.\n\n`;
+    }
+    
+    texto += `Saldo Restante: ${formatarMoeda(saldoVal)} (${escreverValorPorExtenso(saldoVal)}) dividido em ${qtdParcelas.toString().padStart(2, '0')} (${escreverCardinal(qtdParcelas)}) parcelas mensais e consecutivas no valor de ${formatarMoeda(parcelaVal)} (${escreverValorPorExtenso(parcelaVal)}) cada, via ${meioPagamento}, com vencimentos programados para:\n`;
+    
+    for (let i = 0; i < qtdParcelas; i++) {
+        let venc = adicionarMeses(primeiraParcelaDataStr, i);
+        texto += `- ${i + 1}ª Parcela: ${venc} — ${formatarMoeda(parcelaVal)}\n`;
+    }
+    
+    document.getElementById('condicoes_pagamento').value = texto.trim();
+}
 </script>
 
 <?php require_once __DIR__ . '/../includes/layout/footer.php'; ?>

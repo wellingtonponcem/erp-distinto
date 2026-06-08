@@ -38,7 +38,7 @@ if ($isCasamento && !empty($contratoTexto)) {
     $dataEvento = $dadosJson['data_evento'] ?? '';
 
     $n = 1;
-    $clausula2Html = '<h4>CLAUSULA SEGUNDA - PRAZO E LOCAL DE EXECUCAO DOS SERVICOS</h4>';
+    $clausula2Html = '<h4>CLÁUSULA SEGUNDA – PRAZO E LOCAL DE EXECUÇÃO DOS SERVIÇOS</h4>';
 
     if (!empty($locais['tem_prewedding'])) {
         $dataPw = !empty($locais['data_prewedding']) ? dataExtenso($locais['data_prewedding']) : 'data a ser definida em comum acordo';
@@ -75,9 +75,8 @@ if ($isCasamento && !empty($contratoTexto)) {
     $clausula2Html .= '<p>2.' . $n . '. A duracao padrao da cobertura sera aquela descrita e especificada no Anexo I, podendo ser ajustada mediante comum acordo entre as partes.</p>';
     $n++;
     $clausula2Html .= '<p>2.' . $n . '. A CONTRATADA nao se responsabiliza por atrasos ou impossibilidade de execucao dos servicos decorrentes de condicoes climaticas adversas, falhas de energia eletrica no local do evento ou quaisquer outros fatores alheios a sua vontade, comprometendo-se, nestes casos, a remarcar a data mediante comum acordo com os CONTRATANTES.</p>';
-
-    $contratoTexto = '
-    <h3>CONTRATO DE PRESTACAO DE SERVICOS</h3>
+    $contratoTexto = '
+    <h3>CONTRATO DE PRESTAÇÃO DE SERVIÇOS</h3>
     <p class="pdf-subtitle">CASAMENTO</p>
     <p class="pdf-numero">N&ordm; ' . date('Y') . '/' . substr($contrato['id'], 0, 4) . '</p>
 
@@ -89,63 +88,63 @@ if ($isCasamento && !empty($contratoTexto)) {
     <p class="p0"><strong>CONTRATADA:</strong><br>
     <strong>Distinto | Poncem Studio (Poncem Studio LTDA)</strong>, CNPJ 50.168.732/0001-63, com sede na Rod. do Sol n&ordm; 2780, sala 1307, Praia de Itaparica, Vila Velha-ES, CEP 29102-020, e-mail contato@wedistinto.com, doravante denominada <strong>CONTRATADA</strong>.</p>
 
-    <p class="p0">Firmam o presente contrato de prestacao de servicos, mediante clausulas e condicoes a seguir:</p>
+    <p class="p0">Firmam o presente contrato de prestação de serviços, mediante cláusulas e condições a seguir:</p>
 
-    <h4>CLAUSULA PRIMEIRA - DO OBJETO</h4>
-    <p>1.1. A <strong>CONTRATADA</strong> prestara servicos profissionais de cobertura fotografica e/ou producao audiovisual para o casamento dos <strong>CONTRATANTES</strong>, em conformidade com o detalhamento contido no Anexo I, que integra este instrumento.</p>
+    <h4>CLÁUSULA PRIMEIRA - DO OBJETO</h4>
+    <p>1.1. A <strong>CONTRATADA</strong> prestará serviços profissionais de cobertura fotográfica e/ou produção audiovisual para o casamento dos <strong>CONTRATANTES</strong>, em conformidade com o detalhamento contido no Anexo I, que integra este instrumento.</p>
 
     ' . $clausula2Html . '
 
-    <h4>CLAUSULA TERCEIRA - VALOR E CONDICOES DE PAGAMENTO</h4>
-    <p>3.1. Pela prestacao dos servicos contratados, os <strong>CONTRATANTES</strong> pagarao a <strong>CONTRATADA</strong> a quantia total de <strong>R$ ' . number_format($valorTotal, 2, ',', '.') . '</strong>, nas seguintes condicoes: ' . htmlspecialchars($condicoesPagamento) . '.</p>
-    <p>3.2. O pagamento sera efetuado conforme cronograma acordado entre as partes, podendo ser dividido em parcelas mensais, conforme discriminado na proposta comercial aceita pelos CONTRATANTES.</p>
-    <p>3.3. Em caso de atraso no pagamento de qualquer parcela, incidira multa de 2% (dois por cento) sobre o valor da parcela em atraso, bem como juros de mora de 1% (um por cento) ao mes e correcao monetaria pelo IPCA.</p>
+    <h4>CLÁUSULA TERCEIRA - VALOR E CONDIÇÕES DE PAGAMENTO</h4>
+    <p>3.1. Pela prestação dos serviços contratados, os <strong>CONTRATANTES</strong> pagarão à <strong>CONTRATADA</strong> a quantia total de <strong>R$ ' . number_format($valorTotal, 2, ',', '.') . '</strong>, nas seguintes condições: ' . htmlspecialchars($condicoesPagamento) . '.</p>
+    <p>3.2. O pagamento será efetuado conforme cronograma acordado entre as partes, podendo ser dividido em parcelas mensais, conforme discriminado na proposta comercial aceita pelos CONTRATANTES.</p>
+    <p>3.3. Em caso de atraso no pagamento de qualquer parcela, incidirá multa de 2% (dois por cento) sobre o valor da parcela em atraso, bem como juros de mora de 1% (um por cento) ao mês e correção monetária pelo IPCA.</p>
 
-    <h4>CLAUSULA QUARTA - DAS ENTREGAS</h4>
-    <p>4.1. A <strong>CONTRATADA</strong> entregara aos <strong>CONTRATANTES</strong> o material fotografico e/ou audiovisual devidamente editado, conforme especificacoes tecnicas e prazos estabelecidos no Anexo I, parte integrante deste instrumento.</p>
-    <p>4.2. O prazo de entrega do material final sera contado a partir da data de realizacao do evento, salvo disposicao em contrario prevista no Anexo I.</p>
-    <p>4.3. A <strong>CONTRATADA</strong> nao se responsabiliza pela perda do material decorrente de caso fortuito ou forca maior, obrigando-se, entretanto, a manter backup de seguranca de todos os arquivos pelo prazo minimo de 90 (noventa) dias apos a entrega.</p>
+    <h4>CLÁUSULA QUARTA - DAS ENTREGAS</h4>
+    <p>4.1. A <strong>CONTRATADA</strong> entregará aos <strong>CONTRATANTES</strong> o material fotográfico e/ou audiovisual devidamente editado, conforme especificações técnicas e prazos estabelecidos no Anexo I, parte integrante deste instrumento.</p>
+    <p>4.2. O prazo de entrega do material final será contado a partir da data de realização do evento, salvo disposição em contrário prevista no Anexo I.</p>
+    <p>4.3. A <strong>CONTRATADA</strong> não se responsabiliza pela perda do material decorrente de caso fortuito ou força maior, obrigando-se, entretanto, a manter backup de segurança de todos os arquivos pelo prazo mínimo de 90 (noventa) dias após a entrega.</p>
 
-    <h4>CLAUSULA QUINTA - DA AUTORIZACAO DE IMAGEM</h4>
-    <p>5.1. Os <strong>CONTRATANTES</strong> autorizam de forma expressa, irrevogavel e gratuita a utilizacao de suas imagens capturadas durante os eventos e ensaios, para fins de divulgacao de portfolio profissional da <strong>CONTRATADA</strong> em suas midias digitais, redes sociais, site institucional e materiais promocionais, pelo periodo de 2 (dois) anos contados da data de realizacao do evento.</p>
-    <p>5.2. A autorizacao prevista no item 5.1 abrange a reproducao, exibicao, publicacao e divulgacao das imagens em qualquer midia ou formato, desde que sem finalidade lucrativa direta e respeitando o decoro e a boa imagem dos CONTRATANTES.</p>
-    <p>5.3. Caso os <strong>CONTRATANTES</strong> desejem restringir a divulgacao de imagens específicas, deverao comunicar a <strong>CONTRATADA</strong> por escrito em ate 15 (quinze) dias apos a data do evento.</p>
+    <h4>CLÁUSULA QUINTA - DA AUTORIZAÇÃO DE IMAGEM</h4>
+    <p>5.1. Os <strong>CONTRATANTES</strong> autorizam de forma expressa, irrevogável e gratuita a utilização de suas imagens capturadas durante os eventos e ensaios, para fins de divulgação de portfólio profissional da <strong>CONTRATADA</strong> em suas mídias digitais, redes sociais, site institucional e materiais promocionais, pelo período de 2 (dois) anos contados da data de realização do evento.</p>
+    <p>5.2. A autorização prevista no item 5.1 abrange a reprodução, exibição, publicação e divulgação das imagens em qualquer mídia ou formato, desde que sem finalidade lucrativa direta e respeitando o decoro e a boa imagem dos CONTRATANTES.</p>
+    <p>5.3. Caso os <strong>CONTRATANTES</strong> desejem restringir a divulgação de imagens específicas, deverão comunicar a <strong>CONTRATADA</strong> por escrito em até 15 (quinze) dias após a data do evento.</p>
 
-    <h4>CLAUSULA SEXTA - DAS OBRIGACOES DA CONTRATADA</h4>
-    <p>6.1. Prestar os servicos contratados com zelo profissional, utilizando equipamentos adequados e profissionais qualificados de sua inteira confianca.<br>
-    6.2. Comparecer ao local do evento com antecedencia minima necessaria para preparacao e montagem dos equipamentos.<br>
-    6.3. Disponibilizar aos CONTRATANTES os contatos telefonicos e de WhatsApp da equipe escalada para o dia do evento.<br>
-    6.4. Manter sigilo absoluto sobre as informacoes pessoais e dados compartilhados pelos CONTRATANTES no âmbito da prestacao dos servicos.</p>
+    <h4>CLÁUSULA SEXTA - DAS OBRIGAÇÕES DA CONTRATADA</h4>
+    <p>6.1. Prestar os serviços contratados com zelo profissional, utilizando equipamentos adequados e profissionais qualificados de sua inteira confiança.<br>
+    6.2. Comparecer ao local do evento com antecedência mínima necessária para preparação e montagem dos equipamentos.<br>
+    6.3. Disponibilizar aos CONTRATANTES os contatos telefônicos e de WhatsApp da equipe escalada para o dia do evento.<br>
+    6.4. Manter sigilo absoluto sobre as informações pessoais e dados compartilhados pelos CONTRATANTES no âmbito da prestação dos serviços.</p>
 
-    <h4>CLAUSULA SETIMA - DAS OBRIGACOES DOS CONTRATANTES</h4>
-    <p>7.1. Fornecer alimentacao adequada para a equipe de captacao caso o tempo total do evento exceda 4 (quatro) horas.<br>
-    7.2. Garantir o livre transito dos fotografos e cinegrafistas no local do evento.<br>
+    <h4>CLÁUSULA SÉTIMA - DAS OBRIGAÇÕES DOS CONTRATANTES</h4>
+    <p>7.1. Fornecer alimentação adequada para a equipe de captação caso o tempo total do evento exceda 4 (quatro) horas.<br>
+    7.2. Garantir o livre trânsito dos fotógrafos e cinegrafistas no local do evento.<br>
     7.3. Efetuar os pagamentos rigorosamente em dia, conforme cronograma acordado.<br>
-    7.4. Disponibilizar os convites e credenciais necessarios para acesso da equipe aos locais dos eventos.<br>
-    7.5. Informar a <strong>CONTRATADA</strong> com antecedencia minima de 48 (quarenta e oito) horas sobre qualquer alteracao de horario ou local dos eventos.</p>
+    7.4. Disponibilizar os convites e credenciais necessários para acesso da equipe aos locais dos eventos.<br>
+    7.5. Informar a <strong>CONTRATADA</strong> com antecedência mínima de 48 (quarenta e oito) horas sobre qualquer alteração de horário ou local dos eventos.</p>
 
-    <h4>CLAUSULA OITAVA - DA CESSAO</h4>
-    <p>8.1. A <strong>CONTRATADA</strong> podera ceder ou subcontratar total ou parcialmente os servicos objeto deste contrato a terceiros de sua confianca, mantendo-se como unica responsavel perante os CONTRATANTES pela fiel execucao do objeto contratado.</p>
-    <p>8.2. Os <strong>CONTRATANTES</strong> nao poderao ceder ou transferir a terceiros os direitos e obrigacoes decorrentes deste contrato sem a previa e expressa autorizacao por escrito da CONTRATADA.</p>
+    <h4>CLÁUSULA OITAVA - DA CESSÃO</h4>
+    <p>8.1. A <strong>CONTRATADA</strong> poderá ceder ou subcontratar total ou parcialmente os serviços objeto deste contrato a terceiros de sua confiança, mantendo-se como única responsável perante os CONTRATANTES pela fiel execução do objeto contratado.</p>
+    <p>8.2. Os <strong>CONTRATANTES</strong> não poderão ceder ou transferir a terceiros os direitos e obrigações decorrentes deste contrato sem a prévia e expressa autorização por escrito da CONTRATADA.</p>
 
-    <h4>CLAUSULA NONA - DA RESCISAO CONTRATUAL E MULTAS</h4>
-    <p>9.1. Em caso de cancelamento unilateral imotivado por parte dos <strong>CONTRATANTES</strong> com menos de 30 (trinta) dias da data do evento, nenhum valor pago a titulo de sinal ou reserva sera reembolsado, configurando-se como clausula penal de natureza compensatoria.</p>
-    <p>9.2. Em caso de cancelamento com antecedencia superior a 30 (trinta) dias, os valores ja pagos serao devolvidos deduzindo-se o percentual de 20% (vinte por cento) a titulo de multa compensatoria pela reserva de data e custos administrativos ja incorridos.</p>
-    <p>9.3. Em descumprimento de quaisquer outras clausulas deste contrato, incidira multa penal de 10% (dez por cento) sobre o valor remanescente do instrumento, sem prejuizo de perdas e danos.</p>
-    <p>9.4. A <strong>CONTRATADA</strong> podera rescindir o contrato de pleno direito caso os <strong>CONTRATANTES</strong> descumpram com as obrigacoes pecuniarias aqui assumidas, ficando autorizada a reter os valores eventualmente ja recebidos a titulo de indenizacao minima.</p>
+    <h4>CLÁUSULA NONA - DA RESCISÃO CONTRATUAL E MULTAS</h4>
+    <p>9.1. Em caso de cancelamento unilateral imotivado por parte dos <strong>CONTRATANTES</strong> com menos de 30 (trinta) dias da data do evento, nenhum valor pago a título de sinal ou reserva será reembolsado, configurando-se como cláusula penal de natureza compensatória.</p>
+    <p>9.2. Em caso de cancelamento com antecedência superior a 30 (trinta) dias, os valores já pagos serão devolvidos deduzindo-se o percentual de 20% (vinte por cento) a título de multa compensatória pela reserva de data e custos administrativos já incorridos.</p>
+    <p>9.3. Em descumprimento de quaisquer outras cláusulas deste contrato, incidirá multa penal de 10% (dez por cento) sobre o valor remanescente do instrumento, sem prejuízo de perdas e danos.</p>
+    <p>9.4. A <strong>CONTRATADA</strong> poderá rescindir o contrato de pleno direito caso os <strong>CONTRATANTES</strong> descumpram com as obrigações pecuniárias aqui assumidas, ficando autorizada a reter os valores eventualmente já recebidos a título de indenização mínima.</p>
 
-    <h4>CLAUSULA DECIMA - DISPOSICOES GERAIS</h4>
-    <p>10.1. O presente instrumento nao gera vinculo de natureza empregaticia entre as partes contratantes, nem solidariedade trabalhista ou previdenciaria.</p>
-    <p>10.2. As partes elegem o Anexo I como parte integrante e indissociavel deste contrato para todos os fins de direito.</p>
-    <p>10.3. Qualquer alteracao neste instrumento devera ser feita por escrito, mediante aditivo contratual assinado por ambas as partes.</p>
-    <p>10.4. A tolerancia ao descumprimento de qualquer clausula ou condicao deste contrato nao constituira novacao ou precedente, nem afetara o exercicio posterior do direito pela parte inocente.</p>
-    <p>10.5. As partes se comprometem a buscar uma solucao amigavel, por meio de negociacao direta, antes de recorrer a qualquer via judicial para resolucao de eventuais controversias.</p>
+    <h4>CLÁUSULA DÉCIMA - DISPOSIÇÕES GERAIS</h4>
+    <p>10.1. O presente instrumento não gera vínculo de natureza empregatícia entre as partes contratantes, nem solidariedade trabalhista ou previdenciária.</p>
+    <p>10.2. As partes elegem o Anexo I como parte integrante e indissociável deste contrato para todos os fins de direito.</p>
+    <p>10.3. Qualquer alteração neste instrumento deverá ser feita por escrito, mediante aditivo contratual assinado por ambas as partes.</p>
+    <p>10.4. A tolerância ao descumprimento de qualquer cláusula ou condição deste contrato não constituirá novação ou precedente, nem afetará o exercício posterior do direito pela parte inocente.</p>
+    <p>10.5. As partes se comprometem a buscar uma solução amigável, por meio de negociação direta, antes de recorrer a qualquer via judicial para resolução de eventuais controvérsias.</p>
 
-    <h4>CLAUSULA DECIMA PRIMEIRA - DO FORO</h4>
-    <p>11.1. Fica eleito o foro da Comarca de Vitoria/ES para dirimir quaisquer duvidas ou controversias decorrentes do presente contrato, com expressa renuncia a qualquer outro, por mais privilegiado que seja.</p>
+    <h4>CLÁUSULA DÉCIMA PRIMEIRA - DO FORO</h4>
+    <p>11.1. Fica eleito o foro da Comarca de Vitória/ES para dirimir quaisquer dúvidas ou controvérsias decorrentes do presente contrato, com expressa renúncia a qualquer outro, por mais privilegiado que seja.</p>
 
-    <p class="p-closing">Vitoria/ES, ' . $dataContratoPorExtenso . '.</p>
-    ';
+    <p class="p-closing">Vitória/ES, ' . $dataContratoPorExtenso . '.</p>
+    '; ';
 }
 
 $tituloPagina = 'Visualizar Contrato';

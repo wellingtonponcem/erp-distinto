@@ -5,10 +5,12 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
 
 ## Alterações Recentes
 
-- **Datas por Extenso e Toggle de Pré-Wedding** *(jun/2026)*:
+- **Datas por Extenso, Acentuações, Toggle de Pré-Wedding e Calculadora de Parcelamento** *(jun/2026)*:
   - Adicionado checkbox "A definir em comum acordo entre as partes" para o Pré-Wedding no formulário de `contrato_gerar.php`.
   - Criado comportamento dinâmico em JS para desabilitar/esmaecer o input de endereço físico quando o toggle estiver ativo.
   - Implementada a renderização de datas de ensaios/evento por extenso (`dataExtenso()`) nas minutas e visualizações dos contratos (`contrato_gerar.php` e `contrato_visualizar.php`).
+  - Corrigidas e restauradas as acentuações do português do Brasil em todas as cláusulas do template de Casamento nas páginas `contrato_gerar.php` e `contrato_visualizar.php`.
+  - Adicionada uma **Calculadora de Parcelas Automática** que calcula dinamicamente o número de parcelas baseando-se na diferença de meses entre a data de Entrada/Sinal e a do Último Pagamento (em caso de Pix/Boleto), ou permite a seleção manual da quantidade de parcelas (para Cartão de Crédito).
 
 - **Correção do Editor Visual de Contratos** *(jun/2026)*:
   - `contrato_gerar.php` exibia HTML cru porque o CKEditor 5 tinha CDN descontinuada. Substituído por **Quill.js 2**.
