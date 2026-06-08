@@ -582,16 +582,29 @@ require_once __DIR__ . '/../includes/layout/head.php';
                             </span>
                             
                             <?php if ($contrato['proposta_id']): ?>
-                                <button type="button" @click="gerarAnexoIA()" :disabled="iaAnexoLoading" 
-                                        class="px-4 py-1.5 bg-zinc-800 text-zinc-200 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black active:scale-95 transition-all flex items-center gap-1.5 disabled:opacity-50">
-                                    <template x-if="!iaAnexoLoading">
-                                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-                                    </template>
-                                    <template x-if="iaAnexoLoading">
-                                        <svg class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg>
-                                    </template>
-                                    <span x-text="iaAnexoLoading ? 'Gerando...' : 'Reescrever via IA'"></span>
-                                </button>
+                                <div class="flex items-center gap-2">
+                                    <button type="button" @click="gerarAnexoIA()" :disabled="iaAnexoLoading" 
+                                            class="px-4 py-1.5 bg-zinc-800 text-zinc-200 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black active:scale-95 transition-all flex items-center gap-1.5 disabled:opacity-50">
+                                        <template x-if="!iaAnexoLoading">
+                                            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                                        </template>
+                                        <template x-if="iaAnexoLoading">
+                                            <svg class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg>
+                                        </template>
+                                        <span x-text="iaAnexoLoading ? 'Gerando...' : 'Reescrever via IA'"></span>
+                                    </button>
+
+                                    <button type="button" @click="atualizarAnexo()" :disabled="iaSaveLoading"
+                                            class="px-4 py-1.5 bg-zinc-800 text-zinc-200 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black active:scale-95 transition-all flex items-center gap-1.5 disabled:opacity-50">
+                                        <template x-if="!iaSaveLoading">
+                                            <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                                        </template>
+                                        <template x-if="iaSaveLoading">
+                                            <svg class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg>
+                                        </template>
+                                        <span x-text="iaSaveLoading ? 'Salvando...' : 'Atualizar Anexo'"></span>
+                                    </button>
+                                </div>
                             <?php endif; ?>
                         </h2>
                         
@@ -808,6 +821,7 @@ function contratoGerarApp() {
         propostaId: <?= json_encode($contrato['proposta_id']) ?>,
         contratoId: <?= json_encode($contrato['id']) ?>,
         iaAnexoLoading: false,
+        iaSaveLoading: false,
         copilotTexto: '',
         copilotPrompt: '',
         copilotResultado: '',
@@ -845,6 +859,31 @@ function contratoGerarApp() {
             });
         },
         
+        atualizarAnexo() {
+            if (!this.contratoId) return;
+            this.iaSaveLoading = true;
+
+            fetch('<?= raizUrl("/api/contratos/atualizar_anexo.php") ?>', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contrato_id: this.contratoId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.erro || 'Falha ao gerar anexo.');
+                    this.iaSaveLoading = false;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Erro de conexão ao gerar anexo.');
+                this.iaSaveLoading = false;
+            });
+        },
+
         copilotOtimizar() {
             if (!this.copilotTexto.trim()) return;
             this.copilotLoading = true;
