@@ -41,28 +41,34 @@ if ($isCasamento && !empty($contratoTexto)) {
     $clausula2Html = '<h4>CLAUSULA SEGUNDA - PRAZO E LOCAL DE EXECUCAO DOS SERVICOS</h4>';
 
     if (!empty($locais['tem_prewedding'])) {
-        $dataPw = !empty($locais['data_prewedding']) ? date('d/m/Y', strtotime($locais['data_prewedding'])) : 'a definir';
-        $localPw = !empty($locais['local_prewedding']) ? htmlspecialchars($locais['local_prewedding']) : 'local a ser definido em comum acordo';
+        $dataPw = !empty($locais['data_prewedding']) ? dataExtenso($locais['data_prewedding']) : 'data a ser definida em comum acordo';
+        
+        $localPw = 'local a ser definido em comum acordo entre as partes';
+        if (empty($locais['local_prewedding_a_definir']) && !empty($locais['local_prewedding'])) {
+            $localPw = htmlspecialchars($locais['local_prewedding']);
+        }
+        
         $clausula2Html .= '<p>2.' . $n . '. Ensaio Pre-Wedding: Previsto para <strong>' . $dataPw . '</strong>, em ' . $localPw . '.</p>';
         $n++;
     }
 
     if (!empty($locais['tem_cartorio'])) {
-        $dataCt = !empty($dataEvento) ? date('d/m/Y', strtotime($dataEvento)) : 'a definir';
+        $dataCt = !empty($dataEvento) ? dataExtenso($dataEvento) : 'data a ser definida em comum acordo';
         $localCt = !empty($locais['local_cartorio']) ? htmlspecialchars($locais['local_cartorio']) : 'a definir em comum acordo entre as partes';
         $clausula2Html .= '<p>2.' . $n . '. Cerimonia Civil: Prevista para <strong>' . $dataCt . '</strong>, em ' . $localCt . '.</p>';
         $n++;
     }
 
     if (!empty($locais['tem_cerimonia'])) {
-        $dataCe = !empty($locais['data_cerimonia']) ? date('d/m/Y', strtotime($locais['data_cerimonia'])) : 'a definir';
+        $dataCe = !empty($locais['data_cerimonia']) ? dataExtenso($locais['data_cerimonia']) : 'data a ser definida em comum acordo';
         $localCe = !empty($locais['local_cerimonia']) ? htmlspecialchars($locais['local_cerimonia']) : 'local a ser definido em comum acordo';
         $clausula2Html .= '<p>2.' . $n . '. Cerimonia e Festa: Prevista para <strong>' . $dataCe . '</strong>, em ' . $localCe . '.</p>';
         $n++;
     }
 
     if ($n === 1) {
-        $clausula2Html .= '<p>2.1. Os servicos serao executados na data de <strong>' . ($dataEvento ? date('d/m/Y', strtotime($dataEvento)) : '[Data do Evento]') . '</strong>, em local a definir em comum acordo entre as partes.</p>';
+        $dataEv = !empty($dataEvento) ? dataExtenso($dataEvento) : 'data a ser definida em comum acordo';
+        $clausula2Html .= '<p>2.1. Os servicos serao executados na data de <strong>' . $dataEv . '</strong>, em local a definir em comum acordo entre as partes.</p>';
         $n++;
     }
 

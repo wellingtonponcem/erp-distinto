@@ -117,28 +117,34 @@ if (isset($_GET['proposta_id'])) {
         $clausula2 = '<h4>CLÁUSULA SEGUNDA – PRAZO E LOCAL DE EXECUÇÃO DOS SERVIÇOS</h4>';
 
         if (!empty($locais['tem_prewedding'])) {
-            $dataPw = !empty($locais['data_prewedding']) ? date('d/m/Y', strtotime($locais['data_prewedding'])) : 'a definir';
-            $localPw = !empty($locais['local_prewedding']) ? htmlspecialchars($locais['local_prewedding']) : 'local a ser definido em comum acordo';
+            $dataPw = !empty($locais['data_prewedding']) ? dataExtenso($locais['data_prewedding']) : 'data a ser definida em comum acordo';
+            
+            $localPw = 'local a ser definido em comum acordo entre as partes';
+            if (empty($locais['local_prewedding_a_definir']) && !empty($locais['local_prewedding'])) {
+                $localPw = htmlspecialchars($locais['local_prewedding']);
+            }
+            
             $clausula2 .= '<p>2.' . $n . '. Ensaio Pré-Wedding: Previsto para <strong>' . $dataPw . '</strong>, em ' . $localPw . '.</p>';
             $n++;
         }
 
         if (!empty($locais['tem_cartorio'])) {
-            $dataCt = !empty($dataEvento) ? date('d/m/Y', strtotime($dataEvento)) : 'a definir';
+            $dataCt = !empty($dataEvento) ? dataExtenso($dataEvento) : 'data a ser definida em comum acordo';
             $localCt = !empty($locais['local_cartorio']) ? htmlspecialchars($locais['local_cartorio']) : 'a definir em comum acordo entre as partes';
             $clausula2 .= '<p>2.' . $n . '. Cerimônia Civil: Prevista para <strong>' . $dataCt . '</strong>, em ' . $localCt . '.</p>';
             $n++;
         }
 
         if (!empty($locais['tem_cerimonia'])) {
-            $dataCe = !empty($locais['data_cerimonia']) ? date('d/m/Y', strtotime($locais['data_cerimonia'])) : 'a definir';
+            $dataCe = !empty($locais['data_cerimonia']) ? dataExtenso($locais['data_cerimonia']) : 'data a ser definida em comum acordo';
             $localCe = !empty($locais['local_cerimonia']) ? htmlspecialchars($locais['local_cerimonia']) : 'local a ser definido em comum acordo';
             $clausula2 .= '<p>2.' . $n . '. Cerimônia e Festa: Prevista para <strong>' . $dataCe . '</strong>, em ' . $localCe . '.</p>';
             $n++;
         }
 
         if ($n === 1) {
-            $clausula2 .= '<p>2.1. Os serviços serão executados na data de <strong>' . ($dataEvento ? date('d/m/Y', strtotime($dataEvento)) : '[Data do Evento]') . '</strong>, em local a definir em comum acordo entre as partes.</p>';
+            $dataEv = !empty($dataEvento) ? dataExtenso($dataEvento) : 'data a ser definida em comum acordo';
+            $clausula2 .= '<p>2.1. Os serviços serão executados na data de <strong>' . $dataEv . '</strong>, em local a definir em comum acordo entre as partes.</p>';
             $n++;
         }
 
@@ -365,7 +371,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $vigenciaMeses = sanitizar($_POST['vigencia_meses'] ?? '');
     $contratoTexto = $_POST['contrato_texto'] ?? '';
     $anexoTexto = $_POST['anexo_texto'] ?? '';
-    $locais = ['tem_prewedding' => isset($_POST['tem_prewedding']) ? '1' : '', 'local_prewedding' => sanitizar($_POST['local_prewedding'] ?? ''), 'data_prewedding' => sanitizar($_POST['data_prewedding'] ?? ''), 'tem_cartorio' => isset($_POST['tem_cartorio']) ? '1' : '', 'local_cartorio' => sanitizar($_POST['local_cartorio'] ?? ''), 'tem_cerimonia' => isset($_POST['tem_cerimonia']) ? '1' : '', 'local_cerimonia' => sanitizar($_POST['local_cerimonia'] ?? ''), 'data_cerimonia' => sanitizar($_POST['data_cerimonia'] ?? '')];
+    $locais = [
+        'tem_prewedding' => isset($_POST['tem_prewedding']) ? '1' : '',
+        'local_prewedding' => sanitizar($_POST['local_prewedding'] ?? ''),
+        'local_prewedding_a_definir' => isset($_POST['local_prewedding_a_definir']) ? '1' : '',
+        'data_prewedding' => sanitizar($_POST['data_prewedding'] ?? ''),
+        'tem_cartorio' => isset($_POST['tem_cartorio']) ? '1' : '',
+        'local_cartorio' => sanitizar($_POST['local_cartorio'] ?? ''),
+        'tem_cerimonia' => isset($_POST['tem_cerimonia']) ? '1' : '',
+        'local_cerimonia' => sanitizar($_POST['local_cerimonia'] ?? ''),
+        'data_cerimonia' => sanitizar($_POST['data_cerimonia'] ?? '')
+    ];
 
     // Regenerate full contract template for wedding contracts
     if ($proposta && $proposta['tipo'] === 'casamento') {
@@ -373,28 +389,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $clausula2Html = '<h4>CLAUSULA SEGUNDA - PRAZO E LOCAL DE EXECUCAO DOS SERVICOS</h4>';
 
         if (!empty($locais['tem_prewedding'])) {
-            $dataPw = !empty($locais['data_prewedding']) ? date('d/m/Y', strtotime($locais['data_prewedding'])) : 'a definir';
-            $localPw = !empty($locais['local_prewedding']) ? htmlspecialchars($locais['local_prewedding']) : 'local a ser definido em comum acordo';
+            $dataPw = !empty($locais['data_prewedding']) ? dataExtenso($locais['data_prewedding']) : 'data a ser definida em comum acordo';
+            
+            $localPw = 'local a ser definido em comum acordo entre as partes';
+            if (empty($locais['local_prewedding_a_definir']) && !empty($locais['local_prewedding'])) {
+                $localPw = htmlspecialchars($locais['local_prewedding']);
+            }
+            
             $clausula2Html .= '<p>2.' . $n . '. Ensaio Pre-Wedding: Previsto para <strong>' . $dataPw . '</strong>, em ' . $localPw . '.</p>';
             $n++;
         }
 
         if (!empty($locais['tem_cartorio'])) {
-            $dataCt = !empty($dataEvento) ? date('d/m/Y', strtotime($dataEvento)) : 'a definir';
+            $dataCt = !empty($dataEvento) ? dataExtenso($dataEvento) : 'data a ser definida em comum acordo';
             $localCt = !empty($locais['local_cartorio']) ? htmlspecialchars($locais['local_cartorio']) : 'a definir em comum acordo entre as partes';
             $clausula2Html .= '<p>2.' . $n . '. Cerimonia Civil: Prevista para <strong>' . $dataCt . '</strong>, em ' . $localCt . '.</p>';
             $n++;
         }
 
         if (!empty($locais['tem_cerimonia'])) {
-            $dataCe = !empty($locais['data_cerimonia']) ? date('d/m/Y', strtotime($locais['data_cerimonia'])) : 'a definir';
+            $dataCe = !empty($locais['data_cerimonia']) ? dataExtenso($locais['data_cerimonia']) : 'data a ser definida em comum acordo';
             $localCe = !empty($locais['local_cerimonia']) ? htmlspecialchars($locais['local_cerimonia']) : 'local a ser definido em comum acordo';
             $clausula2Html .= '<p>2.' . $n . '. Cerimonia e Festa: Prevista para <strong>' . $dataCe . '</strong>, em ' . $localCe . '.</p>';
             $n++;
         }
 
         if ($n === 1) {
-            $clausula2Html .= '<p>2.1. Os servicos serao executados na data de <strong>' . ($dataEvento ? date('d/m/Y', strtotime($dataEvento)) : '[Data do Evento]') . '</strong>, em local a definir em comum acordo entre as partes.</p>';
+            $dataEv = !empty($dataEvento) ? dataExtenso($dataEvento) : 'data a ser definida em comum acordo';
+            $clausula2Html .= '<p>2.1. Os servicos serao executados na data de <strong>' . $dataEv . '</strong>, em local a definir em comum acordo entre as partes.</p>';
             $n++;
         }
 
@@ -734,6 +756,11 @@ require_once __DIR__ . '/../includes/layout/head.php';
                                 <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Local do Pré-Wedding</label>
                                 <input type="text" name="local_prewedding" value="<?= sanitizar($locais['local_prewedding'] ?? '') ?>" placeholder="Endereço ou 'a definir'"
                                        class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+                                <div class="flex items-center gap-2 mt-1">
+                                    <input type="checkbox" name="local_prewedding_a_definir" id="local_prewedding_a_definir" value="1" <?= !empty($locais['local_prewedding_a_definir']) ? 'checked' : '' ?>
+                                           class="w-3.5 h-3.5 rounded accent-white">
+                                    <label for="local_prewedding_a_definir" class="text-[9px] font-bold text-zinc-400 cursor-pointer">A definir em comum acordo entre as partes</label>
+                                </div>
                             </div>
 
                             <!-- Cartório -->
@@ -960,6 +987,25 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    const togglePreweddingAdefinir = () => {
+        const cbDefinir = document.querySelector('[name="local_prewedding_a_definir"]');
+        const inputLocal = document.querySelector('[name="local_prewedding"]');
+        if (cbDefinir && inputLocal) {
+            inputLocal.disabled = cbDefinir.checked;
+            if (cbDefinir.checked) {
+                inputLocal.classList.add('opacity-50');
+            } else {
+                inputLocal.classList.remove('opacity-50');
+            }
+        }
+    };
+
+    const cbDefinir = document.querySelector('[name="local_prewedding_a_definir"]');
+    if (cbDefinir) {
+        cbDefinir.addEventListener('change', togglePreweddingAdefinir);
+    }
+    togglePreweddingAdefinir();
 });
 </script>
 

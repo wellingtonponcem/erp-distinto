@@ -5,6 +5,11 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
 
 ## Alterações Recentes
 
+- **Datas por Extenso e Toggle de Pré-Wedding** *(jun/2026)*:
+  - Adicionado checkbox "A definir em comum acordo entre as partes" para o Pré-Wedding no formulário de `contrato_gerar.php`.
+  - Criado comportamento dinâmico em JS para desabilitar/esmaecer o input de endereço físico quando o toggle estiver ativo.
+  - Implementada a renderização de datas de ensaios/evento por extenso (`dataExtenso()`) nas minutas e visualizações dos contratos (`contrato_gerar.php` e `contrato_visualizar.php`).
+
 - **Correção do Editor Visual de Contratos** *(jun/2026)*:
   - `contrato_gerar.php` exibia HTML cru porque o CKEditor 5 tinha CDN descontinuada. Substituído por **Quill.js 2**.
   - Corrigidos erros de sintaxe nos headers dos fetches (`'Content-Type: application/json'` -> `'Content-Type': 'application/json'`) que travavam o Alpine.js e deixavam os botões de ação e do anexo invisíveis (tracinhos pretos).
