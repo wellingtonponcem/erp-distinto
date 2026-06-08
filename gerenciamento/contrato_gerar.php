@@ -849,7 +849,8 @@ function contratoGerarApp() {
         }
     }
 }
-
+</script>
+<script>
 // Initialize CKEditor
 document.addEventListener('DOMContentLoaded', () => {
     ClassicEditor
