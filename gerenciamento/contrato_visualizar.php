@@ -29,32 +29,16 @@ $locais = $dadosJson['locais'] ?? ['tem_prewedding' => '', 'local_prewedding' =>
 $contratoTexto = $dadosJson['contrato_texto'] ?? '';
 $anexoTexto = $dadosJson['anexo_texto'] ?? '';
 
-// Dynamically render the header with current signatario data
-if (!empty($contratoTexto)) {
-    $headerHtml = '<p>Pelo presente instrumento particular, de um lado:</p>';
-    $headerHtml .= '<p><strong>CONTRATANTES:</strong><br>';
-    $headerHtml .= '<strong>' . ($sig1['nome'] ?: '[Nome da Noiva]') . '</strong>, portadora do CPF n&ordm; ' . ($sig1['cpf'] ?: '[CPF da Noiva]') . ', e <strong>' . ($sig2['nome'] ?: '[Nome do Noivo]') . '</strong>, portador do CPF n&ordm; ' . ($sig2['cpf'] ?: '[CPF do Noivo]') . ', doravante denominados simplesmente <strong>CONTRATANTES</strong>.</p>';
-    $headerHtml .= '<p><strong>CONTRATADA:</strong><br>';
-    $headerHtml .= '<strong>Distinto | Poncem Studio (Poncem Studio LTDA)</strong>, CNPJ 50.168.732/0001-63, com sede na Rod. do Sol n&ordm; 2780, sala 1307, Praia de Itaparica, Vila Velha-ES, CEP 29102-020, e-mail contato@wedistinto.com, doravante denominada <strong>CONTRATADA</strong>.</p>';
-    $headerHtml .= '<p>Firmam o presente contrato de prestacao de servicos, mediante clausulas e condicoes a seguir:</p>';
+// For wedding contracts, regenerate full text from current data
+$isCasamento = (stripos($contratoTexto, 'CASAMENTO') !== false);
+if ($isCasamento && !empty($contratoTexto)) {
+    $dataContratoPorExtenso = dataExtenso($contrato['data_contrato'] ?? date('Y-m-d'));
+    $valorTotal = $contrato['valor_total'];
+    $condicoesPagamento = $contrato['condicoes_pagamento'];
+    $dataEvento = $dadosJson['data_evento'] ?? '';
 
-    // Find the header boundary: replace everything between "<h3" (title) and first "<h4" (clausula primeira)
-    $posAbertura = strpos($contratoTexto, '<h3');
-    $posPrimeiraClausula = strpos($contratoTexto, '<h4');
-
-    if ($posAbertura !== false && $posPrimeiraClausula !== false && $posPrimeiraClausula > $posAbertura) {
-        $titulo = substr($contratoTexto, $posAbertura, $posPrimeiraClausula - $posAbertura);
-        $fimTitulo = strpos($titulo, '</h3>');
-        if ($fimTitulo !== false) {
-            $tituloHtml = substr($titulo, 0, $fimTitulo + 6);
-            $resto = substr($contratoTexto, $posPrimeiraClausula);
-            $contratoTexto = substr($contratoTexto, 0, $posAbertura) . $tituloHtml . "\n\n" . $headerHtml . "\n\n" . $resto;
-        }
-    }
-
-    // Dynamically render Clause 2 with current locais data
     $clausula2Html = '<h4>CLAUSULA SEGUNDA - PRAZO E LOCAL DE EXECUCAO DOS SERVICOS</h4>';
-    $clausula2Html .= '<p>2.1. Os servicos objeto deste contrato serao executados na data de <strong>' . ($dadosJson['data_evento'] ? date('d/m/Y', strtotime($dadosJson['data_evento'])) : '[Data do Evento]') . '</strong>, conforme as especificacoes de local e horario a seguir:</p>';
+    $clausula2Html .= '<p>2.1. Os servicos objeto deste contrato serao executados na data de <strong>' . ($dataEvento ? date('d/m/Y', strtotime($dataEvento)) : '[Data do Evento]') . '</strong>, conforme as especificacoes de local e horario a seguir:</p>';
     $clausula2Html .= '<ol style="margin-bottom: 12px;">';
     if (!empty($locais['tem_prewedding'])) {
         $localPw = !empty($locais['local_prewedding']) ? htmlspecialchars($locais['local_prewedding']) : 'a definir em comum acordo entre as partes';
@@ -75,20 +59,75 @@ if (!empty($contratoTexto)) {
     $clausula2Html .= '<p>2.2. A duracao padrao da cobertura sera aquela descrita e especificada no Anexo I, podendo ser ajustada mediante comum acordo entre as partes.<br>';
     $clausula2Html .= '2.3. A CONTRATADA nao se responsabiliza por atrasos ou impossibilidade de execucao dos servicos decorrentes de condicoes climaticas adversas, falhas de energia eletrica no local do evento ou quaisquer outros fatores alheios a sua vontade, comprometendo-se, nestes casos, a remarcar a data mediante comum acordo com os CONTRATANTES.</p>';
 
-    // Replace stored Clause 2 with dynamic version (support both accented and non-accented)
-    $posClausula2 = strpos($contratoTexto, 'CLAUSULA SEGUNDA');
-    if ($posClausula2 === false) {
-        $posClausula2 = strpos($contratoTexto, 'CLÁUSULA SEGUNDA');
-    }
-    $posClausula3 = strpos($contratoTexto, 'CLAUSULA TERCEIRA');
-    if ($posClausula3 === false) {
-        $posClausula3 = strpos($contratoTexto, 'CLÁUSULA TERCEIRA');
-    }
-    if ($posClausula2 !== false && $posClausula3 !== false && $posClausula3 > $posClausula2) {
-        $beforeCl2 = substr($contratoTexto, 0, $posClausula2);
-        $afterCl3 = substr($contratoTexto, $posClausula3);
-        $contratoTexto = $beforeCl2 . $clausula2Html . "\n\n" . $afterCl3;
-    }
+    $contratoTexto = '
+    <h3 style="text-align: center;">CONTRATO DE PRESTACAO DE SERVICOS - CASAMENTO</h3>
+    <p style="text-align: center;"><strong>N&ordm; ' . date('Y') . '/' . substr($contrato['id'], 0, 4) . '</strong></p>
+
+    <p>Pelo presente instrumento particular, de um lado:</p>
+
+    <p><strong>CONTRATANTES:</strong><br>
+    <strong>' . ($sig1['nome'] ?: '[Nome da Noiva]') . '</strong>, portadora do CPF n&ordm; ' . ($sig1['cpf'] ?: '[CPF da Noiva]') . ', e <strong>' . ($sig2['nome'] ?: '[Nome do Noivo]') . '</strong>, portador do CPF n&ordm; ' . ($sig2['cpf'] ?: '[CPF do Noivo]') . ', doravante denominados simplesmente <strong>CONTRATANTES</strong>.</p>
+
+    <p><strong>CONTRATADA:</strong><br>
+    <strong>Distinto | Poncem Studio (Poncem Studio LTDA)</strong>, CNPJ 50.168.732/0001-63, com sede na Rod. do Sol n&ordm; 2780, sala 1307, Praia de Itaparica, Vila Velha-ES, CEP 29102-020, e-mail contato@wedistinto.com, doravante denominada <strong>CONTRATADA</strong>.</p>
+
+    <p>Firmam o presente contrato de prestacao de servicos, mediante clausulas e condicoes a seguir:</p>
+
+    <h4>CLAUSULA PRIMEIRA - DO OBJETO</h4>
+    <p>1.1. A <strong>CONTRATADA</strong> prestara servicos profissionais de cobertura fotografica e/ou producao audiovisual para o casamento dos <strong>CONTRATANTES</strong>, em conformidade com o detalhamento contido no Anexo I, que integra este instrumento.</p>
+
+    ' . $clausula2Html . '
+
+    <h4>CLAUSULA TERCEIRA - VALOR E CONDICOES DE PAGAMENTO</h4>
+    <p>3.1. Pela prestacao dos servicos contratados, os <strong>CONTRATANTES</strong> pagarao a <strong>CONTRATADA</strong> a quantia total de <strong>R$ ' . number_format($valorTotal, 2, ',', '.') . '</strong>, nas seguintes condicoes: ' . htmlspecialchars($condicoesPagamento) . '.</p>
+    <p>3.2. O pagamento sera efetuado conforme cronograma acordado entre as partes, podendo ser dividido em parcelas mensais, conforme discriminado na proposta comercial aceita pelos CONTRATANTES.</p>
+    <p>3.3. Em caso de atraso no pagamento de qualquer parcela, incidira multa de 2% (dois por cento) sobre o valor da parcela em atraso, bem como juros de mora de 1% (um por cento) ao mes e correcao monetaria pelo IPCA.</p>
+
+    <h4>CLAUSULA QUARTA - DAS ENTREGAS</h4>
+    <p>4.1. A <strong>CONTRATADA</strong> entregara aos <strong>CONTRATANTES</strong> o material fotografico e/ou audiovisual devidamente editado, conforme especificacoes tecnicas e prazos estabelecidos no Anexo I, parte integrante deste instrumento.</p>
+    <p>4.2. O prazo de entrega do material final sera contado a partir da data de realizacao do evento, salvo disposicao em contrario prevista no Anexo I.</p>
+    <p>4.3. A <strong>CONTRATADA</strong> nao se responsabiliza pela perda do material decorrente de caso fortuito ou forca maior, obrigando-se, entretanto, a manter backup de seguranca de todos os arquivos pelo prazo minimo de 90 (noventa) dias apos a entrega.</p>
+
+    <h4>CLAUSULA QUINTA - DA AUTORIZACAO DE IMAGEM</h4>
+    <p>5.1. Os <strong>CONTRATANTES</strong> autorizam de forma expressa, irrevogavel e gratuita a utilizacao de suas imagens capturadas durante os eventos e ensaios, para fins de divulgacao de portfolio profissional da <strong>CONTRATADA</strong> em suas midias digitais, redes sociais, site institucional e materiais promocionais, pelo periodo de 2 (dois) anos contados da data de realizacao do evento.</p>
+    <p>5.2. A autorizacao prevista no item 5.1 abrange a reproducao, exibicao, publicacao e divulgacao das imagens em qualquer midia ou formato, desde que sem finalidade lucrativa direta e respeitando o decoro e a boa imagem dos CONTRATANTES.</p>
+    <p>5.3. Caso os <strong>CONTRATANTES</strong> desejem restringir a divulgacao de imagens especificas, deverao comunicar a <strong>CONTRATADA</strong> por escrito em ate 15 (quinze) dias apos a data do evento.</p>
+
+    <h4>CLAUSULA SEXTA - DAS OBRIGACOES DA CONTRATADA</h4>
+    <p>6.1. Prestar os servicos contratados com zelo profissional, utilizando equipamentos adequados e profissionais qualificados de sua inteira confianca.<br>
+    6.2. Comparecer ao local do evento com antecedencia minima necessaria para preparacao e montagem dos equipamentos.<br>
+    6.3. Disponibilizar aos CONTRATANTES os contatos telefonicos e de WhatsApp da equipe escalada para o dia do evento.<br>
+    6.4. Manter sigilo absoluto sobre as informacoes pessoais e dados compartilhados pelos CONTRATANTES no âmbito da prestacao dos servicos.</p>
+
+    <h4>CLAUSULA SETIMA - DAS OBRIGACOES DOS CONTRATANTES</h4>
+    <p>7.1. Fornecer alimentacao adequada para a equipe de captacao caso o tempo total do evento exceda 4 (quatro) horas.<br>
+    7.2. Garantir o livre transito dos fotografos e cinegrafistas no local do evento.<br>
+    7.3. Efetuar os pagamentos rigorosamente em dia, conforme cronograma acordado.<br>
+    7.4. Disponibilizar os convites e credenciais necessarios para acesso da equipe aos locais dos eventos.<br>
+    7.5. Informar a <strong>CONTRATADA</strong> com antecedencia minima de 48 (quarenta e oito) horas sobre qualquer alteracao de horario ou local dos eventos.</p>
+
+    <h4>CLAUSULA OITAVA - DA CESSAO</h4>
+    <p>8.1. A <strong>CONTRATADA</strong> podera ceder ou subcontratar total ou parcialmente os servicos objeto deste contrato a terceiros de sua confianca, mantendo-se como unica responsavel perante os CONTRATANTES pela fiel execucao do objeto contratado.</p>
+    <p>8.2. Os <strong>CONTRATANTES</strong> nao poderao ceder ou transferir a terceiros os direitos e obrigacoes decorrentes deste contrato sem a previa e expressa autorizacao por escrito da CONTRATADA.</p>
+
+    <h4>CLAUSULA NONA - DA RESCISAO CONTRATUAL E MULTAS</h4>
+    <p>9.1. Em caso de cancelamento unilateral imotivado por parte dos <strong>CONTRATANTES</strong> com menos de 30 (trinta) dias da data do evento, nenhum valor pago a titulo de sinal ou reserva sera reembolsado, configurando-se como clausula penal de natureza compensatoria.</p>
+    <p>9.2. Em caso de cancelamento com antecedencia superior a 30 (trinta) dias, os valores ja pagos serao devolvidos deduzindo-se o percentual de 20% (vinte por cento) a titulo de multa compensatoria pela reserva de data e custos administrativos ja incorridos.</p>
+    <p>9.3. Em descumprimento de quaisquer outras clausulas deste contrato, incidira multa penal de 10% (dez por cento) sobre o valor remanescente do instrumento, sem prejuizo de perdas e danos.</p>
+    <p>9.4. A <strong>CONTRATADA</strong> podera rescindir o contrato de pleno direito caso os <strong>CONTRATANTES</strong> descumpram com as obrigacoes pecuniarias aqui assumidas, ficando autorizada a reter os valores eventualmente ja recebidos a titulo de indenizacao minima.</p>
+
+    <h4>CLAUSULA DECIMA - DISPOSICOES GERAIS</h4>
+    <p>10.1. O presente instrumento nao gera vinculo de natureza empregaticia entre as partes contratantes, nem solidariedade trabalhista ou previdenciaria.</p>
+    <p>10.2. As partes elegem o Anexo I como parte integrante e indissociavel deste contrato para todos os fins de direito.</p>
+    <p>10.3. Qualquer alteracao neste instrumento devera ser feita por escrito, mediante aditivo contratual assinado por ambas as partes.</p>
+    <p>10.4. A tolerancia ao descumprimento de qualquer clausula ou condicao deste contrato nao constituira novacao ou precedente, nem afetara o exercicio posterior do direito pela parte inocente.</p>
+    <p>10.5. As partes se comprometem a buscar uma solucao amigavel, por meio de negociacao direta, antes de recorrer a qualquer via judicial para resolucao de eventuais controversias.</p>
+
+    <h4>CLAUSULA DECIMA PRIMEIRA - DO FORO</h4>
+    <p>11.1. Fica eleito o foro da Comarca de Vitoria/ES para dirimir quaisquer duvidas ou controversias decorrentes do presente contrato, com expressa renuncia a qualquer outro, por mais privilegiado que seja.</p>
+
+    <p>Vitoria/ES, ' . $dataContratoPorExtenso . '.</p>
+    ';
 }
 
 $tituloPagina = 'Visualizar Contrato';
