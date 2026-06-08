@@ -23,8 +23,73 @@ if (!$contrato) {
 }
 
 $dadosJson = json_decode($contrato['dados_json'], true) ?: [];
+$sig1 = $dadosJson['signatario_1'] ?? ['nome' => '', 'cpf' => '', 'email' => '', 'telefone' => '', 'endereco' => ''];
+$sig2 = $dadosJson['signatario_2'] ?? ['nome' => '', 'cpf' => '', 'email' => '', 'telefone' => '', 'endereco' => ''];
+$locais = $dadosJson['locais'] ?? ['tem_prewedding' => '', 'local_prewedding' => '', 'tem_cartorio' => '', 'local_cartorio' => '', 'tem_cerimonia' => '', 'local_cerimonia' => ''];
 $contratoTexto = $dadosJson['contrato_texto'] ?? '';
 $anexoTexto = $dadosJson['anexo_texto'] ?? '';
+
+// Dynamically render the header with current signatario data
+if (!empty($contratoTexto)) {
+    $headerHtml = '<p>Pelo presente instrumento particular, de um lado:</p>';
+    $headerHtml .= '<p><strong>CONTRATANTES:</strong><br>';
+    $headerHtml .= '<strong>' . ($sig1['nome'] ?: '[Nome da Noiva]') . '</strong>, portadora do CPF n&ordm; ' . ($sig1['cpf'] ?: '[CPF da Noiva]') . ', e <strong>' . ($sig2['nome'] ?: '[Nome do Noivo]') . '</strong>, portador do CPF n&ordm; ' . ($sig2['cpf'] ?: '[CPF do Noivo]') . ', doravante denominados simplesmente <strong>CONTRATANTES</strong>.</p>';
+    $headerHtml .= '<p><strong>CONTRATADA:</strong><br>';
+    $headerHtml .= '<strong>Distinto | Poncem Studio (Poncem Studio LTDA)</strong>, CNPJ 50.168.732/0001-63, com sede na Rod. do Sol n&ordm; 2780, sala 1307, Praia de Itaparica, Vila Velha-ES, CEP 29102-020, e-mail contato@wedistinto.com, doravante denominada <strong>CONTRATADA</strong>.</p>';
+    $headerHtml .= '<p>Firmam o presente contrato de prestacao de servicos, mediante clausulas e condicoes a seguir:</p>';
+
+    // Find the header boundary: replace everything between "<h3" (title) and first "<h4" (clausula primeira)
+    $posAbertura = strpos($contratoTexto, '<h3');
+    $posPrimeiraClausula = strpos($contratoTexto, '<h4');
+
+    if ($posAbertura !== false && $posPrimeiraClausula !== false && $posPrimeiraClausula > $posAbertura) {
+        $titulo = substr($contratoTexto, $posAbertura, $posPrimeiraClausula - $posAbertura);
+        $fimTitulo = strpos($titulo, '</h3>');
+        if ($fimTitulo !== false) {
+            $tituloHtml = substr($titulo, 0, $fimTitulo + 6);
+            $resto = substr($contratoTexto, $posPrimeiraClausula);
+            $contratoTexto = substr($contratoTexto, 0, $posAbertura) . $tituloHtml . "\n\n" . $headerHtml . "\n\n" . $resto;
+        }
+    }
+
+    // Dynamically render Clause 2 with current locais data
+    $clausula2Html = '<h4>CLAUSULA SEGUNDA - PRAZO E LOCAL DE EXECUCAO DOS SERVICOS</h4>';
+    $clausula2Html .= '<p>2.1. Os servicos objeto deste contrato serao executados na data de <strong>' . ($dadosJson['data_evento'] ? date('d/m/Y', strtotime($dadosJson['data_evento'])) : '[Data do Evento]') . '</strong>, conforme as especificacoes de local e horario a seguir:</p>';
+    $clausula2Html .= '<ol style="margin-bottom: 12px;">';
+    if (!empty($locais['tem_prewedding'])) {
+        $localPw = !empty($locais['local_prewedding']) ? htmlspecialchars($locais['local_prewedding']) : 'a definir em comum acordo entre as partes';
+        $clausula2Html .= '<li><strong>Ensaio Pre-Wedding:</strong> ' . $localPw . '.</li>';
+    }
+    if (!empty($locais['tem_cartorio'])) {
+        $localCt = !empty($locais['local_cartorio']) ? htmlspecialchars($locais['local_cartorio']) : 'a definir em comum acordo entre as partes';
+        $clausula2Html .= '<li><strong>Cartorio Civil:</strong> ' . $localCt . '.</li>';
+    }
+    if (!empty($locais['tem_cerimonia'])) {
+        $localCe = !empty($locais['local_cerimonia']) ? htmlspecialchars($locais['local_cerimonia']) : 'a definir em comum acordo entre as partes';
+        $clausula2Html .= '<li><strong>Cerimonia e Festa:</strong> ' . $localCe . '.</li>';
+    }
+    if (empty($locais['tem_prewedding']) && empty($locais['tem_cartorio']) && empty($locais['tem_cerimonia'])) {
+        $clausula2Html .= '<li>Local a definir em comum acordo entre as partes.</li>';
+    }
+    $clausula2Html .= '</ol>';
+    $clausula2Html .= '<p>2.2. A duracao padrao da cobertura sera aquela descrita e especificada no Anexo I, podendo ser ajustada mediante comum acordo entre as partes.<br>';
+    $clausula2Html .= '2.3. A CONTRATADA nao se responsabiliza por atrasos ou impossibilidade de execucao dos servicos decorrentes de condicoes climaticas adversas, falhas de energia eletrica no local do evento ou quaisquer outros fatores alheios a sua vontade, comprometendo-se, nestes casos, a remarcar a data mediante comum acordo com os CONTRATANTES.</p>';
+
+    // Replace stored Clause 2 with dynamic version (support both accented and non-accented)
+    $posClausula2 = strpos($contratoTexto, 'CLAUSULA SEGUNDA');
+    if ($posClausula2 === false) {
+        $posClausula2 = strpos($contratoTexto, 'CLÁUSULA SEGUNDA');
+    }
+    $posClausula3 = strpos($contratoTexto, 'CLAUSULA TERCEIRA');
+    if ($posClausula3 === false) {
+        $posClausula3 = strpos($contratoTexto, 'CLÁUSULA TERCEIRA');
+    }
+    if ($posClausula2 !== false && $posClausula3 !== false && $posClausula3 > $posClausula2) {
+        $beforeCl2 = substr($contratoTexto, 0, $posClausula2);
+        $afterCl3 = substr($contratoTexto, $posClausula3);
+        $contratoTexto = $beforeCl2 . $clausula2Html . "\n\n" . $afterCl3;
+    }
+}
 
 $tituloPagina = 'Visualizar Contrato';
 require_once __DIR__ . '/../includes/layout/head.php';

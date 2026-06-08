@@ -120,8 +120,32 @@ if (isset($_GET['proposta_id'])) {
     // Build default Contract Body text
     $dataContratoPorExtenso = dataExtenso($dataContrato);
     $dataEvento = $dadosProposta['data_casamento'] ?? $dadosProposta['data_inicio'] ?? '';
+    $locais = [];
     
     if ($proposta['tipo'] === 'casamento') {
+        // Build Clause 2 dynamically based on locais config
+        $clausula2 = '<h4>CLÁUSULA SEGUNDA – PRAZO E LOCAL DE EXECUÇÃO DOS SERVIÇOS</h4>';
+        $clausula2 .= '<p>2.1. Os serviços objeto deste contrato serão executados na data de <strong>' . ($dataEvento ? date('d/m/Y', strtotime($dataEvento)) : '[Data do Evento]') . '</strong>, conforme as especificações de local e horário a seguir:</p>';
+        $clausula2 .= '<ol style="margin-bottom: 12px;">';
+        if (!empty($locais['tem_prewedding'])) {
+            $localPw = !empty($locais['local_prewedding']) ? htmlspecialchars($locais['local_prewedding']) : 'a definir em comum acordo entre as partes';
+            $clausula2 .= '<li><strong>Ensaio Pré-Wedding:</strong> ' . $localPw . '.</li>';
+        }
+        if (!empty($locais['tem_cartorio'])) {
+            $localCt = !empty($locais['local_cartorio']) ? htmlspecialchars($locais['local_cartorio']) : 'a definir em comum acordo entre as partes';
+            $clausula2 .= '<li><strong>Cartório Civil:</strong> ' . $localCt . '.</li>';
+        }
+        if (!empty($locais['tem_cerimonia'])) {
+            $localCe = !empty($locais['local_cerimonia']) ? htmlspecialchars($locais['local_cerimonia']) : 'a definir em comum acordo entre as partes';
+            $clausula2 .= '<li><strong>Cerimônia e Festa:</strong> ' . $localCe . '.</li>';
+        }
+        if (empty($locais['tem_prewedding']) && empty($locais['tem_cartorio']) && empty($locais['tem_cerimonia'])) {
+            $clausula2 .= '<li>Local a definir em comum acordo entre as partes.</li>';
+        }
+        $clausula2 .= '</ol>';
+        $clausula2 .= '<p>2.2. A duração padrão da cobertura será aquela descrita e especificada no Anexo I, podendo ser ajustada mediante comum acordo entre as partes.<br>';
+        $clausula2 .= '2.3. A CONTRATADA não se responsabiliza por atrasos ou impossibilidade de execução dos serviços decorrentes de condições climáticas adversas, falhas de energia elétrica no local do evento ou quaisquer outros fatores alheios à sua vontade, comprometendo-se, nestes casos, a remarcar a data mediante comum acordo com os CONTRATANTES.</p>';
+
         $contratoTexto = "
         <h3 style=\"text-align: center;\">CONTRATO DE PRESTAÇÃO DE SERVIÇOS — CASAMENTO</h3>
         <p style=\"text-align: center;\"><strong>Nº " . date('Y') . "/" . substr($contratoId, 0, 4) . "</strong></p>
@@ -139,26 +163,55 @@ if (isset($_GET['proposta_id'])) {
         <h4>CLÁUSULA PRIMEIRA – DO OBJETO</h4>
         <p>1.1. A <strong>CONTRATADA</strong> prestará serviços profissionais de cobertura fotográfica e/ou produção audiovisual para o casamento dos <strong>CONTRATANTES</strong>, em conformidade com o detalhamento contido no Anexo I, que integra este instrumento.</p>
 
-        <h4>CLÁUSULA SEGUNDA – PRAZO E LOCAL</h4>
-        <p>2.1. A cobertura fotográfica e audiovisual do casamento civil ou cerimônia está prevista para a data de <strong>" . ($dataEvento ? date('d/m/Y', strtotime($dataEvento)) : '[Data do Casamento]') . "</strong>, a ser realizada em local determinado em comum acordo entre as partes.<br>
-        2.2. A duração padrão da cobertura será aquela descrita e especificada no Anexo I.</p>
+        " . $clausula2 . "
 
         <h4>CLÁUSULA TERCEIRA – VALOR E CONDIÇÕES DE PAGAMENTO</h4>
         <p>3.1. Pela prestação dos serviços contratados, os <strong>CONTRATANTES</strong> pagarão à <strong>CONTRATADA</strong> a quantia total de <strong>R$ " . number_format($valorTotal, 2, ',', '.') . "</strong>, nas seguintes condições: " . htmlspecialchars($condicoesPagamento) . ".</p>
+        <p>3.2. O pagamento será efetuado conforme cronograma acordado entre as partes, podendo ser dividido em parcelas mensais, conforme discriminado na proposta comercial aceita pelos CONTRATANTES.</p>
+        <p>3.3. Em caso de atraso no pagamento de qualquer parcela, incidirá multa de 2% (dois por cento) sobre o valor da parcela em atraso, bem como juros de mora de 1% (um por cento) ao mês e correção monetária pelo IPCA.</p>
 
-        <h4>CLÁUSULA QUARTA – DA AUTORIZAÇÃO DE IMAGEM</h4>
-        <p>4.1. Os <strong>CONTRATANTES</strong> autorizam de forma expressa, irrevogável e gratuita a utilização de suas imagens capturadas durante os eventos e ensaios, para fins de divulgação de portfólio profissional da <strong>CONTRATADA</strong> em suas mídias digitais e redes sociais, pelo período de 2 anos.</p>
+        <h4>CLÁUSULA QUARTA – DAS ENTREGAS</h4>
+        <p>4.1. A <strong>CONTRATADA</strong> entregará aos <strong>CONTRATANTES</strong> o material fotográfico e/ou audiovisual devidamente editado, conforme especificações técnicas e prazos estabelecidos no Anexo I, parte integrante deste instrumento.</p>
+        <p>4.2. O prazo de entrega do material final será contado a partir da data de realização do evento, salvo disposição em contrário prevista no Anexo I.</p>
+        <p>4.3. A <strong>CONTRATADA</strong> não se responsabiliza pela perda do material decorrente de caso fortuito ou força maior, obrigando-se, entretanto, a manter backup de segurança de todos os arquivos pelo prazo mínimo de 90 (noventa) dias após a entrega.</p>
 
-        <h4>CLÁUSULA QUINTA – DAS OBRIGAÇÕES DAS PARTES</h4>
-        <p>5.1. <strong>DA CONTRATADA:</strong> Prestar os serviços contratados com zelo profissional, utilizando profissionais qualificados de sua inteira confiança e no estilo alinhado com o portfólio comercial da marca.<br>
-        5.2. <strong>DOS CONTRATANTES:</strong> Fornecer alimentação adequada para a equipe de captação caso o tempo total do evento exceda 4 horas, garantir o livre trânsito dos fotógrafos e cinegrafistas no local e efetuar os pagamentos rigorosamente em dia.</p>
+        <h4>CLÁUSULA QUINTA – DA AUTORIZAÇÃO DE IMAGEM</h4>
+        <p>5.1. Os <strong>CONTRATANTES</strong> autorizam de forma expressa, irrevogável e gratuita a utilização de suas imagens capturadas durante os eventos e ensaios, para fins de divulgação de portfólio profissional da <strong>CONTRATADA</strong> em suas mídias digitais, redes sociais, site institucional e materiais promocionais, pelo período de 2 (dois) anos contados da data de realização do evento.</p>
+        <p>5.2. A autorização prevista no item 5.1 abrange a reprodução, exibição, publicação e divulgação das imagens em qualquer mídia ou formato, desde que sem finalidade lucrativa direta e respeitando o decoro e a boa imagem dos CONTRATANTES.</p>
+        <p>5.3. Caso os <strong>CONTRATANTES</strong> desejem restringir a divulgação de imagens específicas, deverão comunicar a <strong>CONTRATADA</strong> por escrito em até 15 (quinze) dias após a data do evento.</p>
 
-        <h4>CLÁUSULA SEXTA – RESCISÃO E MULTAS</h4>
-        <p>6.1. Em caso de cancelamento unilateral imotivado por parte dos <strong>CONTRATANTES</strong> com menos de 30 dias do evento, nenhum valor pago a título de sinal ou reserva será reembolsado. Em descumprimento de outras cláusulas deste contrato, incidirá multa penal de 10% sobre o valor remanescente do instrumento.</p>
+        <h4>CLÁUSULA SEXTA – DAS OBRIGAÇÕES DA CONTRATADA</h4>
+        <p>6.1. Prestar os serviços contratados com zelo profissional, utilizando equipamentos adequados e profissionais qualificados de sua inteira confiança.<br>
+        6.2. Comparecer ao local do evento com antecedência mínima necessária para preparação e montagem dos equipamentos.<br>
+        6.3. Disponibilizar aos CONTRATANTES os contatos telefônicos e de WhatsApp da equipe escalada para o dia do evento.<br>
+        6.4. Manter sigilo absoluto sobre as informações pessoais e dados compartilhados pelos CONTRATANTES no âmbito da prestação dos serviços.</p>
 
-        <h4>CLÁUSULA SÉTIMA – DISPOSIÇÕES GERAIS E FORO</h4>
-        <p>7.1. O presente instrumento não gera vínculo de natureza empregatícia entre as partes contratantes.<br>
-        7.2. Fica eleito o foro da Comarca de Vitória/ES para dirimir quaisquer dúvidas decorrentes do presente contrato comercial.</p>
+        <h4>CLÁUSULA SÉTIMA – DAS OBRIGAÇÕES DOS CONTRATANTES</h4>
+        <p>7.1. Fornecer alimentação adequada para a equipe de captação caso o tempo total do evento exceda 4 (quatro) horas.<br>
+        7.2. Garantir o livre trânsito dos fotógrafos e cinegrafistas no local do evento.<br>
+        7.3. Efetuar os pagamentos rigorosamente em dia, conforme cronograma acordado.<br>
+        7.4. Disponibilizar os convites e credenciais necessários para acesso da equipe aos locais dos eventos.<br>
+        7.5. Informar a <strong>CONTRATADA</strong> com antecedência mínima de 48 (quarenta e oito) horas sobre qualquer alteração de horário ou local dos eventos.</p>
+
+        <h4>CLÁUSULA OITAVA – DA CESSÃO</h4>
+        <p>8.1. A <strong>CONTRATADA</strong> poderá ceder ou subcontratar total ou parcialmente os serviços objeto deste contrato a terceiros de sua confiança, mantendo-se como única responsável perante os CONTRATANTES pela fiel execução do objeto contratado.</p>
+        <p>8.2. Os <strong>CONTRATANTES</strong> não poderão ceder ou transferir a terceiros os direitos e obrigações decorrentes deste contrato sem a prévia e expressa autorização por escrito da CONTRATADA.</p>
+
+        <h4>CLÁUSULA NONA – DA RESCISÃO CONTRATUAL E MULTAS</h4>
+        <p>9.1. Em caso de cancelamento unilateral imotivado por parte dos <strong>CONTRATANTES</strong> com menos de 30 (trinta) dias da data do evento, nenhum valor pago a título de sinal ou reserva será reembolsado, configurando-se como cláusula penal de natureza compensatória.</p>
+        <p>9.2. Em caso de cancelamento com antecedência superior a 30 (trinta) dias, os valores já pagos serão devolvidos deduzindo-se o percentual de 20% (vinte por cento) a título de multa compensatória pela reserva de data e custos administrativos já incorridos.</p>
+        <p>9.3. Em descumprimento de quaisquer outras cláusulas deste contrato, incidirá multa penal de 10% (dez por cento) sobre o valor remanescente do instrumento, sem prejuízo de perdas e danos.</p>
+        <p>9.4. A <strong>CONTRATADA</strong> poderá rescindir o contrato de pleno direito caso os <strong>CONTRATANTES</strong> descumpram com as obrigações pecuniárias aqui assumidas, ficando autorizada a reter os valores eventualmente já recebidos a título de indenização mínima.</p>
+
+        <h4>CLÁUSULA DÉCIMA – DISPOSIÇÕES GERAIS</h4>
+        <p>10.1. O presente instrumento não gera vínculo de natureza empregatícia entre as partes contratantes, nem solidariedade trabalhista ou previdenciária.</p>
+        <p>10.2. As partes elegem o Anexo I como parte integrante e indissociável deste contrato para todos os fins de direito.</p>
+        <p>10.3. Qualquer alteração neste instrumento deverá ser feita por escrito, mediante aditivo contratual assinado por ambas as partes.</p>
+        <p>10.4. A tolerância ao descumprimento de qualquer cláusula ou condição deste contrato não constituirá novação ou precedente, nem afetará o exercício posterior do direito pela parte inocente.</p>
+        <p>10.5. As partes se comprometem a buscar uma solução amigável, por meio de negociação direta, antes de recorrer a qualquer via judicial para resolução de eventuais controvérsias.</p>
+
+        <h4>CLÁUSULA DÉCIMA PRIMEIRA – DO FORO</h4>
+        <p>11.1. Fica eleito o foro da Comarca de Vitória/ES para dirimir quaisquer dúvidas ou controvérsias decorrentes do presente contrato, com expressa renúncia a qualquer outro, por mais privilegiado que seja.</p>
 
         <p>Vitória/ES, " . $dataContratoPorExtenso . ".</p>
         ";
@@ -212,9 +265,10 @@ if (isset($_GET['proposta_id'])) {
         'signatario_2' => $sig2,
         'data_evento' => $dataEvento,
         'local_evento' => '',
+        'locais' => $locais,
         'vigencia_meses' => $dadosProposta['meses_contrato'] ?? ''
     ], JSON_UNESCAPED_UNICODE);
-    
+
     $stmtInsert = $db->prepare("
         INSERT INTO contratos (id, proposta_id, cliente_id, cliente_nome, titulo, valor_total, condicoes_pagamento, data_contrato, local_contrato, status, dados_json)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -255,6 +309,11 @@ if (!$contrato) {
     exit;
 }
 
+// Load proposta for tipo check
+$stmtP = $db->prepare("SELECT * FROM propostas WHERE id = ?");
+$stmtP->execute([$contrato['proposta_id']]);
+$proposta = $stmtP->fetch();
+
 if (($contrato['status'] ?? 'rascunho') !== 'rascunho') {
     header('Location: ' . raizUrl('/gerenciamento/contrato_visualizar.php?id=' . $contrato['id']));
     exit;
@@ -266,6 +325,7 @@ $sig2 = $dadosJson['signatario_2'] ?? ['nome' => '', 'cpf' => '', 'email' => '',
 $dataEvento = $dadosJson['data_evento'] ?? '';
 $localEvento = $dadosJson['local_evento'] ?? '';
 $vigenciaMeses = $dadosJson['vigencia_meses'] ?? '';
+$locais = $dadosJson['locais'] ?? ['tem_prewedding' => '', 'local_prewedding' => '', 'tem_cartorio' => '', 'local_cartorio' => '', 'tem_cerimonia' => '', 'local_cerimonia' => ''];
 $contratoTexto = $dadosJson['contrato_texto'] ?? '';
 $anexoTexto = $dadosJson['anexo_texto'] ?? '';
 
@@ -298,6 +358,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $vigenciaMeses = sanitizar($_POST['vigencia_meses'] ?? '');
     $contratoTexto = $_POST['contrato_texto'] ?? '';
     $anexoTexto = $_POST['anexo_texto'] ?? '';
+    $locais = ['tem_prewedding' => isset($_POST['tem_prewedding']) ? '1' : '', 'local_prewedding' => sanitizar($_POST['local_prewedding'] ?? ''), 'tem_cartorio' => isset($_POST['tem_cartorio']) ? '1' : '', 'local_cartorio' => sanitizar($_POST['local_cartorio'] ?? ''), 'tem_cerimonia' => isset($_POST['tem_cerimonia']) ? '1' : '', 'local_cerimonia' => sanitizar($_POST['local_cerimonia'] ?? '')];
+
+    // Regenerate header and Clause 2 with current signatario/locais data
+    if ($proposta && $proposta['tipo'] === 'casamento') {
+        $novoHeader = '<p>Pelo presente instrumento particular, de um lado:</p>';
+        $novoHeader .= '<p><strong>CONTRATANTES:</strong><br>';
+        $novoHeader .= '<strong>' . ($sig1['nome'] ?: '[Nome da Noiva]') . '</strong>, portadora do CPF n&ordm; ' . ($sig1['cpf'] ?: '[CPF da Noiva]') . ', e <strong>' . ($sig2['nome'] ?: '[Nome do Noivo]') . '</strong>, portador do CPF n&ordm; ' . ($sig2['cpf'] ?: '[CPF do Noivo]') . ', doravante denominados simplesmente <strong>CONTRATANTES</strong>.</p>';
+        $novoHeader .= '<p><strong>CONTRATADA:</strong><br>';
+        $novoHeader .= '<strong>Distinto | Poncem Studio (Poncem Studio LTDA)</strong>, CNPJ 50.168.732/0001-63, com sede na Rod. do Sol n&ordm; 2780, sala 1307, Praia de Itaparica, Vila Velha-ES, CEP 29102-020, e-mail contato@wedistinto.com, doravante denominada <strong>CONTRATADA</strong>.</p>';
+        $novoHeader .= '<p>Firmam o presente contrato de prestacao de servicos, mediante clausulas e condicoes a seguir:</p>';
+
+        $posAbertura = strpos($contratoTexto, '<h3');
+        $posPrimeiraClausula = strpos($contratoTexto, '<h4');
+        if ($posAbertura !== false && $posPrimeiraClausula !== false && $posPrimeiraClausula > $posAbertura) {
+            $titulo = substr($contratoTexto, $posAbertura, $posPrimeiraClausula - $posAbertura);
+            $fimTitulo = strpos($titulo, '</h3>');
+            if ($fimTitulo !== false) {
+                $tituloHtml = substr($titulo, 0, $fimTitulo + 6);
+                $resto = substr($contratoTexto, $posPrimeiraClausula);
+                $contratoTexto = substr($contratoTexto, 0, $posAbertura) . $tituloHtml . "\n\n" . $novoHeader . "\n\n" . $resto;
+            }
+        }
+
+        // Regenerate Clause 2
+        $clausula2Html = '<h4>CLAUSULA SEGUNDA - PRAZO E LOCAL DE EXECUCAO DOS SERVICOS</h4>';
+        $clausula2Html .= '<p>2.1. Os servicos objeto deste contrato serao executados na data de <strong>' . ($dataEvento ? date('d/m/Y', strtotime($dataEvento)) : '[Data do Evento]') . '</strong>, conforme as especificacoes de local e horario a seguir:</p>';
+        $clausula2Html .= '<ol style="margin-bottom: 12px;">';
+        if (!empty($locais['tem_prewedding'])) {
+            $localPw = !empty($locais['local_prewedding']) ? htmlspecialchars($locais['local_prewedding']) : 'a definir em comum acordo entre as partes';
+            $clausula2Html .= '<li><strong>Ensaio Pre-Wedding:</strong> ' . $localPw . '.</li>';
+        }
+        if (!empty($locais['tem_cartorio'])) {
+            $localCt = !empty($locais['local_cartorio']) ? htmlspecialchars($locais['local_cartorio']) : 'a definir em comum acordo entre as partes';
+            $clausula2Html .= '<li><strong>Cartorio Civil:</strong> ' . $localCt . '.</li>';
+        }
+        if (!empty($locais['tem_cerimonia'])) {
+            $localCe = !empty($locais['local_cerimonia']) ? htmlspecialchars($locais['local_cerimonia']) : 'a definir em comum acordo entre as partes';
+            $clausula2Html .= '<li><strong>Cerimonia e Festa:</strong> ' . $localCe . '.</li>';
+        }
+        if (empty($locais['tem_prewedding']) && empty($locais['tem_cartorio']) && empty($locais['tem_cerimonia'])) {
+            $clausula2Html .= '<li>Local a definir em comum acordo entre as partes.</li>';
+        }
+        $clausula2Html .= '</ol>';
+        $clausula2Html .= '<p>2.2. A duracao padrao da cobertura sera aquela descrita e especificada no Anexo I, podendo ser ajustada mediante comum acordo entre as partes.<br>';
+        $clausula2Html .= '2.3. A CONTRATADA nao se responsabiliza por atrasos ou impossibilidade de execucao dos servicos decorrentes de condicoes climaticas adversas, falhas de energia eletrica no local do evento ou quaisquer outros fatores alheios a sua vontade, comprometendo-se, nestes casos, a remarcar a data mediante comum acordo com os CONTRATANTES.</p>';
+
+        $posClausula2 = strpos($contratoTexto, 'CLAUSULA SEGUNDA');
+        if ($posClausula2 === false) {
+            $posClausula2 = strpos($contratoTexto, 'CLÁUSULA SEGUNDA');
+        }
+        $posClausula3 = strpos($contratoTexto, 'CLAUSULA TERCEIRA');
+        if ($posClausula3 === false) {
+            $posClausula3 = strpos($contratoTexto, 'CLÁUSULA TERCEIRA');
+        }
+        if ($posClausula2 !== false && $posClausula3 !== false && $posClausula3 > $posClausula2) {
+            $beforeCl2 = substr($contratoTexto, 0, $posClausula2);
+            $afterCl3 = substr($contratoTexto, $posClausula3);
+            $contratoTexto = $beforeCl2 . $clausula2Html . "\n\n" . $afterCl3;
+        }
+    }
     
     // Re-pack dados_json
     $dadosJsonUpdated = json_encode([
@@ -307,7 +427,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'signatario_2' => $sig2,
         'data_evento' => $dataEvento,
         'local_evento' => $localEvento,
-        'vigencia_meses' => $vigenciaMeses
+        'vigencia_meses' => $vigenciaMeses,
+        'locais' => $locais
     ], JSON_UNESCAPED_UNICODE);
     
     // Save to Database
@@ -511,6 +632,52 @@ require_once __DIR__ . '/../includes/layout/head.php';
                         </div>
                     </div>
 
+                    <!-- Locais do Casamento -->
+                    <div class="bg-zinc-900/50 border border-white/5 rounded-[32px] p-8">
+                        <h2 class="text-md font-bold text-white mb-6 flex items-center gap-2">
+                            <i data-lucide="map-pin" class="w-4.5 h-4.5 opacity-50"></i>
+                            Locais do Casamento
+                        </h2>
+
+                        <div class="space-y-5">
+                            <!-- Pre-Wedding -->
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" name="tem_prewedding" value="1" <?= !empty($locais['tem_prewedding']) ? 'checked' : '' ?>
+                                       class="w-4 h-4 rounded accent-white">
+                                <label class="text-[9px] font-black uppercase tracking-widest text-zinc-400 flex-1">Ensaio Pré-Wedding</label>
+                            </div>
+                            <div class="space-y-1.5" id="local_prewedding_wrap" style="<?= empty($locais['tem_prewedding']) ? 'display:none' : '' ?>">
+                                <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Local do Pré-Wedding</label>
+                                <input type="text" name="local_prewedding" value="<?= sanitizar($locais['local_prewedding'] ?? '') ?>" placeholder="Endereço ou 'a definir'"
+                                       class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+                            </div>
+
+                            <!-- Cartório -->
+                            <div class="flex items-center gap-3 mt-4">
+                                <input type="checkbox" name="tem_cartorio" value="1" <?= !empty($locais['tem_cartorio']) ? 'checked' : '' ?>
+                                       class="w-4 h-4 rounded accent-white">
+                                <label class="text-[9px] font-black uppercase tracking-widest text-zinc-400 flex-1">Cartório Civil</label>
+                            </div>
+                            <div class="space-y-1.5" id="local_cartorio_wrap" style="<?= empty($locais['tem_cartorio']) ? 'display:none' : '' ?>">
+                                <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Local do Cartório</label>
+                                <input type="text" name="local_cartorio" value="<?= sanitizar($locais['local_cartorio'] ?? '') ?>" placeholder="Endereço ou 'a definir'"
+                                       class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+                            </div>
+
+                            <!-- Cerimônia -->
+                            <div class="flex items-center gap-3 mt-4">
+                                <input type="checkbox" name="tem_cerimonia" value="1" <?= !empty($locais['tem_cerimonia']) ? 'checked' : '' ?>
+                                       class="w-4 h-4 rounded accent-white">
+                                <label class="text-[9px] font-black uppercase tracking-widest text-zinc-400 flex-1">Cerimônia e Festa</label>
+                            </div>
+                            <div class="space-y-1.5" id="local_cerimonia_wrap" style="<?= empty($locais['tem_cerimonia']) ? 'display:none' : '' ?>">
+                                <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Local da Cerimônia</label>
+                                <input type="text" name="local_cerimonia" value="<?= sanitizar($locais['local_cerimonia'] ?? '') ?>" placeholder="Endereço ou 'a definir'"
+                                       class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- AI Copilot Panel -->
                     <div class="bg-white/5 border border-white/10 rounded-[32px] p-8 shadow-[0_0_50px_rgba(255,255,255,0.02)]">
                         <h2 class="text-md font-bold text-white mb-4 flex items-center gap-2">
@@ -669,6 +836,16 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(err => {
             console.warn('Falha ao inicializar CKEditor no anexo_texto', err);
         });
+
+    // Toggle location fields when checkboxes change
+    document.querySelectorAll('[name="tem_prewedding"], [name="tem_cartorio"], [name="tem_cerimonia"]').forEach(cb => {
+        cb.addEventListener('change', function () {
+            const wrap = document.getElementById('local_' + this.name.replace('tem_', '') + '_wrap');
+            if (wrap) {
+                wrap.style.display = this.checked ? '' : 'none';
+            }
+        });
+    });
 });
 </script>
 
