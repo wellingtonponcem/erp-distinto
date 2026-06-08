@@ -1,58 +1,31 @@
 # Histórico de Alterações - ERP Distinto
 
 ## Objetivo do Projeto
-Melhorias no ERP Distinto, com foco na consistência visual entre a proposta web e a exportação do PDF via template.
+ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco em integração do frontend público (proposta web) com o painel administrativo.
 
 ## Alterações Recentes
-- **Correção da Integração com o Gemini (Erro 403)**:
-  - Corrigida a chave de API do Gemini no banco de dados Neon (que estava desativada por vazamento/leaked key) por uma chave ativa e funcional.
-  - Adicionado o fallback de leitura de chaves de API a partir da variável de ambiente do sistema (`getenv('GEMINI_API_KEY')`) em `includes/ia_propostas.php` e `includes/ia_roteiros.php` para maior robustez.
-- **Negrito no Editor de Template e Exportação PDF**:
-  - Ajustado o texto padrão de `experiencias_distintas_texto` em `includes/pdf_templates.php` e no editor `pdf_template_editor.php` para incluir o nome do casal e a última frase em negrito usando a tag `<b>`.
-  - Atualizado o editor `pdf_template_editor.php` (no palco do Alpine.js com `x-html` e na janela de `preview`) para permitir a renderização de tags `<b>` e `<strong>` com segurança.
-  - Modificado o arquivo `assets/js/propostas.js` na função `exportPdfTemplate` para interpretar tags HTML básicas de negrito (`<b>` e `<strong>`) utilizando `innerHTML` em vez de `textContent`, após sanitização.
-- **Páginas de Pacotes Sequenciais, Vinculadas e Reordenáveis**:
-  - Implementado o suporte para **vincular diretamente** cada página de pacotes a um plano/pacote específico do sistema (Heritage, Cinematic, Essencial, etc.) usando o campo `plano_id` no editor. Se a página estiver vinculada a um plano que não está ativo na proposta atual, ela é **omitida automaticamente** no PDF.
-  - Mantido o mapeamento sequencial inteligente e rotativo como fallback caso a vinculação direta `plano_id` não esteja selecionada.
-  - Implementada a funcionalidade de **reordenação de páginas** (botões ▲ e ▼ para Subir e Descer) no menu lateral do editor para que o usuário organize as páginas livremente.
-  - A renderização em tempo real do palco de edição (computada em `currentPackageMock`), o `preview()` e a exportação final do PDF respeitam perfeitamente a vinculação `plano_id` de cada página.
-- **Usabilidade Simplificada de Foto**:
-  - Criado o botão direto **"Adicionar Foto do Pacote"** no painel do editor para inserir o campo de imagem dinâmico instantaneamente.
-  - Adicionado card informativo de instrução na barra lateral quando o campo `pacote_foto` for selecionado.
-- **Formato do Texto (Maiúsculas / Normal)**:
-  - Adicionada a propriedade `transform` (`none`/`uppercase`) nos campos dinâmicos do editor de templates para que o usuário possa escolher se o texto deve ficar em caixa alta ou normal.
-- **Alinhamento Vertical do Texto**:
-  - Adicionada a propriedade `valign` (`flex-start`/`center`/`flex-end`) nos campos do editor de templates para que o usuário controle o alinhamento vertical dentro da caixa cinza.
-  - O alinhamento vertical padrão agora é o **Topo** (`flex-start`), impedindo que o texto fique empurrado para a parte inferior ("lá embaixo") na caixa de texto por padrão no editor, no preview e na exportação final.
-- **Textos Completos e Ricos dos Pacotes (Heritage, Cinematic, Essencial)**:
-  - Adicionados fallbacks com os textos ricos padrão completos nos pacotes em `includes/pdf_templates.php`, garantindo consistência total com os benefícios exibidos na proposta web e no banco.
-  - Implementada a função PHP `formatarItemRico($linha)` em `includes/pdf_templates.php` para automaticamente formatar cada item do pacote como uma lista com a bolinha `• ` no início e o título (texto antes do caractere `:`) em **negrito** e a descrição regular.
-  - Atualizados os dados mockados no editor `pdf_template_editor.php` (`values` e `planosMockados`) para simularem os textos reais ricos com as bolinhas e tags `<b>` em toda a sua extensão na pré-visualização.
-  - Implementada a função PHP `obterBeneficiosTexto()` no início de `proposta_nova.php` e `proposta_editar.php` para carregar e formatar os benefícios completos do banco separados por quebra de linha (`\n`), injetando com `json_encode` no Alpine de forma 100% segura contra erros de sintaxe JS.
-  - Ajustadas as funções `fieldPreview` em `pdf_template_editor.php` e a função de renderização `exportPdfTemplate` em `assets/js/propostas.js` para converterem quebras de linha `\n` em `<br>` ao injetarem no HTML, garantindo espaçamento e separação perfeita entre os itens.
-- **Campo Dinâmico de Condição Especial e Resolução de Imagens Quebradas**:
-  - Incluído o campo `condicao_especial` no PDF, nos planos e nas seções `$camposPorSessao` do editor, com dados mockados.
-  - Corrigido o bug de imagens quebradas nos mockups dos pacotes (`pacote_foto`) no palco do editor envolvendo os caminhos estáticos com a função PHP `raizUrl()`. Isso garante que o servidor resolva os caminhos corretamente mesmo rodando em subpastas no Apache/Nginx.
-- **Resolução do Bug de Reatividade do Dropdown nas Páginas de Pacotes (Página 8/9)**:
-  - Adicionado o atributo `:key="page.id"` no bloco principal de propriedades da página ativa no editor `pdf_template_editor.php`. Isso força o Alpine.js a destruir e recriar o painel lateral quando o usuário muda de página, evitando que o estado físico anterior do checkbox de pacotes "contamine" a nova página.
-  - Implementada a normalização estrita de `page.is_pacote` para booleanos nativos no JS (`true`/`false`) no método `init()` do Alpine e no momento de criar novas páginas em `uploadPage()`. Isso resolve a falha em que tipos inconsistentes vindos do banco de dados (ex: `"1"`, `"0"`, `1` ou `0`) confundiam o binding do Alpine.js e ocultavam o dropdown nas páginas 8 e 9.
-  - Botão "Adicionar Foto do Pacote" e cards de instrução no editor.
-- **Formato do Texto e Alinhamento Vertical**:
-  - Adicionadas propriedades `transform` e `valign` (padrão `flex-start`).
-- **Textos Completos e Ricos dos Pacotes**:
-  - Implementada função `formatarItemRico` e conversão de `\n` para `<br>`.
-- **Campo Dinâmico de Condição Especial e Resolução de Imagens**:
-  - Inclusão de `condicao_especial` e correção de caminhos com `raizUrl()`.
-- **Resolução do Bug de Reatividade do Dropdown**:
-  - Uso de `:key` no Alpine.js e normalização de `is_pacote` para booleanos.
-- **Suporte Completo a Adicionais (Upgrades)**:
-  - Mapeamento dinâmico de `itens_adicionais` e `pacote_adicionais`.
-- **Correção da Tela Preta na Proposta de Casamento**:
-  - Corrigido erro fatal por ausência do método `gerarMensagemWhatsApp` em `IAPropostas`.
-  - Implementado fallback robusto no método para garantir a renderização da proposta.
+
+- **Integração da Escolha de Plano pelo Cliente (Casamento)** *(jun/2026)*:
+  - Criado `api/propostas/escolher-plano.php`: recebe POST com plano + upgrades, calcula `valor_total`, atualiza `status` para `pendente` e registra em `dados_json['cliente_escolha']`.
+  - Um evento legível é inserido automaticamente em `andamento_proposta` (JSON), visível no painel admin.
+  - `p.php` faz `await fetch()` para a API antes de abrir o WhatsApp. Se a API falhar, o `catch` garante que o cliente prossiga normalmente.
+  - Administrador pode alterar o plano ou adicionar upgrades manuais como aditivos contratuais a qualquer tempo.
+
+- **Correção da Corrupção do p.php** *(jun/2026)*:
+  - Arquivo estava corrompido (IIFE duplicada, `mRefresh` incompleto). Restaurado via git (`4331ff5`).
+  - Adicionado alias `window.openInteractiveModal = window.openPlanModal` para o botão flutuante funcionar.
+
+- **Melhorias de PDF e Editor** *(anteriores)*:
+  - Negrito nos templates PDF com `<b>`/`<strong>` via sanitização.
+  - Páginas de pacotes vinculadas a `plano_id` com omissão automática se inativo.
+  - Reordenação de páginas (▲/▼) no editor, campo `condicao_especial`, alinhamento vertical (`valign`).
+  - Correção de reatividade Alpine.js (`:key`, normalização de `is_pacote` para booleano).
+  - Fallback robusto de API Gemini via `getenv('GEMINI_API_KEY')`.
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.
-2. **Commit**: Sempre dê sugestões de título para o commit em português ao finalizar uma ação.
-3. **Padrão de Código**: Mantenha a integridade das funções PHP existentes e de sua segurança. Ao interpretar HTML nos templates PDF, sempre realize o escape de caracteres indesejados antes de re-injetar as tags `<b>` e `<strong>` seguras.
-4. **Histórico**: Mantenha este arquivo `HISTORICO.md` atualizado e com menos de 70 linhas de extensão.
+2. **Commit**: Sugira título de commit em português ao finalizar uma ação.
+3. **Segurança**: Mantenha integridade das funções PHP. Sanitize sempre antes de reinjetar HTML.
+4. **Histórico**: Mantenha este `HISTORICO.md` com menos de 70 linhas.
+5. **Resiliência**: Toda chamada de API no frontend deve ter `try/catch` para não bloquear o usuário.
+6. **Aditivos**: Mudanças de plano pós-contrato são aditivos manuais pelo administrador.

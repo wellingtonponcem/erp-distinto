@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Visualizador P├║blico de Propostas
  * wedistinto.com/p/[slug]
@@ -394,7 +394,6 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
             document.getElementById('plan-modal').style.display = 'block';
             document.body.style.overflow = 'hidden';
         };
-        window.openInteractiveModal = window.openPlanModal; // alias usado pelo botão flutuante
         window.closePlanModal = function () {
             document.getElementById('plan-modal').style.display = 'none';
             document.body.style.overflow = '';
@@ -443,51 +442,20 @@ $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='princi
             if (hint) hint.style.display = mSelected ? 'none' : 'block';
         }
 
-        window.mEnviar = async function () {
+        window.mEnviar = function () {
             if (!mSelected) return;
             const p = mPlanData[mSelected];
             let total = p.valor;
-            let linhas = 'Plano: ' + p.nome + ' — ' + fmtBRL(p.valor);
-            const extrasEnviados = [];
+            let linhas = 'Plano: ' + p.nome + ' ÔÇö ' + fmtBRL(p.valor);
             if (mUpgrades.boudoir) {
                 total += mUpgradeData.boudoir;
-                linhas += '\nUpgrade Boudoir — ' + fmtBRL(mUpgradeData.boudoir);
-                extrasEnviados.push('boudoir_static');
+                linhas += '\nUpgrade Boudoir ÔÇö ' + fmtBRL(mUpgradeData.boudoir);
             }
             if (mUpgrades.prewedding) {
                 total += mUpgradeData.prewedding;
-                linhas += '\nUpgrade Pré-Wedding — ' + fmtBRL(mUpgradeData.prewedding);
-                extrasEnviados.push('prewedding_static');
+                linhas += '\nUpgrade Pr├®-Wedding ÔÇö ' + fmtBRL(mUpgradeData.prewedding);
             }
-
-            const btnSend = document.getElementById('m-send-btn');
-            const originalBtnText = btnSend ? btnSend.innerHTML : '';
-            if (btnSend) {
-                btnSend.disabled = true;
-                btnSend.innerHTML = 'Gravando escolha...';
-            }
-
-            try {
-                await fetch('<?= raizUrl('/api/propostas/escolher-plano.php') ?>', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        slug: mSlug,
-                        plano_id: mSelected,
-                        extras: extrasEnviados,
-                        condicoes: p.cond
-                    })
-                });
-            } catch (error) {
-                console.warn('Não foi possível gravar a escolha automaticamente.', error);
-            } finally {
-                if (btnSend) {
-                    btnSend.disabled = false;
-                    btnSend.innerHTML = originalBtnText;
-                }
-            }
-
-            const msg = 'Olá! Somos ' + mNomeCasal + ' e gostaríamos de confirmar nosso interesse na proposta da Distinto.\n\n' + linhas + '\n\nTotal: ' + fmtBRL(total) + '\n\nRef: ' + mSlug;
+            const msg = 'Ol├í! Somos ' + mNomeCasal + ' e gostar├¡amos de confirmar nosso interesse na proposta da Distinto.\n\n' + linhas + '\n\nTotal: ' + fmtBRL(total) + '\n\nRef: ' + mSlug;
             window.open('https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(msg), '_blank');
         };
     })();

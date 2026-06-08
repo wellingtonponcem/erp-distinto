@@ -92,6 +92,22 @@ $dados['cliente_escolha'] = [
     'selecionado_em' => date('Y-m-d H:i:s'),
 ];
 
+// Atualizar o andamento da proposta no dados_json de forma automática
+$dataAtual = date('d/m/Y H:i');
+$nomePlano = $planoId === 'heritage' ? 'Experiência Heritage' : ($planoId === 'cinematic' ? 'Experiência Cinematic' : 'Registro Essencial');
+$novaLinhaAndamento = "{$dataAtual} | Cliente selecionou o plano: {$nomePlano}";
+if (!empty($itensSelecionados)) {
+    $novaLinhaAndamento .= " com upgrades (" . implode(', ', $itensSelecionados) . ")";
+}
+$novaLinhaAndamento .= " | Investimento: " . formatarMoeda($total) . " | Escolha realizada via proposta web";
+
+$andamentoAtual = $dados['andamento_proposta'] ?? '';
+if (trim($andamentoAtual) !== '') {
+    $dados['andamento_proposta'] = trim($andamentoAtual) . "\n" . $novaLinhaAndamento;
+} else {
+    $dados['andamento_proposta'] = $novaLinhaAndamento;
+}
+
 $stmtUpdate = $db->prepare("UPDATE propostas SET dados_json = ?, valor_total = ?, status = 'pendente' WHERE id = ?");
 $stmtUpdate->execute([json_encode($dados, JSON_UNESCAPED_UNICODE), $total, $proposta['id']]);
 
