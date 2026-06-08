@@ -60,18 +60,19 @@ if ($isCasamento && !empty($contratoTexto)) {
     $clausula2Html .= '2.3. A CONTRATADA nao se responsabiliza por atrasos ou impossibilidade de execucao dos servicos decorrentes de condicoes climaticas adversas, falhas de energia eletrica no local do evento ou quaisquer outros fatores alheios a sua vontade, comprometendo-se, nestes casos, a remarcar a data mediante comum acordo com os CONTRATANTES.</p>';
 
     $contratoTexto = '
-    <h3 style="text-align: center;">CONTRATO DE PRESTACAO DE SERVICOS - CASAMENTO</h3>
-    <p style="text-align: center;"><strong>N&ordm; ' . date('Y') . '/' . substr($contrato['id'], 0, 4) . '</strong></p>
+    <h3>CONTRATO DE PRESTACAO DE SERVICOS</h3>
+    <p class="pdf-subtitle">CASAMENTO</p>
+    <p class="pdf-numero">N&ordm; ' . date('Y') . '/' . substr($contrato['id'], 0, 4) . '</p>
 
-    <p>Pelo presente instrumento particular, de um lado:</p>
+    <p class="p0">Pelo presente instrumento particular, de um lado:</p>
 
-    <p><strong>CONTRATANTES:</strong><br>
+    <p class="p0"><strong>CONTRATANTES:</strong><br>
     <strong>' . ($sig1['nome'] ?: '[Nome da Noiva]') . '</strong>, portadora do CPF n&ordm; ' . ($sig1['cpf'] ?: '[CPF da Noiva]') . ', e <strong>' . ($sig2['nome'] ?: '[Nome do Noivo]') . '</strong>, portador do CPF n&ordm; ' . ($sig2['cpf'] ?: '[CPF do Noivo]') . ', doravante denominados simplesmente <strong>CONTRATANTES</strong>.</p>
 
-    <p><strong>CONTRATADA:</strong><br>
+    <p class="p0"><strong>CONTRATADA:</strong><br>
     <strong>Distinto | Poncem Studio (Poncem Studio LTDA)</strong>, CNPJ 50.168.732/0001-63, com sede na Rod. do Sol n&ordm; 2780, sala 1307, Praia de Itaparica, Vila Velha-ES, CEP 29102-020, e-mail contato@wedistinto.com, doravante denominada <strong>CONTRATADA</strong>.</p>
 
-    <p>Firmam o presente contrato de prestacao de servicos, mediante clausulas e condicoes a seguir:</p>
+    <p class="p0">Firmam o presente contrato de prestacao de servicos, mediante clausulas e condicoes a seguir:</p>
 
     <h4>CLAUSULA PRIMEIRA - DO OBJETO</h4>
     <p>1.1. A <strong>CONTRATADA</strong> prestara servicos profissionais de cobertura fotografica e/ou producao audiovisual para o casamento dos <strong>CONTRATANTES</strong>, em conformidade com o detalhamento contido no Anexo I, que integra este instrumento.</p>
@@ -126,7 +127,7 @@ if ($isCasamento && !empty($contratoTexto)) {
     <h4>CLAUSULA DECIMA PRIMEIRA - DO FORO</h4>
     <p>11.1. Fica eleito o foro da Comarca de Vitoria/ES para dirimir quaisquer duvidas ou controversias decorrentes do presente contrato, com expressa renuncia a qualquer outro, por mais privilegiado que seja.</p>
 
-    <p>Vitoria/ES, ' . $dataContratoPorExtenso . '.</p>
+    <p class="p-closing">Vitoria/ES, ' . $dataContratoPorExtenso . '.</p>
     ';
 }
 
@@ -250,74 +251,127 @@ require_once __DIR__ . '/../includes/layout/head.php';
 
 <!-- Styles specifically for A4 preview and print generation -->
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;700&display=swap');
 
 .a4-page-content {
     background: #ffffff;
-    color: #1a1a1a;
+    color: #231f20;
     width: 210mm;
     min-height: 297mm;
-    padding: 25mm 20mm 20mm 20mm;
+    padding: 50.7pt 51.5pt 95.7pt 92.3pt;
     box-shadow: 0 20px 50px rgba(0,0,0,0.8);
     box-sizing: border-box;
-    font-family: 'Arial', sans-serif;
-    font-size: 11pt;
-    line-height: 1.5;
+    font-family: 'Sora', 'Arial', sans-serif;
+    font-size: 10pt;
+    line-height: 1;
 }
 
 .pdf-logo-wrapper {
-    margin-bottom: 25px;
+    margin-bottom: 0;
     text-align: left;
 }
 
 .pdf-logo {
-    width: 220px;
+    width: 196px;
     height: auto;
     display: block;
 }
 
+.pdf-body {
+    font-family: 'Sora', 'Arial', sans-serif;
+    font-size: 10pt;
+    color: #231f20;
+    line-height: 1;
+}
+
 .pdf-body h3 {
     font-family: 'Sora', sans-serif;
-    font-size: 14pt;
-    font-weight: 900;
+    font-size: 15pt;
+    font-weight: 700;
     text-transform: uppercase;
     color: #231f20;
-    margin-top: 25px;
-    margin-bottom: 15px;
-    letter-spacing: -0.02em;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    text-align: center;
+}
+
+.pdf-body .pdf-subtitle {
+    font-family: 'Sora', sans-serif;
+    font-size: 10pt;
+    font-weight: 400;
+    color: #231f20;
+    margin: 0;
+    padding-top: 33.1pt;
+    line-height: 1;
+    text-align: left;
+}
+
+.pdf-body .pdf-numero {
+    font-family: 'Sora', sans-serif;
+    font-size: 10pt;
+    font-weight: 400;
+    color: #231f20;
+    margin: 0;
+    padding-top: 0.3pt;
+    line-height: 1;
+    text-align: left;
 }
 
 .pdf-body h4 {
     font-family: 'Sora', sans-serif;
-    font-size: 11pt;
+    font-size: 10pt;
     font-weight: 700;
     text-transform: uppercase;
     color: #231f20;
-    margin-top: 20px;
-    margin-bottom: 8px;
+    margin: 0;
+    padding: 12.3pt 0 0 0;
+    line-height: 1;
+    text-align: left;
 }
 
 .pdf-body p {
-    margin-bottom: 12px;
     font-family: 'Sora', 'Arial', sans-serif;
     font-size: 10pt;
+    font-weight: 400;
     color: #231f20;
+    margin: 0;
+    padding: 12.3pt 0 0 0;
+    line-height: 1;
+    text-align: justify;
+    margin-left: 28.7pt;
+}
+
+.pdf-body .p0 {
+    margin-left: 0.3pt;
+}
+
+.pdf-body .p-closing {
+    margin-left: 0.1pt;
+}
+
+.pdf-body .p2 {
+    margin-left: 57pt;
 }
 
 .pdf-body strong {
     font-weight: 700;
-}
-
-.pdf-body ul, .pdf-body ol {
-    margin-left: 20px;
-    margin-bottom: 15px;
-    font-family: 'Sora', 'Arial', sans-serif;
-    font-size: 10pt;
     color: #231f20;
 }
 
+.pdf-body ul, .pdf-body ol {
+    margin: 0;
+    padding-left: 28.7pt;
+    font-family: 'Sora', 'Arial', sans-serif;
+    font-size: 10pt;
+    color: #231f20;
+    line-height: 1;
+}
+
 .pdf-body li {
-    margin-bottom: 6px;
+    margin: 0;
+    padding-top: 12.3pt;
+    line-height: 1;
 }
 
 .page-break {
@@ -329,7 +383,6 @@ require_once __DIR__ . '/../includes/layout/head.php';
     margin-top: 60px;
 }
 
-/* Print configuration to bypass html2pdf margins issue */
 @media print {
     body {
         background: white;
@@ -358,7 +411,7 @@ function contratoVisualizarApp() {
             
             const element = document.getElementById('pdf-content');
             const opt = {
-                margin: [10, 10, 10, 10], // standard padding for printable
+                margin: 0,
                 filename: 'Contrato_' + this.id + '.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2, useCORS: true },
@@ -386,7 +439,7 @@ function contratoVisualizarApp() {
             
             const element = document.getElementById('pdf-content');
             const opt = {
-                margin: [10, 10, 10, 10],
+                margin: 0,
                 filename: 'Contrato_' + this.id + '.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2, useCORS: true },

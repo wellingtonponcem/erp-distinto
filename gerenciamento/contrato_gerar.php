@@ -16,17 +16,6 @@ $statusMessage = '';
 $errorMessage = '';
 $contrato = null;
 
-// Helper to convert date to Portuguese long format
-function dataExtenso(string $data): string {
-    $d = strtotime($data);
-    $meses = [
-        1 => 'janeiro', 2 => 'fevereiro', 3 => 'março', 4 => 'abril',
-        5 => 'maio', 6 => 'junho', 7 => 'julho', 8 => 'agosto',
-        9 => 'setembro', 10 => 'outubro', 11 => 'novembro', 12 => 'dezembro'
-    ];
-    return date('d', $d) . ' de ' . $meses[(int)date('m', $d)] . ' de ' . date('Y', $d);
-}
-
 // ---------------------------------------------------------
 // CRIAÇÃO E REDIRECIONAMENTO DE CONTRATO A PARTIR DA PROPOSTA
 // ---------------------------------------------------------
@@ -147,18 +136,19 @@ if (isset($_GET['proposta_id'])) {
         $clausula2 .= '2.3. A CONTRATADA não se responsabiliza por atrasos ou impossibilidade de execução dos serviços decorrentes de condições climáticas adversas, falhas de energia elétrica no local do evento ou quaisquer outros fatores alheios à sua vontade, comprometendo-se, nestes casos, a remarcar a data mediante comum acordo com os CONTRATANTES.</p>';
 
         $contratoTexto = "
-        <h3 style=\"text-align: center;\">CONTRATO DE PRESTAÇÃO DE SERVIÇOS — CASAMENTO</h3>
-        <p style=\"text-align: center;\"><strong>Nº " . date('Y') . "/" . substr($contratoId, 0, 4) . "</strong></p>
+        <h3>CONTRATO DE PRESTAÇÃO DE SERVIÇOS</h3>
+        <p class=\"pdf-subtitle\">CASAMENTO</p>
+        <p class=\"pdf-numero\">Nº " . date('Y') . "/" . substr($contratoId, 0, 4) . "</p>
 
-        <p>Pelo presente instrumento particular, de um lado:</p>
+        <p class=\"p0\">Pelo presente instrumento particular, de um lado:</p>
 
-        <p><strong>CONTRATANTES:</strong><br>
+        <p class=\"p0\"><strong>CONTRATANTES:</strong><br>
         <strong>" . ($sig1['nome'] ?: '[Nome da Noiva]') . "</strong>, portadora do CPF nº " . ($sig1['cpf'] ?: '[CPF da Noiva]') . ", e <strong>" . ($sig2['nome'] ?: '[Nome do Noivo]') . "</strong>, portador do CPF nº " . ($sig2['cpf'] ?: '[CPF do Noivo]') . ", doravante denominados simplesmente <strong>CONTRATANTES</strong>.</p>
 
-        <p><strong>CONTRATADA:</strong><br>
+        <p class=\"p0\"><strong>CONTRATADA:</strong><br>
         <strong>Distinto | Poncem Studio (Poncem Studio LTDA)</strong>, CNPJ 50.168.732/0001-63, com sede na Rod. do Sol nº 2780, sala 1307, Praia de Itaparica, Vila Velha-ES, CEP 29102-020, e-mail contato@wedistinto.com, doravante denominada <strong>CONTRATADA</strong>.</p>
 
-        <p>Firmam o presente contrato de prestação de serviços, mediante cláusulas e condições a seguir:</p>
+        <p class=\"p0\">Firmam o presente contrato de prestação de serviços, mediante cláusulas e condições a seguir:</p>
 
         <h4>CLÁUSULA PRIMEIRA – DO OBJETO</h4>
         <p>1.1. A <strong>CONTRATADA</strong> prestará serviços profissionais de cobertura fotográfica e/ou produção audiovisual para o casamento dos <strong>CONTRATANTES</strong>, em conformidade com o detalhamento contido no Anexo I, que integra este instrumento.</p>
@@ -213,7 +203,7 @@ if (isset($_GET['proposta_id'])) {
         <h4>CLÁUSULA DÉCIMA PRIMEIRA – DO FORO</h4>
         <p>11.1. Fica eleito o foro da Comarca de Vitória/ES para dirimir quaisquer dúvidas ou controvérsias decorrentes do presente contrato, com expressa renúncia a qualquer outro, por mais privilegiado que seja.</p>
 
-        <p>Vitória/ES, " . $dataContratoPorExtenso . ".</p>
+        <p class=\"p-closing\">Vitória/ES, " . $dataContratoPorExtenso . ".</p>
         ";
     } else {
         // Marketing / Filmmaker / Corporate template
@@ -386,18 +376,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $clausula2Html .= '2.3. A CONTRATADA nao se responsabiliza por atrasos ou impossibilidade de execucao dos servicos decorrentes de condicoes climaticas adversas, falhas de energia eletrica no local do evento ou quaisquer outros fatores alheios a sua vontade, comprometendo-se, nestes casos, a remarcar a data mediante comum acordo com os CONTRATANTES.</p>';
 
         $contratoTexto = '
-        <h3 style="text-align: center;">CONTRATO DE PRESTACAO DE SERVICOS - CASAMENTO</h3>
-        <p style="text-align: center;"><strong>N&ordm; ' . date('Y') . '/' . substr($contrato['id'], 0, 4) . '</strong></p>
+        <h3>CONTRATO DE PRESTACAO DE SERVICOS</h3>
+        <p class="pdf-subtitle">CASAMENTO</p>
+        <p class="pdf-numero">N&ordm; ' . date('Y') . '/' . substr($contrato['id'], 0, 4) . '</p>
 
-        <p>Pelo presente instrumento particular, de um lado:</p>
+        <p class="p0">Pelo presente instrumento particular, de um lado:</p>
 
-        <p><strong>CONTRATANTES:</strong><br>
+        <p class="p0"><strong>CONTRATANTES:</strong><br>
         <strong>' . ($sig1['nome'] ?: '[Nome da Noiva]') . '</strong>, portadora do CPF n&ordm; ' . ($sig1['cpf'] ?: '[CPF da Noiva]') . ', e <strong>' . ($sig2['nome'] ?: '[Nome do Noivo]') . '</strong>, portador do CPF n&ordm; ' . ($sig2['cpf'] ?: '[CPF do Noivo]') . ', doravante denominados simplesmente <strong>CONTRATANTES</strong>.</p>
 
-        <p><strong>CONTRATADA:</strong><br>
+        <p class="p0"><strong>CONTRATADA:</strong><br>
         <strong>Distinto | Poncem Studio (Poncem Studio LTDA)</strong>, CNPJ 50.168.732/0001-63, com sede na Rod. do Sol n&ordm; 2780, sala 1307, Praia de Itaparica, Vila Velha-ES, CEP 29102-020, e-mail contato@wedistinto.com, doravante denominada <strong>CONTRATADA</strong>.</p>
 
-        <p>Firmam o presente contrato de prestacao de servicos, mediante clausulas e condicoes a seguir:</p>
+        <p class="p0">Firmam o presente contrato de prestacao de servicos, mediante clausulas e condicoes a seguir:</p>
 
         <h4>CLAUSULA PRIMEIRA - DO OBJETO</h4>
         <p>1.1. A <strong>CONTRATADA</strong> prestara servicos profissionais de cobertura fotografica e/ou producao audiovisual para o casamento dos <strong>CONTRATANTES</strong>, em conformidade com o detalhamento contido no Anexo I, que integra este instrumento.</p>
@@ -452,7 +443,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h4>CLAUSULA DECIMA PRIMEIRA - DO FORO</h4>
         <p>11.1. Fica eleito o foro da Comarca de Vitoria/ES para dirimir quaisquer duvidas ou controversias decorrentes do presente contrato, com expressa renuncia a qualquer outro, por mais privilegiado que seja.</p>
 
-        <p>Vitoria/ES, ' . $dataContratoPorExtenso . '.</p>
+        <p class="p-closing">Vitoria/ES, ' . $dataContratoPorExtenso . '.</p>
         ';
     }
     
