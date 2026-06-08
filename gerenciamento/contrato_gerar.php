@@ -818,8 +818,8 @@ require_once __DIR__ . '/../includes/layout/head.php';
 <script>
 function contratoGerarApp() {
     return {
-        propostaId: <?= json_encode($contrato['proposta_id']) ?>,
-        contratoId: <?= json_encode($contrato['id']) ?>,
+        propostaId: <?= json_encode($contrato['proposta_id'] ?? null) ?>,
+        contratoId: <?= json_encode($contrato['id'] ?? null) ?>,
         iaAnexoLoading: false,
         iaSaveLoading: false,
         copilotTexto: '',
@@ -831,7 +831,7 @@ function contratoGerarApp() {
             if (!this.propostaId) return;
             this.iaAnexoLoading = true;
             
-            fetch('<?= raizUrl("/api/contratos/gerar_anexo.php") ?>', {
+            fetch(<?= json_encode(raizUrl("/api/contratos/gerar_anexo.php")) ?>, {
                 method: 'POST',
                 headers: {
                     'Content-Type: application/json'
@@ -863,7 +863,7 @@ function contratoGerarApp() {
             if (!this.contratoId) return;
             this.iaSaveLoading = true;
 
-            fetch('<?= raizUrl("/api/contratos/atualizar_anexo.php") ?>', {
+            fetch(<?= json_encode(raizUrl("/api/contratos/atualizar_anexo.php")) ?>, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contrato_id: this.contratoId })
@@ -895,7 +895,7 @@ function contratoGerarApp() {
                 prompt: this.copilotPrompt
             };
             
-            fetch('<?= raizUrl("/api/contratos/copilot_ia.php") ?>', {
+            fetch(<?= json_encode(raizUrl("/api/contratos/copilot_ia.php")) ?>, {
                 method: 'POST',
                 headers: {
                     'Content-Type: application/json'
