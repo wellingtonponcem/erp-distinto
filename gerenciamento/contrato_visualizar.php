@@ -25,7 +25,7 @@ if (!$contrato) {
 $dadosJson = json_decode($contrato['dados_json'], true) ?: [];
 $sig1 = $dadosJson['signatario_1'] ?? ['nome' => '', 'cpf' => '', 'email' => '', 'telefone' => '', 'endereco' => ''];
 $sig2 = $dadosJson['signatario_2'] ?? ['nome' => '', 'cpf' => '', 'email' => '', 'telefone' => '', 'endereco' => ''];
-$locais = $dadosJson['locais'] ?? ['tem_prewedding' => '', 'local_prewedding' => '', 'tem_cartorio' => '', 'local_cartorio' => '', 'tem_cerimonia' => '', 'local_cerimonia' => ''];
+$locais = $dadosJson['locais'] ?? ['tem_prewedding' => '', 'local_prewedding' => '', 'data_prewedding' => '', 'tem_cartorio' => '', 'local_cartorio' => '', 'tem_cerimonia' => '', 'local_cerimonia' => '', 'data_cerimonia' => ''];
 $contratoTexto = $dadosJson['contrato_texto'] ?? '';
 $anexoTexto = $dadosJson['anexo_texto'] ?? '';
 
@@ -37,27 +37,38 @@ if ($isCasamento && !empty($contratoTexto)) {
     $condicoesPagamento = $contrato['condicoes_pagamento'];
     $dataEvento = $dadosJson['data_evento'] ?? '';
 
+    $n = 1;
     $clausula2Html = '<h4>CLAUSULA SEGUNDA - PRAZO E LOCAL DE EXECUCAO DOS SERVICOS</h4>';
-    $clausula2Html .= '<p>2.1. Os servicos objeto deste contrato serao executados na data de <strong>' . ($dataEvento ? date('d/m/Y', strtotime($dataEvento)) : '[Data do Evento]') . '</strong>, conforme as especificacoes de local e horario a seguir:</p>';
-    $clausula2Html .= '<ol style="margin-bottom: 12px;">';
+
     if (!empty($locais['tem_prewedding'])) {
-        $localPw = !empty($locais['local_prewedding']) ? htmlspecialchars($locais['local_prewedding']) : 'a definir em comum acordo entre as partes';
-        $clausula2Html .= '<li><strong>Ensaio Pre-Wedding:</strong> ' . $localPw . '.</li>';
+        $dataPw = !empty($locais['data_prewedding']) ? date('d/m/Y', strtotime($locais['data_prewedding'])) : 'a definir';
+        $localPw = !empty($locais['local_prewedding']) ? htmlspecialchars($locais['local_prewedding']) : 'local a ser definido em comum acordo';
+        $clausula2Html .= '<p>2.' . $n . '. Ensaio Pre-Wedding: Previsto para <strong>' . $dataPw . '</strong>, em ' . $localPw . '.</p>';
+        $n++;
     }
+
     if (!empty($locais['tem_cartorio'])) {
+        $dataCt = !empty($dataEvento) ? date('d/m/Y', strtotime($dataEvento)) : 'a definir';
         $localCt = !empty($locais['local_cartorio']) ? htmlspecialchars($locais['local_cartorio']) : 'a definir em comum acordo entre as partes';
-        $clausula2Html .= '<li><strong>Cartorio Civil:</strong> ' . $localCt . '.</li>';
+        $clausula2Html .= '<p>2.' . $n . '. Cerimonia Civil: Prevista para <strong>' . $dataCt . '</strong>, em ' . $localCt . '.</p>';
+        $n++;
     }
+
     if (!empty($locais['tem_cerimonia'])) {
-        $localCe = !empty($locais['local_cerimonia']) ? htmlspecialchars($locais['local_cerimonia']) : 'a definir em comum acordo entre as partes';
-        $clausula2Html .= '<li><strong>Cerimonia e Festa:</strong> ' . $localCe . '.</li>';
+        $dataCe = !empty($locais['data_cerimonia']) ? date('d/m/Y', strtotime($locais['data_cerimonia'])) : 'a definir';
+        $localCe = !empty($locais['local_cerimonia']) ? htmlspecialchars($locais['local_cerimonia']) : 'local a ser definido em comum acordo';
+        $clausula2Html .= '<p>2.' . $n . '. Cerimonia e Festa: Prevista para <strong>' . $dataCe . '</strong>, em ' . $localCe . '.</p>';
+        $n++;
     }
-    if (empty($locais['tem_prewedding']) && empty($locais['tem_cartorio']) && empty($locais['tem_cerimonia'])) {
-        $clausula2Html .= '<li>Local a definir em comum acordo entre as partes.</li>';
+
+    if ($n === 1) {
+        $clausula2Html .= '<p>2.1. Os servicos serao executados na data de <strong>' . ($dataEvento ? date('d/m/Y', strtotime($dataEvento)) : '[Data do Evento]') . '</strong>, em local a definir em comum acordo entre as partes.</p>';
+        $n++;
     }
-    $clausula2Html .= '</ol>';
-    $clausula2Html .= '<p>2.2. A duracao padrao da cobertura sera aquela descrita e especificada no Anexo I, podendo ser ajustada mediante comum acordo entre as partes.<br>';
-    $clausula2Html .= '2.3. A CONTRATADA nao se responsabiliza por atrasos ou impossibilidade de execucao dos servicos decorrentes de condicoes climaticas adversas, falhas de energia eletrica no local do evento ou quaisquer outros fatores alheios a sua vontade, comprometendo-se, nestes casos, a remarcar a data mediante comum acordo com os CONTRATANTES.</p>';
+
+    $clausula2Html .= '<p>2.' . $n . '. A duracao padrao da cobertura sera aquela descrita e especificada no Anexo I, podendo ser ajustada mediante comum acordo entre as partes.</p>';
+    $n++;
+    $clausula2Html .= '<p>2.' . $n . '. A CONTRATADA nao se responsabiliza por atrasos ou impossibilidade de execucao dos servicos decorrentes de condicoes climaticas adversas, falhas de energia eletrica no local do evento ou quaisquer outros fatores alheios a sua vontade, comprometendo-se, nestes casos, a remarcar a data mediante comum acordo com os CONTRATANTES.</p>';
 
     $contratoTexto = '
     <h3>CONTRATO DE PRESTACAO DE SERVICOS</h3>
@@ -127,6 +138,8 @@ if ($isCasamento && !empty($contratoTexto)) {
     <h4>CLAUSULA DECIMA PRIMEIRA - DO FORO</h4>
     <p>11.1. Fica eleito o foro da Comarca de Vitoria/ES para dirimir quaisquer duvidas ou controversias decorrentes do presente contrato, com expressa renuncia a qualquer outro, por mais privilegiado que seja.</p>
 
+    <div class="page-break"></div>
+
     <p class="p-closing">Vitoria/ES, ' . $dataContratoPorExtenso . '.</p>
     ';
 }
@@ -167,6 +180,16 @@ require_once __DIR__ . '/../includes/layout/head.php';
                     
                     <button @click="enviarParaAssinatura()" class="px-6 py-2.5 bg-white text-black hover:bg-zinc-200 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-1.5 shadow-xl">
                         <i data-lucide="signature" class="w-4 h-4"></i> Enviar Assinatura
+                    </button>
+
+                    <button @click="atualizarAnexo()" :disabled="loadingAnexo" class="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-white/10 text-zinc-200 rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5 disabled:opacity-50">
+                        <template x-if="!loadingAnexo">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        </template>
+                        <template x-if="loadingAnexo">
+                            <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg>
+                        </template>
+                        <span x-text="loadingAnexo ? 'Gerando...' : 'Anexo IA'"></span>
                     </button>
                 <?php endif; ?>
 
@@ -213,17 +236,6 @@ require_once __DIR__ . '/../includes/layout/head.php';
                     <?= $contratoTexto ?>
                 </div>
 
-                <!-- Page Break For Anexo I -->
-                <?php if (!empty($anexoTexto)): ?>
-                    <div class="page-break"></div>
-                    <div class="pdf-logo-wrapper pt-10">
-                        <img src="<?= raizUrl('/assets/logo-contrato.png') ?>" alt="Poncem Studio Logo" class="pdf-logo">
-                    </div>
-                    <div class="pdf-body text-justify">
-                        <?= $anexoTexto ?>
-                    </div>
-                <?php endif; ?>
-                
                 <!-- Signatures Space -->
                 <div class="pdf-signatures-wrapper">
                     <table style="width: 100%; border: 0; margin-top: 50px;">
@@ -243,6 +255,17 @@ require_once __DIR__ . '/../includes/layout/head.php';
                         </tr>
                     </table>
                 </div>
+
+                <!-- Page Break For Anexo I -->
+                <?php if (!empty($anexoTexto)): ?>
+                    <div class="page-break"></div>
+                    <div class="pdf-logo-wrapper pt-10">
+                        <img src="<?= raizUrl('/assets/logo-contrato.png') ?>" alt="Poncem Studio Logo" class="pdf-logo">
+                    </div>
+                    <div class="pdf-body text-justify">
+                        <?= $anexoTexto ?>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -376,7 +399,9 @@ require_once __DIR__ . '/../includes/layout/head.php';
 
 .page-break {
     page-break-before: always;
-    height: 1px;
+    border-top: 1px dashed #aaa;
+    margin: 20pt 28.7pt;
+    height: 0;
 }
 
 .pdf-signatures-wrapper {
@@ -403,6 +428,7 @@ function contratoVisualizarApp() {
     return {
         id: <?= json_encode($id) ?>,
         loading: false,
+        loadingAnexo: false,
         loadingMessage: '',
         
         exportarPDFLocal() {
@@ -429,6 +455,30 @@ function contratoVisualizarApp() {
             });
         },
         
+        atualizarAnexo() {
+            this.loadingAnexo = true;
+
+            fetch('<?= raizUrl("/api/contratos/atualizar_anexo.php") ?>', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contrato_id: this.id })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.erro || 'Falha ao gerar anexo.');
+                    this.loadingAnexo = false;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Erro de conexão ao gerar anexo.');
+                this.loadingAnexo = false;
+            });
+        },
+
         enviarParaAssinatura() {
             if (!confirm('Deseja gerar o PDF final e enviar este contrato para assinatura eletrônica via Assinafy? Esta ação não poderá ser desfeita.')) {
                 return;
