@@ -1,12 +1,20 @@
 <?php
-function dataExtenso(string $data): string {
+function dataExtenso(?string $data): string {
+    if (empty($data) || $data === '0000-00-00' || $data === '0000-00-00 00:00:00') {
+        return 'data a ser definida';
+    }
     $d = strtotime($data);
+    if ($d === false || $d === -1) {
+        return $data;
+    }
     $meses = [
         1 => 'janeiro', 2 => 'fevereiro', 3 => 'março', 4 => 'abril',
         5 => 'maio', 6 => 'junho', 7 => 'julho', 8 => 'agosto',
         9 => 'setembro', 10 => 'outubro', 11 => 'novembro', 12 => 'dezembro'
     ];
-    return date('d', $d) . ' de ' . $meses[(int)date('m', $d)] . ' de ' . date('Y', $d);
+    $m = (int)date('m', $d);
+    $mesNome = $meses[$m] ?? 'janeiro';
+    return date('d', $d) . ' de ' . $mesNome . ' de ' . date('Y', $d);
 }
 
 function formatarMoeda(float $valor): string {

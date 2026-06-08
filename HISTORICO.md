@@ -5,12 +5,14 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
 
 ## Alterações Recentes
 
-- **Datas por Extenso, Acentuações, Toggle de Pré-Wedding e Calculadora de Parcelamento** *(jun/2026)*:
-  - Adicionado checkbox "A definir em comum acordo entre as partes" para o Pré-Wedding no formulário de `contrato_gerar.php`.
-  - Criado comportamento dinâmico em JS para desabilitar/esmaecer o input de endereço físico quando o toggle estiver ativo.
-  - Implementada a renderização de datas de ensaios/evento por extenso (`dataExtenso()`) nas minutas e visualizações dos contratos (`contrato_gerar.php` e `contrato_visualizar.php`).
-  - Corrigidas e restauradas as acentuações do português do Brasil em todas as cláusulas do template de Casamento nas páginas `contrato_gerar.php` e `contrato_visualizar.php`.
-  - Adicionada uma **Calculadora de Parcelas Automática** que calcula dinamicamente o número de parcelas baseando-se na diferença de meses entre a data de Entrada/Sinal e a do Último Pagamento (em caso de Pix/Boleto), ou permite a seleção manual da quantidade de parcelas (para Cartão de Crédito).
+- **Correção da Persistência do Editor e Resiliência de Datas** *(jun/2026)*:
+  - Resolvido o erro HTTP 500 no salvamento e visualização de contratos tornando a função `dataExtenso()` em `helpers.php` resiliente a datas nulas, vazias ou em formato inválido.
+  - Removida a regeneração automática e destrutiva do template de casamento em `contrato_gerar.php` (POST) e `contrato_visualizar.php` (GET). Agora, o texto editado pelo usuário no Quill/CKEditor é fielmente preservado no banco e exibido na visualização.
+  
+- **Datas por Extenso, Acentuações, Toggle de Pré-Wedding e Calculadora** *(jun/2026)*:
+  - Adicionado checkbox "A definir em comum acordo entre as partes" para o Pré-Wedding no formulário de `contrato_gerar.php` (com input de endereço físico esmaecido).
+  - Adicionada **Calculadora de Parcelas** automática com base no intervalo de meses ou seleção manual de parcelas (para cartão).
+  - Corrigidas e restauradas as acentuações em português do Brasil em todas as cláusulas do template de Casamento inicial.
 
 - **Correção do Editor Visual de Contratos** *(jun/2026)*:
   - `contrato_gerar.php` exibia HTML cru porque o CKEditor 5 tinha CDN descontinuada. Substituído por **Quill.js 2**.
