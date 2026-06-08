@@ -284,12 +284,12 @@ require_once __DIR__ . '/../includes/layout/head.php';
     color: #231f20;
     width: 210mm;
     min-height: 297mm;
-    padding: 50.7pt 51.5pt 95.7pt 92.3pt;
+    padding: 10pt 51.5pt 15pt 92.3pt;
     box-shadow: 0 20px 50px rgba(0,0,0,0.8);
     box-sizing: border-box;
     font-family: 'Sora', 'Arial', sans-serif;
     font-size: 10pt;
-    line-height: 1;
+    line-height: 1.15;
 }
 
 .pdf-logo-wrapper {
@@ -402,9 +402,15 @@ require_once __DIR__ . '/../includes/layout/head.php';
 
 .page-break {
     page-break-before: always;
+    break-before: page;
     border-top: 1px dashed #aaa;
     margin: 20pt 28.7pt;
     height: 0;
+}
+
+.pdf-body h3, .pdf-body h4, .pdf-body p, .pdf-body li, .pdf-signatures-wrapper, table, table tr {
+    page-break-inside: avoid;
+    break-inside: avoid;
 }
 
 .pdf-signatures-wrapper {
@@ -419,6 +425,11 @@ require_once __DIR__ . '/../includes/layout/head.php';
         box-shadow: none;
         padding: 0;
         margin: 0;
+    }
+    .page-break {
+        border-top: none;
+        margin: 0;
+        height: 0;
     }
 }
 </style>
@@ -440,11 +451,15 @@ function contratoVisualizarApp() {
             
             const element = document.getElementById('pdf-content');
             const opt = {
-                margin: 0,
+                margin: [15, 0, 18, 0],
                 filename: 'Contrato_' + this.id + '.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                html2canvas: { scale: 2, useCORS: true, logging: false },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { 
+                    mode: ['css', 'legacy'], 
+                    avoid: ['p', 'h3', 'h4', 'li', 'tr', '.pdf-signatures-wrapper', 'table'] 
+                }
             };
             
             html2pdf().set(opt).from(element).save()
@@ -492,11 +507,15 @@ function contratoVisualizarApp() {
             
             const element = document.getElementById('pdf-content');
             const opt = {
-                margin: 0,
+                margin: [15, 0, 18, 0],
                 filename: 'Contrato_' + this.id + '.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                html2canvas: { scale: 2, useCORS: true, logging: false },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { 
+                    mode: ['css', 'legacy'], 
+                    avoid: ['p', 'h3', 'h4', 'li', 'tr', '.pdf-signatures-wrapper', 'table'] 
+                }
             };
             
             // Generate PDF Blob

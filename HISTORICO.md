@@ -12,6 +12,12 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
   - Editor exibe o texto do contrato com formatação Sora font, negrito, listas e cabeçalhos.
   - Hidden inputs sincronizam o HTML gerado pelo Quill antes do submit.
 
+- **Correção da Exportação de PDF e Quebras de Página** *(jun/2026)*:
+  - Corrigido o corte horizontal de letras e a falta de margens internas no PDF de `contrato_visualizar.php`.
+  - Adicionado `margin: [15, 0, 18, 0]` e configurado o parâmetro `pagebreak` com `avoid` de blocos de texto (`p`, `h3`, `h4`, `li`, `tr`, `.pdf-signatures-wrapper`, `table`) nas opções do **`html2pdf.js`** (tanto no download quanto no envio de assinatura).
+  - Adicionado `page-break-inside: avoid; break-inside: avoid` no CSS para evitar fracionamento de elementos de texto nas páginas.
+  - Reduzido padding vertical do `.a4-page-content` para evitar margens duplas e ajustado `.page-break` na impressão.
+
 - **Integração da Escolha de Plano pelo Cliente (Casamento)** *(jun/2026)*:
   - Criado `api/propostas/escolher-plano.php`: recebe POST com plano + upgrades, calcula `valor_total`, atualiza `status` para `pendente` e registra em `dados_json['cliente_escolha']`.
   - Um evento legível é inserido automaticamente em `andamento_proposta` (JSON), visível no painel admin.
