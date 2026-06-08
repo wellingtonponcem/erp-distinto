@@ -100,12 +100,10 @@ if ($isCasamento && !empty($contratoTexto)) {
     <p>4.2. O prazo de entrega do material final sera contado a partir da data de realizacao do evento, salvo disposicao em contrario prevista no Anexo I.</p>
     <p>4.3. A <strong>CONTRATADA</strong> nao se responsabiliza pela perda do material decorrente de caso fortuito ou forca maior, obrigando-se, entretanto, a manter backup de seguranca de todos os arquivos pelo prazo minimo de 90 (noventa) dias apos a entrega.</p>
 
-    <div class="page-break"></div>
-
     <h4>CLAUSULA QUINTA - DA AUTORIZACAO DE IMAGEM</h4>
     <p>5.1. Os <strong>CONTRATANTES</strong> autorizam de forma expressa, irrevogavel e gratuita a utilizacao de suas imagens capturadas durante os eventos e ensaios, para fins de divulgacao de portfolio profissional da <strong>CONTRATADA</strong> em suas midias digitais, redes sociais, site institucional e materiais promocionais, pelo periodo de 2 (dois) anos contados da data de realizacao do evento.</p>
     <p>5.2. A autorizacao prevista no item 5.1 abrange a reproducao, exibicao, publicacao e divulgacao das imagens em qualquer midia ou formato, desde que sem finalidade lucrativa direta e respeitando o decoro e a boa imagem dos CONTRATANTES.</p>
-    <p>5.3. Caso os <strong>CONTRATANTES</strong> desejem restringir a divulgacao de imagens especificas, deverao comunicar a <strong>CONTRATADA</strong> por escrito em ate 15 (quinze) dias apos a data do evento.</p>
+    <p>5.3. Caso os <strong>CONTRATANTES</strong> desejem restringir a divulgacao de imagens específicas, deverao comunicar a <strong>CONTRATADA</strong> por escrito em ate 15 (quinze) dias apos a data do evento.</p>
 
     <h4>CLAUSULA SEXTA - DAS OBRIGACOES DA CONTRATADA</h4>
     <p>6.1. Prestar os servicos contratados com zelo profissional, utilizando equipamentos adequados e profissionais qualificados de sua inteira confianca.<br>
@@ -124,8 +122,6 @@ if ($isCasamento && !empty($contratoTexto)) {
     <p>8.1. A <strong>CONTRATADA</strong> podera ceder ou subcontratar total ou parcialmente os servicos objeto deste contrato a terceiros de sua confianca, mantendo-se como unica responsavel perante os CONTRATANTES pela fiel execucao do objeto contratado.</p>
     <p>8.2. Os <strong>CONTRATANTES</strong> nao poderao ceder ou transferir a terceiros os direitos e obrigacoes decorrentes deste contrato sem a previa e expressa autorizacao por escrito da CONTRATADA.</p>
 
-    <div class="page-break"></div>
-
     <h4>CLAUSULA NONA - DA RESCISAO CONTRATUAL E MULTAS</h4>
     <p>9.1. Em caso de cancelamento unilateral imotivado por parte dos <strong>CONTRATANTES</strong> com menos de 30 (trinta) dias da data do evento, nenhum valor pago a titulo de sinal ou reserva sera reembolsado, configurando-se como clausula penal de natureza compensatoria.</p>
     <p>9.2. Em caso de cancelamento com antecedencia superior a 30 (trinta) dias, os valores ja pagos serao devolvidos deduzindo-se o percentual de 20% (vinte por cento) a titulo de multa compensatoria pela reserva de data e custos administrativos ja incorridos.</p>
@@ -139,12 +135,8 @@ if ($isCasamento && !empty($contratoTexto)) {
     <p>10.4. A tolerancia ao descumprimento de qualquer clausula ou condicao deste contrato nao constituira novacao ou precedente, nem afetara o exercicio posterior do direito pela parte inocente.</p>
     <p>10.5. As partes se comprometem a buscar uma solucao amigavel, por meio de negociacao direta, antes de recorrer a qualquer via judicial para resolucao de eventuais controversias.</p>
 
-    <div class="page-break"></div>
-
     <h4>CLAUSULA DECIMA PRIMEIRA - DO FORO</h4>
     <p>11.1. Fica eleito o foro da Comarca de Vitoria/ES para dirimir quaisquer duvidas ou controversias decorrentes do presente contrato, com expressa renuncia a qualquer outro, por mais privilegiado que seja.</p>
-
-    <div class="page-break"></div>
 
     <p class="p-closing">Vitoria/ES, ' . $dataContratoPorExtenso . '.</p>
     ';
@@ -263,7 +255,6 @@ require_once __DIR__ . '/../includes/layout/head.php';
                 </div>
 
                 <!-- Page Break For Anexo I -->
-                <div class="page-break"></div>
                 <div class="pdf-logo-wrapper pt-10">
                     <img src="<?= raizUrl('/assets/logo-contrato.png') ?>" alt="Poncem Studio Logo" class="pdf-logo">
                 </div>
@@ -293,7 +284,7 @@ require_once __DIR__ . '/../includes/layout/head.php';
 }
 
 .pdf-logo-wrapper {
-    margin-bottom: 0;
+    margin-bottom: 30pt;
     text-align: left;
 }
 
