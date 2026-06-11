@@ -156,7 +156,7 @@ require_once __DIR__ . '/../includes/layout/head.php';
         <?php endif; ?>
 
         <!-- A4 Paper Preview Container -->
-        <div class="overflow-x-auto py-10 flex justify-center bg-[#111] border border-white/5 rounded-[32px] mb-12 shadow-inner">
+        <div class="overflow-x-auto py-10 flex justify-center bg-[#111] border border-white/5 rounded-[32px] mb-12 shadow-inner" x-ignore>
             <!-- PDF Container Content -->
             <div id="pdf-content" class="a4-page-content">
                 <!-- Header Logo -->

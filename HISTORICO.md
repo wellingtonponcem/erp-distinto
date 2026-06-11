@@ -5,8 +5,10 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
 
 ## Alterações Recentes
 
-- **Correção da Inicialização do Painel (Alpine.js)** *(jun/2026)*:
-  - Corrigido erro de sintaxe de fragmento React (`<></>`) inválido no template Alpine.js da sidebar (`includes/layout/sidebar.php`), restaurando o funcionamento do clique de todos os botões (como o "Enviar Assinatura") que dependem do Alpine no ERP.
+- **Correção da Inicialização do Alpine.js (Botões Inoperantes)** *(jun/2026)*:
+  - Causa raiz: o HTML dinâmico do contrato (com e-mails `@gmail.com`) era renderizado dentro do wrapper `x-data` do Alpine.js, que interpretava `@` como diretiva `x-on:`, quebrando silenciosamente toda a inicialização e desativando botões como "Enviar Assinatura", "PDF" e "Anexo IA".
+  - Solução: adicionado `x-ignore` no container do preview A4 em `contrato_visualizar.php` para isolar o HTML dinâmico do parser Alpine.
+  - Corrigida também sintaxe de fragmento React inválido (`<></>`) na sidebar (`sidebar.php`).
 
 - **Ajustes de Layout e Quebras de Página no PDF** *(jun/2026)*:
   - Adicionada regra CSS `break-after: avoid` e `page-break-after: avoid` para títulos `h3` e `h4` em `contrato_visualizar.php`, impedindo que os títulos de cláusulas fiquem "órfãos" sozinhos no fim de uma página.
