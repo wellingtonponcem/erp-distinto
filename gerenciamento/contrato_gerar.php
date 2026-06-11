@@ -407,6 +407,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dataContrato = $_POST['data_contrato'] ?? date('Y-m-d');
     $localContrato = sanitizar($_POST['local_contrato'] ?? 'Vitória/ES');
     
+    // Remover double-encoding do conteúdo do contrato (já vem do CKEditor com HTML)
+    $contratoTexto = $_POST['contrato_texto'] ?? '';
+    $contratoTexto = preg_replace('/&amp;amp;/', '&amp;', $contratoTexto);
+    
     $sig1 = [
         'nome' => sanitizar($_POST['sig1_nome'] ?? ''),
         'cpf' => formatarCpfCnpj(sanitizar($_POST['sig1_cpf'] ?? '')),
@@ -432,7 +436,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dataEvento = $_POST['data_evento'] ?? '';
     $localEvento = sanitizar($_POST['local_evento'] ?? '');
     $vigenciaMeses = sanitizar($_POST['vigencia_meses'] ?? '');
-    $contratoTexto = $_POST['contrato_texto'] ?? '';
     
     // Sincronizar valor total e condições na Cláusula Terceira do HTML
     if (!empty($contratoTexto)) {

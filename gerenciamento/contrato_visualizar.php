@@ -139,6 +139,31 @@ require_once __DIR__ . '/../includes/layout/head.php';
                     <div class="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center text-zinc-400">
                         <i data-lucide="shield-check" class="w-6 h-6"></i>
                     </div>
+                <?php endif; ?>
+
+                <button @click="atualizarAnexo()" :disabled="loadingAnexo" class="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-white/10 text-zinc-200 rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5 disabled:opacity-50">
+                    <template x-if="!loadingAnexo">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    </template>
+                    <template x-if="loadingAnexo">
+                        <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg>
+                    </template>
+                    <span x-text="loadingAnexo ? 'Gerando...' : 'Anexo IA'">Anexo IA</span>
+                </button>
+
+                <button @click="exportarPDFLocal()" class="px-5 py-2.5 bg-zinc-850 hover:bg-zinc-700 border border-white/10 text-zinc-200 rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5">
+                    <i data-lucide="download" class="w-4 h-4"></i> PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- Status Box if already sent/signed -->
+        <?php if (($contrato['status'] ?? 'rascunho') !== 'rascunho'): ?>
+            <div class="mb-8 p-6 rounded-[2rem] bg-zinc-900/50 border border-white/5 flex flex-wrap items-center justify-between gap-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center text-zinc-400">
+                        <i data-lucide="shield-check" class="w-6 h-6"></i>
+                    </div>
                     <div>
                         <h4 class="font-bold text-white">Contrato em Processamento de Assinatura</h4>
                         <p class="text-xs text-zinc-400 mt-1">Este contrato foi enviado eletronicamente e não aceita mais edições diretas.</p>
@@ -150,6 +175,13 @@ require_once __DIR__ . '/../includes/layout/head.php';
                         <a href="<?= sanitizar($contrato['link_assinatura']) ?>" target="_blank" class="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5">
                             <i data-lucide="external-link" class="w-4 h-4"></i> Acompanhar no Assinafy
                         </a>
+                    <?php endif; ?>
+                    
+                    <?php if (($contrato['status'] ?? 'rascunho') === 'pendente'): ?>
+                        <button type="button" @click="sincronizarStatus()" :disabled="loading"
+                                class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5 cursor-pointer shadow-lg disabled:opacity-50">
+                            <i data-lucide="refresh-cw" class="w-4 h-4" :class="loading ? 'animate-spin' : ''"></i> Sincronizar Status
+                        </button>
                     <?php endif; ?>
                 </div>
             </div>
@@ -364,7 +396,7 @@ function contratoVisualizarApp() {
         exportarPDFLocal() {
             this.loading = true;
             if (typeof html2pdf === 'undefined') {
-                alert('Biblioteca de PDF nÃ£o carregada. Recarregue a pÃ¡gina e tente novamente.');
+                alert('Biblioteca de PDF não carregada. Recarregue a página e tente novamente.');
                 this.loading = false;
                 return;
             }
@@ -425,7 +457,7 @@ function contratoVisualizarApp() {
         confirmarEnvio() {
             const pdfLibReady = typeof html2pdf !== 'undefined';
             if (!pdfLibReady) {
-                alert('Biblioteca de PDF nÃ£o carregada. Recarregue a pÃ¡gina e tente novamente.');
+                alert('Biblioteca de PDF não carregada. Recarregue a página e tente novamente.');
                 return;
             }
             this.showConfirmModal = false;
@@ -472,6 +504,34 @@ function contratoVisualizarApp() {
             .catch(err => {
                 console.error(err);
                 alert('Erro ao enviar documento para o servidor.');
+                this.loading = false;
+            });
+        },
+        
+        sincronizarStatus() {
+            this.loading = true;
+            this.loadingMessage = 'Consultando status no Assinafy...';
+
+            const formData = new FormData();
+            formData.append('id', this.id);
+
+            fetch('<?= raizUrl("/api/contratos/sincronizar_status.php") ?>', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                this.loading = false;
+                if (data.success) {
+                    alert(data.mensagem);
+                    window.location.reload();
+                } else {
+                    alert('Erro ao sincronizar status: ' + (data.erro || data.error || 'Erro interno.'));
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Erro de conexão ao sincronizar status.');
                 this.loading = false;
             });
         }

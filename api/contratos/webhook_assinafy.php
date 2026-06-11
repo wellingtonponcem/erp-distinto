@@ -74,7 +74,6 @@ try {
         str_contains($eventNormalizado, 'document_ready') ||
         str_contains($eventNormalizado, 'completed') ||
         str_contains($eventNormalizado, 'signed') ||
-        str_contains($eventNormalizado, 'signer_signed_document') ||
         $statusNormalizado === 'completed' ||
         $statusNormalizado === 'signed' ||
         $statusNormalizado === 'ready' ||

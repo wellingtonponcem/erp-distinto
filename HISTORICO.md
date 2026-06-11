@@ -5,6 +5,10 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
 
 ## Alterações Recentes
 
+- **Sincronização de Status do Assinafy e Correção de Webhook** *(jun/2026)*:
+  - Causa raiz: Inconsistência de status no Assinafy (signatários como "Assinado" mas documento travado em "Aguardando assinatura"). Além disso, o webhook local possuía um bug que marcaria o contrato como assinado no primeiro clique de assinatura (`signer_signed_document`).
+  - Solução: Criado o endpoint `api/contratos/sincronizar_status.php` que consulta diretamente os detalhes do documento na API do Assinafy, forçando o status local para `assinado` se todos os signatários assinaram individualmente. Adicionado botão "Sincronizar Status" em `contrato_visualizar.php` para autonomia do usuário. Corrigido webhook para ignorar `signer_signed_document`.
+
 - **Sincronização da Cláusula Terceira (Valor e Condições de Pagamento)** *(jun/2026)*:
   - Causa raiz: Alterações do "Valor Total" e "Condições de Pagamento" no painel lateral não refletiam no HTML do contrato no editor principal (CKEditor), fazendo com que as edições fossem sobrescritas por valores zerados ou antigos.
   - Solução: Implementada sincronização automática em tempo real tanto no frontend (JavaScript ao calcular e ao submeter o formulário) quanto no backend (no POST do PHP) substituindo os novos valores no parágrafo 3.1. da Cláusula Terceira.
