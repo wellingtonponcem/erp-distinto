@@ -49,6 +49,34 @@ $tituloPagina = 'Visualizar Contrato';
 require_once __DIR__ . '/../includes/layout/head.php';
 ?>
 <div id="app-wrapper" x-data="contratoVisualizarApp()">
+    <!-- Modal de Confirmação de Assinatura -->
+    <div x-show="showConfirmModal" 
+         class="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] flex items-center justify-center p-4" 
+         x-transition
+         x-cloak>
+        <div class="bg-zinc-950 border border-white/10 rounded-[2rem] p-8 w-full max-w-md shadow-2xl relative text-center" @click.away="showConfirmModal = false">
+            <div class="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 mx-auto mb-6">
+                <i data-lucide="alert-triangle" class="w-7 h-7"></i>
+            </div>
+            
+            <h3 class="text-xl font-black text-white mb-3">Enviar para Assinatura?</h3>
+            <p class="text-sm text-zinc-400 leading-relaxed mb-8">
+                Deseja gerar o PDF final e enviar este contrato para assinatura eletrônica via Assinafy? Esta ação não poderá ser desfeita e bloqueará edições futuras.
+            </p>
+            
+            <div class="flex gap-3">
+                <button type="button" @click="showConfirmModal = false" 
+                        class="flex-1 py-3.5 bg-zinc-900 hover:bg-zinc-850 text-zinc-400 hover:text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all cursor-pointer">
+                    Cancelar
+                </button>
+                <button type="button" @click="confirmarEnvio()" 
+                        class="flex-1 py-3.5 bg-white hover:bg-zinc-200 text-black rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-lg shadow-white/5">
+                    Confirmar Envio
+                </button>
+            </div>
+        </div>
+    </div>
+
     <?php require_once __DIR__ . '/../includes/layout/sidebar.php'; ?>
     <main id="main-content" class="content-sheet flex flex-col min-h-screen !bg-[#0c0c0c] !text-white relative">
         
@@ -325,6 +353,7 @@ function contratoVisualizarApp() {
         loading: false,
         loadingAnexo: false,
         loadingMessage: '',
+        showConfirmModal: false,
         
         exportarPDFLocal() {
             this.loading = true;
@@ -379,10 +408,11 @@ function contratoVisualizarApp() {
         },
 
         enviarParaAssinatura() {
-            if (!confirm('Deseja gerar o PDF final e enviar este contrato para assinatura eletrônica via Assinafy? Esta ação não poderá ser desfeita.')) {
-                return;
-            }
-            
+            this.showConfirmModal = true;
+        },
+
+        confirmarEnvio() {
+            this.showConfirmModal = false;
             this.loading = true;
             this.loadingMessage = 'Gerando PDF de alta definição...';
             
