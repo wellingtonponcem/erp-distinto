@@ -49,6 +49,50 @@ $status = $d['status'] ?? '';
 $eventNormalizado = strtolower((string)$event);
 $statusNormalizado = strtolower((string)$status);
 
+function extrairSignatariosWebhookAssinafy(array $payload): array {
+    $candidatos = [
+        $payload['signers'] ?? null,
+        $payload['assignments'] ?? null,
+        $payload['recipients'] ?? null,
+        $payload['participants'] ?? null,
+        $payload['data']['signers'] ?? null,
+        $payload['data']['assignments'] ?? null,
+        $payload['document']['signers'] ?? null,
+        $payload['document']['assignments'] ?? null,
+        $payload['data']['document']['signers'] ?? null,
+        $payload['data']['document']['assignments'] ?? null,
+    ];
+
+    foreach ($candidatos as $lista) {
+        if (is_array($lista) && count($lista) > 0) {
+            return $lista;
+        }
+    }
+
+    return [];
+}
+
+function signatarioWebhookAssinadoAssinafy(array $signatario): bool {
+    $status = strtolower(trim((string)(
+        $signatario['status']
+        ?? $signatario['signature_status']
+        ?? $signatario['signing_status']
+        ?? ''
+    )));
+
+    if (in_array($status, ['signed', 'completed', 'ready', 'assinado', 'finalizado'], true)) {
+        return true;
+    }
+
+    foreach (['signed_at', 'signedAt', 'signature_date', 'signatureDate', 'completed_at', 'completedAt'] as $campo) {
+        if (!empty($signatario[$campo])) {
+            return true;
+        }
+    }
+
+    return !empty($signatario['signed']) || !empty($signatario['completed']);
+}
+
 if (!$documentId) {
     echo json_encode(['erro' => 'Document ID não fornecido no payload'], 400);
     exit;
@@ -66,7 +110,7 @@ try {
         exit;
     }
     
-$novoStatus = null;
+    $novoStatus = null;
     $mensagemHistorico = '';
     
     // Normalizar eventos de status de assinatura.
@@ -84,12 +128,11 @@ $novoStatus = null;
     ) {
         // Verificar se todos os signatários já assinaram
         $signatariosAssinaram = false;
-        $signers = $d['signers'] ?? $d['data']['signers'] ?? $d['document']['signers'] ?? [];
+        $signers = extrairSignatariosWebhookAssinafy($d);
         if (is_array($signers) && count($signers) > 0) {
             $todosAssinaram = true;
             foreach ($signers as $signer) {
-                $signerStatus = strtolower($signer['status'] ?? $signer['signed_at'] ?? '');
-                if (empty($signerStatus) && empty($signer['signed_at'])) {
+                if (!is_array($signer) || !signatarioWebhookAssinadoAssinafy($signer)) {
                     $todosAssinaram = false;
                     break;
                 }
@@ -98,7 +141,7 @@ $novoStatus = null;
         }
         
         // Se o evento indica assinatura parcial ou os signatários estão todos com status de assinado
-        if (str_contains($eventNormalizado, 'signer_signed') || $signatariosAssinaram || empty($signers)) {
+        if (!str_contains($eventNormalizado, 'signer_signed') || $signatariosAssinaram) {
             $novoStatus = 'assinado';
             $mensagemHistorico = "Contrato comercial assinado com sucesso por todas as partes (Assinafy).";
         }

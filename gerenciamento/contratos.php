@@ -82,6 +82,8 @@ require_once __DIR__ . '/../includes/layout/head.php';
             <div class="grid grid-cols-1 gap-3">
                 <?php foreach ($contratos as $contrato): ?>
                     <?php
+                    $clienteNome = sanitizar(decodificarEntidades($contrato['cliente_nome'] ?? ''));
+                    $tituloContrato = sanitizar(decodificarEntidades($contrato['titulo'] ?? ''));
                     $status = $contrato['status'] ?? 'rascunho';
                     $statusLabel = 'Rascunho';
                     $statusClass = 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400';
@@ -103,12 +105,12 @@ require_once __DIR__ . '/../includes/layout/head.php';
                             </div>
                             <div>
                                 <div class="flex items-center gap-2 mb-1">
-                                    <h3 class="font-bold text-zinc-900 dark:text-white"><?= sanitizar($contrato['cliente_nome']) ?></h3>
+                                    <h3 class="font-bold text-zinc-900 dark:text-white"><?= $clienteNome ?></h3>
                                     <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider <?= $statusClass ?>">
                                         <?= $statusLabel ?>
                                     </span>
                                 </div>
-                                <p class="text-[11px] font-medium text-zinc-500 uppercase tracking-widest"><?= sanitizar($contrato['titulo']) ?></p>
+                                <p class="text-[11px] font-medium text-zinc-500 uppercase tracking-widest"><?= $tituloContrato ?></p>
                             </div>
                         </div>
 
@@ -135,6 +137,15 @@ require_once __DIR__ . '/../includes/layout/head.php';
                             <?php endif; ?>
 
                             <div class="flex items-center gap-2 border-l border-zinc-100 dark:border-zinc-800/50 pl-6">
+                                <?php if ($status === 'pendente' && !empty($contrato['documento_assinatura_id'])): ?>
+                                    <button type="button"
+                                            onclick="sincronizarStatusContrato('<?= sanitizar($contrato['id']) ?>', this)"
+                                            class="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all"
+                                            title="Sincronizar status com Assinafy">
+                                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                                    </button>
+                                <?php endif; ?>
+
                                 <a href="<?= raizUrl('/gerenciamento/contrato_visualizar.php?id=' . $contrato['id']) ?>" 
                                    class="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-900 dark:hover:bg-white hover:text-white dark:hover:text-black transition-all"
                                    title="Visualizar PDF / Enviar">
@@ -173,7 +184,8 @@ require_once __DIR__ . '/../includes/layout/head.php';
 </div>
 
 <!-- Modal de Configuração Assinafy -->
-<div id="modal-assinafy" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] hidden items-center justify-center p-4">
+<div id="modal-assinafy" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] hidden items-center justify-center p-4"
+     style="display: none; z-index: 9999;">
     <div class="bg-zinc-950 border border-white/10 rounded-[2rem] p-8 w-full max-w-md shadow-2xl relative">
         <button onclick="fecharModalAssinafy()" class="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors cursor-pointer">
             <i data-lucide="x" class="w-5 h-5"></i>
@@ -215,6 +227,20 @@ require_once __DIR__ . '/../includes/layout/head.php';
                         <option value="prod" <?= ($config['assinafy_mode'] ?? 'test') === 'prod' ? 'selected' : '' ?>>🟢 Produção (Real)</option>
                     </select>
                 </div>
+
+                <div>
+                    <label class="block text-[11px] font-black uppercase tracking-wider text-zinc-400 mb-2">URL do Webhook</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="assinafy-webhook-url" readonly
+                               value="<?= sanitizar(preg_replace('#/sistema/?$#', '', rtrim(APP_URL, '/')) . raizUrl('/api/contratos/webhook_assinafy.php')) ?>"
+                               class="flex-1 bg-zinc-900 border border-white/5 rounded-xl px-4 py-3 text-xs text-zinc-300 focus:outline-none focus:border-white/20 transition-all">
+                        <button type="button" onclick="copiarWebhookAssinafy()"
+                                class="px-4 py-3 bg-zinc-900 hover:bg-zinc-800 border border-white/5 text-zinc-200 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                            Copiar
+                        </button>
+                    </div>
+                    <p class="text-[10px] text-zinc-500 mt-2">Use esta URL no painel da Assinafy e ative eventos de assinatura, rejeição e documento pronto.</p>
+                </div>
             </div>
             
             <div class="flex gap-3">
@@ -236,6 +262,8 @@ function abrirModalAssinafy() {
     const modal = document.getElementById('modal-assinafy');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
+    modal.style.display = 'flex';
+    modal.style.zIndex = '9999';
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
@@ -245,6 +273,51 @@ function fecharModalAssinafy() {
     const modal = document.getElementById('modal-assinafy');
     modal.classList.remove('flex');
     modal.classList.add('hidden');
+    modal.style.display = 'none';
+}
+
+function copiarWebhookAssinafy() {
+    const input = document.getElementById('assinafy-webhook-url');
+    if (!input) return;
+
+    input.select();
+    input.setSelectionRange(0, input.value.length);
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(input.value)
+            .then(() => alert('URL do webhook copiada.'))
+            .catch(() => document.execCommand('copy'));
+        return;
+    }
+
+    document.execCommand('copy');
+    alert('URL do webhook copiada.');
+}
+
+function sincronizarStatusContrato(id, btn) {
+    const original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg>';
+
+    fetch('<?= raizUrl("/api/contratos/sincronizar_status.php") ?>', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ id })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (!data.success) {
+            throw new Error(data.erro || 'Não foi possível sincronizar o status.');
+        }
+        alert(data.mensagem || 'Status sincronizado.');
+        window.location.reload();
+    })
+    .catch(err => {
+        alert('Erro ao sincronizar status: ' + err.message);
+        btn.disabled = false;
+        btn.innerHTML = original;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    });
 }
 
 function salvarConfigAssinafy(e) {

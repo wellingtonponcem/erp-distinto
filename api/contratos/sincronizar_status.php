@@ -99,6 +99,58 @@ try {
         }
     }
 
+    if (!function_exists('normalizarStatusAssinafy')) {
+        function normalizarStatusAssinafy($valor): string {
+            return strtolower(trim((string)$valor));
+        }
+    }
+
+    if (!function_exists('extrairSignatariosAssinafy')) {
+        function extrairSignatariosAssinafy(array $docData): array {
+            $candidatos = [
+                $docData['assignments'] ?? null,
+                $docData['signers'] ?? null,
+                $docData['recipients'] ?? null,
+                $docData['participants'] ?? null,
+                $docData['data']['assignments'] ?? null,
+                $docData['data']['signers'] ?? null,
+                $docData['document']['assignments'] ?? null,
+                $docData['document']['signers'] ?? null,
+            ];
+
+            foreach ($candidatos as $lista) {
+                if (is_array($lista) && count($lista) > 0) {
+                    return $lista;
+                }
+            }
+
+            return [];
+        }
+    }
+
+    if (!function_exists('signatarioAssinadoAssinafy')) {
+        function signatarioAssinadoAssinafy(array $signatario): bool {
+            $status = normalizarStatusAssinafy(
+                $signatario['status']
+                ?? $signatario['signature_status']
+                ?? $signatario['signing_status']
+                ?? ''
+            );
+
+            if (in_array($status, ['signed', 'completed', 'ready', 'assinado', 'finalizado'], true)) {
+                return true;
+            }
+
+            foreach (['signed_at', 'signedAt', 'signature_date', 'signatureDate', 'completed_at', 'completedAt'] as $campo) {
+                if (!empty($signatario[$campo])) {
+                    return true;
+                }
+            }
+
+            return !empty($signatario['signed']) || !empty($signatario['completed']);
+        }
+    }
+
     // Buscar detalhes do documento na API
     $responseJson = chamarAssinafyGet("/accounts/{$accountId}/documents/{$documentId}", $apiKey, $mode);
     $data = json_decode($responseJson, true);
@@ -108,7 +160,7 @@ try {
     }
     
     $docData = $data['data'] ?? $data;
-    $statusApi = strtolower((string)($docData['status'] ?? ''));
+    $statusApi = normalizarStatusAssinafy($docData['status'] ?? $docData['document_status'] ?? $docData['state'] ?? '');
     
     $novoStatus = null;
     $mensagemHistorico = '';
@@ -125,12 +177,11 @@ try {
     } 
     // Caso de redundância protetiva: se todos os signatários individuais já assinaram, consideramos assinado
     else {
-        $assignments = $docData['assignments'] ?? $docData['signers'] ?? [];
+        $assignments = extrairSignatariosAssinafy($docData);
         if (is_array($assignments) && count($assignments) > 0) {
             $todosAssinaram = true;
             foreach ($assignments as $a) {
-                $statusSigner = strtolower((string)($a['status'] ?? ''));
-                if (!in_array($statusSigner, ['signed', 'assinado', 'completed'])) {
+                if (!is_array($a) || !signatarioAssinadoAssinafy($a)) {
                     $todosAssinaram = false;
                     break;
                 }
