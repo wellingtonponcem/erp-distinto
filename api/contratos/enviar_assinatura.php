@@ -46,6 +46,7 @@ if (!$contrato) {
 $dadosJson = json_decode($contrato['dados_json'], true) ?: [];
 $sig1 = $dadosJson['signatario_1'] ?? null;
 $sig2 = $dadosJson['signatario_2'] ?? null;
+$sigDistinto = $dadosJson['signatario_distinto'] ?? ['nome' => 'Jeane Poncem', 'email' => 'jeaneponcemsm@gmail.com', 'telefone' => ''];
 
 if (!$sig1 || empty($sig1['nome']) || empty($sig1['email'])) {
     responderJson(['erro' => 'O Signatário 1 (Nome e E-mail) é obrigatório para enviar o contrato.'], 422);
@@ -151,6 +152,25 @@ try {
             }
         } catch (Exception $e) {
             // Se falhar o segundo signatário, tentamos seguir sem ele ou reportamos
+        }
+    }
+
+    // Signatário Distinto (Contratada)
+    if ($sigDistinto && !empty($sigDistinto['nome']) && !empty($sigDistinto['email'])) {
+        $signerDistintoPayload = [
+            'full_name' => $sigDistinto['nome'],
+            'email' => $sigDistinto['email'],
+            'whatsapp_phone_number' => preg_replace('/\D/', '', $sigDistinto['telefone'] ?? '')
+        ];
+        try {
+            $sigDistintoRes = chamarAssinafy("/accounts/{$accountId}/signers", 'POST', $signerDistintoPayload, false, $apiKey, $mode);
+            $sigDistintoData = json_decode($sigDistintoRes, true);
+            $sigDistintoId = $sigDistintoData['data']['id'] ?? $sigDistintoData['id'] ?? null;
+            if ($sigDistintoId) {
+                $signerIds[] = $sigDistintoId;
+            }
+        } catch (Exception $e) {
+            // Se falhar o signatário da Distinto, logamos ou tentamos seguir
         }
     }
     

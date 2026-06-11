@@ -94,6 +94,12 @@ if (isset($_GET['proposta_id'])) {
         'endereco' => ''
     ];
     
+    $sigDistinto = [
+        'nome' => 'Jeane Poncem',
+        'email' => 'jeaneponcemsm@gmail.com',
+        'telefone' => ''
+    ];
+    
     // Dynamic Anexo I generation via Gemini
     $anexoTexto = '';
     try {
@@ -311,6 +317,7 @@ if (isset($_GET['proposta_id'])) {
         'anexo_texto' => $anexoTexto,
         'signatario_1' => $sig1,
         'signatario_2' => $sig2,
+        'signatario_distinto' => $sigDistinto,
         'data_evento' => $dataEvento,
         'local_evento' => '',
         'locais' => $locais,
@@ -370,6 +377,7 @@ if (($contrato['status'] ?? 'rascunho') !== 'rascunho') {
 $dadosJson = json_decode($contrato['dados_json'], true) ?: [];
 $sig1 = $dadosJson['signatario_1'] ?? ['nome' => '', 'cpf' => '', 'email' => '', 'telefone' => '', 'endereco' => ''];
 $sig2 = $dadosJson['signatario_2'] ?? ['nome' => '', 'cpf' => '', 'email' => '', 'telefone' => '', 'endereco' => ''];
+$sigDistinto = $dadosJson['signatario_distinto'] ?? ['nome' => 'Jeane Poncem', 'email' => 'jeaneponcemsm@gmail.com', 'telefone' => ''];
 $dataEvento = $dadosJson['data_evento'] ?? '';
 $localEvento = $dadosJson['local_evento'] ?? '';
 $vigenciaMeses = $dadosJson['vigencia_meses'] ?? '';
@@ -413,6 +421,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'email' => sanitizar($_POST['sig2_email'] ?? ''),
         'telefone' => sanitizar($_POST['sig2_telefone'] ?? ''),
         'endereco' => sanitizar($_POST['sig2_endereco'] ?? '')
+    ];
+    
+    $sigDistinto = [
+        'nome' => sanitizar($_POST['sig_distinto_nome'] ?? 'Jeane Poncem'),
+        'email' => sanitizar($_POST['sig_distinto_email'] ?? 'jeaneponcemsm@gmail.com'),
+        'telefone' => sanitizar($_POST['sig_distinto_telefone'] ?? '')
     ];
     
     $dataEvento = $_POST['data_evento'] ?? '';
@@ -498,6 +512,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'anexo_texto' => $anexoTexto,
         'signatario_1' => $sig1,
         'signatario_2' => $sig2,
+        'signatario_distinto' => $sigDistinto,
         'data_evento' => $dataEvento,
         'local_evento' => $localEvento,
         'vigencia_meses' => $vigenciaMeses,
@@ -756,7 +771,7 @@ require_once __DIR__ . '/../includes/layout/head.php';
                         </div>
 
                         <!-- Signatário 2 (Casamentos) -->
-                        <div class="space-y-4">
+                        <div class="space-y-4 pb-6 border-b border-white/5">
                             <div class="text-[9px] font-black text-white uppercase tracking-widest">Signatário 2 (Noivo / Opcional)</div>
                             
                             <div class="space-y-2">
@@ -769,6 +784,20 @@ require_once __DIR__ . '/../includes/layout/head.php';
                                 <input type="text" name="sig2_telefone" value="<?= sanitizar($sig2['telefone'] ?? '') ?>" placeholder="WhatsApp"
                                        class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
                                 <input type="text" name="sig2_endereco" value="<?= sanitizar($sig2['endereco'] ?? '') ?>" placeholder="Endereço Residencial"
+                                       class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Signatário Distinto (Contratada) -->
+                        <div class="space-y-4 mt-6">
+                            <div class="text-[9px] font-black text-white uppercase tracking-widest">Signatário Distinto (Contratada / Padrão)</div>
+                            
+                            <div class="space-y-2">
+                                <input type="text" name="sig_distinto_nome" value="<?= sanitizar($sigDistinto['nome'] ?? 'Jeane Poncem') ?>" placeholder="Nome Completo *" required
+                                       class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+                                <input type="email" name="sig_distinto_email" value="<?= sanitizar($sigDistinto['email'] ?? 'jeaneponcemsm@gmail.com') ?>" placeholder="E-mail de Assinatura *" required
+                                       class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+                                <input type="text" name="sig_distinto_telefone" value="<?= sanitizar($sigDistinto['telefone'] ?? '') ?>" placeholder="WhatsApp"
                                        class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
                             </div>
                         </div>

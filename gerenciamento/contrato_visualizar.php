@@ -141,25 +141,7 @@ require_once __DIR__ . '/../includes/layout/head.php';
                     <?= $contratoTexto ?>
                 </div>
 
-                <!-- Signatures Space -->
-                <div class="pdf-signatures-wrapper">
-                    <table style="width: 100%; border: 0; margin-top: 50px;">
-                        <tr>
-                            <td style="width: 46%; text-align: center; border: 0; padding: 0;">
-                                <div style="border-top: 1px solid #111; padding-top: 8px; font-size: 10px; color: #333; font-family: 'Arial', sans-serif;">
-                                    <strong>CONTRATANTE(S)</strong>
-                                </div>
-                            </td>
-                            <td style="width: 8%; border: 0;"></td>
-                            <td style="width: 46%; text-align: center; border: 0; padding: 0;">
-                                <div style="border-top: 1px solid #111; padding-top: 8px; font-size: 10px; color: #333; font-family: 'Arial', sans-serif;">
-                                    <strong>CONTRATADA</strong><br>
-                                    Poncem Studio LTDA
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
+
 
                 <!-- Page Break For Anexo I -->
                 <div class="pdf-logo-wrapper pt-10">
