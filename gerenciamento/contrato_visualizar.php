@@ -101,10 +101,6 @@ require_once __DIR__ . '/../includes/layout/head.php';
                 <a href="<?= raizUrl('/gerenciamento/contratos.php') ?>" class="px-5 py-2.5 bg-zinc-900 border border-white/5 hover:bg-zinc-800 text-zinc-300 rounded-xl text-xs font-bold uppercase tracking-widest transition-all">
                     Voltar
                 </a>
-
-                <button onclick="abrirModalAssinafy()" class="px-5 py-2.5 bg-zinc-900 border border-white/5 hover:bg-zinc-800 text-zinc-300 rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5 cursor-pointer shadow-xl" title="Configurar API do Assinafy">
-                    <i data-lucide="key" class="w-4 h-4"></i> API Assinafy
-                </button>
                 
                 <?php if (($contrato['status'] ?? 'rascunho') === 'rascunho'): ?>
                     <a href="<?= raizUrl('/gerenciamento/contrato_gerar.php?id=' . $id) ?>" class="px-5 py-2.5 bg-zinc-900 border border-white/5 hover:bg-zinc-800 text-zinc-300 rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5">
