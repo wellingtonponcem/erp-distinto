@@ -158,10 +158,10 @@ if ($usuario['sistema_origem'] !== 'distinto' || $isAreaRoteiros) {
             }" style="display:flex; align-items:center; justify-content:space-between; margin-top:4px; padding-top:10px; border-top:1px solid rgba(0,0,0,0.05);" class="dark:border-white/10">
                 <button @click="toggle()" :title="isDark ? 'Ativar Modo Claro' : 'Ativar Modo Escuro'" class="dark:text-zinc-300 dark:hover:text-white dark:bg-white/10 dark:hover:bg-white/20 hover:bg-black/10 hover:text-black transition-colors" style="display:flex; align-items:center; gap:6px; padding:6px 10px; color:#555; border-radius:10px; background:none; border:none; cursor:pointer; font-size:11px; font-weight:bold;">
                     <template x-if="isDark">
-                        <><i data-lucide="sun" style="width:14px;height:14px;"></i> Claro</>
+                        <span class="flex items-center gap-1.5"><i data-lucide="sun" class="w-3.5 h-3.5"></i> Claro</span>
                     </template>
                     <template x-if="!isDark">
-                        <><i data-lucide="moon" style="width:14px;height:14px;"></i> Escuro</>
+                        <span class="flex items-center gap-1.5"><i data-lucide="moon" class="w-3.5 h-3.5"></i> Escuro</span>
                     </template>
                 </button>
 

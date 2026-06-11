@@ -177,6 +177,7 @@ require_once __DIR__ . '/../includes/layout/head.php';
                 </div>
                 <div class="pdf-body text-justify">
                     <?= !empty($anexoTexto) ? $anexoTexto : '<h4>ANEXO I – DESCRIÇÃO DOS SERVIÇOS</h4><p class="p0">A descrição detalhada dos serviços será incluída após a definição do escopo do evento.</p>' ?>
+                </div>
             </div>
         </div>
 

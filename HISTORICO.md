@@ -5,6 +5,9 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
 
 ## Alterações Recentes
 
+- **Correção da Inicialização do Painel (Alpine.js)** *(jun/2026)*:
+  - Corrigido erro de sintaxe de fragmento React (`<></>`) inválido no template Alpine.js da sidebar (`includes/layout/sidebar.php`), restaurando o funcionamento do clique de todos os botões (como o "Enviar Assinatura") que dependem do Alpine no ERP.
+
 - **Integração e Configuração Front-End do Assinafy** *(jun/2026)*:
   - Corrigidos bugs no payload de vinculação (`signerIds` em vez de `signers`) e no parse dos IDs de signatários no backend (`api/contratos/enviar_assinatura.php`).
   - Adicionado o Signatário da Distinto (Contratada) por padrão (`jeaneponcemsm@gmail.com`) no formulário (`contrato_gerar.php`), permitindo edição no front-end e sincronizando seu registro no Assinafy.
