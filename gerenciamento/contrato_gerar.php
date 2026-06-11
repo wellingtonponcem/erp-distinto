@@ -433,6 +433,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $localEvento = sanitizar($_POST['local_evento'] ?? '');
     $vigenciaMeses = sanitizar($_POST['vigencia_meses'] ?? '');
     $contratoTexto = $_POST['contrato_texto'] ?? '';
+    
+    // Substituir placeholders padrão pelos valores preenchidos no formulário
+    if (!empty($contratoTexto)) {
+        // Casamentos
+        $contratoTexto = str_replace('[Nome da Noiva]', $sig1['nome'], $contratoTexto);
+        $contratoTexto = str_replace('[CPF da Noiva]', $sig1['cpf'], $contratoTexto);
+        $contratoTexto = str_replace('[Nome do Noivo]', $sig2['nome'], $contratoTexto);
+        $contratoTexto = str_replace('[CPF do Noivo]', $sig2['cpf'], $contratoTexto);
+        
+        // Corporativo / Marketing
+        $contratoTexto = str_replace('[Nome da Empresa / Cliente]', $sig1['nome'], $contratoTexto);
+        $contratoTexto = str_replace('[Documento]', $sig1['cpf'], $contratoTexto);
+        $contratoTexto = str_replace('[Responsável]', $sig1['nome'], $contratoTexto);
+        $contratoTexto = str_replace('[Endereço]', $sig1['endereco'], $contratoTexto);
+    }
+    
     $anexoTexto = $_POST['anexo_texto'] ?? '';
     $locais = [
         'tem_prewedding' => isset($_POST['tem_prewedding']) ? '1' : '',
