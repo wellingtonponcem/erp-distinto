@@ -236,7 +236,7 @@ try {
     
     // Fallback caso a API retorne outra estrutura
     if (!$linkAssinatura) {
-        $linkAssinatura = "https://painel.assinafy.com.br/documento/{$documentId}";
+        $linkAssinatura = "https://app.assinafy.com.br/documento/{$documentId}";
     }
     
     // 8. Atualizar banco de dados do ERP

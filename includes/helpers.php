@@ -131,3 +131,13 @@ function raizUrl(string $caminho = ''): string {
     
     return $base . '/' . ltrim($caminho, '/');
 }
+
+function decodificarEntidades(?string $valor): string {
+    if ($valor === null) return '';
+    $prev = '';
+    while ($valor !== $prev) {
+        $prev = $valor;
+        $valor = html_entity_decode($valor, ENT_QUOTES, 'UTF-8');
+    }
+    return $valor;
+}

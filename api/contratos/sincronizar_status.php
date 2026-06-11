@@ -45,6 +45,14 @@ try {
         responderJson(['success' => false, 'erro' => 'Contrato não encontrado.']);
     }
 
+    // Corrigir domínio do Assinafy no link caso esteja com o subdomínio antigo
+    if (!empty($contrato['link_assinatura']) && strpos($contrato['link_assinatura'], 'painel.assinafy.com.br') !== false) {
+        $linkAssinaturaLimpo = str_replace('painel.assinafy.com.br', 'app.assinafy.com.br', $contrato['link_assinatura']);
+        $stmtUpdateLink = $db->prepare("UPDATE contratos SET link_assinatura = ? WHERE id = ?");
+        $stmtUpdateLink->execute([$linkAssinaturaLimpo, $id]);
+        $contrato['link_assinatura'] = $linkAssinaturaLimpo;
+    }
+
     $documentId = $contrato['documento_assinatura_id'] ?? '';
     if (!$documentId) {
         responderJson(['success' => false, 'erro' => 'Este contrato ainda não foi enviado para assinatura.']);

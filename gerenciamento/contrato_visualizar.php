@@ -171,8 +171,10 @@ require_once __DIR__ . '/../includes/layout/head.php';
                 </div>
                 
                 <div class="flex items-center gap-3">
-                    <?php if ($contrato['link_assinatura']): ?>
-                        <a href="<?= sanitizar($contrato['link_assinatura']) ?>" target="_blank" class="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5">
+                    <?php if ($contrato['link_assinatura']): 
+                        $linkLimpo = str_replace('painel.assinafy.com.br', 'app.assinafy.com.br', $contrato['link_assinatura']);
+                    ?>
+                        <a href="<?= sanitizar($linkLimpo) ?>" target="_blank" class="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5">
                             <i data-lucide="external-link" class="w-4 h-4"></i> Acompanhar no Assinafy
                         </a>
                     <?php endif; ?>

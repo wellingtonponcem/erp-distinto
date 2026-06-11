@@ -38,23 +38,12 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
   - Implementada sincronização automática em tempo real no POST: ao salvar a minuta de um contrato legado/existente, o PHP intercepta o HTML e atualiza ou insere as cláusulas de entrega se o checkbox estiver ativo, mantendo a numeração e edições personalizadas do usuário.
   - Ajustados estilos de visualização em [contrato_visualizar.php](file:///c:/Users/Wellington/Documents/GitHub/erp-distinto/gerenciamento/contrato_visualizar.php): padding da folha A4 alterado para `10pt 50.5pt 15pt 47.3pt`, `margin-top: 35px` no logotipo e `line-height: 1.4` para os itens de lista (`li`) para melhorar a legibilidade.
 
-- **Correção da Persistência do Editor e Resiliência de Datas** *(jun/2026)*:
-  - Resolvido o erro HTTP 500 no salvamento e visualização de contratos tornando a função `dataExtenso()` em `helpers.php` resiliente a datas nulas, vazias ou em formato inválido.
-  - Removida a regeneração automática e destrutiva do template de casamento. Agora, o texto editado pelo usuário no Quill/CKEditor é fielmente preservado no banco e exibido na visualização.
+- **Correção de Subdomínio do Assinafy e Múltiplos Escapes HTML (Double Encoding)** *(jun/2026)*:
+  - Causa raiz: O subdomínio antigo `painel.assinafy.com.br` estava inativo (NXDOMAIN) nos links de visualização e fallbacks. Adicionalmente, dados do formulário sofriam escapes recursivos de entidades HTML (ex: `&amp;amp;amp;`) devido ao uso de `sanitizar()` no POST antes do salvamento e dupla codificação na exibição.
+  - Solução: Corrigidos links e fallbacks para `app.assinafy.com.br`, com tratamento dinâmico retroativo na exibição e na sincronização de status. Substituído `sanitizar()` por `trim()` + `decodificarEntidades()` no salvamento e inicialização do formulário em `contrato_gerar.php`, persistindo texto puro e tratando dados legados.
 
-- **Datas por Extenso, Acentuações, Toggle de Pré-Wedding e Calculadora** *(jun/2026)*:
-  - Adicionado checkbox "A definir em comum acordo entre as partes" para o Pré-Wedding no formulário.
-  - Adicionada Calculadora de Parcelas automática com base no intervalo de meses ou seleção manual de parcelas (para cartão).
-  - Corrigidas e restauradas as acentuações em português do Brasil em todas as cláusulas do template de Casamento inicial.
-
-- **Correção do Editor Visual de Contratos** *(jun/2026)*:
-  - Substituição do CKEditor 5 por Quill.js 2 (devido à descontinuação de CDN) e correções de sintaxe de headers Alpine.js.
-
-- **Correção da Exportação de PDF e Quebras de Página** *(jun/2026)*:
-  - Ajustes de margens no html2pdf.js e estilos de CSS no visualizador para evitar quebras inadequadas de páginas.
-
-- **Integração da Escolha de Plano pelo Cliente (Casamento)** *(jun/2026)*:
-  - Criação do endpoint `api/propostas/escolher-plano.php` para integrar escolhas e registrar andamento de proposta.
+- **Melhorias de Estabilidade, Editor, PDF e Integrações Anteriores** *(jun/2026)*:
+  - Correção de erro HTTP 500 com datas vazias, preservação das edições do Quill, toggle de Pré-Wedding, calculadora automática de parcelas, correções de acentuação nos templates de casamento, configuração de margens no html2pdf.js e endpoint de escolha de planos do cliente.
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.

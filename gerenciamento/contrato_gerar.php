@@ -374,12 +374,27 @@ if (($contrato['status'] ?? 'rascunho') !== 'rascunho') {
     exit;
 }
 
+$contrato['titulo'] = decodificarEntidades($contrato['titulo'] ?? '');
+$contrato['cliente_nome'] = decodificarEntidades($contrato['cliente_nome'] ?? '');
+$contrato['local_contrato'] = decodificarEntidades($contrato['local_contrato'] ?? '');
+
 $dadosJson = json_decode($contrato['dados_json'], true) ?: [];
 $sig1 = $dadosJson['signatario_1'] ?? ['nome' => '', 'cpf' => '', 'email' => '', 'telefone' => '', 'endereco' => ''];
 $sig2 = $dadosJson['signatario_2'] ?? ['nome' => '', 'cpf' => '', 'email' => '', 'telefone' => '', 'endereco' => ''];
 $sigDistinto = $dadosJson['signatario_distinto'] ?? ['nome' => 'Jeane Poncem', 'email' => 'jeaneponcemsm@gmail.com', 'telefone' => ''];
+
+$sig1['nome'] = decodificarEntidades($sig1['nome'] ?? '');
+$sig1['endereco'] = decodificarEntidades($sig1['endereco'] ?? '');
+$sig1['cpf'] = decodificarEntidades($sig1['cpf'] ?? '');
+
+$sig2['nome'] = decodificarEntidades($sig2['nome'] ?? '');
+$sig2['endereco'] = decodificarEntidades($sig2['endereco'] ?? '');
+$sig2['cpf'] = decodificarEntidades($sig2['cpf'] ?? '');
+
+$sigDistinto['nome'] = decodificarEntidades($sigDistinto['nome'] ?? '');
+
 $dataEvento = $dadosJson['data_evento'] ?? '';
-$localEvento = $dadosJson['local_evento'] ?? '';
+$localEvento = decodificarEntidades($dadosJson['local_evento'] ?? '');
 $vigenciaMeses = $dadosJson['vigencia_meses'] ?? '';
 $locais = $dadosJson['locais'] ?? [];
 $locais = array_merge([
@@ -395,47 +410,55 @@ $locais = array_merge([
     'local_cerimonia' => '',
     'data_cerimonia' => ''
 ], $locais);
+
+// Decodificar campos de string dentro de locais
+foreach ($locais as $key => $val) {
+    if (is_string($val)) {
+        $locais[$key] = decodificarEntidades($val);
+    }
+}
+
 $contratoTexto = $dadosJson['contrato_texto'] ?? '';
 $anexoTexto = $dadosJson['anexo_texto'] ?? '';
 $dataContratoPorExtenso = dataExtenso($contrato['data_contrato'] ?? date('Y-m-d'));
 
 // Save / POST Action
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $titulo = sanitizar($_POST['titulo'] ?? $contrato['titulo']);
+    $titulo = decodificarEntidades(trim($_POST['titulo'] ?? $contrato['titulo']));
     $valorTotal = (float)str_replace(['.', ','], ['', '.'], $_POST['valor_total'] ?? $contrato['valor_total']);
-    $condicoesPagamento = $_POST['condicoes_pagamento'] ?? '';
+    $condicoesPagamento = trim($_POST['condicoes_pagamento'] ?? '');
     $dataContrato = $_POST['data_contrato'] ?? date('Y-m-d');
-    $localContrato = sanitizar($_POST['local_contrato'] ?? 'Vitória/ES');
+    $localContrato = decodificarEntidades(trim($_POST['local_contrato'] ?? 'Vitória/ES'));
     
     // Remover double-encoding do conteúdo do contrato (já vem do CKEditor com HTML)
     $contratoTexto = $_POST['contrato_texto'] ?? '';
     $contratoTexto = preg_replace('/&amp;amp;/', '&amp;', $contratoTexto);
     
     $sig1 = [
-        'nome' => sanitizar($_POST['sig1_nome'] ?? ''),
-        'cpf' => formatarCpfCnpj(sanitizar($_POST['sig1_cpf'] ?? '')),
-        'email' => sanitizar($_POST['sig1_email'] ?? ''),
-        'telefone' => sanitizar($_POST['sig1_telefone'] ?? ''),
-        'endereco' => sanitizar($_POST['sig1_endereco'] ?? '')
+        'nome' => decodificarEntidades(trim($_POST['sig1_nome'] ?? '')),
+        'cpf' => formatarCpfCnpj(decodificarEntidades(trim($_POST['sig1_cpf'] ?? ''))),
+        'email' => trim($_POST['sig1_email'] ?? ''),
+        'telefone' => trim($_POST['sig1_telefone'] ?? ''),
+        'endereco' => decodificarEntidades(trim($_POST['sig1_endereco'] ?? ''))
     ];
     
     $sig2 = [
-        'nome' => sanitizar($_POST['sig2_nome'] ?? ''),
-        'cpf' => formatarCpfCnpj(sanitizar($_POST['sig2_cpf'] ?? '')),
-        'email' => sanitizar($_POST['sig2_email'] ?? ''),
-        'telefone' => sanitizar($_POST['sig2_telefone'] ?? ''),
-        'endereco' => sanitizar($_POST['sig2_endereco'] ?? '')
+        'nome' => decodificarEntidades(trim($_POST['sig2_nome'] ?? '')),
+        'cpf' => formatarCpfCnpj(decodificarEntidades(trim($_POST['sig2_cpf'] ?? ''))),
+        'email' => trim($_POST['sig2_email'] ?? ''),
+        'telefone' => trim($_POST['sig2_telefone'] ?? ''),
+        'endereco' => decodificarEntidades(trim($_POST['sig2_endereco'] ?? ''))
     ];
     
     $sigDistinto = [
-        'nome' => sanitizar($_POST['sig_distinto_nome'] ?? 'Jeane Poncem'),
-        'email' => sanitizar($_POST['sig_distinto_email'] ?? 'jeaneponcemsm@gmail.com'),
-        'telefone' => sanitizar($_POST['sig_distinto_telefone'] ?? '')
+        'nome' => decodificarEntidades(trim($_POST['sig_distinto_nome'] ?? 'Jeane Poncem')),
+        'email' => trim($_POST['sig_distinto_email'] ?? 'jeaneponcemsm@gmail.com'),
+        'telefone' => trim($_POST['sig_distinto_telefone'] ?? '')
     ];
     
     $dataEvento = $_POST['data_evento'] ?? '';
-    $localEvento = sanitizar($_POST['local_evento'] ?? '');
-    $vigenciaMeses = sanitizar($_POST['vigencia_meses'] ?? '');
+    $localEvento = decodificarEntidades(trim($_POST['local_evento'] ?? ''));
+    $vigenciaMeses = trim($_POST['vigencia_meses'] ?? '');
     
     // Sincronizar valor total e condições na Cláusula Terceira do HTML
     if (!empty($contratoTexto)) {
@@ -481,16 +504,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $anexoTexto = $_POST['anexo_texto'] ?? '';
     $locais = [
         'tem_prewedding' => isset($_POST['tem_prewedding']) ? '1' : '',
-        'local_prewedding' => sanitizar($_POST['local_prewedding'] ?? ''),
+        'local_prewedding' => decodificarEntidades(trim($_POST['local_prewedding'] ?? '')),
         'local_prewedding_a_definir' => isset($_POST['local_prewedding_a_definir']) ? '1' : '',
-        'data_prewedding' => sanitizar($_POST['data_prewedding'] ?? ''),
-        'previsao_prewedding' => sanitizar($_POST['previsao_prewedding'] ?? ''),
-        'previsao_savethedate' => sanitizar($_POST['previsao_savethedate'] ?? ''),
+        'data_prewedding' => trim($_POST['data_prewedding'] ?? ''),
+        'previsao_prewedding' => decodificarEntidades(trim($_POST['previsao_prewedding'] ?? '')),
+        'previsao_savethedate' => decodificarEntidades(trim($_POST['previsao_savethedate'] ?? '')),
         'tem_cartorio' => isset($_POST['tem_cartorio']) ? '1' : '',
-        'local_cartorio' => sanitizar($_POST['local_cartorio'] ?? ''),
+        'local_cartorio' => decodificarEntidades(trim($_POST['local_cartorio'] ?? '')),
         'tem_cerimonia' => isset($_POST['tem_cerimonia']) ? '1' : '',
-        'local_cerimonia' => sanitizar($_POST['local_cerimonia'] ?? ''),
-        'data_cerimonia' => sanitizar($_POST['data_cerimonia'] ?? '')
+        'local_cerimonia' => decodificarEntidades(trim($_POST['local_cerimonia'] ?? '')),
+        'data_cerimonia' => trim($_POST['data_cerimonia'] ?? '')
     ];
 
     // Se for casamento, sincronizar dinamicamente os parágrafos de pré-wedding na Cláusula Quarta do HTML
