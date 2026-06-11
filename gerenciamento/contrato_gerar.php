@@ -643,9 +643,9 @@ require_once __DIR__ . '/../includes/layout/head.php';
                             <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500">Editável em HTML</span>
                         </h2>
                         
-                        <div class="space-y-2 prose prose-invert max-w-none text-black">
-                            <textarea id="contrato_texto" name="contrato_texto"><?= $contratoTexto ?></textarea>
-                        </div>
+<div class="space-y-2 prose prose-invert max-w-none text-black">
+                             <textarea id="contrato_texto" name="contrato_texto"><?= htmlspecialchars_decode($contratoTexto) ?></textarea>
+                         </div>
                     </div>
 
                     <!-- Editor do Anexo I -->
@@ -683,9 +683,9 @@ require_once __DIR__ . '/../includes/layout/head.php';
                             <?php endif; ?>
                         </h2>
                         
-                        <div class="space-y-2 text-black">
-                            <textarea id="anexo_texto" name="anexo_texto"><?= $anexoTexto ?></textarea>
-                        </div>
+<div class="space-y-2 text-black">
+                             <textarea id="anexo_texto" name="anexo_texto"><?= htmlspecialchars_decode($anexoTexto) ?></textarea>
+                         </div>
                     </div>
                 </div>
 

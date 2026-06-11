@@ -66,7 +66,7 @@ try {
         exit;
     }
     
-    $novoStatus = null;
+$novoStatus = null;
     $mensagemHistorico = '';
     
     // Normalizar eventos de status de assinatura.
@@ -74,13 +74,34 @@ try {
         str_contains($eventNormalizado, 'document_ready') ||
         str_contains($eventNormalizado, 'completed') ||
         str_contains($eventNormalizado, 'signed') ||
+        str_contains($eventNormalizado, 'signer_signed') ||
+        str_contains($eventNormalizado, 'all_signers_signed') ||
         $statusNormalizado === 'completed' ||
         $statusNormalizado === 'signed' ||
         $statusNormalizado === 'ready' ||
-        $statusNormalizado === 'assinado'
+        $statusNormalizado === 'assinado' ||
+        $statusNormalizado === 'finalizado'
     ) {
-        $novoStatus = 'assinado';
-        $mensagemHistorico = "Contrato comercial assinado com sucesso por todas as partes (Assinafy).";
+        // Verificar se todos os signatários já assinaram
+        $signatariosAssinaram = false;
+        $signers = $d['signers'] ?? $d['data']['signers'] ?? $d['document']['signers'] ?? [];
+        if (is_array($signers) && count($signers) > 0) {
+            $todosAssinaram = true;
+            foreach ($signers as $signer) {
+                $signerStatus = strtolower($signer['status'] ?? $signer['signed_at'] ?? '');
+                if (empty($signerStatus) && empty($signer['signed_at'])) {
+                    $todosAssinaram = false;
+                    break;
+                }
+            }
+            $signatariosAssinaram = $todosAssinaram;
+        }
+        
+        // Se o evento indica assinatura parcial ou os signatários estão todos com status de assinado
+        if (str_contains($eventNormalizado, 'signer_signed') || $signatariosAssinaram || empty($signers)) {
+            $novoStatus = 'assinado';
+            $mensagemHistorico = "Contrato comercial assinado com sucesso por todas as partes (Assinafy).";
+        }
     } elseif (
         str_contains($eventNormalizado, 'signer_rejected_document') ||
         str_contains($eventNormalizado, 'user_rejected_document') ||
