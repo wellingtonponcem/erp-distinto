@@ -7,9 +7,10 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
 
 - **Previsão de Entrega de Pré-Wedding e Save the Date** *(jun/2026)*:
   - Adicionados campos de previsão de entrega no formulário de contratos em [contrato_gerar.php](file:///c:/Users/Wellington/Documents/GitHub/erp-distinto/gerenciamento/contrato_gerar.php).
-  - Padrão inicial definido de acordo com o feedback do usuário: Fotos do Pré-wedding em "10 dias úteis após a seleção das fotos pelo casal" e Save the Date em "Até 15 dias úteis após a realização do ensaio".
+  - Padrão inicial: Fotos do Pré-wedding em "10 dias úteis..." e Save the Date em "Até 15 dias...".
   - A Cláusula Quarta (Das Entregas) passa a gerar dinamicamente os parágrafos 4.3 e 4.4 contendo os prazos especificados para ensaios ativos.
-  - Implementada persistência via `dados_json` e leitura resiliente com fallbacks tanto em `contrato_gerar.php` quanto em [contrato_visualizar.php](file:///c:/Users/Wellington/Documents/GitHub/erp-distinto/gerenciamento/contrato_visualizar.php).
+  - Implementada sincronização automática em tempo real no POST: ao salvar a minuta de um contrato legado/existente, o PHP intercepta o HTML e atualiza ou insere as cláusulas de entrega se o checkbox estiver ativo, mantendo a numeração e edições personalizadas do usuário.
+  - Ajustados estilos de visualização em [contrato_visualizar.php](file:///c:/Users/Wellington/Documents/GitHub/erp-distinto/gerenciamento/contrato_visualizar.php): padding da folha A4 alterado para `10pt 50.5pt 15pt 47.3pt`, `margin-top: 35px` no logotipo e `line-height: 1.4` para os itens de lista (`li`) para melhorar a legibilidade.
 
 - **Correção da Persistência do Editor e Resiliência de Datas** *(jun/2026)*:
   - Resolvido o erro HTTP 500 no salvamento e visualização de contratos tornando a função `dataExtenso()` em `helpers.php` resiliente a datas nulas, vazias ou em formato inválido.

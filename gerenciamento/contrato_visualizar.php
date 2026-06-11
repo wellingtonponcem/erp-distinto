@@ -176,7 +176,7 @@ require_once __DIR__ . '/../includes/layout/head.php';
     color: #231f20;
     width: 210mm;
     min-height: 297mm;
-    padding: 10pt 51.5pt 15pt 92.3pt;
+    padding: 10pt 50.5pt 15pt 47.3pt;
     box-shadow: 0 20px 50px rgba(0,0,0,0.8);
     box-sizing: border-box;
     font-family: 'Sora', 'Arial', sans-serif;
@@ -193,6 +193,7 @@ require_once __DIR__ . '/../includes/layout/head.php';
     width: 196px;
     height: auto;
     display: block;
+    margin-top: 35px;
 }
 
 .pdf-body {
@@ -289,7 +290,7 @@ require_once __DIR__ . '/../includes/layout/head.php';
 .pdf-body li {
     margin: 0;
     padding-top: 12.3pt;
-    line-height: 1;
+    line-height: 1.4;
 }
 
 .page-break {
