@@ -52,6 +52,7 @@ require_once __DIR__ . '/../includes/layout/head.php';
     <!-- Modal de Confirmação de Assinatura -->
     <div id="modal-confirm-assinatura"
          class="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] hidden items-center justify-center p-4"
+         style="display: none; z-index: 9999;"
          onclick="if (event.target === this) fecharModalAssinatura()">
         <div class="bg-zinc-950 border border-white/10 rounded-[2rem] p-8 w-full max-w-md shadow-2xl relative text-center">
             <div class="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 mx-auto mb-6">
@@ -485,6 +486,8 @@ function abrirModalAssinatura() {
     if (!modal) return;
     modal.classList.remove('hidden');
     modal.classList.add('flex');
+    modal.style.display = 'flex';
+    modal.style.zIndex = '9999';
 }
 
 function fecharModalAssinatura() {
@@ -492,6 +495,7 @@ function fecharModalAssinatura() {
     if (!modal) return;
     modal.classList.remove('flex');
     modal.classList.add('hidden');
+    modal.style.display = 'none';
 }
 
 function setContratoAssinaturaLoading(active, message = '') {
