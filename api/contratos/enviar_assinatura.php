@@ -130,8 +130,9 @@ try {
     ];
     $sig1Res = chamarAssinafy("/accounts/{$accountId}/signers", 'POST', $signer1Payload, false, $apiKey, $mode);
     $sig1Data = json_decode($sig1Res, true);
-    if (!empty($sig1Data['id'])) {
-        $signerIds[] = $sig1Data['id'];
+    $sig1Id = $sig1Data['data']['id'] ?? $sig1Data['id'] ?? null;
+    if ($sig1Id) {
+        $signerIds[] = $sig1Id;
     }
     
     // Signatário 2 (se preenchido)
@@ -144,8 +145,9 @@ try {
         try {
             $sig2Res = chamarAssinafy("/accounts/{$accountId}/signers", 'POST', $signer2Payload, false, $apiKey, $mode);
             $sig2Data = json_decode($sig2Res, true);
-            if (!empty($sig2Data['id'])) {
-                $signerIds[] = $sig2Data['id'];
+            $sig2Id = $sig2Data['data']['id'] ?? $sig2Data['id'] ?? null;
+            if ($sig2Id) {
+                $signerIds[] = $sig2Id;
             }
         } catch (Exception $e) {
             // Se falhar o segundo signatário, tentamos seguir sem ele ou reportamos
@@ -159,7 +161,7 @@ try {
     // 7. Passo 3 no Assinafy: Associar Assinaturas (Assignments)
     $assignPayload = [
         'method' => 'virtual',
-        'signers' => $signerIds,
+        'signerIds' => $signerIds,
         'message' => 'Por favor, assine o contrato de prestação de serviços da Distinto | Poncem Studio.'
     ];
     

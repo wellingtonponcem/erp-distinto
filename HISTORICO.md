@@ -5,6 +5,11 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
 
 ## Alterações Recentes
 
+- **Integração e Configuração Front-End do Assinafy** *(jun/2026)*:
+  - Corrigidos bugs no payload de vinculação (`signerIds` em vez de `signers`) e no parse dos IDs de signatários no backend (`api/contratos/enviar_assinatura.php`).
+  - Criado o modal de configurações da API do Assinafy diretamente no front-end (`contratos.php` e `contrato_visualizar.php`) para fácil acesso às chaves.
+  - Implementado o endpoint seguro `api/contratos/salvar_config_assinafy.php` para atualização das credenciais via AJAX.
+
 - **Previsão de Entrega de Pré-Wedding e Save the Date** *(jun/2026)*:
   - Adicionados campos de previsão de entrega no formulário de contratos em [contrato_gerar.php](file:///c:/Users/Wellington/Documents/GitHub/erp-distinto/gerenciamento/contrato_gerar.php).
   - Padrão inicial: Fotos do Pré-wedding em "10 dias úteis..." e Save the Date em "Até 15 dias...".

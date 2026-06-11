@@ -33,6 +33,8 @@ $contratos = $db->query("
     ORDER BY c.created_at DESC
 ")->fetchAll();
 
+$config = $db->query("SELECT assinafy_api_key, assinafy_account_id, assinafy_mode FROM configuracao_empresa WHERE id = 'principal' LIMIT 1")->fetch();
+
 $tituloPagina = 'Contratos Comerciais';
 require_once __DIR__ . '/../includes/layout/head.php';
 ?>
@@ -46,6 +48,11 @@ require_once __DIR__ . '/../includes/layout/head.php';
                     Contratos
                 </h1>
                 <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mt-1">Gerencie, envie para assinatura eletrônica e acompanhe o status de formalização das propostas.</p>
+            </div>
+            <div>
+                <button onclick="abrirModalAssinafy()" class="px-5 py-2.5 bg-zinc-900 border border-white/5 hover:bg-zinc-800 text-zinc-300 rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5 shadow-xl cursor-pointer">
+                    <i data-lucide="key" class="w-4 h-4"></i> API Assinafy
+                </button>
             </div>
         </div>
 
@@ -164,4 +171,121 @@ require_once __DIR__ . '/../includes/layout/head.php';
         </div>
     </main>
 </div>
+
+<!-- Modal de Configuração Assinafy -->
+<div id="modal-assinafy" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] hidden items-center justify-center p-4">
+    <div class="bg-zinc-950 border border-white/10 rounded-[2rem] p-8 w-full max-w-md shadow-2xl relative">
+        <button onclick="fecharModalAssinafy()" class="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors cursor-pointer">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+        
+        <div class="mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-zinc-900 flex items-center justify-center text-zinc-300 mb-4 border border-white/5">
+                <i data-lucide="key" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-xl font-black text-white">Configurar API Assinafy</h3>
+            <p class="text-xs text-zinc-400 mt-1">Insira suas credenciais da Assinafy para enviar contratos eletrônicos.</p>
+        </div>
+        
+        <form id="form-config-assinafy" onsubmit="salvarConfigAssinafy(event)">
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-[11px] font-black uppercase tracking-wider text-zinc-400 mb-2">API Key (Token)</label>
+                    <input type="password" id="assinafy-api-key" name="assinafy_api_key" 
+                           class="w-full bg-zinc-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 transition-all placeholder-zinc-600"
+                           placeholder="<?= !empty($config['assinafy_api_key']) ? '••••••••••••••••••••••••••••••••' : 'Cole a chave da API' ?>">
+                    <?php if (!empty($config['assinafy_api_key'])): ?>
+                        <span class="text-[10px] text-emerald-500 flex items-center gap-1 mt-1.5"><i data-lucide="check" class="w-3.5 h-3.5"></i> Chave atualmente salva</span>
+                    <?php endif; ?>
+                </div>
+                
+                <div>
+                    <label class="block text-[11px] font-black uppercase tracking-wider text-zinc-400 mb-2">ID da Conta (Account ID) *</label>
+                    <input type="text" id="assinafy-account-id" name="assinafy_account_id" required
+                           value="<?= sanitizar($config['assinafy_account_id'] ?? '') ?>"
+                           class="w-full bg-zinc-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 transition-all placeholder-zinc-600"
+                           placeholder="ID da Conta no painel">
+                </div>
+                
+                <div>
+                    <label class="block text-[11px] font-black uppercase tracking-wider text-zinc-400 mb-2">Ambiente Ativo</label>
+                    <select id="assinafy-mode" name="assinafy_mode" 
+                            class="w-full bg-zinc-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 transition-all cursor-pointer">
+                        <option value="test" <?= ($config['assinafy_mode'] ?? 'test') === 'test' ? 'selected' : '' ?>>🧪 Sandbox (Testes)</option>
+                        <option value="prod" <?= ($config['assinafy_mode'] ?? 'test') === 'prod' ? 'selected' : '' ?>>🟢 Produção (Real)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex gap-3">
+                <button type="button" onclick="fecharModalAssinafy()" 
+                        class="flex-1 py-3 bg-zinc-900 hover:bg-zinc-850 text-zinc-400 hover:text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all cursor-pointer">
+                    Cancelar
+                </button>
+                <button type="submit" id="btn-salvar-assinafy"
+                        class="flex-1 py-3 bg-white hover:bg-zinc-200 text-black rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                    Salvar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function abrirModalAssinafy() {
+    const modal = document.getElementById('modal-assinafy');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+function fecharModalAssinafy() {
+    const modal = document.getElementById('modal-assinafy');
+    modal.classList.remove('flex');
+    modal.classList.add('hidden');
+}
+
+function salvarConfigAssinafy(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-salvar-assinafy');
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg> Salvando...`;
+    
+    const apiKey = document.getElementById('assinafy-api-key').value;
+    const accountId = document.getElementById('assinafy-account-id').value;
+    const mode = document.getElementById('assinafy-mode').value;
+    
+    fetch('<?= raizUrl("/api/contratos/salvar_config_assinafy.php") ?>', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            assinafy_api_key: apiKey,
+            assinafy_account_id: accountId,
+            assinafy_mode: mode
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        if (data.success) {
+            alert('Configurações salvas com sucesso!');
+            fecharModalAssinafy();
+            window.location.reload();
+        } else {
+            alert(data.erro || 'Falha ao salvar configurações.');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+        alert('Erro de conexão ao salvar configurações.');
+    });
+}
+</script>
+
 <?php require_once __DIR__ . '/../includes/layout/footer.php'; ?>
