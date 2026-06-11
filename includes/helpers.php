@@ -28,6 +28,17 @@ function formatarData(string $data): string {
     return $dt ? $dt->format('d/m/Y') : $data;
 }
 
+function formatarCpfCnpj(string $valor): string {
+    $numeros = preg_replace('/\D/', '', $valor);
+    if (strlen($numeros) === 11) {
+        return vsprintf('%s%s%s.%s%s%s.%s%s%s-%s%s', str_split($numeros));
+    }
+    if (strlen($numeros) === 14) {
+        return vsprintf('%s%s.%s%s%s.%s%s%s/%s%s%s%s-%s%s', str_split($numeros));
+    }
+    return $valor;
+}
+
 function gerarId(): string {
     return bin2hex(random_bytes(16));
 }

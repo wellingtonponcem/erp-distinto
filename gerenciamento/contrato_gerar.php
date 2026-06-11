@@ -409,7 +409,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $sig1 = [
         'nome' => sanitizar($_POST['sig1_nome'] ?? ''),
-        'cpf' => sanitizar($_POST['sig1_cpf'] ?? ''),
+        'cpf' => formatarCpfCnpj(sanitizar($_POST['sig1_cpf'] ?? '')),
         'email' => sanitizar($_POST['sig1_email'] ?? ''),
         'telefone' => sanitizar($_POST['sig1_telefone'] ?? ''),
         'endereco' => sanitizar($_POST['sig1_endereco'] ?? '')
@@ -417,7 +417,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $sig2 = [
         'nome' => sanitizar($_POST['sig2_nome'] ?? ''),
-        'cpf' => sanitizar($_POST['sig2_cpf'] ?? ''),
+        'cpf' => formatarCpfCnpj(sanitizar($_POST['sig2_cpf'] ?? '')),
         'email' => sanitizar($_POST['sig2_email'] ?? ''),
         'telefone' => sanitizar($_POST['sig2_telefone'] ?? ''),
         'endereco' => sanitizar($_POST['sig2_endereco'] ?? '')

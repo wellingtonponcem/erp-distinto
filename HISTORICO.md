@@ -8,7 +8,7 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
 - **Integração e Configuração Front-End do Assinafy** *(jun/2026)*:
   - Corrigidos bugs no payload de vinculação (`signerIds` em vez de `signers`) e no parse dos IDs de signatários no backend (`api/contratos/enviar_assinatura.php`).
   - Adicionado o Signatário da Distinto (Contratada) por padrão (`jeaneponcemsm@gmail.com`) no formulário (`contrato_gerar.php`), permitindo edição no front-end e sincronizando seu registro no Assinafy.
-  - Implementada substituição automática no POST de placeholders como `[CPF da Noiva]`, `[CPF do Noivo]` e dados de CNPJ/Endereço em [contrato_gerar.php](file:///c:/Users/Wellington/Documents/GitHub/erp-distinto/gerenciamento/contrato_gerar.php).
+  - Implementada substituição automática no POST de placeholders e formatação de CPF/CNPJ (ex: `000.000.000-00`) caso o usuário preencha apenas números em [contrato_gerar.php](file:///c:/Users/Wellington/Documents/GitHub/erp-distinto/gerenciamento/contrato_gerar.php).
   - Removido o bloco visual de assinaturas físicas (tabela pontilhada) de [contrato_visualizar.php](file:///c:/Users/Wellington/Documents/GitHub/erp-distinto/gerenciamento/contrato_visualizar.php).
   - Substituído o `confirm` nativo do navegador por um modal de confirmação de envio escuro e premium com Alpine.js na pré-visualização.
   - Criado o modal de configurações da API do Assinafy diretamente no front-end (`contratos.php` e `contrato_visualizar.php`) para fácil acesso às chaves.
