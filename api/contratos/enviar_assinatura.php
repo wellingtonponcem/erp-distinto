@@ -94,14 +94,50 @@ function chamarAssinafy(string $endpoint, string $method, $payload, bool $isMult
     curl_setopt($ch, CURLOPT_TIMEOUT, 60);
     
     $response = curl_exec($ch);
+    $curlError = curl_error($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
+
+    if ($response === false) {
+        throw new Exception("Erro Assinafy (cURL): " . $curlError);
+    }
     
     if ($httpCode < 200 || $httpCode >= 300) {
         throw new Exception("Erro Assinafy (HTTP $httpCode): " . $response);
     }
     
     return $response;
+}
+
+function resumirRespostaAssinafy($payload): string {
+    $texto = is_string($payload) ? $payload : json_encode($payload, JSON_UNESCAPED_UNICODE);
+    $texto = trim((string)$texto);
+    if ($texto === '') {
+        return 'Resposta vazia.';
+    }
+    return substr($texto, 0, 800);
+}
+
+function extrairIdAssinafy(array $payload): ?string {
+    $candidatos = [
+        $payload['id'] ?? null,
+        $payload['document_id'] ?? null,
+        $payload['documentId'] ?? null,
+        $payload['uuid'] ?? null,
+        $payload['data']['id'] ?? null,
+        $payload['data']['document_id'] ?? null,
+        $payload['data']['documentId'] ?? null,
+        $payload['document']['id'] ?? null,
+        $payload['document']['uuid'] ?? null,
+    ];
+
+    foreach ($candidatos as $id) {
+        if (is_scalar($id) && trim((string)$id) !== '') {
+            return (string)$id;
+        }
+    }
+
+    return null;
 }
 
 try {
@@ -114,10 +150,14 @@ try {
     
     $uploadRes = chamarAssinafy("/accounts/{$accountId}/documents", 'POST', $uploadPayload, true, $apiKey, $mode);
     $uploadData = json_decode($uploadRes, true);
-    $documentId = $uploadData['id'] ?? null;
+    if (!is_array($uploadData)) {
+        throw new Exception("Resposta de upload invalida do Assinafy: " . resumirRespostaAssinafy($uploadRes));
+    }
+
+    $documentId = extrairIdAssinafy($uploadData);
     
     if (!$documentId) {
-        throw new Exception("Resposta de upload inválida do Assinafy.");
+        throw new Exception("Resposta de upload invalida do Assinafy: " . resumirRespostaAssinafy($uploadData));
     }
     
     // 6. Passo 2 no Assinafy: Criar Signatários

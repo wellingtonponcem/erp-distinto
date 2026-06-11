@@ -34,9 +34,20 @@ try {
 }
 
 // Extrair ID do documento do Assinafy do payload
-$documentId = $d['document_id'] ?? $d['document']['id'] ?? $d['id'] ?? '';
+$documentId = $d['document_id']
+    ?? $d['documentId']
+    ?? $d['document']['id']
+    ?? $d['data']['document_id']
+    ?? $d['data']['documentId']
+    ?? $d['data']['document']['id']
+    ?? $d['assignment']['document_id']
+    ?? $d['assignment']['document']['id']
+    ?? $d['id']
+    ?? '';
 $event = $d['event'] ?? '';
 $status = $d['status'] ?? '';
+$eventNormalizado = strtolower((string)$event);
+$statusNormalizado = strtolower((string)$status);
 
 if (!$documentId) {
     echo json_encode(['erro' => 'Document ID não fornecido no payload'], 400);
@@ -58,23 +69,29 @@ try {
     $novoStatus = null;
     $mensagemHistorico = '';
     
-    // Normalizar eventos de status de assinatura
-    // Assinafy costuma enviar 'document.completed', 'document.signed' ou 'completed', 'signed'
+    // Normalizar eventos de status de assinatura.
     if (
-        strpos($event, 'completed') !== false || 
-        strpos($event, 'signed') !== false || 
-        $status === 'completed' || 
-        $status === 'signed' || 
-        $status === 'assinado'
+        str_contains($eventNormalizado, 'document_ready') ||
+        str_contains($eventNormalizado, 'completed') ||
+        str_contains($eventNormalizado, 'signed') ||
+        str_contains($eventNormalizado, 'signer_signed_document') ||
+        $statusNormalizado === 'completed' ||
+        $statusNormalizado === 'signed' ||
+        $statusNormalizado === 'ready' ||
+        $statusNormalizado === 'assinado'
     ) {
         $novoStatus = 'assinado';
         $mensagemHistorico = "Contrato comercial assinado com sucesso por todas as partes (Assinafy).";
     } elseif (
-        strpos($event, 'cancelled') !== false || 
-        strpos($event, 'rejected') !== false || 
-        $status === 'cancelled' || 
-        $status === 'rejected' || 
-        $status === 'cancelado'
+        str_contains($eventNormalizado, 'signer_rejected_document') ||
+        str_contains($eventNormalizado, 'user_rejected_document') ||
+        str_contains($eventNormalizado, 'cancelled') ||
+        str_contains($eventNormalizado, 'canceled') ||
+        str_contains($eventNormalizado, 'rejected') ||
+        $statusNormalizado === 'cancelled' ||
+        $statusNormalizado === 'canceled' ||
+        $statusNormalizado === 'rejected' ||
+        $statusNormalizado === 'cancelado'
     ) {
         $novoStatus = 'cancelado';
         $mensagemHistorico = "Assinatura do contrato cancelada ou recusada no Assinafy.";

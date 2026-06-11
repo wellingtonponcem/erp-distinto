@@ -621,6 +621,20 @@ function confirmarEnvioAssinatura() {
                         <option value="prod" <?= ($config['assinafy_mode'] ?? 'test') === 'prod' ? 'selected' : '' ?>>🟢 Produção (Real)</option>
                     </select>
                 </div>
+
+                <div>
+                    <label class="block text-[11px] font-black uppercase tracking-wider text-zinc-400 mb-2">URL do Webhook</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="assinafy-webhook-url" readonly
+                               value="<?= sanitizar(preg_replace('#/sistema/?$#', '', rtrim(APP_URL, '/')) . raizUrl('/api/contratos/webhook_assinafy.php')) ?>"
+                               class="flex-1 bg-zinc-900 border border-white/5 rounded-xl px-4 py-3 text-xs text-zinc-300 focus:outline-none focus:border-white/20 transition-all">
+                        <button type="button" onclick="copiarWebhookAssinafy()"
+                                class="px-4 py-3 bg-zinc-900 hover:bg-zinc-800 border border-white/5 text-zinc-200 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                            Copiar
+                        </button>
+                    </div>
+                    <p class="text-[10px] text-zinc-500 mt-2">Use esta URL no painel da Assinafy e ative eventos de assinatura, rejeição e documento pronto.</p>
+                </div>
             </div>
             
             <div class="flex gap-3">
@@ -651,6 +665,24 @@ function fecharModalAssinafy() {
     const modal = document.getElementById('modal-assinafy');
     modal.classList.remove('flex');
     modal.classList.add('hidden');
+}
+
+function copiarWebhookAssinafy() {
+    const input = document.getElementById('assinafy-webhook-url');
+    if (!input) return;
+
+    input.select();
+    input.setSelectionRange(0, input.value.length);
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(input.value)
+            .then(() => alert('URL do webhook copiada.'))
+            .catch(() => document.execCommand('copy'));
+        return;
+    }
+
+    document.execCommand('copy');
+    alert('URL do webhook copiada.');
 }
 
 function salvarConfigAssinafy(e) {
