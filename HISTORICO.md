@@ -38,9 +38,9 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
   - Implementada sincronização automática em tempo real no POST: ao salvar a minuta de um contrato legado/existente, o PHP intercepta o HTML e atualiza ou insere as cláusulas de entrega se o checkbox estiver ativo, mantendo a numeração e edições personalizadas do usuário.
   - Ajustados estilos de visualização em [contrato_visualizar.php](file:///c:/Users/Wellington/Documents/GitHub/erp-distinto/gerenciamento/contrato_visualizar.php): padding da folha A4 alterado para `10pt 50.5pt 15pt 47.3pt`, `margin-top: 35px` no logotipo e `line-height: 1.4` para os itens de lista (`li`) para melhorar a legibilidade.
 
-- **Correção do Subdomínio Assinafy, Double Encoding, Botão e Layout** *(jun/2026)*:
-  - Causa raiz: O subdomínio antigo `painel.assinafy.com.br` estava inativo (NXDOMAIN). Dados sofriam escapes recursivos de HTML por causa de `sanitizar()` no POST. Havia um bloco de HTML quebrado/duplicado e o botão redundante "API Assinafy" em `contrato_visualizar.php` que quebravam o layout do preview A4 (empurrando-o para fora da página).
-  - Solução: Atualizado para `app.assinafy.com.br`. Mudado POST para salvar em raw (`trim()` + `decodificarEntidades()`). Removido o botão redundante e limpado o bloco de divs órfãs e duplicadas no visualizador, restaurando o alinhamento da folha A4.
+- **Subdomínio Assinafy, Double Encoding, Layout e CPF dos Signatários** *(jun/2026)*:
+  - Causa raiz: Subdomínio `painel.assinafy.com.br` inativo. Nomes e CPFs sofriam escapes aninhados de HTML por causa de `sanitizar()` no POST. Os CPFs também eram renderizados sem formatação (números crus) na minuta do contrato, pois a geração inicial e a edição lateral não os atualizavam no corpo do HTML.
+  - Solução: Corrigido domínio para `app.assinafy.com.br` e removido botão e divs duplicadas no layout. Substituído `sanitizar()` por `trim()` + `decodificarEntidades()` no POST e inicialização. Adicionado `formatarCpfCnpj()` na criação inicial e implementada substituição dinâmica no POST que sincroniza CPFs/Nomes crus e formatados no corpo do texto do contrato.
 
 - **Melhorias de Estabilidade, Editor, PDF e Integrações Anteriores** *(jun/2026)*:
   - Correção de erro HTTP 500 com datas vazias, preservação das edições do Quill, toggle de Pré-Wedding, calculadora automática de parcelas, correções de acentuação nos templates de casamento, configuração de margens no html2pdf.js e endpoint de escolha de planos do cliente.

@@ -80,7 +80,7 @@ if (isset($_GET['proposta_id'])) {
     // Initialize Signatarios
     $sig1 = [
         'nome' => ($dadosProposta['nome_noiva'] ?? '') ?: ($cliente['nome'] ?? $clienteNome),
-        'cpf' => $cliente['cpf_cnpj'] ?? '',
+        'cpf' => formatarCpfCnpj($cliente['cpf_cnpj'] ?? ''),
         'email' => $dadosProposta['email_contato'] ?? ($cliente['contato'] ?? ''),
         'telefone' => $dadosProposta['whatsapp'] ?? '',
         'endereco' => ''
@@ -499,6 +499,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $contratoTexto = str_replace('[Documento]', $sig1['cpf'], $contratoTexto);
         $contratoTexto = str_replace('[Responsável]', $sig1['nome'], $contratoTexto);
         $contratoTexto = str_replace('[Endereço]', $sig1['endereco'], $contratoTexto);
+    }
+
+    // Sincronizar CPFs e Nomes modificados ou crus diretamente no HTML do contrato
+    if (!empty($contratoTexto)) {
+        $dadosJsonAntigo = json_decode($contrato['dados_json'], true) ?: [];
+        $sig1Antigo = $dadosJsonAntigo['signatario_1'] ?? null;
+        $sig2Antigo = $dadosJsonAntigo['signatario_2'] ?? null;
+        
+        // Sincronização do Signatário 1
+        if ($sig1Antigo) {
+            $cpfAntigo = $sig1Antigo['cpf'] ?? '';
+            $cpfAntigoCru = preg_replace('/\D/', '', $cpfAntigo);
+            $nomeAntigo = $sig1Antigo['nome'] ?? '';
+            
+            if (!empty($cpfAntigoCru)) {
+                $contratoTexto = str_replace($cpfAntigoCru, $sig1['cpf'], $contratoTexto);
+                $contratoTexto = str_replace(formatarCpfCnpj($cpfAntigoCru), $sig1['cpf'], $contratoTexto);
+            }
+            if (!empty($nomeAntigo) && $nomeAntigo !== $sig1['nome']) {
+                $contratoTexto = str_replace($nomeAntigo, $sig1['nome'], $contratoTexto);
+            }
+        }
+        
+        // Sincronização do Signatário 2
+        if ($sig2Antigo) {
+            $cpfAntigo = $sig2Antigo['cpf'] ?? '';
+            $cpfAntigoCru = preg_replace('/\D/', '', $cpfAntigo);
+            $nomeAntigo = $sig2Antigo['nome'] ?? '';
+            
+            if (!empty($cpfAntigoCru)) {
+                $contratoTexto = str_replace($cpfAntigoCru, $sig2['cpf'], $contratoTexto);
+                $contratoTexto = str_replace(formatarCpfCnpj($cpfAntigoCru), $sig2['cpf'], $contratoTexto);
+            }
+            if (!empty($nomeAntigo) && $nomeAntigo !== $sig2['nome']) {
+                $contratoTexto = str_replace($nomeAntigo, $sig2['nome'], $contratoTexto);
+            }
+        }
+
+        // Redundância caso os CPFs estejam crus no HTML mas corretos no formulário
+        $sig1CpfCru = preg_replace('/\D/', '', $sig1['cpf']);
+        if (strlen($sig1CpfCru) === 11 || strlen($sig1CpfCru) === 14) {
+            $contratoTexto = str_replace($sig1CpfCru, $sig1['cpf'], $contratoTexto);
+        }
+        
+        $sig2CpfCru = preg_replace('/\D/', '', $sig2['cpf']);
+        if (strlen($sig2CpfCru) === 11 || strlen($sig2CpfCru) === 14) {
+            $contratoTexto = str_replace($sig2CpfCru, $sig2['cpf'], $contratoTexto);
+        }
     }
     
     $anexoTexto = $_POST['anexo_texto'] ?? '';
