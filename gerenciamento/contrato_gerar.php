@@ -1101,6 +1101,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof toggleMeioPagamento === 'function') {
         toggleMeioPagamento();
     }
+
+    // Sincronizar dados do CKEditor antes do envio do formulário
+    const contratoForm = document.getElementById('contrato-form');
+    if (contratoForm) {
+        contratoForm.addEventListener('submit', function() {
+            if (window.contratoEditor) {
+                document.getElementById('contrato_texto').value = window.contratoEditor.getData();
+            }
+            if (window.anexoEditor) {
+                document.getElementById('anexo_texto').value = window.anexoEditor.getData();
+            }
+        });
+    }
 });
 
 function escreverValorPorExtenso(valor) {

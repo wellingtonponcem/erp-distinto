@@ -111,7 +111,7 @@ require_once __DIR__ . '/../includes/layout/head.php';
                         <i data-lucide="edit-3" class="w-4 h-4"></i> Editar
                     </a>
                     
-                    <button @click="enviarParaAssinatura()" class="px-6 py-2.5 bg-white text-black hover:bg-zinc-200 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-1.5 shadow-xl">
+                    <button type="button" @click="enviarParaAssinatura()" class="px-6 py-2.5 bg-white text-black hover:bg-zinc-200 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-1.5 shadow-xl">
                         <i data-lucide="signature" class="w-4 h-4"></i> Enviar Assinatura
                     </button>
                 <?php endif; ?>
