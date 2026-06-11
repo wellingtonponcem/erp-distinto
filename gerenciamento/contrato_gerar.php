@@ -109,7 +109,28 @@ if (isset($_GET['proposta_id'])) {
     // Build default Contract Body text
     $dataContratoPorExtenso = dataExtenso($dataContrato);
     $dataEvento = $dadosProposta['data_casamento'] ?? $dadosProposta['data_inicio'] ?? '';
-    $locais = [];
+    
+    $temPreweddingInicial = false;
+    if ($proposta['tipo'] === 'casamento') {
+        $temPreweddingInicial = !empty($dadosProposta['include_prewedding'])
+            || !empty($dadosProposta['include_prewedding_heritage'])
+            || !empty($dadosProposta['include_prewedding_cinematic'])
+            || !empty($dadosProposta['include_prewedding_essencial']);
+    }
+    
+    $locais = [
+        'tem_prewedding' => $temPreweddingInicial ? '1' : '',
+        'local_prewedding' => '',
+        'local_prewedding_a_definir' => '1',
+        'data_prewedding' => '',
+        'previsao_prewedding' => '10 dias úteis após a seleção das fotos pelo casal',
+        'previsao_savethedate' => 'Até 15 dias úteis após a realização do ensaio',
+        'tem_cartorio' => '',
+        'local_cartorio' => '',
+        'tem_cerimonia' => '1',
+        'local_cerimonia' => '',
+        'data_cerimonia' => $dataEvento
+    ];
     
     if ($proposta['tipo'] === 'casamento') {
         // Build Clause 2 dynamically based on locais config
@@ -152,6 +173,24 @@ if (isset($_GET['proposta_id'])) {
         $n++;
         $clausula2 .= '<p>2.' . $n . '. A CONTRATADA não se responsabiliza por atrasos ou impossibilidade de execução dos serviços decorrentes de condições climáticas adversas, falhas de energia elétrica no local do evento ou quaisquer outros fatores alheios à sua vontade, comprometendo-se, nestes casos, a remarcar a data mediante comum acordo com os CONTRATANTES.</p>';
 
+        // Build Clause 4 dynamically based on prewedding config
+        $clausula4 = '<h4>CLÁUSULA QUARTA – DAS ENTREGAS</h4>';
+        $clausula4 .= '<p>4.1. A <strong>CONTRATADA</strong> entregará aos <strong>CONTRATANTES</strong> o material fotográfico e/ou audiovisual devidamente editado, conforme especificações técnicas e prazos estabelecidos no Anexo I, parte integrante deste instrumento.</p>';
+        $clausula4 .= '<p>4.2. O prazo de entrega do material final será contado a partir da data de realização do evento, salvo disposição em contrário prevista no Anexo I.</p>';
+        
+        $c4_idx = 3;
+        if (!empty($locais['tem_prewedding'])) {
+            $previsaoPw = !empty($locais['previsao_prewedding']) ? htmlspecialchars($locais['previsao_prewedding']) : '10 dias úteis após a seleção das fotos pelo casal';
+            $previsaoStd = !empty($locais['previsao_savethedate']) ? htmlspecialchars($locais['previsao_savethedate']) : 'Até 15 dias úteis após a realização do ensaio';
+            
+            $clausula4 .= '<p>4.' . $c4_idx . '. O prazo previsto para a entrega das fotos do ensaio Pré-Wedding é de <strong>' . $previsaoPw . '</strong>.</p>';
+            $c4_idx++;
+            $clausula4 .= '<p>4.' . $c4_idx . '. O prazo previsto para a entrega do Save the Date é de <strong>' . $previsaoStd . '</strong>.</p>';
+            $c4_idx++;
+        }
+        
+        $clausula4 .= '<p>4.' . $c4_idx . '. A <strong>CONTRATADA</strong> não se responsabiliza pela perda do material decorrente de caso fortuito ou força maior, obrigando-se, entretanto, a manter backup de segurança de todos os arquivos pelo prazo mínimo de 90 (noventa) dias após a entrega.</p>';
+
         $contratoTexto = "
         <h3>CONTRATO DE PRESTAÇÃO DE SERVIÇOS</h3>
         <p class=\"pdf-subtitle\">CASAMENTO</p>
@@ -177,10 +216,7 @@ if (isset($_GET['proposta_id'])) {
         <p>3.2. O pagamento será efetuado conforme cronograma acordado entre as partes, podendo ser dividido em parcelas mensais, conforme discriminado na proposta comercial aceita pelos CONTRATANTES.</p>
         <p>3.3. Em caso de atraso no pagamento de qualquer parcela, incidirá multa de 2% (dois por cento) sobre o valor da parcela em atraso, bem como juros de mora de 1% (um por cento) ao mês e correção monetária pelo IPCA.</p>
 
-        <h4>CLÁUSULA QUARTA – DAS ENTREGAS</h4>
-        <p>4.1. A <strong>CONTRATADA</strong> entregará aos <strong>CONTRATANTES</strong> o material fotográfico e/ou audiovisual devidamente editado, conforme especificações técnicas e prazos estabelecidos no Anexo I, parte integrante deste instrumento.</p>
-        <p>4.2. O prazo de entrega do material final será contado a partir da data de realização do evento, salvo disposição em contrário prevista no Anexo I.</p>
-        <p>4.3. A <strong>CONTRATADA</strong> não se responsabiliza pela perda do material decorrente de caso fortuito ou força maior, obrigando-se, entretanto, a manter backup de segurança de todos os arquivos pelo prazo mínimo de 90 (noventa) dias após a entrega.</p>
+        " . $clausula4 . "
 
 
         <h4>CLÁUSULA QUINTA – DA AUTORIZAÇÃO DE IMAGEM</h4>
@@ -337,7 +373,20 @@ $sig2 = $dadosJson['signatario_2'] ?? ['nome' => '', 'cpf' => '', 'email' => '',
 $dataEvento = $dadosJson['data_evento'] ?? '';
 $localEvento = $dadosJson['local_evento'] ?? '';
 $vigenciaMeses = $dadosJson['vigencia_meses'] ?? '';
-$locais = $dadosJson['locais'] ?? ['tem_prewedding' => '', 'local_prewedding' => '', 'data_prewedding' => '', 'tem_cartorio' => '', 'local_cartorio' => '', 'tem_cerimonia' => '', 'local_cerimonia' => '', 'data_cerimonia' => ''];
+$locais = $dadosJson['locais'] ?? [];
+$locais = array_merge([
+    'tem_prewedding' => '',
+    'local_prewedding' => '',
+    'local_prewedding_a_definir' => '',
+    'data_prewedding' => '',
+    'previsao_prewedding' => '10 dias úteis após a seleção das fotos pelo casal',
+    'previsao_savethedate' => 'Até 15 dias úteis após a realização do ensaio',
+    'tem_cartorio' => '',
+    'local_cartorio' => '',
+    'tem_cerimonia' => '',
+    'local_cerimonia' => '',
+    'data_cerimonia' => ''
+], $locais);
 $contratoTexto = $dadosJson['contrato_texto'] ?? '';
 $anexoTexto = $dadosJson['anexo_texto'] ?? '';
 $dataContratoPorExtenso = dataExtenso($contrato['data_contrato'] ?? date('Y-m-d'));
@@ -376,6 +425,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'local_prewedding' => sanitizar($_POST['local_prewedding'] ?? ''),
         'local_prewedding_a_definir' => isset($_POST['local_prewedding_a_definir']) ? '1' : '',
         'data_prewedding' => sanitizar($_POST['data_prewedding'] ?? ''),
+        'previsao_prewedding' => sanitizar($_POST['previsao_prewedding'] ?? ''),
+        'previsao_savethedate' => sanitizar($_POST['previsao_savethedate'] ?? ''),
         'tem_cartorio' => isset($_POST['tem_cartorio']) ? '1' : '',
         'local_cartorio' => sanitizar($_POST['local_cartorio'] ?? ''),
         'tem_cerimonia' => isset($_POST['tem_cerimonia']) ? '1' : '',
@@ -688,11 +739,17 @@ require_once __DIR__ . '/../includes/layout/head.php';
                                 <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Local do Pré-Wedding</label>
                                 <input type="text" name="local_prewedding" value="<?= sanitizar($locais['local_prewedding'] ?? '') ?>" placeholder="Endereço ou 'a definir'"
                                        class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
-                                <div class="flex items-center gap-2 mt-1">
+                                <div class="flex items-center gap-2 mt-1 mb-2">
                                     <input type="checkbox" name="local_prewedding_a_definir" id="local_prewedding_a_definir" value="1" <?= !empty($locais['local_prewedding_a_definir']) ? 'checked' : '' ?>
                                            class="w-3.5 h-3.5 rounded accent-white">
                                     <label for="local_prewedding_a_definir" class="text-[9px] font-bold text-zinc-400 cursor-pointer">A definir em comum acordo entre as partes</label>
                                 </div>
+                                <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Previsão de Entrega das Fotos</label>
+                                <input type="text" name="previsao_prewedding" value="<?= sanitizar($locais['previsao_prewedding'] ?? '') ?>" placeholder="Ex: 10 dias úteis após a seleção das fotos pelo casal"
+                                       class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
+                                <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Previsão de Entrega do Save the Date</label>
+                                <input type="text" name="previsao_savethedate" value="<?= sanitizar($locais['previsao_savethedate'] ?? '') ?>" placeholder="Ex: Até 15 dias úteis após a realização do ensaio"
+                                       class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white outline-none">
                             </div>
 
                             <!-- Cartório -->

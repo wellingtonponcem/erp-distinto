@@ -25,7 +25,20 @@ if (!$contrato) {
 $dadosJson = json_decode($contrato['dados_json'], true) ?: [];
 $sig1 = $dadosJson['signatario_1'] ?? ['nome' => '', 'cpf' => '', 'email' => '', 'telefone' => '', 'endereco' => ''];
 $sig2 = $dadosJson['signatario_2'] ?? ['nome' => '', 'cpf' => '', 'email' => '', 'telefone' => '', 'endereco' => ''];
-$locais = $dadosJson['locais'] ?? ['tem_prewedding' => '', 'local_prewedding' => '', 'data_prewedding' => '', 'tem_cartorio' => '', 'local_cartorio' => '', 'tem_cerimonia' => '', 'local_cerimonia' => '', 'data_cerimonia' => ''];
+$locais = $dadosJson['locais'] ?? [];
+$locais = array_merge([
+    'tem_prewedding' => '',
+    'local_prewedding' => '',
+    'local_prewedding_a_definir' => '',
+    'data_prewedding' => '',
+    'previsao_prewedding' => '10 dias úteis após a seleção das fotos pelo casal',
+    'previsao_savethedate' => 'Até 15 dias úteis após a realização do ensaio',
+    'tem_cartorio' => '',
+    'local_cartorio' => '',
+    'tem_cerimonia' => '',
+    'local_cerimonia' => '',
+    'data_cerimonia' => ''
+], $locais);
 $contratoTexto = $dadosJson['contrato_texto'] ?? '';
 $anexoTexto = $dadosJson['anexo_texto'] ?? '';
 // For wedding contracts, we display the saved text directly to respect user edits.
