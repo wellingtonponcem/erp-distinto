@@ -172,6 +172,7 @@ require_once __DIR__ . '/../includes/layout/head.php';
 
 
                 <!-- Page Break For Anexo I -->
+                <div class="page-break"></div>
                 <div class="pdf-logo-wrapper pt-10">
                     <img src="<?= raizUrl('/assets/logo-contrato.png') ?>" alt="Poncem Studio Logo" class="pdf-logo">
                 </div>
@@ -230,6 +231,8 @@ require_once __DIR__ . '/../includes/layout/head.php';
     padding: 0;
     line-height: 1;
     text-align: center;
+    page-break-after: avoid;
+    break-after: avoid;
 }
 
 .pdf-body .pdf-subtitle {
@@ -264,6 +267,8 @@ require_once __DIR__ . '/../includes/layout/head.php';
     padding: 12.3pt 0 0 0;
     line-height: 1;
     text-align: left;
+    page-break-after: avoid;
+    break-after: avoid;
 }
 
 .pdf-body p {
