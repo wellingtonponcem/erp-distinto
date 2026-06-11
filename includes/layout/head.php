@@ -28,7 +28,7 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
         }
     </script>
 
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+    <script defer src="<?= raizUrl('/assets/js/alpine.min.js') ?>"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     
     <!-- Flatpickr (Date Picker) -->
