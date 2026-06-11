@@ -363,8 +363,13 @@ function contratoVisualizarApp() {
         
         exportarPDFLocal() {
             this.loading = true;
+            if (typeof html2pdf === 'undefined') {
+                alert('Biblioteca de PDF nÃ£o carregada. Recarregue a pÃ¡gina e tente novamente.');
+                this.loading = false;
+                return;
+            }
             this.loadingMessage = 'Gerando arquivo PDF...';
-            
+
             const element = document.getElementById('pdf-content');
             const opt = {
                 margin: [15, 0, 18, 0],
@@ -418,6 +423,11 @@ function contratoVisualizarApp() {
         },
 
         confirmarEnvio() {
+            const pdfLibReady = typeof html2pdf !== 'undefined';
+            if (!pdfLibReady) {
+                alert('Biblioteca de PDF nÃ£o carregada. Recarregue a pÃ¡gina e tente novamente.');
+                return;
+            }
             this.showConfirmModal = false;
             this.loading = true;
             this.loadingMessage = 'Gerando PDF de alta definição...';

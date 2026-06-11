@@ -37,8 +37,12 @@ if ($usuario['sistema_origem'] !== 'distinto' || $isAreaRoteiros) {
             <button @click="collapsed = !collapsed" 
                     title="Alternar Menu"
                     class="w-10 h-10 flex flex-shrink-0 items-center justify-center rounded-xl bg-zinc-100 dark:bg-white/5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-900 dark:hover:bg-white hover:text-white dark:hover:text-black transition-all shadow-sm mx-auto">
-                <i x-show="collapsed" data-lucide="chevron-right" class="w-5 h-5"></i>
-                <i x-show="!collapsed" data-lucide="chevron-left" class="w-5 h-5"></i>
+                <span x-show="collapsed" class="flex items-center justify-center">
+                    <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                </span>
+                <span x-show="!collapsed" class="flex items-center justify-center">
+                    <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                </span>
             </button>
         </div>
     </div>
