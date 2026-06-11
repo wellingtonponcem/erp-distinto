@@ -434,6 +434,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'data_cerimonia' => sanitizar($_POST['data_cerimonia'] ?? '')
     ];
 
+    // Se for casamento, sincronizar dinamicamente os parágrafos de pré-wedding na Cláusula Quarta do HTML
+    if (($proposta['tipo'] ?? '') === 'casamento' && !empty($contratoTexto)) {
+        if (preg_match('/(<h4>CLÁUSULA QUARTA.*?<\/h4>)(.*?)(?=<h4>CLÁUSULA QUINTA|<p class="p-closing"|$)/is', $contratoTexto, $matches)) {
+            $header = $matches[1];
+            $conteudo = $matches[2];
+            
+            preg_match_all('/<p>.*?<\/p>|<p\s[^>]*>.*?<\/p>/is', $conteudo, $pMatches);
+            $paragrafos = $pMatches[0] ?? [];
+            
+            $p1 = null;
+            $p2 = null;
+            $pBackup = null;
+            
+            foreach ($paragrafos as $p) {
+                if (strpos($p, 'material fotográfico e/ou audiovisual') !== false) {
+                    $p1 = $p;
+                } elseif (strpos($p, 'prazo de entrega do material final') !== false) {
+                    $p2 = $p;
+                } elseif (strpos($p, 'perda do material decorrente de caso') !== false || strpos($p, 'backup de segurança') !== false) {
+                    $pBackup = $p;
+                }
+            }
+            
+            if (!$p1 && isset($paragrafos[0])) $p1 = $paragrafos[0];
+            if (!$p2 && isset($paragrafos[1])) $p2 = $paragrafos[1];
+            if (!$pBackup) {
+                $pBackup = end($paragrafos);
+            }
+            
+            $novosParagrafos = [];
+            $novosParagrafos[] = preg_replace('/^\s*(?:<p>|<p\s[^>]*>)\s*4\.1\.\s*/i', '<p>4.1. ', $p1 ?: '<p>4.1. A <strong>CONTRATADA</strong> entregará aos <strong>CONTRATANTES</strong> o material fotográfico e/ou audiovisual devidamente editado, conforme especificações técnicas e prazos estabelecidos no Anexo I, parte integrante deste instrumento.</p>');
+            
+            $novosParagrafos[] = preg_replace('/^\s*(?:<p>|<p\s[^>]*>)\s*4\.2\.\s*/i', '<p>4.2. ', $p2 ?: '<p>4.2. O prazo de entrega do material final será contado a partir da data de realização do evento, salvo disposição em contrário prevista no Anexo I.</p>');
+            
+            $idx = 3;
+            if (!empty($locais['tem_prewedding'])) {
+                $previsaoPw = !empty($locais['previsao_prewedding']) ? htmlspecialchars($locais['previsao_prewedding']) : '10 dias úteis após a seleção das fotos pelo casal';
+                $previsaoStd = !empty($locais['previsao_savethedate']) ? htmlspecialchars($locais['previsao_savethedate']) : 'Até 15 dias úteis após a realização do ensaio';
+                
+                $novosParagrafos[] = "<p>4.{$idx}. O prazo previsto para a entrega das fotos do ensaio Pré-Wedding é de <strong>{$previsaoPw}</strong>.</p>";
+                $idx++;
+                $novosParagrafos[] = "<p>4.{$idx}. O prazo previsto para a entrega do Save the Date é de <strong>{$previsaoStd}</strong>.</p>";
+                $idx++;
+            }
+            
+            $pBackupLimpo = preg_replace('/^\s*(?:<p>|<p\s[^>]*>)\s*4\.[0-9]+\.\s*/i', '', $pBackup ?: '<p>A <strong>CONTRATADA</strong> não se responsabiliza pela perda do material decorrente de caso fortuito ou força maior, obrigando-se, entretanto, a manter backup de segurança de todos os arquivos pelo prazo mínimo de 90 (noventa) dias após a entrega.</p>');
+            if (strpos($pBackupLimpo, '<p>') === false && strpos($pBackupLimpo, '<p ') === false) {
+                $pBackupLimpo = '<p>' . $pBackupLimpo;
+            }
+            $novosParagrafos[] = preg_replace('/^\s*<p>/i', "<p>4.{$idx}. ", $pBackupLimpo);
+            
+            $novoConteudo = "\n        " . implode("\n        ", $novosParagrafos) . "\n        ";
+            $contratoTexto = str_replace($matches[0], $header . $novoConteudo, $contratoTexto);
+        }
+    }
+
     // We save the contract text directly as edited by the user, without regenerating the template.
     
     // Re-pack dados_json
