@@ -50,11 +50,10 @@ require_once __DIR__ . '/../includes/layout/head.php';
 ?>
 <div id="app-wrapper" x-data="contratoVisualizarApp()">
     <!-- Modal de Confirmação de Assinatura -->
-    <div x-show="showConfirmModal" 
-         class="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] flex items-center justify-center p-4" 
-         x-transition
-         x-cloak>
-        <div class="bg-zinc-950 border border-white/10 rounded-[2rem] p-8 w-full max-w-md shadow-2xl relative text-center" @click.away="showConfirmModal = false">
+    <div id="modal-confirm-assinatura"
+         class="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] hidden items-center justify-center p-4"
+         onclick="if (event.target === this) fecharModalAssinatura()">
+        <div class="bg-zinc-950 border border-white/10 rounded-[2rem] p-8 w-full max-w-md shadow-2xl relative text-center">
             <div class="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 mx-auto mb-6">
                 <i data-lucide="alert-triangle" class="w-7 h-7"></i>
             </div>
@@ -65,11 +64,11 @@ require_once __DIR__ . '/../includes/layout/head.php';
             </p>
             
             <div class="flex gap-3">
-                <button type="button" @click="showConfirmModal = false" 
+                <button type="button" onclick="fecharModalAssinatura()"
                         class="flex-1 py-3.5 bg-zinc-900 hover:bg-zinc-850 text-zinc-400 hover:text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all cursor-pointer">
                     Cancelar
                 </button>
-                <button type="button" @click="confirmarEnvio()" 
+                <button type="button" onclick="confirmarEnvioAssinatura()"
                         class="flex-1 py-3.5 bg-white hover:bg-zinc-200 text-black rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-lg shadow-white/5">
                     Confirmar Envio
                 </button>
@@ -111,7 +110,7 @@ require_once __DIR__ . '/../includes/layout/head.php';
                         <i data-lucide="edit-3" class="w-4 h-4"></i> Editar
                     </a>
                     
-                    <button type="button" @click="enviarParaAssinatura()" class="px-6 py-2.5 bg-white text-black hover:bg-zinc-200 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-1.5 shadow-xl">
+                    <button type="button" onclick="abrirModalAssinatura()" class="px-6 py-2.5 bg-white text-black hover:bg-zinc-200 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-1.5 shadow-xl">
                         <i data-lucide="signature" class="w-4 h-4"></i> Enviar Assinatura
                     </button>
                 <?php endif; ?>
@@ -480,6 +479,102 @@ function contratoVisualizarApp() {
 </script>
 
 <!-- Modal de Configuração Assinafy -->
+<script>
+function abrirModalAssinatura() {
+    const modal = document.getElementById('modal-confirm-assinatura');
+    if (!modal) return;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function fecharModalAssinatura() {
+    const modal = document.getElementById('modal-confirm-assinatura');
+    if (!modal) return;
+    modal.classList.remove('flex');
+    modal.classList.add('hidden');
+}
+
+function setContratoAssinaturaLoading(active, message = '') {
+    let overlay = document.getElementById('contrato-assinatura-loading');
+
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'contrato-assinatura-loading';
+        overlay.className = 'fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] hidden flex-col items-center justify-center gap-4';
+        overlay.innerHTML = `
+            <div class="w-12 h-12 border-4 border-white/10 border-t-white rounded-full animate-spin"></div>
+            <p class="text-sm font-bold text-white uppercase tracking-widest"></p>
+        `;
+        document.body.appendChild(overlay);
+    }
+
+    overlay.querySelector('p').textContent = message;
+    overlay.classList.toggle('hidden', !active);
+    overlay.classList.toggle('flex', active);
+}
+
+function confirmarEnvioAssinatura() {
+    fecharModalAssinatura();
+
+    if (typeof html2pdf === 'undefined') {
+        alert('Biblioteca de PDF nao carregada. Recarregue a pagina e tente novamente.');
+        return;
+    }
+
+    const element = document.getElementById('pdf-content');
+    if (!element) {
+        alert('Conteudo do contrato nao encontrado para gerar o PDF.');
+        return;
+    }
+
+    setContratoAssinaturaLoading(true, 'Gerando PDF de alta definicao...');
+
+    const contratoId = <?= json_encode($id) ?>;
+    const opt = {
+        margin: [15, 0, 18, 0],
+        filename: 'Contrato_' + contratoId + '.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: {
+            mode: ['css', 'legacy'],
+            avoid: ['p', 'h3', 'h4', 'li', 'tr', '.pdf-signatures-wrapper', 'table']
+        }
+    };
+
+    html2pdf().set(opt).from(element).outputPdf('blob')
+        .then(blob => {
+            setContratoAssinaturaLoading(true, 'Enviando documento para o Assinafy...');
+
+            const formData = new FormData();
+            formData.append('pdf', blob, 'Contrato_' + contratoId + '.pdf');
+            formData.append('id', contratoId);
+
+            return fetch('<?= raizUrl("/api/contratos/enviar_assinatura.php") ?>', {
+                method: 'POST',
+                body: formData
+            });
+        })
+        .then(res => res.json())
+        .then(data => {
+            setContratoAssinaturaLoading(false);
+
+            if (data.success) {
+                alert('Contrato enviado com sucesso para assinatura eletronica!');
+                window.location.reload();
+                return;
+            }
+
+            alert('Erro ao enviar assinatura: ' + (data.erro || data.error || 'Erro interno. Verifique as credenciais do Assinafy nas configuracoes.'));
+        })
+        .catch(err => {
+            console.error(err);
+            setContratoAssinaturaLoading(false);
+            alert('Erro ao enviar documento para o servidor.');
+        });
+}
+</script>
+
 <div id="modal-assinafy" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] hidden items-center justify-center p-4">
     <div class="bg-zinc-950 border border-white/10 rounded-[2rem] p-8 w-full max-w-md shadow-2xl relative">
         <button onclick="fecharModalAssinafy()" class="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors cursor-pointer">
