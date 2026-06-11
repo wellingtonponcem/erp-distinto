@@ -5,6 +5,10 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
 
 ## Alterações Recentes
 
+- **Sincronização da Cláusula Terceira (Valor e Condições de Pagamento)** *(jun/2026)*:
+  - Causa raiz: Alterações do "Valor Total" e "Condições de Pagamento" no painel lateral não refletiam no HTML do contrato no editor principal (CKEditor), fazendo com que as edições fossem sobrescritas por valores zerados ou antigos.
+  - Solução: Implementada sincronização automática em tempo real tanto no frontend (JavaScript ao calcular e ao submeter o formulário) quanto no backend (no POST do PHP) substituindo os novos valores no parágrafo 3.1. da Cláusula Terceira.
+
 - **Correção da Inicialização do Alpine.js (Botões Inoperantes)** *(jun/2026)*:
   - Causa raiz: o HTML dinâmico do contrato (com e-mails `@gmail.com`) era renderizado dentro do wrapper `x-data` do Alpine.js, que interpretava `@` como diretiva `x-on:`, quebrando silenciosamente toda a inicialização e desativando botões como "Enviar Assinatura", "PDF" e "Anexo IA".
   - Solução: adicionado `x-ignore` no container do preview A4 em `contrato_visualizar.php` para isolar o HTML dinâmico do parser Alpine.

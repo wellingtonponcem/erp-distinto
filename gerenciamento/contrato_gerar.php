@@ -434,6 +434,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $vigenciaMeses = sanitizar($_POST['vigencia_meses'] ?? '');
     $contratoTexto = $_POST['contrato_texto'] ?? '';
     
+    // Sincronizar valor total e condições na Cláusula Terceira do HTML
+    if (!empty($contratoTexto)) {
+        $valorTotalFormated = 'R$ ' . number_format($valorTotal, 2, ',', '.');
+        $condicoesHtml = nl2br(htmlspecialchars($condicoesPagamento));
+        
+        $tipoProposta = $proposta['tipo'] ?? '';
+        if ($tipoProposta === 'casamento') {
+            $novoP = "<p>3.1. Pela prestação dos serviços contratados, os <strong>CONTRATANTES</strong> pagarão à <strong>CONTRATADA</strong> a quantia total de <strong>{$valorTotalFormated}</strong>, nas seguintes condições: {$condicoesHtml}.</p>";
+        } else {
+            $novoP = "<p>3.1. Pela execução dos serviços, a <strong>CONTRATANTE</strong> pagará à <strong>CONTRATADA</strong> a quantia mensal/total de <strong>{$valorTotalFormated}</strong>, nas seguintes condições: {$condicoesHtml}.</p>";
+        }
+        
+        if (preg_match('/(<h4>CLÁUSULA TERCEIRA.*?<\/h4>)(.*?)(?=<h4>CLÁUSULA QUARTA|<h4>CLÁUSULA QUINTA|<p class="p-closing"|$)/is', $contratoTexto, $matches)) {
+            $header = $matches[1];
+            $conteudo = $matches[2];
+            
+            if (preg_match('/(<p>.*?3\.1\..*?<\/p>|<p\s[^>]*>.*?3\.1\..*?<\/p>)/is', $conteudo, $pMatch)) {
+                $conteudoAtualizado = str_replace($pMatch[1], $novoP, $conteudo);
+            } else {
+                $conteudoAtualizado = "\n        " . $novoP . "\n        " . preg_replace('/^\s+/', '', $conteudo);
+            }
+            
+            $contratoTexto = str_replace($matches[0], $header . $conteudoAtualizado, $contratoTexto);
+        }
+    }
+    
     // Substituir placeholders padrão pelos valores preenchidos no formulário
     if (!empty($contratoTexto)) {
         // Casamentos
@@ -1102,15 +1128,119 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleMeioPagamento();
     }
 
+    // Função para sincronizar valor total e condições no HTML do CKEditor
+    function sincronizarCondicoesNoEditor() {
+        if (!window.contratoEditor) return;
+        
+        let totalInput = document.querySelector('[name="valor_total"]').value;
+        let condicoes = document.getElementById('condicoes_pagamento').value;
+        
+        let html = window.contratoEditor.getData();
+        let condicoesHtml = condicoes.replace(/\n/g, '<br>');
+        
+        // Identificar Cláusula Terceira usando regex segura para quebras de linha
+        let regexClausula3 = /(<h4>CLÁUSULA TERCEIRA[\s\S]*?<\/h4>)([\s\S]*?)(?=<h4>CLÁUSULA QUARTA|<h4>CLÁUSULA QUINTA|<p class="p-closing"|$)/i;
+        
+        let match = html.match(regexClausula3);
+        if (match) {
+            let header = match[1];
+            let conteudo = match[2];
+            
+            let novoP = '';
+            let tipo = <?= json_encode($proposta['tipo'] ?? '') ?>;
+            if (tipo === 'casamento') {
+                novoP = `<p>3.1. Pela prestação dos serviços contratados, os <strong>CONTRATANTES</strong> pagarão à <strong>CONTRATADA</strong> a quantia total de <strong>R$ ${totalInput}</strong>, nas seguintes condições: ${condicoesHtml}.</p>`;
+            } else {
+                novoP = `<p>3.1. Pela execução dos serviços, a <strong>CONTRATANTE</strong> pagará à <strong>CONTRATADA</strong> a quantia mensal/total de <strong>R$ ${totalInput}</strong>, nas seguintes condições: ${condicoesHtml}.</p>`;
+            }
+            
+            let regexP31 = /(<p>[\s\S]*?3\.1\.[\s\S]*?<\/p>|<p\s[^>]*>[\s\S]*?3\.1\.[\s\S]*?<\/p>)/i;
+            let pMatch = conteudo.match(regexP31);
+            let novoConteudo = '';
+            if (pMatch) {
+                novoConteudo = conteudo.replace(pMatch[0], novoP);
+            } else {
+                novoConteudo = "\n        " + novoP + "\n        " + conteudo.trim();
+            }
+            
+            let novoHtml = html.replace(match[0], header + novoConteudo);
+            window.contratoEditor.setData(novoHtml);
+        }
+    }
+
     // Sincronizar dados do CKEditor antes do envio do formulário
     const contratoForm = document.getElementById('contrato-form');
     if (contratoForm) {
         contratoForm.addEventListener('submit', function() {
+            sincronizarCondicoesNoEditor();
             if (window.contratoEditor) {
                 document.getElementById('contrato_texto').value = window.contratoEditor.getData();
             }
             if (window.anexoEditor) {
                 document.getElementById('anexo_texto').value = window.anexoEditor.getData();
+            }
+        });
+    }
+
+    // Mascaras de input
+    const mascararCPF = (v) => {
+        v = v.replace(/\D/g, '').slice(0, 11);
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        return v;
+    };
+
+    const mascararCNPJ = (v) => {
+        v = v.replace(/\D/g, '').slice(0, 14);
+        v = v.replace(/(\d{2})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d)/, '$1/$2');
+        v = v.replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+        return v;
+    };
+
+    const mascararCPFCNPJ = (v) => {
+        const n = v.replace(/\D/g, '');
+        if (n.length <= 11) return mascararCPF(v);
+        return mascararCNPJ(v);
+    };
+
+    const mascararTelefone = (v) => {
+        v = v.replace(/\D/g, '').slice(0, 11);
+        v = v.replace(/(\d{2})(\d)/, '($1) $2');
+        v = v.replace(/(\d{4,5})(\d{4})$/, '$1-$2');
+        return v;
+    };
+
+    const mascararMoeda = (v) => {
+        v = v.replace(/\D/g, '');
+        if (!v) return '';
+        v = (parseInt(v, 10) / 100).toFixed(2);
+        const parts = v.split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        return parts.join(',');
+    };
+
+    document.querySelectorAll('input[name="sig1_cpf"], input[name="sig2_cpf"]').forEach(el => {
+        el.addEventListener('input', e => e.target.value = mascararCPFCNPJ(e.target.value));
+    });
+
+    document.querySelectorAll('input[name="sig1_telefone"], input[name="sig2_telefone"], input[name="sig_distinto_telefone"]').forEach(el => {
+        el.addEventListener('input', e => e.target.value = mascararTelefone(e.target.value));
+    });
+
+    const valorInput = document.querySelector('input[name="valor_total"]');
+    if (valorInput) {
+        valorInput.addEventListener('blur', e => {
+            e.target.value = mascararMoeda(e.target.value);
+        });
+        valorInput.addEventListener('input', e => {
+            const cursor = e.target.selectionStart;
+            const val = e.target.value;
+            if (val.includes(',')) {
+                e.target.value = mascararMoeda(val);
+                e.target.setSelectionRange(cursor, cursor);
             }
         });
     }
@@ -1278,6 +1408,7 @@ function calcularCondicoes() {
     }
     
     document.getElementById('condicoes_pagamento').value = texto.trim();
+    sincronizarCondicoesNoEditor();
 }
 </script>
 
