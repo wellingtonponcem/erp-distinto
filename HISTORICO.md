@@ -38,9 +38,9 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
   - Implementada sincronização automática em tempo real no POST: ao salvar a minuta de um contrato legado/existente, o PHP intercepta o HTML e atualiza ou insere as cláusulas de entrega se o checkbox estiver ativo, mantendo a numeração e edições personalizadas do usuário.
   - Ajustados estilos de visualização em [contrato_visualizar.php](file:///c:/Users/Wellington/Documents/GitHub/erp-distinto/gerenciamento/contrato_visualizar.php): padding da folha A4 alterado para `10pt 50.5pt 15pt 47.3pt`, `margin-top: 35px` no logotipo e `line-height: 1.4` para os itens de lista (`li`) para melhorar a legibilidade.
 
-- **Correção de Subdomínio do Assinafy, Múltiplos Escapes HTML e Remoção de Botão** *(jun/2026)*:
-  - Causa raiz: O subdomínio antigo `painel.assinafy.com.br` estava inativo (NXDOMAIN) nos links de visualização e fallbacks. Adicionalmente, dados do formulário sofriam escapes recursivos de entidades HTML (ex: `&amp;amp;amp;`) devido ao uso de `sanitizar()` no POST. O botão "API Assinafy" no cabeçalho de visualização era desnecessário na interface.
-  - Solução: Corrigidos links e fallbacks para `app.assinafy.com.br` (com tratamento retroativo na exibição e sincronização de status). Substituído `sanitizar()` por `trim()` + `decodificarEntidades()` no formulário de `contrato_gerar.php`, persistindo texto puro. Removido o botão "API Assinafy" do cabeçalho de `contrato_visualizar.php`.
+- **Correção do Subdomínio Assinafy, Double Encoding, Botão e Layout** *(jun/2026)*:
+  - Causa raiz: O subdomínio antigo `painel.assinafy.com.br` estava inativo (NXDOMAIN). Dados sofriam escapes recursivos de HTML por causa de `sanitizar()` no POST. Havia um bloco de HTML quebrado/duplicado e o botão redundante "API Assinafy" em `contrato_visualizar.php` que quebravam o layout do preview A4 (empurrando-o para fora da página).
+  - Solução: Atualizado para `app.assinafy.com.br`. Mudado POST para salvar em raw (`trim()` + `decodificarEntidades()`). Removido o botão redundante e limpado o bloco de divs órfãs e duplicadas no visualizador, restaurando o alinhamento da folha A4.
 
 - **Melhorias de Estabilidade, Editor, PDF e Integrações Anteriores** *(jun/2026)*:
   - Correção de erro HTTP 500 com datas vazias, preservação das edições do Quill, toggle de Pré-Wedding, calculadora automática de parcelas, correções de acentuação nos templates de casamento, configuração de margens no html2pdf.js e endpoint de escolha de planos do cliente.

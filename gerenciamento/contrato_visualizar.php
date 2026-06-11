@@ -135,31 +135,6 @@ require_once __DIR__ . '/../includes/layout/head.php';
                     <div class="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center text-zinc-400">
                         <i data-lucide="shield-check" class="w-6 h-6"></i>
                     </div>
-                <?php endif; ?>
-
-                <button @click="atualizarAnexo()" :disabled="loadingAnexo" class="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-white/10 text-zinc-200 rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5 disabled:opacity-50">
-                    <template x-if="!loadingAnexo">
-                        <i data-lucide="sparkles" class="w-4 h-4"></i>
-                    </template>
-                    <template x-if="loadingAnexo">
-                        <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg>
-                    </template>
-                    <span x-text="loadingAnexo ? 'Gerando...' : 'Anexo IA'">Anexo IA</span>
-                </button>
-
-                <button @click="exportarPDFLocal()" class="px-5 py-2.5 bg-zinc-850 hover:bg-zinc-700 border border-white/10 text-zinc-200 rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5">
-                    <i data-lucide="download" class="w-4 h-4"></i> PDF
-                </button>
-            </div>
-        </div>
-
-        <!-- Status Box if already sent/signed -->
-        <?php if (($contrato['status'] ?? 'rascunho') !== 'rascunho'): ?>
-            <div class="mb-8 p-6 rounded-[2rem] bg-zinc-900/50 border border-white/5 flex flex-wrap items-center justify-between gap-6">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center text-zinc-400">
-                        <i data-lucide="shield-check" class="w-6 h-6"></i>
-                    </div>
                     <div>
                         <h4 class="font-bold text-white">Contrato em Processamento de Assinatura</h4>
                         <p class="text-xs text-zinc-400 mt-1">Este contrato foi enviado eletronicamente e não aceita mais edições diretas.</p>
