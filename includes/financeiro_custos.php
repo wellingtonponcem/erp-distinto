@@ -7,7 +7,11 @@ function garantirEstruturaFinanceira(PDO $db): void {
         garantirColuna($db, 'lancamentos', 'forma_pagamento', "VARCHAR(50) NULL");
         garantirColuna($db, 'lancamentos', 'custo_fixo_id', "VARCHAR(32) NULL");
         garantirColuna($db, 'lancamentos', 'ofx_fitid', "VARCHAR(100) NULL");
+        garantirColuna($db, 'lancamentos', 'data_pagamento', "DATE NULL");
         garantirColuna($db, 'fornecedores', 'cpf_cnpj', "VARCHAR(20) NULL");
+
+        // Garantir constraint único para ofx_fitid (evita duplicatas)
+        garantirConstraintUnico($db, 'lancamentos', 'ofx_fitid', 'unique_ofx_fitid');
 
         $categoria = colunaInfo($db, 'custos_fixos', 'categoria');
         if ($categoria && substr(strtolower($categoria['Type']), 0, 5) === 'enum(') {
@@ -15,6 +19,41 @@ function garantirEstruturaFinanceira(PDO $db): void {
         }
     } catch (Exception $e) {
         // Em producao, a falta de permissao para ALTER nao pode derrubar o sistema.
+    }
+}
+
+function garantirConstraintUnico(PDO $db, string $tabela, string $coluna, string $constraintName): void {
+    try {
+        $driver = $db->getAttribute(PDO::ATTR_DRIVER_NAME);
+        $constraintExists = false;
+
+        if ($driver === 'pgsql') {
+            $stmt = $db->prepare("SELECT 1 FROM pg_constraint WHERE conname = ?");
+            $stmt->execute([$constraintName]);
+            $constraintExists = (bool)$stmt->fetch();
+            if (!$constraintExists) {
+                $db->exec("ALTER TABLE {$tabela} ADD CONSTRAINT {$constraintName} UNIQUE ({$coluna}) WHERE {$coluna} IS NOT NULL AND {$coluna} != ''");
+            }
+        } else {
+            // MySQL - verifica se já existe index único
+            $stmt = $db->prepare("SHOW INDEX FROM {$tabela} WHERE Key_name = ? AND Column_name = ?");
+            $stmt->execute([$constraintName, $coluna]);
+            if (!$stmt->fetch()) {
+                // Primeiro limpa duplicatas, depois cria o constraint
+                $dupStmt = $db->prepare("
+                    DELETE t1 FROM lancamentos t1
+                    INNER JOIN lancamentos t2 
+                    WHERE t1.id > t2.id 
+                    AND t1.ofx_fitid = t2.ofx_fitid 
+                    AND t1.ofx_fitid IS NOT NULL 
+                    AND t1.ofx_fitid != ''
+                ");
+                $dupStmt->execute();
+                $db->exec("ALTER TABLE {$tabela} ADD CONSTRAINT {$constraintName} UNIQUE ({$coluna})");
+            }
+        }
+    } catch (Exception $e) {
+        // Ignorar erro se constraint já existir
     }
 }
 

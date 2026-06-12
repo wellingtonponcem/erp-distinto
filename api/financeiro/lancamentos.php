@@ -32,6 +32,15 @@ try {
         $d = lerCorpo();
         validarLancamento($d);
 
+        // Prevenir duplicação de importação OFX - verificar se fitid já existe
+        if (!empty($d['ofx_fitid'])) {
+            $stmt = $db->prepare("SELECT id FROM lancamentos WHERE ofx_fitid = ? AND ofx_fitid IS NOT NULL AND ofx_fitid != '' LIMIT 1");
+            $stmt->execute([$d['ofx_fitid']]);
+            if ($stmt->fetch()) {
+                responderJson(['erro' => 'Esta transação OFX já foi importada anteriormente.'], 409);
+            }
+        }
+
         // Se marcado como custo fixo, criar/vincular custo_fixo
         if (($d['tipo'] ?? '') === 'pagar' && !empty($d['e_custo_fixo']) && empty($d['custo_fixo_id'])) {
             $d['custo_fixo_id'] = criarCustoFixoFromLancamento($db, $d);
@@ -199,6 +208,7 @@ function inserirLancamento(PDO $db, string $id, array $d, float $valor, string $
     
     $status = $d['status'] ?? 'pendente';
     $valorPago = isset($d['valor_pago']) ? (float)$d['valor_pago'] : 0;
+    $dataPagamento = isset($d['valor_pago']) && $d['valor_pago'] > 0 ? date('Y-m-d') : null;
     $clienteFornecedorTexto = empty($d['cliente_fornecedor']) ? null : $d['cliente_fornecedor'];
     if (empty($clienteFornecedorTexto) && !empty($d['cliente_id'])) {
         $clienteFornecedorTexto = obterNomeClienteFornecedor($db, $d['cliente_id'], 'clientes');
@@ -246,6 +256,11 @@ function inserirLancamento(PDO $db, string $id, array $d, float $valor, string $
         $colunas[] = 'ofx_fitid';
         $valores[] = '?';
         $params[] = $d['ofx_fitid'] ?? null;
+    }
+    if (tabelaTemColuna($db, 'lancamentos', 'data_pagamento')) {
+        $colunas[] = 'data_pagamento';
+        $valores[] = '?';
+        $params[] = $dataPagamento;
     }
 
     $stmt = $db->prepare('INSERT INTO lancamentos (' . implode(',', $colunas) . ') VALUES (' . implode(',', $valores) . ')');

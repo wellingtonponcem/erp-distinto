@@ -537,8 +537,9 @@ include __DIR__ . '/../includes/layout/head.php';
 
             <div style="display:flex; justify-content:flex-end; gap:12px;">
                 <button class="btn-secondary" @click="modalOfxAberto=false">Cancelar</button>
-                <button class="btn-primary" @click="processarOfx()">
-                    Confirmar Importação
+                <button class="btn-primary" @click="processarOfx()" :disabled="carregando">
+                    <span x-show="!carregando">Confirmar Importação</span>
+                    <span x-show="carregando">Processando...</span>
                 </button>
             </div>
         </div>
@@ -1387,7 +1388,7 @@ function lancamentos() {
                     }
 
                     // Criar novo pagamento já baixado
-                    await fetch('<?= raizUrl('/api/financeiro/lancamentos.php') ?>', {
+                    const resp = await fetch('<?= raizUrl('/api/financeiro/lancamentos.php') ?>', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -1403,12 +1404,13 @@ function lancamentos() {
                             ofx_fitid: txn.fitid
                         })
                     });
-                    // Opcionalmente poderíamos buscar o ID e dar baixa, ou o backend já assume.
-                    // Para garantir a baixa, precisaríamos do ID.
-                    // Como não pegamos o ID do POST, é melhor fazermos a requisição em lote no backend no futuro.
-                    // Mas por hora vamos rodar carregarLancamentos() ao final e os novos vão ficar pendentes para baixar.
-                    // Wait, se é pra entrar como pago, vamos alterar o backend de POST para aceitar 'valor_pago' e 'data_pagamento'.
-                    // Por enquanto vamos cadastrar.
+                    if (!resp.ok) {
+                        const err = await resp.json();
+                        if (resp.status === 409) {
+                            toast(err.erro, 'aviso');
+                            continue;
+                        }
+                    }
                     sucesso++;
                 } else {
                     // Vincular (Baixar a conta existente)
