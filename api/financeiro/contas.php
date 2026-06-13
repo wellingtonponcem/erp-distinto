@@ -20,10 +20,19 @@ try {
         criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");
 
-    // Adicionar conta_id em lancamentos se não existir
-    $stmt = $db->query("SHOW COLUMNS FROM lancamentos LIKE 'conta_id'");
-    if (!$stmt->fetch()) {
-        $db->exec("ALTER TABLE lancamentos ADD COLUMN conta_id VARCHAR(50) NULL");
+    // Adicionar conta_id em lancamentos se não existir (compatível com MySQL e PostgreSQL)
+    $driver = $db->getAttribute(PDO::ATTR_DRIVER_NAME);
+    if ($driver === 'pgsql') {
+        $stmt = $db->prepare("SELECT 1 FROM information_schema.columns WHERE table_name='lancamentos' AND column_name='conta_id'");
+        $stmt->execute();
+        if (!$stmt->fetch()) {
+            $db->exec("ALTER TABLE lancamentos ADD COLUMN conta_id VARCHAR(50)");
+        }
+    } else {
+        $stmt = $db->query("SHOW COLUMNS FROM lancamentos LIKE 'conta_id'");
+        if (!$stmt->fetch()) {
+            $db->exec("ALTER TABLE lancamentos ADD COLUMN conta_id VARCHAR(50) NULL");
+        }
     }
 } catch (Exception $e) {}
 
@@ -37,7 +46,7 @@ switch ($metodo) {
                 SELECT 
                     SUM(CASE WHEN tipo='receber' THEN valor_pago ELSE -valor_pago END) as fluxo
                 FROM lancamentos 
-                WHERE conta_id = ? AND status IN ('pago', 'efetivado')
+                WHERE conta_id = ? AND valor_pago > 0
             ");
             $calc->execute([$c['id']]);
             $fluxo = $calc->fetch()['fluxo'] ?? 0;

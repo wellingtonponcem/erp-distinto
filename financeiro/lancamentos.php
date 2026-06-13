@@ -997,8 +997,15 @@ function lancamentos() {
         async carregarContas() {
             try {
                 const r = await fetch('<?= raizUrl('/api/financeiro/contas.php') ?>');
+                if (!r.ok) {
+                    console.error('Erro ao carregar contas:', r.status);
+                    return;
+                }
                 this.contas = await r.json();
-            } catch(e) {}
+            } catch(e) {
+                console.error('Erro ao carregar contas:', e);
+                toast('Erro ao carregar contas bancárias', 'erro');
+            }
         },
 
         mudarModoPeriodo() {

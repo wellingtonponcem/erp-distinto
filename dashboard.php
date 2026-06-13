@@ -84,7 +84,7 @@ foreach ($contas as $c) {
     $calc = $db->prepare("
         SELECT SUM(CASE WHEN tipo='receber' THEN valor_pago ELSE -valor_pago END) as fluxo
         FROM lancamentos 
-        WHERE conta_id = ? AND status IN ('pago', 'efetivado')
+        WHERE conta_id = ? AND valor_pago > 0
     ");
     $calc->execute([$c['id']]);
     $fluxo = (float) $calc->fetchColumn();
@@ -196,7 +196,7 @@ $kpis = [
 $stmtCat = $db->prepare("
     SELECT categoria, SUM(valor_pago) as total
     FROM lancamentos
-    WHERE tipo='pagar' AND status IN ('pago', 'efetivado', 'pago_parcial') AND vencimento BETWEEN ? AND ?
+    WHERE tipo='pagar' AND valor_pago > 0 AND vencimento BETWEEN ? AND ?
     GROUP BY categoria
     ORDER BY total DESC
     LIMIT 4
