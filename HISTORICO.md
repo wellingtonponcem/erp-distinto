@@ -5,6 +5,10 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
 
 ## Alterações Recentes
 
+- **Correção no Endpoint de Sincronização do Assinafy** *(jun/2026)*:
+  - Causa raiz: Erro 404 (Página não encontrada) ao sincronizar manualmente, pois a rota GET para obter os detalhes do documento incluía erroneamente `/accounts/{accountId}` no início da URL.
+  - Solução: Ajustado o endpoint no script `api/contratos/sincronizar_status.php` de `/accounts/{accountId}/documents/{documentId}` para `/documents/{documentId}` de acordo com a API do Assinafy.
+
 - **Sincronização de Status do Assinafy e Correção de Webhook** *(jun/2026)*:
   - Causa raiz: Inconsistência de status no Assinafy (signatários como "Assinado" mas documento "Aguardando assinatura"). Bug no webhook local (conclusão prematura no evento `signer_signed_document`). Ocorrência de erro 500 silencioso se as credenciais estivessem em branco ou se o cURL falhasse, interceptado por proxies/hospedagem (Hostinger) que serviam HTML quebrando o JSON.
   - Solução: Criado o endpoint `api/contratos/sincronizar_status.php` consultando a API do Assinafy diretamente, forçando status local para `assinado` se todos assinaram individualmente. Corrigido webhook para ignorar `signer_signed_document`. Envolvido o endpoint com `catch (Throwable)` e retorno de status HTTP 200 em todas as respostas de falhas JSON de negócio, contornando bloqueios de proxy.

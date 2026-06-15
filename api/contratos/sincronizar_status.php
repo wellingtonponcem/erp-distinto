@@ -152,7 +152,7 @@ try {
     }
 
     // Buscar detalhes do documento na API
-    $responseJson = chamarAssinafyGet("/accounts/{$accountId}/documents/{$documentId}", $apiKey, $mode);
+    $responseJson = chamarAssinafyGet("/documents/{$documentId}", $apiKey, $mode);
     $data = json_decode($responseJson, true);
     
     if (!is_array($data)) {
