@@ -130,9 +130,15 @@ require_once __DIR__ . '/../includes/layout/head.php';
                             <?php if ($contrato['link_assinatura']): ?>
                                 <div class="hidden md:block">
                                     <p class="text-[10px] font-black text-zinc-400 uppercase tracking-tighter">Assinatura Eletrônica</p>
-                                    <a href="<?= sanitizar($contrato['link_assinatura']) ?>" target="_blank" class="text-xs font-bold text-blue-500 hover:underline flex items-center gap-1 mt-0.5">
-                                        <i data-lucide="signature" class="w-3.5 h-3.5"></i> Link Assinafy
-                                    </a>
+                                    <?php if ($status === 'assinado'): ?>
+                                        <a href="<?= sanitizar($contrato['link_assinatura']) ?>" target="_blank" class="text-xs font-bold text-emerald-500 hover:underline flex items-center gap-1 mt-0.5">
+                                            <i data-lucide="file-check" class="w-3.5 h-3.5"></i> Documento Assinado
+                                        </a>
+                                    <?php else: ?>
+                                        <a href="<?= sanitizar($contrato['link_assinatura']) ?>" target="_blank" class="text-xs font-bold text-blue-500 hover:underline flex items-center gap-1 mt-0.5">
+                                            <i data-lucide="signature" class="w-3.5 h-3.5"></i> Link Assinafy
+                                        </a>
+                                    <?php endif; ?>
                                 </div>
                             <?php endif; ?>
 

@@ -129,15 +129,17 @@ require_once __DIR__ . '/../includes/layout/head.php';
         </div>
 
         <!-- Status Box if already sent/signed -->
-        <?php if (($contrato['status'] ?? 'rascunho') !== 'rascunho'): ?>
+        <?php if (($contrato['status'] ?? 'rascunho') !== 'rascunho'): 
+            $ehAssinado = ($contrato['status'] ?? '') === 'assinado';
+        ?>
             <div class="mb-8 p-6 rounded-[2rem] bg-zinc-900/50 border border-white/5 flex flex-wrap items-center justify-between gap-6">
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center text-zinc-400">
-                        <i data-lucide="shield-check" class="w-6 h-6"></i>
+                    <div class="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center <?= $ehAssinado ? 'text-emerald-400' : 'text-zinc-400' ?>">
+                        <i data-lucide="<?= $ehAssinado ? 'file-check' : 'shield-check' ?>" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h4 class="font-bold text-white">Contrato em Processamento de Assinatura</h4>
-                        <p class="text-xs text-zinc-400 mt-1">Este contrato foi enviado eletronicamente e não aceita mais edições diretas.</p>
+                        <h4 class="font-bold text-white"><?= $ehAssinado ? 'Contrato Assinado com Sucesso!' : 'Contrato em Processamento de Assinatura' ?></h4>
+                        <p class="text-xs text-zinc-400 mt-1"><?= $ehAssinado ? 'Este contrato foi assinado eletronicamente por todas as partes e está formalizado.' : 'Este contrato foi enviado eletronicamente e não aceita mais edições diretas.' ?></p>
                     </div>
                 </div>
                 
@@ -145,8 +147,8 @@ require_once __DIR__ . '/../includes/layout/head.php';
                     <?php if ($contrato['link_assinatura']): 
                         $linkLimpo = str_replace('painel.assinafy.com.br', 'app.assinafy.com.br', $contrato['link_assinatura']);
                     ?>
-                        <a href="<?= sanitizar($linkLimpo) ?>" target="_blank" class="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5">
-                            <i data-lucide="external-link" class="w-4 h-4"></i> Acompanhar no Assinafy
+                        <a href="<?= sanitizar($linkLimpo) ?>" target="_blank" class="px-5 py-2.5 <?= $ehAssinado ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-blue-500 hover:bg-blue-600' ?> text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5 shadow-lg">
+                            <i data-lucide="<?= $ehAssinado ? 'download' : 'external-link' ?>" class="w-4 h-4"></i> <?= $ehAssinado ? 'Visualizar / Baixar Assinado' : 'Acompanhar no Assinafy' ?>
                         </a>
                     <?php endif; ?>
                     
