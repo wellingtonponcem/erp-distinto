@@ -6,8 +6,8 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
 ## Alterações Recentes
 
 - **Correção no Endpoint de Sincronização do Assinafy** *(jun/2026)*:
-  - Causa raiz: Erro 404 (Página não encontrada) ao sincronizar manualmente, pois a rota GET para obter os detalhes do documento incluía erroneamente `/accounts/{accountId}` no início da URL.
-  - Solução: Ajustado o endpoint no script `api/contratos/sincronizar_status.php` de `/accounts/{accountId}/documents/{documentId}` para `/documents/{documentId}` de acordo com a API do Assinafy.
+  - Causa raiz: Erro 404 (Página não encontrada) ao sincronizar manualmente, pois a rota GET para obter os detalhes do documento incluía erroneamente `/accounts/{accountId}` no início da URL. Além disso, o documento concluído no Assinafy retorna com o status `'certificated'`, que não era mapeado como `'assinado'` pelo ERP, impedindo a atualização de status (manual e automática).
+  - Solução: Ajustado o endpoint no script `api/contratos/sincronizar_status.php` de `/accounts/{accountId}/documents/{documentId}` para `/documents/{documentId}`. Adicionado suporte aos status `'certificated'` e `'registrado'` mapeando-os para `'assinado'` tanto na sincronização manual quanto no `api/contratos/webhook_assinafy.php`.
 
 - **Sincronização de Status do Assinafy e Correção de Webhook** *(jun/2026)*:
   - Causa raiz: Inconsistência de status no Assinafy (signatários como "Assinado" mas documento "Aguardando assinatura"). Bug no webhook local (conclusão prematura no evento `signer_signed_document`). Ocorrência de erro 500 silencioso se as credenciais estivessem em branco ou se o cURL falhasse, interceptado por proxies/hospedagem (Hostinger) que serviam HTML quebrando o JSON.

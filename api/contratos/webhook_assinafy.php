@@ -80,7 +80,7 @@ function signatarioWebhookAssinadoAssinafy(array $signatario): bool {
         ?? ''
     )));
 
-    if (in_array($status, ['signed', 'completed', 'ready', 'assinado', 'finalizado'], true)) {
+    if (in_array($status, ['signed', 'completed', 'ready', 'assinado', 'finalizado', 'certificated', 'registrado'], true)) {
         return true;
     }
 
@@ -120,11 +120,15 @@ try {
         str_contains($eventNormalizado, 'signed') ||
         str_contains($eventNormalizado, 'signer_signed') ||
         str_contains($eventNormalizado, 'all_signers_signed') ||
+        str_contains($eventNormalizado, 'certificated') ||
+        str_contains($eventNormalizado, 'registrado') ||
         $statusNormalizado === 'completed' ||
         $statusNormalizado === 'signed' ||
         $statusNormalizado === 'ready' ||
         $statusNormalizado === 'assinado' ||
-        $statusNormalizado === 'finalizado'
+        $statusNormalizado === 'finalizado' ||
+        $statusNormalizado === 'certificated' ||
+        $statusNormalizado === 'registrado'
     ) {
         // Verificar se todos os signatários já assinaram
         $signatariosAssinaram = false;

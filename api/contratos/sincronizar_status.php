@@ -166,7 +166,7 @@ try {
     $mensagemHistorico = '';
     
     // Se o status geral for assinado/completo
-    if (in_array($statusApi, ['completed', 'signed', 'ready', 'assinado'])) {
+    if (in_array($statusApi, ['completed', 'signed', 'ready', 'assinado', 'certificated', 'registrado'])) {
         $novoStatus = 'assinado';
         $mensagemHistorico = "Contrato comercial atualizado para ASSINADO após sincronização direta com Assinafy.";
     } 
