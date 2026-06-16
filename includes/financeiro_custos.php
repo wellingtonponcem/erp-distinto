@@ -10,6 +10,17 @@ function garantirEstruturaFinanceira(PDO $db): void {
         garantirColuna($db, 'lancamentos', 'data_pagamento', "DATE NULL");
         garantirColuna($db, 'fornecedores', 'cpf_cnpj', "VARCHAR(20) NULL");
 
+        // Colunas do Asaas
+        garantirColuna($db, 'configuracao_empresa', 'asaas_api_key', "TEXT NULL");
+        garantirColuna($db, 'configuracao_empresa', 'asaas_mode', "VARCHAR(10) DEFAULT 'test'");
+        garantirColuna($db, 'configuracao_empresa', 'asaas_webhook_token', "VARCHAR(255) NULL");
+        garantirColuna($db, 'clientes', 'asaas_customer_id', "VARCHAR(100) NULL");
+        garantirColuna($db, 'lancamentos', 'asaas_id', "VARCHAR(100) NULL");
+        garantirColuna($db, 'lancamentos', 'asaas_boleto_url', "VARCHAR(512) NULL");
+        garantirColuna($db, 'lancamentos', 'asaas_pix_qr_code', "TEXT NULL");
+        garantirColuna($db, 'lancamentos', 'asaas_invoice_url', "VARCHAR(512) NULL");
+        garantirColuna($db, 'contratos', 'asaas_cobranca_gerada', "INT DEFAULT 0");
+
         // Garantir constraint único para ofx_fitid (evita duplicatas)
         garantirConstraintUnico($db, 'lancamentos', 'ofx_fitid', 'unique_ofx_fitid');
 
@@ -63,7 +74,7 @@ function garantirColuna(PDO $db, string $tabela, string $coluna, string $definic
 }
 
 function colunaInfo(PDO $db, string $tabela, string $coluna): ?array {
-    $tabelasPermitidas = ['custos_fixos', 'lancamentos', 'clientes', 'fornecedores'];
+    $tabelasPermitidas = ['custos_fixos', 'lancamentos', 'clientes', 'fornecedores', 'configuracao_empresa', 'contratos'];
     if (!in_array($tabela, $tabelasPermitidas, true)) return null;
 
     try {

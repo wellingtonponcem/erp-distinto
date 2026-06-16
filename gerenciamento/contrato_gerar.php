@@ -422,6 +422,12 @@ $contratoTexto = $dadosJson['contrato_texto'] ?? '';
 $anexoTexto = $dadosJson['anexo_texto'] ?? '';
 $dataContratoPorExtenso = dataExtenso($contrato['data_contrato'] ?? date('Y-m-d'));
 
+$asaasBillingType = $dadosJson['asaas_billing_type'] ?? 'UNDEFINED';
+$asaasTotalParcelas = $dadosJson['asaas_total_parcelas'] ?? 1;
+$asaasFirstDueDate = $dadosJson['asaas_first_due_date'] ?? '';
+$asaasValorSinal = $dadosJson['asaas_valor_sinal'] ?? 0;
+$asaasSinalVencimento = $dadosJson['asaas_sinal_vencimento'] ?? '';
+
 // Save / POST Action
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $titulo = decodificarEntidades(trim($_POST['titulo'] ?? $contrato['titulo']));
@@ -632,7 +638,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'data_evento' => $dataEvento,
         'local_evento' => $localEvento,
         'vigencia_meses' => $vigenciaMeses,
-        'locais' => $locais
+        'locais' => $locais,
+        'asaas_billing_type' => $_POST['asaas_billing_type'] ?? 'UNDEFINED',
+        'asaas_total_parcelas' => (int)($_POST['asaas_total_parcelas'] ?? 1),
+        'asaas_first_due_date' => $_POST['asaas_first_due_date'] ?? '',
+        'asaas_valor_sinal' => (float)str_replace(['.', ','], ['', '.'], $_POST['asaas_valor_sinal'] ?? '0'),
+        'asaas_sinal_vencimento' => $_POST['asaas_sinal_vencimento'] ?? ''
     ], JSON_UNESCAPED_UNICODE);
     
     // Save to Database
@@ -857,6 +868,56 @@ require_once __DIR__ . '/../includes/layout/head.php';
                                 <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Condições de Pagamento (Texto do Contrato)</label>
                                 <textarea name="condicoes_pagamento" id="condicoes_pagamento" rows="4"
                                           class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white focus:border-white transition-all outline-none resize-none"><?= sanitizar($contrato['condicoes_pagamento']) ?></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Configuração do Faturamento Asaas -->
+                    <div class="bg-zinc-900/50 border border-white/5 rounded-[32px] p-8">
+                        <h2 class="text-lg font-bold text-white mb-6 flex items-center justify-between">
+                            <span class="flex items-center gap-2">
+                                <i data-lucide="wallet" class="w-5 h-5 opacity-50"></i>
+                                Cobrança Asaas
+                            </span>
+                            <span class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Automático</span>
+                        </h2>
+
+                        <div class="space-y-4">
+                            <div class="space-y-1.5">
+                                <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Meio de Faturamento</label>
+                                <select name="asaas_billing_type" class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white focus:border-white transition-all outline-none cursor-pointer">
+                                    <option value="UNDEFINED" <?= $asaasBillingType === 'UNDEFINED' ? 'selected' : '' ?>>Sem preferência (Cliente escolhe Boleto/Pix/Cartão)</option>
+                                    <option value="BOLETO" <?= $asaasBillingType === 'BOLETO' ? 'selected' : '' ?>>Boleto Bancário</option>
+                                    <option value="PIX" <?= $asaasBillingType === 'PIX' ? 'selected' : '' ?>>Apenas Pix</option>
+                                    <option value="CREDIT_CARD" <?= $asaasBillingType === 'CREDIT_CARD' ? 'selected' : '' ?>>Apenas Cartão de Crédito</option>
+                                </select>
+                                <p class="text-[10px] text-zinc-500">Obs: Se o cliente escolher Cartão de Crédito, as taxas serão cobradas dele de acordo com a sua conta do Asaas.</p>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-1.5">
+                                    <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Qtd. de Parcelas</label>
+                                    <input type="number" name="asaas_total_parcelas" value="<?= $asaasTotalParcelas ?>" min="1" max="60"
+                                           class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white focus:border-white transition-all outline-none">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Vencimento da 1ª Parcela</label>
+                                    <input type="date" name="asaas_first_due_date" value="<?= $asaasFirstDueDate ?>"
+                                           class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white focus:border-white transition-all outline-none">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="space-y-1.5">
+                                    <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Valor do Sinal (Entrada)</label>
+                                    <input type="text" name="asaas_valor_sinal" value="<?= $asaasValorSinal > 0 ? number_format($asaasValorSinal, 2, ',', '.') : '' ?>" placeholder="R$ 0,00"
+                                           class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white focus:border-white transition-all outline-none">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-[9px] font-black uppercase tracking-widest text-zinc-500">Vencimento do Sinal</label>
+                                    <input type="date" name="asaas_sinal_vencimento" value="<?= $asaasSinalVencimento ?>"
+                                           class="w-full bg-black/60 border border-white/5 rounded-xl px-4 py-3 text-xs text-white focus:border-white transition-all outline-none">
+                                </div>
                             </div>
                         </div>
                     </div>

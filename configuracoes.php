@@ -24,6 +24,9 @@ foreach ([
     "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS assinafy_api_key              TEXT",
     "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS assinafy_account_id           VARCHAR(64)",
     "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS assinafy_mode                 VARCHAR(10) DEFAULT 'test'",
+    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS asaas_api_key                 TEXT",
+    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS asaas_mode                    VARCHAR(10) DEFAULT 'test'",
+    "ALTER TABLE configuracao_empresa ADD COLUMN IF NOT EXISTS asaas_webhook_token           VARCHAR(255)",
 ] as $sql) {
     try { $db->exec($sql); } catch (Exception $e) { /* ignora */ }
 }
@@ -34,7 +37,8 @@ $config = $db->query("SELECT id, nome, cnpj, telefone, email, endereco, groq_api
     mercadopago_test_access_token, mercadopago_test_public_key,
     mercadopago_prod_access_token, mercadopago_prod_public_key,
     mercadopago_mode,
-    assinafy_api_key, assinafy_account_id, assinafy_mode
+    assinafy_api_key, assinafy_account_id, assinafy_mode,
+    asaas_api_key, asaas_mode, asaas_webhook_token
     FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
 
 $sucesso = '';
@@ -69,6 +73,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $assinafyMode = in_array($_POST['assinafy_mode'] ?? '', ['test', 'prod']) ? $_POST['assinafy_mode'] : 'test';
     $campos[] = 'assinafy_mode';
     $vals[] = $assinafyMode;
+
+    if (!empty($_POST['asaas_api_key'])) {
+        $campos[] = 'asaas_api_key';
+        $vals[] = trim($_POST['asaas_api_key']);
+    }
+    $asaasMode = in_array($_POST['asaas_mode'] ?? '', ['test', 'prod']) ? $_POST['asaas_mode'] : 'test';
+    $campos[] = 'asaas_mode';
+    $vals[] = $asaasMode;
+    $campos[] = 'asaas_webhook_token';
+    $vals[] = trim($_POST['asaas_webhook_token'] ?? '');
 
     // Mercado Pago — campos sensíveis: só atualiza se enviado
     if (!empty($_POST['mercadopago_access_token'])) {
@@ -138,7 +152,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mercadopago_test_access_token, mercadopago_test_public_key,
         mercadopago_prod_access_token, mercadopago_prod_public_key,
         mercadopago_mode,
-        assinafy_api_key, assinafy_account_id, assinafy_mode
+        assinafy_api_key, assinafy_account_id, assinafy_mode,
+        asaas_api_key, asaas_mode, asaas_webhook_token
         FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch();
 }
 
@@ -398,6 +413,46 @@ include __DIR__ . '/includes/layout/head.php';
                     </div>
                 </div>
 
+                <!-- ── Seção Gateway de Pagamentos (Asaas) ─────────────────────── -->
+                <div style="margin-bottom:8px; border-top:1px solid #334155; padding-top:20px;">
+                    <h3 style="font-size:15px; font-weight:600; color:#e2e8f0; margin-bottom:4px;">Gateway de Pagamentos — Asaas</h3>
+                    <p style="font-size:12px; color:#6b7280; margin-bottom:14px;">
+                        Configuração para emissão automática de cobranças (Pix, Boleto, Cartão) e extrato financeiro.
+                    </p>
+                </div>
+
+                <div style="margin-bottom:16px;">
+                    <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>API Key (Token)</span>
+                        <?php if (!empty($config['asaas_api_key'])): ?>
+                            <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Chave salva</span>
+                        <?php endif; ?>
+                    </label>
+                    <input class="input" type="password" name="asaas_api_key" placeholder="<?= !empty($config['asaas_api_key']) ? '••••••••••••••••••••••••••••••••' : 'Cole a chave da API do Asaas' ?>">
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+                    <div>
+                        <label class="label">Ambiente Ativo</label>
+                        <select class="input" name="asaas_mode" style="cursor:pointer;">
+                            <option value="test" <?= ($config['asaas_mode'] ?? 'test') === 'test' ? 'selected' : '' ?>>🧪 Sandbox (Testes)</option>
+                            <option value="prod" <?= ($config['asaas_mode'] ?? 'test') === 'prod' ? 'selected' : '' ?>>🟢 Produção (Real)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="label">Token do Webhook</label>
+                        <input class="input" type="text" name="asaas_webhook_token" value="<?= sanitizar($config['asaas_webhook_token'] ?? '') ?>" placeholder="Token configurado no Asaas">
+                    </div>
+                </div>
+
+                <div style="margin-bottom:24px;">
+                    <label class="label">URL do Webhook Asaas</label>
+                    <div style="display:flex; gap:8px;">
+                        <input class="input" type="text" readonly value="<?= sanitizar(preg_replace('#/sistema/?$#', '', rtrim(APP_URL, '/')) . raizUrl('/api/financeiro/webhook_asaas.php')) ?>" style="opacity:0.7; flex:1;">
+                    </div>
+                    <p style="font-size:10px; color:#6b7280; margin-top:6px;">Use esta URL no painel do Asaas (Menu Integrações > Webhooks > Cobranças) e copie/defina o token acima.</p>
+                </div>
+
                 <button type="submit" class="btn-primary">
                     <i data-lucide="save" style="width:15px;height:15px;"></i> Salvar Configurações
                 </button>
@@ -443,6 +498,13 @@ include __DIR__ . '/includes/layout/head.php';
                     <?php $isMPTest = $temMP && str_starts_with($config['mercadopago_access_token'], 'TEST-'); ?>
                     <div style="color:<?= $temMP ? '#10b981' : '#ef4444' ?>;">
                         <?= $temMP ? ('✓ ' . ($isMPTest ? 'Sandbox' : 'Produção')) : '✗ Não configurado' ?>
+                    </div>
+                </div>
+                <div>
+                    <div style="color:#6b7280; margin-bottom:2px;">Asaas</div>
+                    <?php $temAsaas = !empty($config['asaas_api_key']); ?>
+                    <div style="color:<?= $temAsaas ? '#10b981' : '#ef4444' ?>;">
+                        <?= $temAsaas ? ('✓ ' . (($config['asaas_mode'] ?? 'test') === 'test' ? 'Sandbox' : 'Produção')) : '✗ Não configurado' ?>
                     </div>
                 </div>
                 <div>

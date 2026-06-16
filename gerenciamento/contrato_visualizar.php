@@ -22,6 +22,13 @@ if (!$contrato) {
     exit;
 }
 
+$lancamentosAsaas = [];
+if ((int)($contrato['asaas_cobranca_gerada'] ?? 0) === 1) {
+    $stmtL = $db->prepare("SELECT * FROM lancamentos WHERE cliente_id = ? AND asaas_id IS NOT NULL AND asaas_id != '' AND (descricao LIKE ? OR observacao LIKE ?) ORDER BY vencimento ASC");
+    $stmtL->execute([$contrato['cliente_id'], '%' . $contrato['titulo'] . '%', '%Contrato: ' . $contrato['id'] . '%']);
+    $lancamentosAsaas = $stmtL->fetchAll();
+}
+
 $config = $db->query("SELECT assinafy_api_key, assinafy_account_id, assinafy_mode FROM configuracao_empresa WHERE id = 'principal' LIMIT 1")->fetch();
 
 $dadosJson = json_decode($contrato['dados_json'], true) ?: [];
@@ -162,31 +169,128 @@ require_once __DIR__ . '/../includes/layout/head.php';
             </div>
         <?php endif; ?>
 
-        <!-- A4 Paper Preview Container -->
-        <div class="overflow-x-auto py-10 flex justify-center bg-[#111] border border-white/5 rounded-[32px] mb-12 shadow-inner" x-ignore>
-            <!-- PDF Container Content -->
-            <div id="pdf-content" class="a4-page-content">
-                <!-- Header Logo -->
-                <div class="pdf-logo-wrapper">
-                    <img src="<?= raizUrl('/assets/logo-contrato.png') ?>" alt="Poncem Studio Logo" class="pdf-logo">
-                </div>
+        <!-- Layout com Sidebar de Faturamento se o contrato for assinado -->
+        <div class="flex flex-col lg:flex-row gap-8 items-start mb-12 w-full">
+            <!-- A4 Paper Preview Container -->
+            <div class="flex-1 overflow-x-auto py-10 flex justify-center bg-[#111] border border-white/5 rounded-[32px] shadow-inner w-full" x-ignore>
+                <!-- PDF Container Content -->
+                <div id="pdf-content" class="a4-page-content">
+                    <!-- Header Logo -->
+                    <div class="pdf-logo-wrapper">
+                        <img src="<?= raizUrl('/assets/logo-contrato.png') ?>" alt="Poncem Studio Logo" class="pdf-logo">
+                    </div>
 
-                <!-- Contract Body Text -->
-                <div class="pdf-body text-justify">
-                    <?= $contratoTexto ?>
-                </div>
+                    <!-- Contract Body Text -->
+                    <div class="pdf-body text-justify">
+                        <?= $contratoTexto ?>
+                    </div>
 
-
-
-                <!-- Page Break For Anexo I -->
-                <div class="page-break"></div>
-                <div class="pdf-logo-wrapper pt-10">
-                    <img src="<?= raizUrl('/assets/logo-contrato.png') ?>" alt="Poncem Studio Logo" class="pdf-logo">
-                </div>
-                <div class="pdf-body text-justify">
-                    <?= !empty($anexoTexto) ? $anexoTexto : '<h4>ANEXO I – DESCRIÇÃO DOS SERVIÇOS</h4><p class="p0">A descrição detalhada dos serviços será incluída após a definição do escopo do evento.</p>' ?>
+                    <!-- Page Break For Anexo I -->
+                    <div class="page-break"></div>
+                    <div class="pdf-logo-wrapper pt-10">
+                        <img src="<?= raizUrl('/assets/logo-contrato.png') ?>" alt="Poncem Studio Logo" class="pdf-logo">
+                    </div>
+                    <div class="pdf-body text-justify">
+                        <?= !empty($anexoTexto) ? $anexoTexto : '<h4>ANEXO I – DESCRIÇÃO DOS SERVIÇOS</h4><p class="p0">A descrição detalhada dos serviços será incluída após a definição do escopo do evento.</p>' ?>
+                    </div>
                 </div>
             </div>
+
+            <?php if (($contrato['status'] ?? 'rascunho') === 'assinado'): ?>
+                <!-- Sidebar de Faturamento Asaas -->
+                <div class="w-full lg:w-[380px] bg-zinc-900/60 border border-white/10 rounded-[2rem] p-6 space-y-6 flex-shrink-0">
+                    <div class="flex items-center justify-between border-b border-white/5 pb-4">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+                                <i data-lucide="wallet" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-sm">Faturamento Asaas</h4>
+                                <p class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Integração Ativa</p>
+                            </div>
+                        </div>
+                        
+                        <?php if ((int)($contrato['asaas_cobranca_gerada'] ?? 0) === 0): ?>
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-500/10 text-amber-500 border border-amber-500/20">Pendente</span>
+                        <?php else: ?>
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">Gerado</span>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if ((int)($contrato['asaas_cobranca_gerada'] ?? 0) === 0): ?>
+                        <div class="text-center py-6">
+                            <p class="text-xs text-zinc-400 leading-relaxed mb-4">
+                                Este contrato foi assinado, mas o faturamento automático do Asaas ainda não foi gerado.
+                            </p>
+                            <button type="button" onclick="gerarCobrancaVisualizar('<?= sanitizar($contrato['id']) ?>', this)"
+                                    class="w-full py-3 bg-white hover:bg-zinc-200 text-black rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-lg">
+                                <i data-lucide="wallet" class="w-4 h-4"></i> Gerar Cobrança Agora
+                            </button>
+                        </div>
+                    <?php else: ?>
+                        <!-- Detalhes do Faturamento -->
+                        <div class="space-y-4">
+                            <?php if (empty($lancamentosAsaas)): ?>
+                                <p class="text-xs text-zinc-500 italic text-center">Nenhum lançamento local encontrado para esta cobrança.</p>
+                            <?php else: ?>
+                                <div class="space-y-3">
+                                    <?php foreach ($lancamentosAsaas as $idx => $lanc): 
+                                        $statusLanc = $lanc['status'];
+                                        $badgeClass = 'bg-zinc-800 text-zinc-400';
+                                        $statusTxt = 'Pendente';
+                                        if ($statusLanc === 'pago') {
+                                            $badgeClass = 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+                                            $statusTxt = 'Pago';
+                                        } elseif ($statusLanc === 'atrasado') {
+                                            $badgeClass = 'bg-red-500/10 text-red-400 border border-red-500/20';
+                                            $statusTxt = 'Atrasado';
+                                        } elseif ($statusLanc === 'cancelado') {
+                                            $badgeClass = 'bg-zinc-800 text-zinc-500';
+                                            $statusTxt = 'Cancelado';
+                                        }
+                                    ?>
+                                        <div class="bg-zinc-950/45 border border-white/5 rounded-2xl p-4 space-y-3 hover:border-white/10 transition-all">
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-xs font-bold text-white"><?= sanitizar($lanc['descricao']) ?></span>
+                                                <span class="px-2 py-0.5 rounded-full text-[8px] font-black uppercase <?= $badgeClass ?>">
+                                                    <?= $statusTxt ?>
+                                                </span>
+                                            </div>
+                                            
+                                            <div class="grid grid-cols-2 gap-2 text-[11px] text-zinc-400">
+                                                <div>
+                                                    <span class="block text-[9px] text-zinc-500 uppercase tracking-wider font-semibold">Valor</span>
+                                                    <span class="font-bold text-white">R$ <?= number_format($lanc['valor'], 2, ',', '.') ?></span>
+                                                </div>
+                                                <div>
+                                                    <span class="block text-[9px] text-zinc-500 uppercase tracking-wider font-semibold">Vencimento</span>
+                                                    <span class="font-bold text-white"><?= date('d/m/Y', strtotime($lanc['vencimento'])) ?></span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="flex gap-2 pt-1 border-t border-white/5">
+                                                <?php if ($lanc['asaas_boleto_url']): ?>
+                                                    <a href="<?= sanitizar($lanc['asaas_boleto_url']) ?>" target="_blank" 
+                                                       class="flex-1 py-2 bg-zinc-900 hover:bg-zinc-800 border border-white/5 text-zinc-300 hover:text-white rounded-xl text-[10px] font-bold uppercase tracking-wider text-center transition-all flex items-center justify-center gap-1">
+                                                        <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Boleto / Pix
+                                                    </a>
+                                                <?php endif; ?>
+                                                
+                                                <?php if ($lanc['asaas_invoice_url']): ?>
+                                                    <a href="<?= sanitizar($lanc['asaas_invoice_url']) ?>" target="_blank"
+                                                       class="flex-1 py-2 bg-zinc-900 hover:bg-zinc-800 border border-white/5 text-zinc-300 hover:text-white rounded-xl text-[10px] font-bold uppercase tracking-wider text-center transition-all flex items-center justify-center gap-1">
+                                                        <i data-lucide="external-link" class="w-3.5 h-3.5"></i> Fatura
+                                                    </a>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
         </div>
 
     </main>
@@ -757,6 +861,31 @@ function salvarConfigAssinafy(e) {
         btn.disabled = false;
         btn.innerHTML = originalText;
         alert('Erro de conexão ao salvar configurações.');
+    });
+}
+
+function gerarCobrancaVisualizar(id, btn) {
+    const original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg> Gerando...';
+
+    fetch('<?= raizUrl("/api/contratos/gerar_asaas.php") ?>', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ id })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (!data.success) {
+            throw new Error(data.erro || 'Não foi possível gerar a cobrança.');
+        }
+        alert(data.mensagem || 'Cobrança gerada com sucesso.');
+        window.location.reload();
+    })
+    .catch(err => {
+        alert('Erro ao gerar cobrança: ' + err.message);
+        btn.disabled = false;
+        btn.innerHTML = original;
     });
 }
 </script>

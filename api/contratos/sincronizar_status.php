@@ -8,6 +8,7 @@ require_once __DIR__ . '/../../config/env.php';
 require_once __DIR__ . '/../../config/auth.php';
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../includes/helpers.php';
+require_once __DIR__ . '/../../includes/contratos.php';
 
 // Captura global de erros para retornar sempre JSON válido e evitar erros 500 secos da hospedagem
 try {
@@ -199,67 +200,41 @@ try {
         $stmtUpdate = $db->prepare("UPDATE contratos SET status = ? WHERE id = ?");
         $stmtUpdate->execute([$novoStatus, $id]);
         
-        // Se houver proposta vinculada, atualizar
-        if (!empty($contrato['proposta_id'])) {
-            $statusProposta = ($novoStatus === 'assinado') ? 'aceita' : 'rascunho';
-            $db->prepare("UPDATE propostas SET status = ? WHERE id = ?")
-               ->execute([$statusProposta, $contrato['proposta_id']]);
-               
-            // Se o contrato foi ganho (assinado), atualiza a etapa da oportunidade vinculada para 'ganha' no CRM
-            if ($novoStatus === 'assinado') {
-                $stmtProp = $db->prepare("SELECT oportunidade_id FROM propostas WHERE id = ?");
-                $stmtProp->execute([$contrato['proposta_id']]);
-                $prop = $stmtProp->fetch();
-                
-                if ($prop && !empty($prop['oportunidade_id'])) {
-                    $db->prepare("UPDATE oportunidades SET etapa = 'ganha', atualizado_em = CURRENT_TIMESTAMP WHERE id = ?")
-                       ->execute([$prop['oportunidade_id']]);
-                }
+        if ($novoStatus === 'assinado') {
+            $resAssinatura = processarAssinaturaContrato($id);
+            $msgRetorno = "Status atualizado localmente para: ASSINADO." . ($resAssinatura['asaas_cobranca'] ? " Cobrança Asaas emitida." : "");
+            if (!empty($resAssinatura['erros'])) {
+                $msgRetorno .= " Erros Asaas: " . implode(', ', $resAssinatura['erros']);
             }
-
-            // Gravar histórico
-            $stmtHist = $db->prepare("
-                INSERT INTO propostas_historico (proposta_id, user_id, tipo, conteudo)
-                VALUES (?, ?, 'documento', ?)
-            ");
-            $usuario = usuarioAtual();
-            $stmtHist->execute([
-                $contrato['proposta_id'],
-                $usuario['id'] ?? 'sistema',
-                $mensagemHistorico
+            responderJson([
+                'success' => true,
+                'status' => $novoStatus,
+                'mensagem' => $msgRetorno
+            ]);
+        } else {
+            // Caso de cancelamento
+            if (!empty($contrato['proposta_id'])) {
+                $db->prepare("UPDATE propostas SET status = 'rascunho' WHERE id = ?")
+                   ->execute([$contrato['proposta_id']]);
+                   
+                // Gravar histórico
+                $stmtHist = $db->prepare("
+                    INSERT INTO propostas_historico (proposta_id, user_id, tipo, conteudo)
+                    VALUES (?, ?, 'documento', ?)
+                ");
+                $usuario = usuarioAtual();
+                $stmtHist->execute([
+                    $contrato['proposta_id'],
+                    $usuario['id'] ?? 'sistema',
+                    $mensagemHistorico
+                ]);
+            }
+            responderJson([
+                'success' => true,
+                'status' => $novoStatus,
+                'mensagem' => "Status atualizado localmente para: " . strtoupper($novoStatus)
             ]);
         }
-
-        // Se o contrato foi assinado, atualizar os dados de CPF/CNPJ e contato do cliente cadastrado
-        if ($novoStatus === 'assinado' && !empty($contrato['cliente_id'])) {
-            $dadosJson = json_decode($contrato['dados_json'], true) ?: [];
-            $sig1 = $dadosJson['signatario_1'] ?? null;
-            if ($sig1 && !empty($sig1['nome'])) {
-                $stmtGetCli = $db->prepare("SELECT cpf_cnpj, contato FROM clientes WHERE id = ?");
-                $stmtGetCli->execute([$contrato['cliente_id']]);
-                $cliExistente = $stmtGetCli->fetch();
-                
-                if ($cliExistente) {
-                    $novoCpf = $cliExistente['cpf_cnpj'];
-                    if (empty($novoCpf) && !empty($sig1['cpf'])) {
-                        $novoCpf = $sig1['cpf'];
-                    }
-                    $novoContato = $cliExistente['contato'];
-                    if (empty($novoContato) && !empty($sig1['email'])) {
-                        $novoContato = $sig1['email'];
-                    }
-                    
-                    $stmtUpCli = $db->prepare("UPDATE clientes SET cpf_cnpj = ?, contato = ? WHERE id = ?");
-                    $stmtUpCli->execute([$novoCpf, $novoContato, $contrato['cliente_id']]);
-                }
-            }
-        }
-        
-        responderJson([
-            'success' => true,
-            'status' => $novoStatus,
-            'mensagem' => "Status atualizado localmente para: " . strtoupper($novoStatus)
-        ]);
     } else {
         responderJson([
             'success' => true,

@@ -93,6 +93,10 @@ require_once __DIR__ . '/../includes/layout/head.php';
                     } elseif ($status === 'assinado') {
                         $statusLabel = 'Assinado';
                         $statusClass = 'bg-emerald-500/10 text-emerald-500';
+                        if ((int)($contrato['asaas_cobranca_gerada'] ?? 0) === 0) {
+                            $statusLabel = 'Assinado • Cobrança Pendente';
+                            $statusClass = 'bg-amber-500/10 text-amber-500 border border-amber-500/20';
+                        }
                     } elseif ($status === 'cancelado') {
                         $statusLabel = 'Cancelado';
                         $statusClass = 'bg-red-500/10 text-red-500';
@@ -149,6 +153,15 @@ require_once __DIR__ . '/../includes/layout/head.php';
                                             class="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all"
                                             title="Sincronizar status com Assinafy">
                                         <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                                    </button>
+                                <?php endif; ?>
+
+                                <?php if ($status === 'assinado' && (int)($contrato['asaas_cobranca_gerada'] ?? 0) === 0): ?>
+                                    <button type="button"
+                                            onclick="gerarCobrancaAsaas('<?= sanitizar($contrato['id']) ?>', this)"
+                                            class="p-2.5 rounded-xl bg-purple-500/10 text-purple-500 hover:bg-purple-500 hover:text-white transition-all"
+                                            title="Gerar Cobrança Asaas">
+                                        <i data-lucide="wallet" class="w-4 h-4"></i>
                                     </button>
                                 <?php endif; ?>
 
@@ -363,6 +376,32 @@ function salvarConfigAssinafy(e) {
         btn.disabled = false;
         btn.innerHTML = originalText;
         alert('Erro de conexão ao salvar configurações.');
+    });
+}
+
+function gerarCobrancaAsaas(id, btn) {
+    const original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg>';
+
+    fetch('<?= raizUrl("/api/contratos/gerar_asaas.php") ?>', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ id })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (!data.success) {
+            throw new Error(data.erro || 'Não foi possível gerar a cobrança.');
+        }
+        alert(data.mensagem || 'Cobrança gerada com sucesso.');
+        window.location.reload();
+    })
+    .catch(err => {
+        alert('Erro ao gerar cobrança: ' + err.message);
+        btn.disabled = false;
+        btn.innerHTML = original;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
     });
 }
 </script>

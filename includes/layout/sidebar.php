@@ -69,6 +69,10 @@ if ($usuario['sistema_origem'] !== 'distinto' || $isAreaRoteiros) {
             <i data-lucide="calculator" style="width:20px;height:20px; flex-shrink:0;"></i>
             <span class="nav-label hide-on-collapse transition-opacity">Custos Fixos</span>
         </a>
+        <a href="<?= raizUrl('/financeiro/asaas.php') ?>" class="nav-link <?= menuAtivo('/financeiro/asaas') ?>">
+            <i data-lucide="wallet" style="width:20px;height:20px; flex-shrink:0;"></i>
+            <span class="nav-label hide-on-collapse transition-opacity">Asaas Pagamentos</span>
+        </a>
 
         <div class="nav-section hide-on-collapse">Serviços</div>
         <a href="<?= raizUrl('/precificacao/servicos.php') ?>" class="nav-link <?= menuAtivo('/servicos') ?>">
