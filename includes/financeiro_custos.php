@@ -2,6 +2,10 @@
 
 function garantirEstruturaFinanceira(PDO $db): void {
     try {
+        if (tabelaTemColuna($db, 'contratos', 'asaas_cobranca_gerada')) {
+            return;
+        }
+
         garantirColuna($db, 'custos_fixos', 'dia_vencimento', "INT NOT NULL DEFAULT 5");
         garantirColuna($db, 'custos_fixos', 'forma_pagamento', "VARCHAR(50) NULL DEFAULT 'pix'");
         garantirColuna($db, 'lancamentos', 'forma_pagamento', "VARCHAR(50) NULL");
@@ -29,22 +33,28 @@ function garantirEstruturaFinanceira(PDO $db): void {
             $db->exec("ALTER TABLE custos_fixos MODIFY categoria VARCHAR(100) NOT NULL DEFAULT 'outros'");
         }
     } catch (Exception $e) {
-        // Em producao, a falta de permissao para ALTER nao pode derrubar o sistema.
+        if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'pgsql') {
+            try {
+                $db->exec('ROLLBACK');
+            } catch (Exception $rollEx) {}
+        }
     }
 }
 
 function garantirConstraintUnico(PDO $db, string $tabela, string $coluna, string $constraintName): void {
     try {
         $driver = $db->getAttribute(PDO::ATTR_DRIVER_NAME);
-        $constraintExists = false;
 
         if ($driver === 'pgsql') {
-            $stmt = $db->prepare("SELECT 1 FROM pg_constraint WHERE conname = ?");
-            $stmt->execute([$constraintName]);
-            $constraintExists = (bool)$stmt->fetch();
-            if (!$constraintExists) {
-                $db->exec("ALTER TABLE {$tabela} ADD CONSTRAINT {$constraintName} UNIQUE ({$coluna}) WHERE {$coluna} IS NOT NULL AND {$coluna} != ''");
-            }
+            // PostgreSQL - Primeiro limpa duplicatas, depois cria o index único parcial
+            $db->exec("
+                DELETE FROM {$tabela} t1 USING {$tabela} t2
+                WHERE t1.id > t2.id 
+                  AND t1.{$coluna} = t2.{$coluna} 
+                  AND t1.{$coluna} IS NOT NULL 
+                  AND t1.{$coluna} != ''
+            ");
+            $db->exec("CREATE UNIQUE INDEX IF NOT EXISTS {$constraintName} ON {$tabela} ({$coluna}) WHERE {$coluna} IS NOT NULL AND {$coluna} != ''");
         } else {
             // MySQL - verifica se já existe index único
             $stmt = $db->prepare("SHOW INDEX FROM {$tabela} WHERE Key_name = ? AND Column_name = ?");
@@ -55,16 +65,20 @@ function garantirConstraintUnico(PDO $db, string $tabela, string $coluna, string
                     DELETE t1 FROM lancamentos t1
                     INNER JOIN lancamentos t2 
                     WHERE t1.id > t2.id 
-                    AND t1.ofx_fitid = t2.ofx_fitid 
-                    AND t1.ofx_fitid IS NOT NULL 
-                    AND t1.ofx_fitid != ''
+                      AND t1.ofx_fitid = t2.ofx_fitid 
+                      AND t1.ofx_fitid IS NOT NULL 
+                      AND t1.ofx_fitid != ''
                 ");
                 $dupStmt->execute();
                 $db->exec("ALTER TABLE {$tabela} ADD CONSTRAINT {$constraintName} UNIQUE ({$coluna})");
             }
         }
     } catch (Exception $e) {
-        // Ignorar erro se constraint já existir
+        if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'pgsql') {
+            try {
+                $db->exec('ROLLBACK');
+            } catch (Exception $rollEx) {}
+        }
     }
 }
 
@@ -91,6 +105,11 @@ function colunaInfo(PDO $db, string $tabela, string $coluna): ?array {
             return $row ?: null;
         }
     } catch (Exception $e) {
+        if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'pgsql') {
+            try {
+                $db->exec('ROLLBACK');
+            } catch (Exception $rollEx) {}
+        }
         return null;
     }
 }

@@ -22,6 +22,11 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
   - Habilitadas as extensões `pdo_pgsql` e `pgsql` no `php.ini` do Laragon para dar suporte a conexões PostgreSQL.
   - Configurada a conexão local com o Neon e sincronizada a estrutura financeira (`contratos.asaas_cobranca_gerada`, `clientes.asaas_customer_id`, etc.), corrigindo o erro 500 no faturamento manual.
 
+- **Correção de Transação Abortada (SQLSTATE[25P02]) no Faturamento Asaas** *(jun/2026)*:
+  - Identificada falha crítica: sintaxe inválida de `ALTER TABLE ... ADD CONSTRAINT ... WHERE` no PostgreSQL gerava erro de sintaxe, abortando a transação de forma silenciosa e quebrando chamadas subsequentes.
+  - Resolvido migrando a restrição única para um índice único parcial nativo (`CREATE UNIQUE INDEX IF NOT EXISTS`) e limpando duplicados da tabela `lancamentos`.
+  - Otimizada a rotina de DDL com early return se as colunas já existem e incluído `ROLLBACK` seguro nos blocos catch para restaurar o estado da conexão no PostgreSQL.
+
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.
 2. **Commit**: Sugira título de commit em português ao finalizar uma ação.
