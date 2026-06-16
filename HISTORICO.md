@@ -17,10 +17,10 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
   - Integração CRM: alteração de oportunidade para `ganha` e promoção de CPF/CNPJ de signatários na tabela local de clientes ao assinar o contrato.
   - Corrigidos bugs de payload, tags de assinaturas físicas e inicialização do Alpine.js isolando o preview do CKEditor com `x-ignore`.
 
-- **Melhorias de Layout, PDF e Prazos de Entrega (Pre-Wedding)** *(jun/2026)*:
-  - Sincronização em tempo real de valores e prazos da Cláusula Terceira e Quarta (Entregas e Pré-Wedding) entre a sidebar de edição e o corpo do contrato (Quill/CKEditor).
-  - Ajustes de margens do PDF, quebras de páginas específicas para Anexo I e estilo de lista (`line-height: 1.4`).
-  - Resolução de double encoding nos nomes/CPFs e correção do domínio Assinafy.
+- **Resolução de Tela em Branco e Conexão Neon (Ambiente Local)** *(jun/2026)*:
+  - Criados `config/env.php` e `config/env.example.php` com chaves necessárias (`DB_*`, `APP_*`, `GEMINI_API_KEY`, `SESSION_NAME`, `SESSION_LIFETIME`, etc.), eliminando erros fatais.
+  - Habilitadas as extensões `pdo_pgsql` e `pgsql` no `php.ini` do Laragon para dar suporte a conexões PostgreSQL.
+  - Configurada a conexão local com o Neon e sincronizada a estrutura financeira (`contratos.asaas_cobranca_gerada`, `clientes.asaas_customer_id`, etc.), corrigindo o erro 500 no faturamento manual.
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.
