@@ -1525,6 +1525,19 @@ function calcularCondicoes() {
     let sinalVal = total * (sinalPct / 100);
     let saldoVal = total - sinalVal;
     let parcelaVal = saldoVal / qtdParcelas;
+
+    // Preenche automaticamente os campos de faturamento do Asaas na sidebar
+    let totalParcelasInput = document.querySelector('[name="asaas_total_parcelas"]');
+    let firstDueDateInput = document.querySelector('[name="asaas_first_due_date"]');
+    let valorSinalInput = document.querySelector('[name="asaas_valor_sinal"]');
+    let sinalVencimentoInput = document.querySelector('[name="asaas_sinal_vencimento"]');
+
+    if (totalParcelasInput) totalParcelasInput.value = qtdParcelas;
+    if (firstDueDateInput) firstDueDateInput.value = primeiraParcelaDataStr;
+    if (valorSinalInput) {
+        valorSinalInput.value = sinalVal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    if (sinalVencimentoInput) sinalVencimentoInput.value = sinalDataStr;
     
     // Formatar data do sinal para exibição
     let dataSinalFormated = `${sinalSplit[2]}/${sinalSplit[1]}/${sinalSplit[0]}`;

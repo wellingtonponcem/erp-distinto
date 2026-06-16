@@ -250,6 +250,7 @@ class AsaasService {
         if ($totalParcelas > 1) {
             $payload['installmentCount'] = $totalParcelas;
             $payload['installmentValue'] = round($valorTotal / $totalParcelas, 2);
+            $payload['dueDate'] = $vencimento;
             $res = $this->request("payments", "POST", $payload);
         } else {
             $payload['value'] = $valorTotal;

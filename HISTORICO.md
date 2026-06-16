@@ -27,6 +27,11 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
   - Resolvido migrando a restrição única para um índice único parcial nativo (`CREATE UNIQUE INDEX IF NOT EXISTS`) e limpando duplicados da tabela `lancamentos`.
   - Otimizada a rotina de DDL com early return se as colunas já existem e incluído `ROLLBACK` seguro nos blocos catch para restaurar o estado da conexão no PostgreSQL.
 
+- **Automação da Calculadora de Pagamento e Correção de Parcelamento Asaas** *(jun/2026)*:
+  - Vinculado o resultado da "Calculadora de Condições de Pagamento" diretamente aos campos de configuração do Asaas na sidebar de `contrato_gerar.php`, preenchendo automaticamente a quantidade de parcelas, valores de sinal e vencimentos ao clicar em calcular.
+  - Corrigido bug em `includes/asaas.php` que não enviava o campo obrigatório `dueDate` quando uma cobrança continha parcelas sem sinal, resultando em cobrança única por padrão no Asaas.
+
+
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.
 2. **Commit**: Sugira título de commit em português ao finalizar uma ação.
