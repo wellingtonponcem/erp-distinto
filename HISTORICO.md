@@ -38,10 +38,12 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
   - Corrigido o envio de PDFs em branco para o Assinafy em [contrato_visualizar.php](file:///c:/xampp/htdocs/erp-distinto/gerenciamento/contrato_visualizar.php) forçando a remoção da classe de exportação do clone, aplicando cores escuras/background branco diretamente no DOM temporário contra interferências do Modo Escuro, e adicionando um delay de 150ms para garantir o reflow completo antes da captura pelo html2pdf.
   - Corrigidos erros de sintaxe JS (`Uncaught SyntaxError: missing ) after argument list`) em [contrato_visualizar.php](file:///c:/xampp/htdocs/erp-distinto/gerenciamento/contrato_visualizar.php) fechando adequadamente as chamadas de `setTimeout` nas funções `confirmarEnvio()` e `confirmarEnvioAssinatura()`, restaurando a inicialização do Alpine.js.
 
-- **Recurso de Clonagem e Reversão de Contratos para Testes** *(jun/2026)*:
+- **Recurso de Clonagem, Reversão e Nova Geração de PDF no Servidor** *(jun/2026)*:
   - Criados os endpoints [clonar.php](file:///c:/xampp/htdocs/erp-distinto/api/contratos/clonar.php) e [resetar.php](file:///c:/xampp/htdocs/erp-distinto/api/contratos/resetar.php).
-  - Adicionadas ações rápidas de "Clonar" e "Reverter para Rascunho" (resetar Assinafy/Asaas) na listagem ([contratos.php](file:///c:/xampp/htdocs/erp-distinto/gerenciamento/contratos.php)) e visualização ([contrato_visualizar.php](file:///c:/xampp/htdocs/erp-distinto/gerenciamento/contrato_visualizar.php)).
-  - Corrigida a geração de PDF em branco (tanto na exportação local quanto no Assinafy) alterando o posicionamento do clone temporário de `fixed` para `absolute` (escondido via `zIndex = -99999`) e forçando `scrollX: 0, scrollY: 0` nas opções do `html2canvas` para mitigar o deslocamento de scroll da página.
+  - Adicionadas ações rápidas de "Clonar" e "Reverter para Rascunho" na listagem ([contratos.php](file:///c:/xampp/htdocs/erp-distinto/gerenciamento/contratos.php)) e visualização ([contrato_visualizar.php](file:///c:/xampp/htdocs/erp-distinto/gerenciamento/contrato_visualizar.php)).
+  - Reestruturado o motor de PDF: migrado do motor cliente (`html2pdf.js`/`html2canvas`) para o servidor PHP usando a biblioteca **Dompdf** (instalada via Composer).
+  - Criado o endpoint [gerar_pdf.php](file:///c:/xampp/htdocs/erp-distinto/api/contratos/gerar_pdf.php) para renderização determinística do contrato A4.
+  - Atualizada a API [enviar_assinatura.php](file:///c:/xampp/htdocs/erp-distinto/api/contratos/enviar_assinatura.php) para gerar o PDF diretamente no servidor e enviá-lo ao Assinafy, removendo o upload manual pelo cliente e eliminando de vez erros de PDF em branco e interferências do Modo Escuro.
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.

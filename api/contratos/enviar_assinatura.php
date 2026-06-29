@@ -8,6 +8,10 @@ require_once __DIR__ . '/../../config/env.php';
 require_once __DIR__ . '/../../config/auth.php';
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../includes/helpers.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 exigirAutenticacao();
 
@@ -16,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $id = $_POST['id'] ?? '';
-if (!$id || empty($_FILES['pdf'])) {
+if (!$id) {
     responderJson(['erro' => 'Dados incompletos.'], 422);
 }
 
@@ -52,15 +56,142 @@ if (!$sig1 || empty($sig1['nome']) || empty($sig1['email'])) {
     responderJson(['erro' => 'O Signatário 1 (Nome e E-mail) é obrigatório para enviar o contrato.'], 422);
 }
 
-// 3. Salvar arquivo PDF temporariamente
-$pdfFile = $_FILES['pdf'];
+// 3. Gerar PDF temporariamente no servidor com Dompdf
+$contratoTexto = $dadosJson['contrato_texto'] ?? '';
+$anexoTexto = $dadosJson['anexo_texto'] ?? '';
+
+// Carregar logotipo em Base64
+$logoPath = __DIR__ . '/../../assets/logo-contrato.png';
+$logoBase64 = '';
+if (file_exists($logoPath)) {
+    $logoData = file_get_contents($logoPath);
+    $logoBase64 = 'data:image/png;base64,' . base64_encode($logoData);
+}
+
+// Montar HTML estruturado
+$html = '
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Contrato_' . htmlspecialchars($id) . '</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        @page {
+            margin: 20mm 18mm 20mm 18mm;
+        }
+        body {
+            font-family: "Sora", "Arial", sans-serif;
+            font-size: 9.5pt;
+            color: #231f20;
+            line-height: 1.45;
+            background-color: #ffffff;
+        }
+        .pdf-logo-wrapper {
+            margin-bottom: 25pt;
+            text-align: left;
+        }
+        .pdf-logo {
+            width: 170px;
+            height: auto;
+            display: block;
+        }
+        .pdf-body {
+            text-align: justify;
+        }
+        h3 {
+            font-size: 14pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-align: center;
+            margin: 0 0 15pt 0;
+            line-height: 1.2;
+        }
+        .pdf-subtitle {
+            font-size: 10pt;
+            font-weight: 400;
+            margin: 0 0 5pt 0;
+            text-align: left;
+        }
+        .pdf-numero {
+            font-size: 10pt;
+            font-weight: 400;
+            margin: 0 0 15pt 0;
+            text-align: left;
+        }
+        h4 {
+            font-size: 10pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin: 18pt 0 6pt 0;
+            line-height: 1.2;
+            page-break-after: avoid;
+        }
+        p {
+            margin: 0 0 10pt 0;
+            text-align: justify;
+            text-indent: 20pt;
+        }
+        p.p0, p.pdf-subtitle, p.pdf-numero {
+            text-indent: 0 !important;
+        }
+        p.p-closing {
+            text-indent: 0 !important;
+            margin-top: 25pt;
+        }
+        ul, ol {
+            margin: 0 0 10pt 0;
+            padding-left: 25pt;
+        }
+        li {
+            margin-bottom: 5pt;
+            text-align: justify;
+        }
+        .page-break {
+            page-break-before: always;
+        }
+        .pdf-body p strong {
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="pdf-logo-wrapper">
+        ' . ($logoBase64 ? '<img src="' . $logoBase64 . '" class="pdf-logo" alt="Logo">' : '') . '
+    </div>
+    <div class="pdf-body">
+        ' . $contratoTexto . '
+    </div>
+    <div class="page-break"></div>
+    <div class="pdf-logo-wrapper">
+        ' . ($logoBase64 ? '<img src="' . $logoBase64 . '" class="pdf-logo" alt="Logo">' : '') . '
+    </div>
+    <div class="pdf-body">
+        ' . (!empty($anexoTexto) ? $anexoTexto : '<h4>ANEXO I - DESCRIÇÃO DOS SERVIÇOS</h4><p class="p0">A descrição detalhada dos serviços será incluída após a definição do escopo do evento.</p>') . '
+    </div>
+</body>
+</html>
+';
+
+$options = new Options();
+$options->set('isHtml5ParserEnabled', true);
+$options->set('isRemoteEnabled', true);
+$options->set('defaultMediaType', 'print');
+$options->set('dpi', 150);
+
+$dompdf = new Dompdf($options);
+$dompdf->loadHtml($html);
+$dompdf->setPaper('A4', 'portrait');
+$dompdf->render();
+$pdfOutput = $dompdf->output();
+
 $tempDir = __DIR__ . '/../../assets/temp';
 if (!is_dir($tempDir)) {
     mkdir($tempDir, 0755, true);
 }
 $tempPdfPath = $tempDir . '/contrato_' . $id . '_' . time() . '.pdf';
 
-if (!move_uploaded_file($pdfFile['tmp_name'], $tempPdfPath)) {
+if (file_put_contents($tempPdfPath, $pdfOutput) === false) {
     responderJson(['erro' => 'Erro ao processar o arquivo PDF no servidor.'], 500);
 }
 

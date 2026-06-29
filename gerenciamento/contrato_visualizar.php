@@ -742,8 +742,7 @@ require_once __DIR__ . '/../includes/layout/head.php';
 }
 </style>
 
-<!-- html2pdf.js library -->
-<script src="<?= raizUrl('/assets/js/html2pdf.bundle.min.js') ?>"></script>
+<!-- PDF generation performed server-side with Dompdf (html2pdf library removed from client) -->
 
 <script>
 function contratoVisualizarApp() {
@@ -756,70 +755,7 @@ function contratoVisualizarApp() {
         showConfirmModal: false,
         
         exportarPDFLocal() {
-            this.loading = true;
-            if (typeof html2pdf === 'undefined') {
-                alert('Biblioteca de PDF não carregada. Recarregue a página e tente novamente.');
-                this.loading = false;
-                return;
-            }
-            this.loadingMessage = 'Gerando arquivo PDF...';
-
-            const original = document.getElementById('pdf-content');
-            if (!original) {
-                alert('Conteúdo do contrato não encontrado.');
-                this.loading = false;
-                return;
-            }
-
-            const element = original.cloneNode(true);
-            element.classList.remove('pdf-export-source');
-            element.style.position = 'absolute';
-            element.style.left = '0';
-            element.style.top = '0';
-            element.style.zIndex = '-99999';
-            element.style.width = '210mm';
-            element.style.backgroundColor = '#ffffff';
-            element.style.color = '#231f20';
-            element.style.pointerEvents = 'none';
-
-            element.querySelectorAll('*').forEach(child => {
-                child.style.color = '#231f20';
-                child.style.backgroundColor = 'transparent';
-            });
-
-            document.body.appendChild(element);
-
-            const opt = {
-                margin: [15, 0, 18, 0],
-                filename: 'Contrato_' + this.id + '.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { 
-                    scale: 2, 
-                    useCORS: true, 
-                    logging: false,
-                    scrollX: 0,
-                    scrollY: 0
-                },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak: {
-                    mode: ['css', 'legacy'],
-                    avoid: ['p', 'h3', 'h4', 'li', 'tr', '.pdf-signatures-wrapper', 'table']
-                }
-            };
-
-            setTimeout(() => {
-                html2pdf().set(opt).from(element).save()
-                .then(() => {
-                    element.remove();
-                    this.loading = false;
-                })
-                .catch(err => {
-                    console.error(err);
-                    element.remove();
-                    alert('Erro ao exportar PDF.');
-                    this.loading = false;
-                });
-            }, 150);
+            window.open('<?= raizUrl("/api/contratos/gerar_pdf.php?id=") ?>' + this.id, '_blank');
         },
         
         atualizarAnexo() {
@@ -851,66 +787,16 @@ function contratoVisualizarApp() {
         },
 
         confirmarEnvio() {
-            const pdfLibReady = typeof html2pdf !== 'undefined';
-            if (!pdfLibReady) {
-                alert('Biblioteca de PDF não carregada. Recarregue a página e tente novamente.');
-                return;
-            }
             this.showConfirmModal = false;
             this.loading = true;
-            this.loadingMessage = 'Gerando PDF de alta definição...';
+            this.loadingMessage = 'Gerando PDF no servidor e enviando para o Assinafy...';
             
-            const original = document.getElementById('pdf-content');
-            const element = original.cloneNode(true);
-            element.classList.remove('pdf-export-source');
-            element.style.position = 'absolute';
-            element.style.left = '0';
-            element.style.top = '0';
-            element.style.zIndex = '-99999';
-            element.style.width = '210mm';
-            element.style.backgroundColor = '#ffffff';
-            element.style.color = '#231f20';
-            element.style.pointerEvents = 'none';
+            const formData = new FormData();
+            formData.append('id', this.id);
 
-            element.querySelectorAll('*').forEach(child => {
-                child.style.color = '#231f20';
-                child.style.backgroundColor = 'transparent';
-            });
-
-            document.body.appendChild(element);
-
-            const opt = {
-                margin: [15, 0, 18, 0],
-                filename: 'Contrato_' + this.id + '.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { 
-                    scale: 2, 
-                    useCORS: true, 
-                    logging: false,
-                    scrollX: 0,
-                    scrollY: 0
-                },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak: { 
-                    mode: ['css', 'legacy'], 
-                    avoid: ['p', 'h3', 'h4', 'li', 'tr', '.pdf-signatures-wrapper', 'table'] 
-                }
-            };
-            
-            setTimeout(() => {
-                html2pdf().set(opt).from(element).outputPdf('blob')
-                .then(blob => {
-                    element.remove();
-                    this.loadingMessage = 'Enviando documento para o Assinafy...';
-                
-                const formData = new FormData();
-                formData.append('pdf', blob, 'Contrato_' + this.id + '.pdf');
-                formData.append('id', this.id);
-                
-                return fetch('<?= raizUrl("/api/contratos/enviar_assinatura.php") ?>', {
-                    method: 'POST',
-                    body: formData
-                });
+            fetch('<?= raizUrl("/api/contratos/enviar_assinatura.php") ?>', {
+                method: 'POST',
+                body: formData
             })
             .then(res => res.json())
             .then(data => {
@@ -924,11 +810,9 @@ function contratoVisualizarApp() {
             })
             .catch(err => {
                 console.error(err);
-                element.remove();
-                alert('Erro ao enviar documento para o servidor.');
+                alert('Erro ao processar e enviar documento para o servidor.');
                 this.loading = false;
             });
-            }, 150);
         },
         
         sincronizarStatus() {
@@ -1003,93 +887,33 @@ function setContratoAssinaturaLoading(active, message = '') {
 
 function confirmarEnvioAssinatura() {
     fecharModalAssinatura();
-
-    if (typeof html2pdf === 'undefined') {
-        alert('Biblioteca de PDF nao carregada. Recarregue a pagina e tente novamente.');
-        return;
-    }
-
-    const original = document.getElementById('pdf-content');
-    if (!original) {
-        alert('Conteudo do contrato nao encontrado para gerar o PDF.');
-        return;
-    }
-
-    const element = original.cloneNode(true);
-    element.classList.remove('pdf-export-source');
-    element.style.position = 'absolute';
-    element.style.left = '0';
-    element.style.top = '0';
-    element.style.zIndex = '-99999';
-    element.style.width = '210mm';
-    element.style.backgroundColor = '#ffffff';
-    element.style.color = '#231f20';
-    element.style.pointerEvents = 'none';
-
-    // Força a cor do texto para escuro em todas as tags filhas (evita que o modo escuro a herde como branca)
-    element.querySelectorAll('*').forEach(child => {
-        child.style.color = '#231f20';
-        child.style.backgroundColor = 'transparent';
-    });
-
-    document.body.appendChild(element);
-
-    setContratoAssinaturaLoading(true, 'Gerando PDF de alta definicao...');
+    setContratoAssinaturaLoading(true, 'Gerando PDF no servidor e enviando para o Assinafy...');
 
     const contratoId = <?= json_encode($id) ?>;
-    const opt = {
-        margin: [15, 0, 18, 0],
-        filename: 'Contrato_' + contratoId + '.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-            scale: 2, 
-            useCORS: true, 
-            logging: false,
-            scrollX: 0,
-            scrollY: 0
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: {
-            mode: ['css', 'legacy'],
-            avoid: ['p', 'h3', 'h4', 'li', 'tr', '.pdf-signatures-wrapper', 'table']
+    const formData = new FormData();
+    formData.append('id', contratoId);
+
+    fetch('<?= raizUrl("/api/contratos/enviar_assinatura.php") ?>', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        setContratoAssinaturaLoading(false);
+
+        if (data.success) {
+            alert('Contrato enviado com sucesso para assinatura eletrônica!');
+            window.location.reload();
+            return;
         }
-    };
 
-    // Aguarda 150ms para garantir a renderização e reflow do clone no DOM pelo navegador antes do canvas capturar
-    setTimeout(() => {
-        html2pdf().set(opt).from(element).outputPdf('blob')
-            .then(blob => {
-                element.remove();
-                setContratoAssinaturaLoading(true, 'Enviando documento para o Assinafy...');
-
-            const formData = new FormData();
-            formData.append('pdf', blob, 'Contrato_' + contratoId + '.pdf');
-            formData.append('id', contratoId);
-
-            return fetch('<?= raizUrl("/api/contratos/enviar_assinatura.php") ?>', {
-                method: 'POST',
-                body: formData
-            });
-        })
-        .then(res => res.json())
-        .then(data => {
-            setContratoAssinaturaLoading(false);
-
-            if (data.success) {
-                alert('Contrato enviado com sucesso para assinatura eletronica!');
-                window.location.reload();
-                return;
-            }
-
-            alert('Erro ao enviar assinatura: ' + (data.erro || data.error || 'Erro interno. Verifique as credenciais do Assinafy nas configuracoes.'));
-        })
-        .catch(err => {
-            console.error(err);
-            element.remove();
-            setContratoAssinaturaLoading(false);
-            alert('Erro ao enviar documento para o servidor.');
-        });
-    }, 150);
+        alert('Erro ao enviar assinatura: ' + (data.erro || data.error || 'Erro interno. Verifique as credenciais do Assinafy nas configurações.'));
+    })
+    .catch(err => {
+        console.error(err);
+        setContratoAssinaturaLoading(false);
+        alert('Erro ao processar e enviar documento para o servidor.');
+    });
 }
 </script>
 
