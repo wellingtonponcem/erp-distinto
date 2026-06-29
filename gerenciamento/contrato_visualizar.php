@@ -739,7 +739,11 @@ document.addEventListener('alpine:init', () => {
         loadingMessage: '',
         modalContratoAberto: false,
         showConfirmModal: false,
-        
+
+        init() {
+            this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
+        },
+
         exportarPDFLocal() {
             this.loading = true;
             if (typeof html2pdf === 'undefined') {
@@ -903,8 +907,8 @@ document.addEventListener('alpine:init', () => {
                 alert('Erro de conexão ao sincronizar status.');
                 this.loading = false;
             });
-        })
-    })
+        }
+    }))
 })
 </script>
 
