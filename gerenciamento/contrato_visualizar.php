@@ -811,7 +811,16 @@ function contratoVisualizarApp() {
             this.loading = true;
             this.loadingMessage = 'Gerando PDF de alta definição...';
             
-            const element = document.getElementById('pdf-content');
+            const original = document.getElementById('pdf-content');
+            const element = original.cloneNode(true);
+            element.style.position = 'fixed';
+            element.style.left = '0';
+            element.style.top = '0';
+            element.style.zIndex = '-1';
+            element.style.width = '210mm';
+            element.style.pointerEvents = 'none';
+            document.body.appendChild(element);
+
             const opt = {
                 margin: [15, 0, 18, 0],
                 filename: 'Contrato_' + this.id + '.pdf',
@@ -827,6 +836,7 @@ function contratoVisualizarApp() {
             // Generate PDF Blob
             html2pdf().set(opt).from(element).outputPdf('blob')
             .then(blob => {
+                element.remove();
                 this.loadingMessage = 'Enviando documento para o Assinafy...';
                 
                 const formData = new FormData();
@@ -850,6 +860,7 @@ function contratoVisualizarApp() {
             })
             .catch(err => {
                 console.error(err);
+                element.remove();
                 alert('Erro ao enviar documento para o servidor.');
                 this.loading = false;
             });
@@ -933,11 +944,20 @@ function confirmarEnvioAssinatura() {
         return;
     }
 
-    const element = document.getElementById('pdf-content');
-    if (!element) {
+    const original = document.getElementById('pdf-content');
+    if (!original) {
         alert('Conteudo do contrato nao encontrado para gerar o PDF.');
         return;
     }
+
+    const element = original.cloneNode(true);
+    element.style.position = 'fixed';
+    element.style.left = '0';
+    element.style.top = '0';
+    element.style.zIndex = '-1';
+    element.style.width = '210mm';
+    element.style.pointerEvents = 'none';
+    document.body.appendChild(element);
 
     setContratoAssinaturaLoading(true, 'Gerando PDF de alta definicao...');
 
@@ -956,6 +976,7 @@ function confirmarEnvioAssinatura() {
 
     html2pdf().set(opt).from(element).outputPdf('blob')
         .then(blob => {
+            element.remove();
             setContratoAssinaturaLoading(true, 'Enviando documento para o Assinafy...');
 
             const formData = new FormData();
@@ -981,6 +1002,7 @@ function confirmarEnvioAssinatura() {
         })
         .catch(err => {
             console.error(err);
+            element.remove();
             setContratoAssinaturaLoading(false);
             alert('Erro ao enviar documento para o servidor.');
         });
