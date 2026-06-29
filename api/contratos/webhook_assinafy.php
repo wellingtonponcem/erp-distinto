@@ -19,8 +19,16 @@ try {
     $db = Database::get();
     
     // Garantir tabela de logs de webhook existe
+    $dbPort = defined('DB_PORT') ? (int)DB_PORT : 5432;
+    $idType = "INTEGER PRIMARY KEY AUTOINCREMENT";
+    if ($dbPort === 3306) {
+        $idType = "INT AUTO_INCREMENT PRIMARY KEY";
+    } elseif ($dbPort === 5432) {
+        $idType = "SERIAL PRIMARY KEY";
+    }
+
     $db->exec("CREATE TABLE IF NOT EXISTS log_webhooks_assinafy (
-        id " . ((defined('DB_PORT') && (int)DB_PORT === 3306) ? "INT AUTO_INCREMENT PRIMARY KEY" : "INTEGER PRIMARY KEY AUTOINCREMENT") . ",
+        id $idType,
         evento VARCHAR(100) NULL,
         payload TEXT NULL,
         criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP

@@ -31,6 +31,7 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
   - Corrigida a montagem do DSN do Neon em [database.php](file:///c:/xampp/htdocs/erp-distinto/config/database.php) (resolvendo o erro 500) e implementada a auto-migração de colunas de plano em `users`.
   - Corrigido o apontamento incorreto de banco de dados do ERP na Hostinger via reconfiguração do `env.php` de produção, restaurando todos os lançamentos reais.
   - Atualizada a senha de `faustinosdg@gmail.com` no banco Neon de produção para sincronizar com a senha informada, e removidos todos os arquivos de diagnóstico temporários.
+  - Corrigida a compatibilidade dos scripts de webhooks do Asaas e Assinafy com o PostgreSQL, substituindo a sintaxe `AUTOINCREMENT` (SQLite) por `SERIAL` para chaves primárias nos logs de auditoria de eventos, solucionando erros 500 silenciosos que causavam pausa de filas no Asaas.
 - **Aprimoramento do Anexo I de Contratos via IA** *(jun/2026)*:
   - Atualizado o prompt do Gemini em [ia_propostas.php](file:///c:/xampp/htdocs/erp-distinto/includes/ia_propostas.php) impondo regras estritas de escopo de pacotes, garantindo que o plano Essencial contenha exclusivamente fotografia, sem itens ou entregas de vídeo/audiovisual.
   - Inseridas regras no prompt para detalhar a entrega de fotos (galeria geral com tratamento básico de luz e cor) e a escolha de até 30 fotos pelo casal para tratamento profissional avançado e detalhado.
