@@ -728,7 +728,7 @@ require_once __DIR__ . '/../includes/layout/head.php';
 </style>
 
 <!-- html2pdf.js library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="<?= raizUrl('/assets/js/html2pdf.bundle.min.js') ?>"></script>
 
 <script>
 document.addEventListener('alpine:init', () => {
