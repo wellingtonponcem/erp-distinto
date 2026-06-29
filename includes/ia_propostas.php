@@ -134,6 +134,10 @@ REGRAS DE ESCOPO RÍGIDAS DE ACORDO COM O PLANO SELECIONADO NA PROPOSTA:
   * Inclui equipe expandida de fotografia e vídeo.
   * Inclui todos os entregáveis premium de foto e vídeo (filme de casamento completo, teaser, ensaios pré-wedding/boudoir).
 
+REGRAS DE TRATAMENTO DE FOTOGRAFIA:
+- A galeria geral entregue (composta por aproximadamente 250 a 350 fotografias) receberá um TRATAMENTO BÁSICO DE LUZ E COR.
+- Deve constar explicitamente no contrato que os clientes/casal poderão escolher até 30 (trinta) fotografias para receber um tratamento profissional avançado e mais detalhado (retoques estéticos finos e detalhados).
+
 O anexo deve detalhar:
 1. Escopo dos Serviços (serviços selecionados, pacotes, itens).
 2. Entregáveis e Prazos (arquivos finais, quantidade de fotos/vídeos, álbuns físicos, tempo estimado de entrega pós-evento).
