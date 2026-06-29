@@ -33,6 +33,7 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
   - Atualizada a senha de `faustinosdg@gmail.com` no Neon de produção para bater com a senha fornecida pelo cliente (`!@Jeane&w#1`), e removidas as depurações temporárias do fluxo de login.
   - Habilitada exibição temporária de erros PHP em [dashboard.php](file:///c:/xampp/htdocs/erp-distinto/dashboard.php) para identificar a causa raiz do erro 500 em produção.
   - Criado o script temporário [corrigir_env_producao.php](file:///c:/xampp/htdocs/erp-distinto/corrigir_env_producao.php) para apontar o ERP em produção para o banco de dados Neon correto do ERP (`ep-crimson-sun-ac4t9f9a`) em vez do banco do site institucional.
+  - Criado o script temporário [check_git_prod.php](file:///c:/xampp/htdocs/erp-distinto/check_git_prod.php) para diagnosticar o status do repositório Git e arquivos em produção da Hostinger devido a assets retornando 404.
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.
