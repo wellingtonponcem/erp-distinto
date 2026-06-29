@@ -75,7 +75,7 @@ $podeGerarFinanceiro = (($contrato['status'] ?? 'rascunho') === 'assinado')
 $tituloPagina = 'Visualizar Contrato';
 require_once __DIR__ . '/../includes/layout/head.php';
 ?>
-<div id="app-wrapper" x-data="contratoVisualizarApp()">
+<div id="app-wrapper" x-data="contratoVisualizarApp">
     <!-- Modal de Confirmação de Assinatura -->
     <div id="modal-confirm-assinatura"
          class="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] hidden items-center justify-center p-4"
@@ -731,8 +731,8 @@ require_once __DIR__ . '/../includes/layout/head.php';
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <script>
-function contratoVisualizarApp() {
-    return {
+document.addEventListener('alpine:init', () => {
+    Alpine.data('contratoVisualizarApp', () => ({
         id: <?= json_encode($id) ?>,
         loading: false,
         loadingAnexo: false,
@@ -903,9 +903,9 @@ function contratoVisualizarApp() {
                 alert('Erro de conexão ao sincronizar status.');
                 this.loading = false;
             });
-        }
-    }
-}
+        })
+    })
+})
 </script>
 
 <!-- Modal de Configuração Assinafy -->
