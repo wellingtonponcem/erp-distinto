@@ -209,6 +209,21 @@ class AsaasService {
             'externalReference' => $externalReference
         ];
 
+        if ($billingType === 'CREDIT_CARD') {
+            if ($totalParcelas > 1) {
+                $payload['dueDate'] = $vencimento;
+                $payload['installmentCount'] = $totalParcelas;
+                $payload['installmentValue'] = round($valorTotal / $totalParcelas, 2);
+                $payload['description'] = "[Cartão] " . $descricao;
+            } else {
+                $payload['dueDate'] = $vencimento;
+                $payload['value'] = $valorTotal;
+                $payload['description'] = "[Cartão] " . $descricao;
+            }
+
+            return $this->request("payments", "POST", $payload);
+        }
+
         // Se houver valor de sinal, este deve ser gerado como uma cobrança separada (vencimento imediato)
         // e o saldo restante parcelado.
         if ($valorSinal > 0 && $valorSinal < $valorTotal) {
@@ -280,6 +295,24 @@ class AsaasService {
         return $this->request("payments/{$asaasId}");
     }
 
+    public function listarCobrancasPorParcelamento(string $installmentId, int $limite = 100): array {
+        if ($installmentId === '') {
+            return [];
+        }
+
+        $res = $this->request('payments?installment=' . urlencode($installmentId) . '&limit=' . max(1, min(100, $limite)));
+        return $res['data'] ?? [];
+    }
+
+    public function listarCobrancasPorReferencia(string $externalReference, int $limite = 100): array {
+        if ($externalReference === '') {
+            return [];
+        }
+
+        $res = $this->request('payments?externalReference=' . urlencode($externalReference) . '&limit=' . max(1, min(100, $limite)));
+        return $res['data'] ?? [];
+    }
+
     /**
      * Consulta o extrato e saldo financeiro
      */
@@ -291,5 +324,25 @@ class AsaasService {
             'saldo' => (float)($saldo['balance'] ?? 0.0),
             'cobrancas' => $cobranças['data'] ?? []
         ];
+    }
+
+    /**
+     * Consulta o extrato financeiro de transações na conta Asaas
+     * Percorre automaticamente todas as páginas disponíveis.
+     */
+    public function obterExtratoFinanceiro(string $startDate, string $finishDate, int $limit = 100): array {
+        $offset = 0;
+        $allData = [];
+        
+        do {
+            $endpoint = "financialTransactions?startDate={$startDate}&finishDate={$finishDate}&limit={$limit}&offset={$offset}&order=asc";
+            $res = $this->request($endpoint);
+            $pageData = $res['data'] ?? [];
+            $allData = array_merge($allData, $pageData);
+            $hasMore = !empty($res['hasMore']);
+            $offset += $limit;
+        } while ($hasMore);
+        
+        return $allData;
     }
 }

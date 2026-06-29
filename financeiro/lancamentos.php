@@ -78,6 +78,14 @@ include __DIR__ . '/../includes/layout/head.php';
                         <span x-show="processandoIA">Analisando...</span>
                     </button>
                     <div class="w-px h-4 bg-white/5"></div>
+                    <button @click="abrirModalExtratoAsaas()" 
+                            class="flex items-center gap-2 px-5 py-2 rounded-full text-purple-500 hover:bg-purple-500/10 transition-all text-[11px] font-black uppercase tracking-widest"
+                            :disabled="consultandoAsaas">
+                        <i data-lucide="landmark" class="w-3.5 h-3.5"></i>
+                        <span x-show="!consultandoAsaas">Extrato Asaas</span>
+                        <span x-show="consultandoAsaas">Consultando...</span>
+                    </button>
+                    <div class="w-px h-4 bg-white/5"></div>
                     <button @click="$refs.ofxInput.click()" 
                             class="flex items-center gap-2 px-5 py-2 rounded-full text-blue-500 hover:bg-blue-500/10 transition-all text-[11px] font-black uppercase tracking-widest"
                             :disabled="uploadingOfx">
@@ -145,6 +153,12 @@ include __DIR__ . '/../includes/layout/head.php';
                     <option value="atrasado">ATRASADO</option>
                 </select>
 
+                <select class="bg-black/40 border border-white/5 rounded-full py-2 px-6 text-[10px] font-black uppercase tracking-widest text-zinc-400 outline-none focus:border-white/20 transition-all appearance-none cursor-pointer" x-model="filtros.conciliado">
+                    <option value="">Conciliação: Todos</option>
+                    <option value="1">Conciliado</option>
+                    <option value="0">Não Conciliado</option>
+                </select>
+
                 <div class="h-4 w-px bg-white/5 mx-2"></div>
 
                 <!-- Seletor de Período Moderno -->
@@ -158,10 +172,11 @@ include __DIR__ . '/../includes/layout/head.php';
 
         <!-- Tabela -->
         <div class="bg-zinc-900/30 border border-white/5 rounded-[2rem] overflow-hidden">
-            <div class="grid grid-cols-[40px_2.5fr_1fr_1fr_1fr_1fr_120px] items-center px-8 py-5 bg-white/5 border-b border-white/5 mb-2">
+            <div class="grid grid-cols-[40px_2.5fr_1fr_1fr_1fr_1fr_1fr_120px] items-center px-8 py-5 bg-white/5 border-b border-white/5 mb-2">
                 <input type="checkbox" style="accent-color:#fff" :checked="todosSelecionados" @change="toggleTodos()">
                 <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500">Descrição / Cliente</span>
                 <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-center">Vencimento</span>
+                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-center">Pagamento</span>
                 <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-right pr-4">Valor</span>
                 <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-right pr-4">Valor Pago</span>
                 <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-center">Status</span>
@@ -172,7 +187,7 @@ include __DIR__ . '/../includes/layout/head.php';
                 <template x-if="carregando">
                     <div class="divide-y divide-white/5">
                         <template x-for="i in 6" :key="i">
-                            <div class="grid grid-cols-[40px_2.5fr_1fr_1fr_1fr_1fr_120px] items-center px-8 py-5 animate-pulse">
+                            <div class="grid grid-cols-[40px_2.5fr_1fr_1fr_1fr_1fr_1fr_120px] items-center px-8 py-5 animate-pulse">
                                 <div class="w-4 h-4 bg-white/5 rounded"></div>
                                 <div class="flex items-center gap-4">
                                     <div class="w-10 h-10 rounded-xl bg-white/5"></div>
@@ -181,6 +196,7 @@ include __DIR__ . '/../includes/layout/head.php';
                                         <div class="h-2 bg-white/5 rounded w-1/2"></div>
                                     </div>
                                 </div>
+                                <div class="h-3 bg-white/5 rounded w-16 mx-auto"></div>
                                 <div class="h-3 bg-white/5 rounded w-16 mx-auto"></div>
                                 <div class="h-3 bg-white/5 rounded w-20 ml-auto"></div>
                                 <div class="h-3 bg-white/5 rounded w-20 ml-auto"></div>
@@ -209,7 +225,7 @@ include __DIR__ . '/../includes/layout/head.php';
                 </template>
 
                 <template x-for="l in lancamentosFiltrados" :key="l.id">
-                    <div class="grid grid-cols-[40px_2.5fr_1fr_1fr_1fr_1fr_120px] items-center px-8 py-5 hover:bg-white/[0.02] transition-colors group">
+                    <div class="grid grid-cols-[40px_2.5fr_1fr_1fr_1fr_1fr_1fr_120px] items-center px-8 py-5 hover:bg-white/[0.02] transition-colors group">
                         <div>
                             <input type="checkbox" :value="l.id" x-model="selecionados" style="accent-color:#fff">
                         </div>
@@ -225,12 +241,22 @@ include __DIR__ . '/../includes/layout/head.php';
                                         <span class="text-[8px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 font-black uppercase tracking-widest border border-white/5" 
                                               x-text="contas.find(c=>c.id===l.conta_id)?.nome"></span>
                                     </template>
+                                    <template x-if="parseInt(l.conciliado) === 1">
+                                        <span class="inline-flex items-center gap-1 text-[8px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-black uppercase tracking-widest border border-emerald-500/20" title="Conciliado. Edição de conta, valor e data bloqueada.">
+                                            <i data-lucide="lock" style="width:8px;height:8px;"></i> CONCILIADO
+                                        </span>
+                                    </template>
                                     <span class="text-[10px] text-zinc-500 font-medium truncate" x-text="clientes.find(c => c.id === l.cliente_id)?.nome || fornecedores.find(f => f.id === l.fornecedor_id)?.nome || l.cliente_fornecedor || l.categoria"></span>
                                 </div>
                             </div>
                         </div>
                         <div class="text-center">
                             <span class="text-[11px] font-black text-zinc-400 uppercase tracking-tighter" x-text="formatarData(l.vencimento)"></span>
+                        </div>
+                        <div class="text-center">
+                            <span class="text-[11px] font-black uppercase tracking-tighter" 
+                                  :class="l.data_pagamento ? 'text-emerald-400 font-bold' : 'text-zinc-600 font-medium'" 
+                                  x-text="l.data_pagamento ? formatarData(l.data_pagamento) : '—'"></span>
                         </div>
                         <div class="text-right pr-4">
                             <span class="text-sm font-black tracking-tight" :class="l.tipo==='receber' ? 'text-emerald-500' : 'text-red-400 drop-shadow-[0_0_8px_rgba(248,113,113,0.2)]'" x-text="formatarMoeda(l.valor)"></span>
@@ -276,18 +302,25 @@ include __DIR__ . '/../includes/layout/head.php';
                 </button>
             </div>
 
+            <template x-if="form.conciliado == 1">
+                <div style="background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.2); border-radius:12px; padding:12px 16px; margin-bottom:16px; font-size:12px; color:#34d399; font-weight:500; display:flex; align-items:center; gap:8px;">
+                    <i data-lucide="lock" style="width:16px; height:16px;"></i>
+                    Este lançamento foi conciliado. Alterações de tipo, valor, vencimento e conta estão bloqueadas.
+                </div>
+            </template>
+
             <form @submit.prevent="salvar()">
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
                     <div>
                         <label class="label">Tipo *</label>
-                        <select class="select" x-model="form.tipo" required>
+                        <select class="select" x-model="form.tipo" required :disabled="form.conciliado == 1">
                             <option value="receber">A Receber</option>
                             <option value="pagar">A Pagar</option>
                         </select>
                     </div>
                     <div>
                         <label class="label">Modalidade *</label>
-                        <select class="select" x-model="form.modalidade" required>
+                        <select class="select" x-model="form.modalidade" required :disabled="form.conciliado == 1">
                             <option value="avista">À Vista</option>
                             <option value="parcelado">Parcelado</option>
                             <option value="recorrente">Recorrente</option>
@@ -297,17 +330,17 @@ include __DIR__ . '/../includes/layout/head.php';
 
                 <div style="margin-bottom:16px;">
                     <label class="label">Descrição *</label>
-                    <input class="input" x-model="form.descricao" required maxlength="500" placeholder="Ex: Honorários cliente ABC">
+                    <input class="input" x-model="form.descricao" required maxlength="500" placeholder="Ex: Honorários cliente ABC" :disabled="form.conciliado == 1">
                 </div>
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
                     <div>
                         <label class="label">Valor (R$) *</label>
-                        <input class="input" type="number" step="0.01" min="0.01" x-model="form.valor" required>
+                        <input class="input" type="number" step="0.01" min="0.01" x-model="form.valor" required :disabled="form.conciliado == 1">
                     </div>
                     <div>
                         <label class="label">Vencimento *</label>
-                        <input class="input js-datepicker" type="text" x-model="form.vencimento" required placeholder="Selecione" x-init="flatpickr($el, { locale: 'pt', dateFormat: 'Y-m-d', altInput: true, altFormat: 'd/m/Y' })">
+                        <input class="input js-datepicker" type="text" x-model="form.vencimento" required placeholder="Selecione" x-init="flatpickr($el, { locale: 'pt', dateFormat: 'Y-m-d', altInput: true, altFormat: 'd/m/Y' })" :disabled="form.conciliado == 1">
                     </div>
                 </div>
 
@@ -327,7 +360,7 @@ include __DIR__ . '/../includes/layout/head.php';
                     </div>
                     <div>
                         <label class="label">Cliente</label>
-                        <select class="select" x-model="form.cliente_id">
+                        <select class="select" x-model="form.cliente_id" :disabled="form.conciliado == 1">
                             <option value="">— Selecione um cliente —</option>
                             <template x-for="c in clientes" :key="c.id">
                                 <option :value="c.id" x-text="c.nome"></option>
@@ -338,7 +371,7 @@ include __DIR__ . '/../includes/layout/head.php';
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
                     <div>
                         <label class="label">Fornecedor</label>
-                        <select class="select" x-model="form.fornecedor_id">
+                        <select class="select" x-model="form.fornecedor_id" :disabled="form.conciliado == 1">
                             <option value="">— Selecione um fornecedor —</option>
                             <template x-for="f in fornecedores" :key="f.id">
                                 <option :value="f.id" x-text="f.nome"></option>
@@ -347,21 +380,21 @@ include __DIR__ . '/../includes/layout/head.php';
                     </div>
                     <div>
                         <label class="label" x-text="form.tipo === 'receber' ? 'Cliente (Texto/Novo)' : 'Fornecedor (Texto/Novo)'"></label>
-                        <input class="input" x-model="form.cliente_fornecedor" placeholder="Nome ou descrição">
+                        <input class="input" x-model="form.cliente_fornecedor" placeholder="Nome ou descrição" :disabled="form.conciliado == 1">
                     </div>
                 </div>
 
                 <div style="margin-bottom:16px;" x-show="!form.cliente_id && !form.fornecedor_id && form.entidade_documento">
                     <label class="label">CPF/CNPJ Identificado (Será cadastrado)</label>
                     <div style="display:flex; gap:8px; align-items:center;">
-                        <input class="input" x-model="form.entidade_documento" placeholder="00.000.000/0001-00" style="flex:1;">
+                        <input class="input" x-model="form.entidade_documento" placeholder="00.000.000/0001-00" style="flex:1;" :disabled="form.conciliado == 1">
                         <div x-show="form.entidade_endereco" class="text-[11px] text-zinc-500 italic">Endereço capturado ✅</div>
                     </div>
                 </div>
 
                 <div style="margin-bottom:16px;">
                     <label class="label">Conta Bancária</label>
-                    <select class="select" x-model="form.conta_id">
+                    <select class="select" x-model="form.conta_id" :disabled="form.conciliado == 1">
                         <option value="">— Selecione o Banco —</option>
                         <template x-for="c in contas" :key="c.id">
                             <option :value="c.id" x-text="c.nome"></option>
@@ -371,7 +404,7 @@ include __DIR__ . '/../includes/layout/head.php';
 
                 <div style="margin-bottom:16px;">
                     <label class="label">Forma de Pagamento</label>
-                    <select class="select" x-model="form.forma_pagamento">
+                    <select class="select" x-model="form.forma_pagamento" :disabled="form.conciliado == 1">
                         <option value="">— Não informado —</option>
                         <option value="pix">Pix</option>
                         <option value="boleto">Boleto</option>
@@ -386,14 +419,14 @@ include __DIR__ . '/../includes/layout/head.php';
                 <!-- Parcelado -->
                 <div x-show="form.modalidade==='parcelado'" style="margin-bottom:16px;">
                     <label class="label">Número de Parcelas</label>
-                    <input class="input" type="number" min="2" max="120" x-model="form.total_parcelas" placeholder="Ex: 12">
+                    <input class="input" type="number" min="2" max="120" x-model="form.total_parcelas" placeholder="Ex: 12" :disabled="form.conciliado == 1">
                 </div>
 
                 <!-- Recorrente -->
                 <div x-show="form.modalidade==='recorrente'" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
                     <div>
                         <label class="label">Frequência</label>
-                        <select class="select" x-model="form.frequencia">
+                        <select class="select" x-model="form.frequencia" :disabled="form.conciliado == 1">
                             <option value="semanal">Semanal</option>
                             <option value="mensal">Mensal</option>
                             <option value="anual">Anual</option>
@@ -401,7 +434,7 @@ include __DIR__ . '/../includes/layout/head.php';
                     </div>
                     <div>
                         <label class="label">Até (opcional)</label>
-                        <input class="input js-datepicker" type="text" x-model="form.data_termino" placeholder="Opcional" x-init="flatpickr($el, { locale: 'pt', dateFormat: 'Y-m-d', altInput: true, altFormat: 'd/m/Y' })">
+                        <input class="input js-datepicker" type="text" x-model="form.data_termino" placeholder="Opcional" x-init="flatpickr($el, { locale: 'pt', dateFormat: 'Y-m-d', altInput: true, altFormat: 'd/m/Y' })" :disabled="form.conciliado == 1">
                     </div>
                 </div>
 
@@ -413,7 +446,7 @@ include __DIR__ . '/../includes/layout/head.php';
                 <!-- Checkbox custo fixo — para contas a pagar -->
                 <div x-show="form.tipo === 'pagar' && !form.custo_fixo_id" style="background:#f7f7f7; border:1px solid #e5e5e5; border-radius:10px; padding:14px 16px; margin-bottom:20px;">
                     <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
-                        <input type="checkbox" x-model="form.e_custo_fixo" style="width:16px;height:16px;accent-color:#111111;">
+                        <input type="checkbox" x-model="form.e_custo_fixo" style="width:16px;height:16px;accent-color:#111111;" :disabled="form.conciliado == 1">
                         <span style="font-size:13px; color:#c4b5fd; font-weight:500;">Salvar também como Custo Fixo</span>
                     </label>
                     <p x-show="form.e_custo_fixo" style="font-size:12px; color:#a78bfa; margin-top:6px; margin-left:26px;">
@@ -541,6 +574,120 @@ include __DIR__ . '/../includes/layout/head.php';
                     <span x-show="!carregando">Confirmar Importação</span>
                     <span x-show="carregando">Processando...</span>
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Extrato Asaas -->
+    <div class="modal-overlay" x-show="modalAsaasAberto" x-cloak>
+        <div class="modal" style="max-width:1200px; width:90%; max-height:90vh; display:flex; flex-direction:column;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h2 style="font-size:17px; font-weight:600; color:#f1f5f9;">
+                    <i data-lucide="landmark" style="width:18px;height:18px;color:#a855f7;margin-right:8px;"></i>
+                    Extrato Financeiro Asaas
+                </h2>
+                <button @click="modalAsaasAberto=false" style="color:#6b7280; background:none; border:none; cursor:pointer;">
+                    <i data-lucide="x" style="width:18px;height:18px;"></i>
+                </button>
+            </div>
+
+            <div style="font-size:13px; color:#94a3b8; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+                <span>Consulte o extrato financeiro da conta Asaas e concilie com os lançamentos.</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <label class="label" style="margin:0;">Conta:</label>
+                    <select class="select" x-model="ofxContaId" style="width:160px; padding:4px 10px; font-size:12px; height:auto;">
+                        <option value="">Selecione...</option>
+                        <template x-for="c in contas" :key="c.id">
+                            <option :value="c.id" x-text="c.nome"></option>
+                        </template>
+                    </select>
+                    <label class="label" style="margin:0;">Período:</label>
+                    <input type="date" x-model="asaasDataInicio" class="input" style="padding:4px 10px; font-size:12px; width:auto;">
+                    <span style="color:#6b7280;">até</span>
+                    <input type="date" x-model="asaasDataFim" class="input" style="padding:4px 10px; font-size:12px; width:auto;">
+                    <button class="btn-primary" @click="consultarExtratoAsaas()" :disabled="consultandoAsaas" style="white-space:nowrap;">
+                        <span x-show="!consultandoAsaas">Consultar</span>
+                        <span x-show="consultandoAsaas">Buscando...</span>
+                    </button>
+                </div>
+            </div>
+
+            <div x-show="asaasErro" style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); border-radius:8px; padding:12px 16px; margin-bottom:16px; color:#ef4444; font-size:13px;">
+                <span x-text="asaasErro"></span>
+            </div>
+
+            <div x-show="asaasTransacoes.length > 0" style="flex:1; overflow-y:auto; border:1px solid #1e293b; border-radius:8px; margin-bottom:20px;">
+                <table style="width:100%; text-align:left; font-size:13px; border-collapse:collapse;">
+                    <thead style="background:#0f172a; position:sticky; top:0; z-index:10;">
+                        <tr>
+                            <th style="padding:10px 12px; color:#94a3b8; font-weight:600;">Data</th>
+                            <th style="padding:10px 12px; color:#94a3b8; font-weight:600;">Tipo Asaas</th>
+                            <th style="padding:10px 12px; color:#94a3b8; font-weight:600; text-align:right;">Valor</th>
+                            <th style="padding:10px 12px; color:#94a3b8; font-weight:600;">Descrição</th>
+                            <th style="padding:10px 12px; color:#94a3b8; font-weight:600; width:200px;">Ação</th>
+                            <th style="padding:10px 12px; color:#94a3b8; font-weight:600; width:160px;">Categoria</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="txn in asaasTransacoes" :key="txn.fitid">
+                            <tr style="border-bottom:1px solid #1e293b;" :style="txn.duplicado ? 'opacity:0.4;' : ''">
+                                <td style="padding:10px 12px; color:#cbd5e1;" x-text="formatarData(txn.data)"></td>
+                                <td style="padding:10px 12px; color:#cbd5e1;">
+                                    <span style="font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px; display:inline-block; text-transform:uppercase;"
+                                          :style="txn.tipo==='receber' ? 'background:rgba(16,185,129,0.15); color:#10b981;' : 'background:rgba(239,68,68,0.15); color:#ef4444;'"
+                                          x-text="txn.asaas_tipo"></span>
+                                </td>
+                                <td style="padding:10px 12px; font-weight:600; text-align:right;" :style="txn.tipo==='receber'?'color:#10b981':'color:#ef4444'" x-text="formatarMoeda(txn.valor)"></td>
+                                <td style="padding:10px 12px; color:#cbd5e1;">
+                                    <span x-text="txn.descricao"></span>
+                                    <span x-show="txn.duplicado" style="background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); font-size:10px; padding:2px 6px; border-radius:4px; margin-left:6px; display:inline-block;">Duplicado</span>
+                                </td>
+                                <td style="padding:10px 12px;">
+                                    <select class="select" x-model="txn.acao_id" style="width:100%; padding:4px 8px; font-size:12px; height:auto; min-height:28px;" :disabled="txn.duplicado">
+                                        <option value="novo">✨ Criar como Novo (Pago)</option>
+                                        <option value="ignorar">❌ Ignorar / Não Importar</option>
+                                        <optgroup label="Vincular a Pendente:">
+                                            <template x-for="l in buscarPendentesParaAsaas(txn)">
+                                                <option :value="l.id" x-text="formatarData(l.vencimento) + ' - ' + l.descricao + ' (' + formatarMoeda(l.valor) + ')'"></option>
+                                            </template>
+                                        </optgroup>
+                                    </select>
+                                </td>
+                                <td style="padding:10px 12px;">
+                                    <select class="select" x-model="txn.categoria" style="width:100%; padding:4px 8px; font-size:12px; height:auto; min-height:28px;" x-show="txn.acao_id === 'novo'">
+                                        <option value="">(Sem categoria)</option>
+                                        <template x-for="cat in categoriasDisponiveis" :key="cat">
+                                            <option :value="cat" x-text="cat.charAt(0).toUpperCase() + cat.slice(1)"></option>
+                                        </template>
+                                        <option value="__custom__" style="font-weight:bold; color:#6366f1;">+ Nova categoria...</option>
+                                    </select>
+                                    <div x-show="txn.acao_id === 'novo' && txn.categoria === '__custom__'" style="margin-top:6px; display:flex; gap:4px;">
+                                        <input class="input" type="text" x-model="txn.categoriaCustom" placeholder="Digite o nome..." style="flex:1; padding:4px 8px; font-size:12px;" @keyup.enter="adicionarCategoriaNoOfx(txn)">
+                                        <button class="btn-primary" @click.prevent="adicionarCategoriaNoOfx(txn)" style="padding:4px 8px; height:28px;" title="Adicionar para todos"><i data-lucide="check" style="width:14px;height:14px;"></i></button>
+                                    </div>
+                                    <span x-show="txn.acao_id !== 'novo' && txn.acao_id !== 'ignorar'" style="font-size:11px; color:#6b7280;">Automático</span>
+                                    <span x-show="txn.acao_id === 'ignorar'" style="font-size:11px; color:#6b7280;">-</span>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+
+            <div x-show="!asaasTransacoes.length && !consultandoAsaas && !asaasErro" style="text-align:center; padding:48px 24px; color:#6b7280; font-size:14px;">
+                <i data-lucide="landmark" style="width:48px;height:48px;margin:0 auto 16px;display:block;opacity:0.3;"></i>
+                Selecione um período e clique em Consultar para importar o extrato do Asaas.
+            </div>
+
+            <div x-show="asaasTransacoes.length > 0" style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+                <span style="font-size:12px; color:#6b7280;" x-text="`Total: ${asaasTransacoes.length} transações`"></span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <button class="btn-secondary" @click="modalAsaasAberto=false">Cancelar</button>
+                    <button class="btn-primary" @click="processarExtratoAsaas()" :disabled="processandoAsaas">
+                        <span x-show="!processandoAsaas">Processar Conciliação</span>
+                        <span x-show="processandoAsaas">Processando...</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -758,7 +905,7 @@ function lancamentos() {
         modalBaixaAberto: false,
         lancamentoBaixa: null,
         valorBaixa: '',
-        filtros: { tipo: '', status: '', data_inicio: '', data_fim: '', busca: '', categoria: '', conta: '' },
+        filtros: { tipo: '', status: '', data_inicio: '', data_fim: '', busca: '', categoria: '', conta: '', conciliado: '' },
         periodoAtivo: 'mes',
         referenciaData: new Date().toISOString().split('T')[0],
         selecionados: [],
@@ -780,6 +927,13 @@ function lancamentos() {
         ofxTransacoes: [],
         ofxContaId: '',
         contas: [],
+        consultandoAsaas: false,
+        asaasErro: '',
+        modalAsaasAberto: false,
+        asaasDataInicio: '',
+        asaasDataFim: '',
+        asaasTransacoes: [],
+        processandoAsaas: false,
         clientes: <?= json_encode($clientes, JSON_UNESCAPED_UNICODE) ?>,
         fornecedores: <?= json_encode($fornecedores, JSON_UNESCAPED_UNICODE) ?>,
 
@@ -836,8 +990,14 @@ function lancamentos() {
                         if (l.conta_id !== this.filtros.conta) return false;
                     }
                 }
-                if (this.filtros.data_inicio && l.vencimento < this.filtros.data_inicio) return false;
-                if (this.filtros.data_fim && l.vencimento > this.filtros.data_fim) return false;
+                const dataRef = (parseFloat(l.valor_pago) >= parseFloat(l.valor) && l.data_pagamento) ? l.data_pagamento : l.vencimento;
+                if (this.filtros.data_inicio && dataRef < this.filtros.data_inicio) return false;
+                if (this.filtros.data_fim && dataRef > this.filtros.data_fim) return false;
+                if (this.filtros.conciliado !== '') {
+                    const isConc = parseInt(l.conciliado) === 1;
+                    const filtConc = parseInt(this.filtros.conciliado) === 1;
+                    if (isConc !== filtConc) return false;
+                }
                 if (this.filtros.busca) {
                     const termo = this.filtros.busca.toLowerCase();
                     const matchDesc = (l.descricao || '').toLowerCase().includes(termo);
@@ -1408,7 +1568,8 @@ function lancamentos() {
                             categoria: catFinal,
                             conta_id: this.ofxContaId,
                             observacao: 'Importado via OFX',
-                            ofx_fitid: txn.fitid
+                            ofx_fitid: txn.fitid,
+                            conciliado: 1
                         })
                     });
                     if (!resp.ok) {
@@ -1424,7 +1585,7 @@ function lancamentos() {
                     await fetch('<?= raizUrl('/api/financeiro/baixa.php') ?>', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id: txn.acao_id, valor: txn.valor })
+                        body: JSON.stringify({ id: txn.acao_id, valor: txn.valor, conciliado: 1, data_pagamento: txn.data })
                     });
                     sucesso++;
                 }
@@ -1436,6 +1597,139 @@ function lancamentos() {
             await this.carregarLancamentos();
         },
 
+        abrirModalExtratoAsaas() {
+            const hoje = new Date();
+            const inicio = new Date(hoje.getFullYear(), hoje.getMonth() - 1, 1);
+            this.asaasDataFim = hoje.toISOString().split('T')[0];
+            this.asaasDataInicio = inicio.toISOString().split('T')[0];
+            this.asaasTransacoes = [];
+            this.asaasErro = '';
+            this.modalAsaasAberto = true;
+            this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
+        },
+
+        async consultarExtratoAsaas() {
+            if (!this.asaasDataInicio || !this.asaasDataFim) {
+                toast('Selecione o período', 'erro');
+                return;
+            }
+            this.consultandoAsaas = true;
+            this.asaasErro = '';
+            toast('Consultando extrato Asaas...', 'info');
+            try {
+                const params = new URLSearchParams();
+                params.append('data_inicio', this.asaasDataInicio);
+                params.append('data_fim', this.asaasDataFim);
+                
+                const r = await fetch('<?= raizUrl('/api/financeiro/extrato_asaas.php') ?>', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params
+                });
+                const res = await r.json();
+                if (res.ok) {
+                    this.asaasTransacoes = res.transacoes.map(t => {
+                        const matchPendente = this.buscarPendentesParaAsaas(t)[0];
+                        const matchPago = this.buscarPagosParaAsaas(t)[0];
+                        let acao_id = 'novo';
+                        let duplicado_hint = false;
+                        if (matchPendente) {
+                            acao_id = matchPendente.id;
+                        } else if (matchPago) {
+                            acao_id = 'ignorar';
+                            duplicado_hint = true;
+                        }
+                        return { ...t, acao_id, duplicado: duplicado_hint, categoria: 'outros', categoriaCustom: '' };
+                    });
+                    toast(`${this.asaasTransacoes.length} transações encontradas`, 'sucesso');
+                } else {
+                    this.asaasErro = res.erro || 'Erro ao consultar extrato';
+                    toast(this.asaasErro, 'erro');
+                }
+            } catch (err) {
+                this.asaasErro = 'Erro de conexão: ' + err.message;
+                toast(this.asaasErro, 'erro');
+            }
+            this.consultandoAsaas = false;
+        },
+
+        buscarPendentesParaAsaas(txn) {
+            return this.lista.filter(l => 
+                l.tipo === txn.tipo && 
+                l.status !== 'pago' && 
+                l.status !== 'cancelado' &&
+                Math.abs(l.valor - txn.valor) <= (txn.valor * 0.10)
+            );
+        },
+
+        buscarPagosParaAsaas(txn) {
+            return this.lista.filter(l => 
+                l.tipo === txn.tipo && 
+                l.status === 'pago' && 
+                Math.abs(l.valor - txn.valor) < 0.05 &&
+                l.vencimento === txn.data
+            );
+        },
+
+        async processarExtratoAsaas() {
+            toast('Processando conciliação Asaas...', 'info');
+            let sucesso = 0;
+            this.processandoAsaas = true;
+
+            for (const txn of this.asaasTransacoes) {
+                if (txn.acao_id === 'ignorar') continue;
+                if (txn.duplicado) continue;
+                
+                if (txn.acao_id === 'novo') {
+                    let catFinal = txn.categoria || 'outros';
+                    if (catFinal === '__custom__' && txn.categoriaCustom) {
+                        catFinal = txn.categoriaCustom.trim().toLowerCase();
+                        this.salvarCategoriaCustomizada(catFinal);
+                    } else if (catFinal === '__custom__') {
+                        catFinal = 'outros';
+                    }
+
+                    const descFinal = txn.descricao + ' (Asaas)';
+                    const observacao = '[ASAAS:' + txn.fitid + '] ' + descFinal;
+                    
+                    const resp = await fetch('<?= raizUrl('/api/financeiro/lancamentos.php') ?>', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            tipo: txn.tipo,
+                            descricao: descFinal,
+                            valor: txn.valor,
+                            valor_pago: txn.valor,
+                            status: 'pago',
+                            vencimento: txn.data,
+                            categoria: catFinal,
+                            conta_id: this.ofxContaId,
+                            observacao: observacao,
+                            conciliado: 1
+                        })
+                    });
+                    if (!resp.ok) {
+                        const err = await resp.json();
+                        toast(err.erro || 'Erro ao salvar', 'erro');
+                        continue;
+                    }
+                    sucesso++;
+                } else {
+                    await fetch('<?= raizUrl('/api/financeiro/baixa.php') ?>', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: txn.acao_id, valor: txn.valor, conciliado: 1, data_pagamento: txn.data })
+                    });
+                    sucesso++;
+                }
+            }
+
+            this.processandoAsaas = false;
+            this.modalAsaasAberto = false;
+            toast(`Conciliação Asaas concluída! ${sucesso} processados.`, 'sucesso');
+            await this.carregarLancamentos();
+        },
+
         limparFiltros() {
             this.filtros = {
                 tipo: '',
@@ -1444,7 +1738,8 @@ function lancamentos() {
                 conta: '',
                 status: '',
                 data_inicio: '',
-                data_fim: ''
+                data_fim: '',
+                conciliado: ''
             };
             this.periodoAtivo = 'mes';
             this.referenciaData = new Date().toISOString().split('T')[0];

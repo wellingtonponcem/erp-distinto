@@ -252,6 +252,7 @@ $dadosJson = json_encode([
     'condicoes_essencial' => $d['condicoes_essencial'] ?? '',
     'contato_tipo' => $d['contato_tipo'] ?? 'noiva',
     'upgrades' => $d['upgrades'] ?? ['heritage' => [], 'cinematic' => [], 'essencial' => []],
+    'pacote_dado_andamento' => $d['pacote_dado_andamento'] ?? '',
 ], JSON_UNESCAPED_UNICODE);
 
 $stmt = $db->prepare("INSERT INTO propostas (id, cliente_id, cliente_nome, tipo, slug, titulo, subtitulo, validade, dados_json, valor_total, status, oportunidade_id, pasta_id) 

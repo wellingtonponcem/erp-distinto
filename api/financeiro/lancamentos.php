@@ -24,7 +24,7 @@ try {
                 ELSE status
               END AS status
             FROM lancamentos
-            ORDER BY vencimento DESC
+            ORDER BY COALESCE(data_pagamento, vencimento) DESC, id DESC
         ")->fetchAll();
         responderJson($rows);
 
@@ -32,12 +32,12 @@ try {
         $d = lerCorpo();
         validarLancamento($d);
 
-        // Prevenir duplicação de importação OFX - verificar se fitid já existe
-        if (!empty($d['ofx_fitid'])) {
-            $stmt = $db->prepare("SELECT id FROM lancamentos WHERE ofx_fitid = ? AND ofx_fitid IS NOT NULL AND ofx_fitid != '' LIMIT 1");
-            $stmt->execute([$d['ofx_fitid']]);
+        // Prevenir duplicação de faturas Asaas - verificar se asaas_id já existe
+        if (!empty($d['asaas_id'])) {
+            $stmt = $db->prepare("SELECT id FROM lancamentos WHERE asaas_id = ? AND asaas_id IS NOT NULL AND asaas_id != '' LIMIT 1");
+            $stmt->execute([$d['asaas_id']]);
             if ($stmt->fetch()) {
-                responderJson(['erro' => 'Esta transação OFX já foi importada anteriormente.'], 409);
+                responderJson(['erro' => 'Esta cobrança do Asaas já foi importada anteriormente.'], 409);
             }
         }
 
@@ -61,6 +61,26 @@ try {
 
         if (($d['tipo'] ?? '') === 'pagar' && !empty($d['e_custo_fixo']) && empty($d['custo_fixo_id'])) {
             $d['custo_fixo_id'] = criarCustoFixoFromLancamento($db, $d);
+        }
+
+        // Se o lançamento estiver conciliado, não permitir alterar dados sensíveis de pagamento
+        $stmtCheck = $db->prepare("SELECT * FROM lancamentos WHERE id = ? LIMIT 1");
+        $stmtCheck->execute([$d['id']]);
+        $old = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+        if ($old && (int)$old['conciliado'] === 1) {
+            $mudancaProibida = false;
+            if (($old['conta_id'] ?? '') !== ($d['conta_id'] ?? '')) $mudancaProibida = true;
+            if (round((float)($old['valor'] ?? 0), 2) !== round((float)($d['valor'] ?? 0), 2)) $mudancaProibida = true;
+            if (($old['vencimento'] ?? '') !== ($d['vencimento'] ?? '')) $mudancaProibida = true;
+            if (($old['tipo'] ?? '') !== ($d['tipo'] ?? '')) $mudancaProibida = true;
+            if (($old['descricao'] ?? '') !== ($d['descricao'] ?? '')) $mudancaProibida = true;
+            if (($old['modalidade'] ?? '') !== ($d['modalidade'] ?? '')) $mudancaProibida = true;
+            if (isset($d['status']) && ($old['status'] ?? '') !== $d['status']) $mudancaProibida = true;
+            if (isset($d['valor_pago']) && round((float)($old['valor_pago'] ?? 0), 2) !== round((float)($d['valor_pago'] ?? 0), 2)) $mudancaProibida = true;
+            
+            if ($mudancaProibida) {
+                responderJson(['erro' => 'Lançamentos conciliados não permitem alteração de dados de pagamento (apenas categoria e observações).'], 422);
+            }
         }
 
         $sets = ['tipo=?','descricao=?','valor=?','categoria=?','cliente_fornecedor=?','vencimento=?','modalidade=?','forma_pagamento=?','observacao=?'];
@@ -87,6 +107,17 @@ try {
         if (isset($d['valor_pago'])) {
             $sets[] = 'valor_pago=?';
             $params[] = $d['valor_pago'];
+        }
+        
+        if (tabelaTemColuna($db, 'lancamentos', 'data_pagamento')) {
+            $sets[] = 'data_pagamento=?';
+            $valorTotal = (float)$d['valor'];
+            $valorPago = isset($d['valor_pago']) ? (float)$d['valor_pago'] : 0;
+            if ($valorPago >= $valorTotal) {
+                $params[] = ($old && !empty($old['data_pagamento'])) ? $old['data_pagamento'] : date('Y-m-d');
+            } else {
+                $params[] = null;
+            }
         }
 
         if (tabelaTemColuna($db, 'lancamentos', 'custo_fixo_id')) {
@@ -208,7 +239,17 @@ function inserirLancamento(PDO $db, string $id, array $d, float $valor, string $
     
     $status = $d['status'] ?? 'pendente';
     $valorPago = isset($d['valor_pago']) ? (float)$d['valor_pago'] : 0;
-    $dataPagamento = isset($d['valor_pago']) && $d['valor_pago'] > 0 ? date('Y-m-d') : null;
+    
+    $dataPagamento = null;
+    if ($valorPago > 0) {
+        if (!empty($d['data_pagamento'])) {
+            $dataPagamento = $d['data_pagamento'];
+        } elseif (($status === 'pago' || $valorPago >= $valor) && !empty($d['vencimento'])) {
+            $dataPagamento = $d['vencimento'];
+        } else {
+            $dataPagamento = date('Y-m-d');
+        }
+    }
     $clienteFornecedorTexto = empty($d['cliente_fornecedor']) ? null : $d['cliente_fornecedor'];
     if (empty($clienteFornecedorTexto) && !empty($d['cliente_id'])) {
         $clienteFornecedorTexto = obterNomeClienteFornecedor($db, $d['cliente_id'], 'clientes');
@@ -261,6 +302,16 @@ function inserirLancamento(PDO $db, string $id, array $d, float $valor, string $
         $colunas[] = 'data_pagamento';
         $valores[] = '?';
         $params[] = $dataPagamento;
+    }
+    if (tabelaTemColuna($db, 'lancamentos', 'conciliado')) {
+        $colunas[] = 'conciliado';
+        $valores[] = '?';
+        
+        $ehConciliado = 0;
+        if (!empty($d['conciliado']) || !empty($d['ofx_fitid']) || !empty($d['asaas_id']) || ($d['conta_id'] ?? '') === 'asaas') {
+            $ehConciliado = 1;
+        }
+        $params[] = $ehConciliado;
     }
 
     $stmt = $db->prepare('INSERT INTO lancamentos (' . implode(',', $colunas) . ') VALUES (' . implode(',', $valores) . ')');

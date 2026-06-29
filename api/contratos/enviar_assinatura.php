@@ -64,6 +64,19 @@ if (!move_uploaded_file($pdfFile['tmp_name'], $tempPdfPath)) {
     responderJson(['erro' => 'Erro ao processar o arquivo PDF no servidor.'], 500);
 }
 
+class AssinafyApiException extends Exception
+{
+    public int $statusCode;
+    public string $responseBody;
+
+    public function __construct(int $statusCode, string $responseBody)
+    {
+        $this->statusCode = $statusCode;
+        $this->responseBody = $responseBody;
+        parent::__construct("Erro Assinafy (HTTP {$statusCode}): {$responseBody}", $statusCode);
+    }
+}
+
 // 4. Helper para chamar a API Assinafy
 function chamarAssinafy(string $endpoint, string $method, $payload, bool $isMultipart, string $apiKey, string $mode): string {
     $baseUrl = ($mode === 'prod') ? 'https://api.assinafy.com.br/v1' : 'https://sandbox.assinafy.com.br/v1';
@@ -82,9 +95,11 @@ function chamarAssinafy(string $endpoint, string $method, $payload, bool $isMult
         'X-Api-Key: ' . $apiKey
     ];
     
+    $method = strtoupper($method);
+
     if ($isMultipart) {
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-    } else {
+    } elseif ($method !== 'GET' && $payload !== null) {
         $jsonPayload = json_encode($payload);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
         $headers[] = 'Content-Type: application/json';
@@ -103,10 +118,162 @@ function chamarAssinafy(string $endpoint, string $method, $payload, bool $isMult
     }
     
     if ($httpCode < 200 || $httpCode >= 300) {
-        throw new Exception("Erro Assinafy (HTTP $httpCode): " . $response);
+        throw new AssinafyApiException($httpCode, (string)$response);
     }
     
     return $response;
+}
+
+function normalizarEmailAssinafy(?string $email): string {
+    return strtolower(trim((string)$email));
+}
+
+function mensagemAssinafy(string $response): string {
+    $payload = json_decode($response, true);
+    if (is_array($payload)) {
+        foreach (['message', 'erro', 'error'] as $campo) {
+            if (!empty($payload[$campo]) && is_scalar($payload[$campo])) {
+                return (string)$payload[$campo];
+            }
+        }
+    }
+
+    return $response;
+}
+
+function erroAssinafyEmailDuplicado(Throwable $e): bool {
+    if (!$e instanceof AssinafyApiException || $e->statusCode !== 400) {
+        return false;
+    }
+
+    $mensagem = strtolower(mensagemAssinafy($e->responseBody));
+    return str_contains($mensagem, 'signat') && str_contains($mensagem, 'e-mail') && str_contains($mensagem, 'existe');
+}
+
+function extrairIdSignatarioAssinafy(array $payload): ?string {
+    $candidatos = [
+        $payload['id'] ?? null,
+        $payload['signer_id'] ?? null,
+        $payload['signerId'] ?? null,
+        $payload['uuid'] ?? null,
+        $payload['data']['id'] ?? null,
+        $payload['data']['signer_id'] ?? null,
+        $payload['data']['signerId'] ?? null,
+    ];
+
+    foreach ($candidatos as $id) {
+        if (is_scalar($id) && trim((string)$id) !== '') {
+            return (string)$id;
+        }
+    }
+
+    return null;
+}
+
+function buscarSignatarioEmPayload(array $payload, string $email): ?string {
+    $email = normalizarEmailAssinafy($email);
+    $pilha = [$payload];
+
+    while ($pilha) {
+        $atual = array_pop($pilha);
+
+        if (!is_array($atual)) {
+            continue;
+        }
+
+        $emailAtual = normalizarEmailAssinafy($atual['email'] ?? $atual['email_address'] ?? null);
+        if ($emailAtual !== '' && $emailAtual === $email) {
+            $id = extrairIdSignatarioAssinafy($atual);
+            if ($id) {
+                return $id;
+            }
+        }
+
+        foreach ($atual as $item) {
+            if (is_array($item)) {
+                $pilha[] = $item;
+            }
+        }
+    }
+
+    return null;
+}
+
+function buscarSignatarioExistenteAssinafy(string $accountId, string $email, string $apiKey, string $mode): ?string {
+    $emailQuery = rawurlencode($email);
+    $endpoints = [
+        "/accounts/{$accountId}/signers?email={$emailQuery}",
+        "/accounts/{$accountId}/signers?search={$emailQuery}",
+        "/accounts/{$accountId}/signers",
+    ];
+
+    foreach ($endpoints as $endpoint) {
+        try {
+            $res = chamarAssinafy($endpoint, 'GET', null, false, $apiKey, $mode);
+            $data = json_decode($res, true);
+            if (is_array($data)) {
+                $id = buscarSignatarioEmPayload($data, $email);
+                if ($id) {
+                    return $id;
+                }
+            }
+        } catch (Throwable $e) {
+            // Tenta o próximo formato de consulta, pois a API pode variar o filtro aceito.
+        }
+    }
+
+    return null;
+}
+
+function criarOuObterSignatarioAssinafy(
+    string $accountId,
+    array $signatario,
+    string $rotulo,
+    string $apiKey,
+    string $mode
+): ?string {
+    $email = trim((string)($signatario['email'] ?? ''));
+    if ($email === '') {
+        return null;
+    }
+
+    $payload = [
+        'full_name' => trim((string)($signatario['nome'] ?? '')),
+        'email' => $email,
+        'whatsapp_phone_number' => preg_replace('/\D/', '', $signatario['telefone'] ?? '')
+    ];
+
+    try {
+        $res = chamarAssinafy("/accounts/{$accountId}/signers", 'POST', $payload, false, $apiKey, $mode);
+        $data = json_decode($res, true);
+        if (is_array($data)) {
+            return extrairIdSignatarioAssinafy($data);
+        }
+    } catch (Throwable $e) {
+        if (erroAssinafyEmailDuplicado($e)) {
+            if ($e instanceof AssinafyApiException) {
+                $payloadErro = json_decode($e->responseBody, true);
+                if (is_array($payloadErro)) {
+                    $idResposta = buscarSignatarioEmPayload($payloadErro, $email) ?: extrairIdSignatarioAssinafy($payloadErro);
+                    if ($idResposta) {
+                        return $idResposta;
+                    }
+                }
+            }
+
+            $idExistente = buscarSignatarioExistenteAssinafy($accountId, $email, $apiKey, $mode);
+            if ($idExistente) {
+                return $idExistente;
+            }
+
+            throw new Exception("A Assinafy informou que o e-mail {$email} ({$rotulo}) já existe, mas não retornou o ID para vincular ao contrato.");
+        }
+
+        $mensagem = $e instanceof AssinafyApiException ? mensagemAssinafy($e->responseBody) : $e->getMessage();
+        throw new Exception("Falha ao registrar {$rotulo} ({$email}) no Assinafy: {$mensagem}");
+    }
+
+    throw new Exception("A Assinafy não retornou o ID do {$rotulo} ({$email}).");
 }
 
 function resumirRespostaAssinafy($payload): string {
@@ -160,64 +327,33 @@ try {
         throw new Exception("Resposta de upload invalida do Assinafy: " . resumirRespostaAssinafy($uploadData));
     }
     
-    // 6. Passo 2 no Assinafy: Criar Signatários
+    // 6. Passo 2 no Assinafy: criar ou reutilizar signatários
     $signerIds = [];
-    
-    // Signatário 1
-    $signer1Payload = [
-        'full_name' => $sig1['nome'],
-        'email' => $sig1['email'],
-        'whatsapp_phone_number' => preg_replace('/\D/', '', $sig1['telefone'] ?? '')
-    ];
-    $sig1Res = chamarAssinafy("/accounts/{$accountId}/signers", 'POST', $signer1Payload, false, $apiKey, $mode);
-    $sig1Data = json_decode($sig1Res, true);
-    $sig1Id = $sig1Data['data']['id'] ?? $sig1Data['id'] ?? null;
+
+    $sig1Id = criarOuObterSignatarioAssinafy($accountId, $sig1, 'Signatário 1', $apiKey, $mode);
     if ($sig1Id) {
         $signerIds[] = $sig1Id;
     }
-    
-    // Signatário 2 (se preenchido)
+
     if ($sig2 && !empty($sig2['nome']) && !empty($sig2['email'])) {
-        $signer2Payload = [
-            'full_name' => $sig2['nome'],
-            'email' => $sig2['email'],
-            'whatsapp_phone_number' => preg_replace('/\D/', '', $sig2['telefone'] ?? '')
-        ];
-        try {
-            $sig2Res = chamarAssinafy("/accounts/{$accountId}/signers", 'POST', $signer2Payload, false, $apiKey, $mode);
-            $sig2Data = json_decode($sig2Res, true);
-            $sig2Id = $sig2Data['data']['id'] ?? $sig2Data['id'] ?? null;
-            if ($sig2Id) {
-                $signerIds[] = $sig2Id;
-            }
-        } catch (Exception $e) {
-            // Se falhar o segundo signatário, tentamos seguir sem ele ou reportamos
+        $sig2Id = criarOuObterSignatarioAssinafy($accountId, $sig2, 'Signatário 2', $apiKey, $mode);
+        if ($sig2Id) {
+            $signerIds[] = $sig2Id;
         }
     }
 
-    // Signatário Distinto (Contratada)
     if ($sigDistinto && !empty($sigDistinto['nome']) && !empty($sigDistinto['email'])) {
-        $signerDistintoPayload = [
-            'full_name' => $sigDistinto['nome'],
-            'email' => $sigDistinto['email'],
-            'whatsapp_phone_number' => preg_replace('/\D/', '', $sigDistinto['telefone'] ?? '')
-        ];
-        try {
-            $sigDistintoRes = chamarAssinafy("/accounts/{$accountId}/signers", 'POST', $signerDistintoPayload, false, $apiKey, $mode);
-            $sigDistintoData = json_decode($sigDistintoRes, true);
-            $sigDistintoId = $sigDistintoData['data']['id'] ?? $sigDistintoData['id'] ?? null;
-            if ($sigDistintoId) {
-                $signerIds[] = $sigDistintoId;
-            }
-        } catch (Exception $e) {
-            // Se falhar o signatário da Distinto, logamos ou tentamos seguir
+        $sigDistintoId = criarOuObterSignatarioAssinafy($accountId, $sigDistinto, 'Signatário Distinto', $apiKey, $mode);
+        if ($sigDistintoId) {
+            $signerIds[] = $sigDistintoId;
         }
     }
-    
+
+    $signerIds = array_values(array_unique(array_filter($signerIds)));
+
     if (empty($signerIds)) {
-        throw new Exception("Falha ao registrar os signatários no Assinafy.");
+        throw new Exception('Falha ao registrar ou localizar os signatários no Assinafy.');
     }
-    
     // 7. Passo 3 no Assinafy: Associar Assinaturas (Assignments)
     $assignPayload = [
         'method' => 'virtual',

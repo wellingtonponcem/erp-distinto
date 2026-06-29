@@ -29,6 +29,7 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
     </script>
 
     <script defer src="<?= raizUrl('/assets/js/alpine.min.js') ?>?v=<?= filemtime(__DIR__ . '/../../assets/js/alpine.min.js') ?>"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     
     <!-- Flatpickr (Date Picker) -->
@@ -438,6 +439,7 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
         .dark .label { color: #aaaaaa; }
         .dark .input, .dark .select { background: #1a1a1a; border-color: #333333; color: #ffffff; }
         .dark .input:focus, .dark .select:focus { border-color: #444444; box-shadow: 0 0 0 3px rgba(255,255,255,0.05); }
+        .dark select option, .dark .input option, .dark .select option { background-color: #1a1a1a !important; color: #ffffff !important; }
         .dark .table-header { background: #1a1a1a; color: #888888; border-color: #222222; }
         .dark .table-row { border-color: #1a1a1a; }
         .dark .table-cell { color: #dddddd; }

@@ -3,34 +3,30 @@
 ## Objetivo do Projeto
 ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco em integração do frontend público (proposta web) com o painel administrativo.
 
-## Alterações Recentes
+- **Ordenação por Data de Pagamento no Financeiro** *(jun/2026)*:
+  - Lançamentos pagos passam a ser ordenados e filtrados no período por sua data de pagamento real (`data_pagamento`), mantendo os pendentes ordenados pelo vencimento.
+  - Criada coluna dedicada a "Pagamento" (`data_pagamento`) ao lado do Vencimento, destacando a data em verde se pago e com traço se pendente.
+  - Atualizada a gravação da `data_pagamento` na baixa manual (`baixa.php`), importação/conciliação OFX, webhook do Asaas e ajuste de saldo.
 
-- **Integração de Gateway de Pagamentos Asaas** *(jun/2026)*:
-  - Integrada a API v3 do Asaas com geração de faturamento imediato (sinal) e parcelado de contratos assinados (Assinafy/sincronização).
-  - Criados os endpoints `gerar_asaas.php` e `webhook_asaas.php` para emissão manual e conciliação bancária automática (recebido/atrasado/cancelado) via webhooks.
-  - Criada tela de Gestão/Extrato (`financeiro/asaas.php`) e sidebar lateral em `contrato_visualizar.php` exibindo faturas, boletos, links de Pix e botão de emissão.
-  - Desenvolvido script de testes automatizados de resiliência a falhas de rede/API e webhooks (`scratch/teste_asaas_prop.php`).
+- **Ajuste de Codificação e Visualização de Contratos (Mojibake)** *(jun/2026)*:
+  - Corrigido o charset mojibake via iconv no `contrato_gerar.php` e habilitado o carregamento correto do CKEditor.
 
-- **Correção e Sincronização do Assinafy & CRM** *(jun/2026)*:
-  - Corrigido erro 404 de sincronização manual removendo `/accounts/{accountId}` das URLs.
-  - Adicionado suporte a status `certificated` / `registrado` e mapeamento automático.
-  - Integração CRM: alteração de oportunidade para `ganha` e promoção de CPF/CNPJ de signatários na tabela local de clientes ao assinar o contrato.
-  - Corrigidos bugs de payload, tags de assinaturas físicas e inicialização do Alpine.js isolando o preview do CKEditor com `x-ignore`.
+- **Financeiro, Gateway Asaas e Conciliação OFX** *(jun/2026)*:
+  - Implementada integração com Asaas API v3, webhooks de conciliação bancária automática e upload/leitura de extrato OFX local.
 
-- **Resolução de Tela em Branco e Conexão Neon (Ambiente Local)** *(jun/2026)*:
-  - Criados `config/env.php` e `config/env.example.php` com chaves necessárias (`DB_*`, `APP_*`, `GEMINI_API_KEY`, `SESSION_NAME`, `SESSION_LIFETIME`, etc.), eliminando erros fatais.
-  - Habilitadas as extensões `pdo_pgsql` e `pgsql` no `php.ini` do Laragon para dar suporte a conexões PostgreSQL.
-  - Configurada a conexão local com o Neon e sincronizada a estrutura financeira (`contratos.asaas_cobranca_gerada`, `clientes.asaas_customer_id`, etc.), corrigindo o erro 500 no faturamento manual.
+- **Edição e Fechamento de Propostas & CRM** *(jun/2026)*:
+  - Novo stepper guiado com salvamento automático reativo, fluxo de casamento no admin e CRM promovendo status ao assinar contrato.
 
-- **Correção de Transação Abortada (SQLSTATE[25P02]) no Faturamento Asaas** *(jun/2026)*:
-  - Identificada falha crítica: sintaxe inválida de `ALTER TABLE ... ADD CONSTRAINT ... WHERE` no PostgreSQL gerava erro de sintaxe, abortando a transação de forma silenciosa e quebrando chamadas subsequentes.
-  - Resolvido migrando a restrição única para um índice único parcial nativo (`CREATE UNIQUE INDEX IF NOT EXISTS`) e limpando duplicados da tabela `lancamentos`.
-  - Otimizada a rotina de DDL com early return se as colunas já existem e incluído `ROLLBACK` seguro nos blocos catch para restaurar o estado da conexão no PostgreSQL.
+- **Correções do Sistema e Conexão Neon** *(jun/2026)*:
+  - Habilitado PDO PGSQL no Laragon, migração e restrições únicas para índices parciais no Postgres.
 
-- **Automação da Calculadora de Pagamento e Correção de Parcelamento Asaas** *(jun/2026)*:
-  - Vinculado o resultado da "Calculadora de Condições de Pagamento" diretamente aos campos de configuração do Asaas na sidebar de `contrato_gerar.php`, preenchendo automaticamente a quantidade de parcelas, valores de sinal e vencimentos ao clicar em calcular.
-  - Corrigido bug em `includes/asaas.php` que não enviava o campo obrigatório `dueDate` quando uma cobrança continha parcelas sem sinal, resultando em cobrança única por padrão no Asaas.
-
+- **Ajuste de Exibição de Valores no Contrato** *(jun/2026)*:
+  - Atualizado o painel do "Pacote de Casamento" no formulário de geração/edição de contrato (`contrato_gerar.php`) para exibir de forma condicional apenas o input de valor do plano atualmente selecionado.
+  - Flexibilizados os regexes de detecção e atualização de cláusulas (`CLÁUSULA SEGUNDA`, `TERCEIRA` e `QUARTA`) no PHP e JS para suportar variações de tags de cabeçalho (`<h3>`, `<h4>`, `<p><strong>` etc.) geradas pelo CKEditor, garantindo o correto preenchimento dinâmico de valores e condições de pagamento.
+  - Corrigida a inicialização da calculadora de condições de pagamento, fazendo o campo de data "Vencimento do Sinal" carregar a data de sinal previamente salva no contrato (em vez de sempre resetar para o dia atual).
+  - Implementada sincronização mútua e automática em tempo real entre o input "Vencimento do Sinal" da Calculadora e o da seção de "Cobrança Asaas".
+  - Corrigido problema de sobreposição visual na pré-visualização de contrato (`contrato_visualizar.php`) aplicando z-index inline (`style="z-index: 9998/9999;"`) em modais e overlays, garantindo correto empilhamento de camadas independentemente do build do Tailwind.
+  - Resolvido o travamento da rolagem (scroll) do papel de contrato dentro do modal adicionando as propriedades `min-h-0` e `overflow-y-auto` na div flexível, e utilizando `mx-auto` no elemento filho para centralização correta.
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.

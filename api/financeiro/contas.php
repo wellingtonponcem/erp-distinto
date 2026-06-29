@@ -89,8 +89,8 @@ switch ($metodo) {
                 $hoje = date('Y-m-d');
                 $stmtLanc = $db->prepare("
                     INSERT INTO lancamentos 
-                    (id, tipo, descricao, valor, valor_pago, vencimento, status, categoria, conta_id)
-                    VALUES (?, ?, ?, ?, ?, ?, 'pago', 'outros', ?)
+                    (id, tipo, descricao, valor, valor_pago, vencimento, status, categoria, conta_id, data_pagamento)
+                    VALUES (?, ?, ?, ?, ?, ?, 'pago', 'outros', ?, ?)
                 ");
                 $stmtLanc->execute([
                     $idLanc,
@@ -99,7 +99,8 @@ switch ($metodo) {
                     $valorAbs,
                     $valorAbs,
                     $hoje,
-                    $d['id']
+                    $d['id'],
+                    $hoje
                 ]);
             }
         }

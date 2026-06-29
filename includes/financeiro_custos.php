@@ -2,6 +2,54 @@
 
 function garantirEstruturaFinanceira(PDO $db): void {
     try {
+        // Garante a tabela de contas bancárias
+        if (!tabelaTemColuna($db, 'contas_bancarias', 'id')) {
+            $db->exec("CREATE TABLE IF NOT EXISTS contas_bancarias (
+                id VARCHAR(50) PRIMARY KEY,
+                nome VARCHAR(100) NOT NULL,
+                saldo_inicial DECIMAL(15,2) DEFAULT 0,
+                cor VARCHAR(20) DEFAULT '#2a2a2a',
+                ativo INTEGER DEFAULT 1,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )");
+        }
+
+        // Garante o cadastro do Asaas como uma conta bancária
+        try {
+            $stmtCheckAsaas = $db->prepare("SELECT 1 FROM contas_bancarias WHERE id = ?");
+            $stmtCheckAsaas->execute(['asaas']);
+            if (!$stmtCheckAsaas->fetch()) {
+                $stmtInsertAsaas = $db->prepare("INSERT INTO contas_bancarias (id, nome, saldo_inicial, cor, ativo) VALUES (?, ?, ?, ?, ?)");
+                $stmtInsertAsaas->execute(['asaas', 'Asaas', 0.00, '#7c3aed', 1]);
+            }
+        } catch (Exception $e) {}
+
+        // Garante a coluna conta_id na tabela lancamentos
+        if (!tabelaTemColuna($db, 'lancamentos', 'conta_id')) {
+            $driver = $db->getAttribute(PDO::ATTR_DRIVER_NAME);
+            if ($driver === 'pgsql') {
+                $db->exec("ALTER TABLE lancamentos ADD COLUMN conta_id VARCHAR(50)");
+            } else {
+                $db->exec("ALTER TABLE lancamentos ADD COLUMN conta_id VARCHAR(50) NULL");
+            }
+        }
+
+        // Vincula retrospectivamente todos os lançamentos gerados pelo Asaas à nova conta Asaas
+        try {
+            $db->exec("UPDATE lancamentos SET conta_id = 'asaas' WHERE asaas_id IS NOT NULL AND (conta_id IS NULL OR conta_id = '')");
+        } catch (Exception $e) {}
+
+        // Garante a coluna conciliado na tabela lancamentos
+        garantirColuna($db, 'lancamentos', 'conciliado', "INT NOT NULL DEFAULT 0");
+
+        // Garantir constraint único para asaas_id (evita duplicatas)
+        garantirConstraintUnico($db, 'lancamentos', 'asaas_id', 'unique_asaas_id');
+
+        // Migração retroativa de conciliados
+        try {
+            $db->exec("UPDATE lancamentos SET conciliado = 1 WHERE asaas_id IS NOT NULL OR ofx_fitid IS NOT NULL");
+        } catch (Exception $e) {}
+
         if (tabelaTemColuna($db, 'contratos', 'asaas_cobranca_gerada')) {
             return;
         }
@@ -62,12 +110,12 @@ function garantirConstraintUnico(PDO $db, string $tabela, string $coluna, string
             if (!$stmt->fetch()) {
                 // Primeiro limpa duplicatas, depois cria o constraint
                 $dupStmt = $db->prepare("
-                    DELETE t1 FROM lancamentos t1
-                    INNER JOIN lancamentos t2 
+                    DELETE t1 FROM {$tabela} t1
+                    INNER JOIN {$tabela} t2 
                     WHERE t1.id > t2.id 
-                      AND t1.ofx_fitid = t2.ofx_fitid 
-                      AND t1.ofx_fitid IS NOT NULL 
-                      AND t1.ofx_fitid != ''
+                      AND t1.{$coluna} = t2.{$coluna} 
+                      AND t1.{$coluna} IS NOT NULL 
+                      AND t1.{$coluna} != ''
                 ");
                 $dupStmt->execute();
                 $db->exec("ALTER TABLE {$tabela} ADD CONSTRAINT {$constraintName} UNIQUE ({$coluna})");
@@ -88,7 +136,7 @@ function garantirColuna(PDO $db, string $tabela, string $coluna, string $definic
 }
 
 function colunaInfo(PDO $db, string $tabela, string $coluna): ?array {
-    $tabelasPermitidas = ['custos_fixos', 'lancamentos', 'clientes', 'fornecedores', 'configuracao_empresa', 'contratos'];
+    $tabelasPermitidas = ['custos_fixos', 'lancamentos', 'clientes', 'fornecedores', 'configuracao_empresa', 'contratos', 'contas_bancarias'];
     if (!in_array($tabela, $tabelasPermitidas, true)) return null;
 
     try {

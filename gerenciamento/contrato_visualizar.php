@@ -24,7 +24,7 @@ if (!$contrato) {
 
 $lancamentosAsaas = [];
 if ((int)($contrato['asaas_cobranca_gerada'] ?? 0) === 1) {
-    $stmtL = $db->prepare("SELECT * FROM lancamentos WHERE cliente_id = ? AND asaas_id IS NOT NULL AND asaas_id != '' AND (descricao LIKE ? OR observacao LIKE ?) ORDER BY vencimento ASC");
+    $stmtL = $db->prepare("SELECT * FROM lancamentos WHERE cliente_id = ? AND (descricao LIKE ? OR observacao LIKE ?) ORDER BY vencimento ASC");
     $stmtL->execute([$contrato['cliente_id'], '%' . $contrato['titulo'] . '%', '%Contrato: ' . $contrato['id'] . '%']);
     $lancamentosAsaas = $stmtL->fetchAll();
 }
@@ -34,6 +34,12 @@ $config = $db->query("SELECT assinafy_api_key, assinafy_account_id, assinafy_mod
 $dadosJson = json_decode($contrato['dados_json'], true) ?: [];
 $sig1 = $dadosJson['signatario_1'] ?? ['nome' => '', 'cpf' => '', 'email' => '', 'telefone' => '', 'endereco' => ''];
 $sig2 = $dadosJson['signatario_2'] ?? ['nome' => '', 'cpf' => '', 'email' => '', 'telefone' => '', 'endereco' => ''];
+$contasBancarias = [];
+try {
+    $contasBancarias = $db->query("SELECT id, nome FROM contas_bancarias WHERE ativo = 1 ORDER BY nome ASC")->fetchAll();
+} catch (Throwable $e) {
+    $contasBancarias = [];
+}
 $locais = $dadosJson['locais'] ?? [];
 $locais = array_merge([
     'tem_prewedding' => '',
@@ -50,6 +56,20 @@ $locais = array_merge([
 ], $locais);
 $contratoTexto = $dadosJson['contrato_texto'] ?? '';
 $anexoTexto = $dadosJson['anexo_texto'] ?? '';
+$planoContrato = detectarPlanoCasamento($dadosJson);
+$percentualEntrada = $planoContrato === 'heritage' ? 25 : 20;
+$valorEntradaPadrao = (float)($dadosJson['asaas_valor_sinal'] ?? 0);
+if ($valorEntradaPadrao <= 0 && (float)$contrato['valor_total'] > 0) {
+    $valorEntradaPadrao = round((float)$contrato['valor_total'] * ($percentualEntrada / 100), 2);
+}
+$sinalVencimentoPadrao = $dadosJson['asaas_sinal_vencimento'] ?? date('Y-m-d');
+$primeiraParcelaPadrao = $dadosJson['asaas_first_due_date'] ?? adicionarMesesData($sinalVencimentoPadrao, 1) ?? date('Y-m-d', strtotime('+30 days'));
+$parcelasPadrao = max(1, (int)($dadosJson['asaas_total_parcelas'] ?? 1));
+$billingTypePadrao = $dadosJson['asaas_billing_type'] ?? 'UNDEFINED';
+$entradaStatusPadrao = $dadosJson['entrada_status'] ?? 'pendente';
+$temLancamentosFinanceiros = !empty($lancamentosAsaas);
+$podeGerarFinanceiro = (($contrato['status'] ?? 'rascunho') === 'assinado')
+    && ((int)($contrato['asaas_cobranca_gerada'] ?? 0) === 0 || !$temLancamentosFinanceiros);
 // For wedding contracts, we display the saved text directly to respect user edits.
 
 $tituloPagina = 'Visualizar Contrato';
@@ -88,9 +108,48 @@ require_once __DIR__ . '/../includes/layout/head.php';
     <main id="main-content" class="content-sheet flex flex-col min-h-screen !bg-[#0c0c0c] !text-white relative">
         
         <!-- Loading Overlay -->
-        <div x-show="loading" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] flex flex-col items-center justify-center gap-4" x-cloak>
+        <div x-show="loading" class="fixed inset-0 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center gap-4" style="z-index: 9999;" x-cloak>
             <div class="w-12 h-12 border-4 border-white/10 border-t-white rounded-full animate-spin"></div>
             <p class="text-sm font-bold text-white uppercase tracking-widest" x-text="loadingMessage"></p>
+        </div>
+
+        <div x-show="modalContratoAberto"
+             x-transition.opacity
+             class="fixed inset-0 bg-black/85 backdrop-blur-md p-6 flex items-center justify-center"
+             style="z-index: 9998;"
+             x-cloak
+             @keydown.escape.window="modalContratoAberto = false"
+             @click.self="modalContratoAberto = false">
+            <div class="w-[80vw] max-w-[1280px] h-[90vh] bg-[#0f0f10] border border-white/10 rounded-[28px] shadow-2xl overflow-hidden flex flex-col">
+                <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-lg font-black text-white">Visualizacao completa do contrato</h2>
+                        <p class="text-xs text-zinc-500 mt-1">Use esta janela para conferir o documento completo.</p>
+                    </div>
+                    <button type="button"
+                            @click="modalContratoAberto = false"
+                            class="w-10 h-10 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-zinc-300 flex items-center justify-center transition-all">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div class="flex-1 min-h-0 overflow-y-auto py-10 px-6">
+                    <div class="a4-page-content contrato-modal-paper mx-auto">
+                        <div class="pdf-logo-wrapper">
+                            <img src="<?= raizUrl('/assets/logo-contrato.png') ?>" alt="Poncem Studio Logo" class="pdf-logo">
+                        </div>
+                        <div class="pdf-body text-justify">
+                            <?= $contratoTexto ?>
+                        </div>
+                        <div class="page-break"></div>
+                        <div class="pdf-logo-wrapper pt-10">
+                            <img src="<?= raizUrl('/assets/logo-contrato.png') ?>" alt="Poncem Studio Logo" class="pdf-logo">
+                        </div>
+                        <div class="pdf-body text-justify">
+                            <?= !empty($anexoTexto) ? $anexoTexto : '<h4>ANEXO I - DESCRICAO DOS SERVICOS</h4><p class="p0">A descricao detalhada dos servicos sera incluida apos a definicao do escopo do evento.</p>' ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Header -->
@@ -170,11 +229,12 @@ require_once __DIR__ . '/../includes/layout/head.php';
         <?php endif; ?>
 
         <!-- Layout com Sidebar de Faturamento se o contrato for assinado -->
-        <div class="flex flex-col lg:flex-row gap-8 items-start mb-12 w-full">
+        <div class="contrato-workspace mb-12 w-full">
             <!-- A4 Paper Preview Container -->
-            <div class="flex-1 overflow-x-auto py-10 flex justify-center bg-[#111] border border-white/5 rounded-[32px] shadow-inner w-full" x-ignore>
+            <div class="contrato-preview-card bg-[#111] border border-white/5 rounded-[32px] shadow-inner">
                 <!-- PDF Container Content -->
-                <div id="pdf-content" class="a4-page-content">
+                <div class="contrato-preview-paper-wrap pointer-events-none" x-ignore>
+                <div id="pdf-preview-content" class="a4-page-content">
                     <!-- Header Logo -->
                     <div class="pdf-logo-wrapper">
                         <img src="<?= raizUrl('/assets/logo-contrato.png') ?>" alt="Poncem Studio Logo" class="pdf-logo">
@@ -191,45 +251,149 @@ require_once __DIR__ . '/../includes/layout/head.php';
                         <img src="<?= raizUrl('/assets/logo-contrato.png') ?>" alt="Poncem Studio Logo" class="pdf-logo">
                     </div>
                     <div class="pdf-body text-justify">
-                        <?= !empty($anexoTexto) ? $anexoTexto : '<h4>ANEXO I – DESCRIÇÃO DOS SERVIÇOS</h4><p class="p0">A descrição detalhada dos serviços será incluída após a definição do escopo do evento.</p>' ?>
+                        <?= !empty($anexoTexto) ? $anexoTexto : '<h4>ANEXO I - DESCRICAO DOS SERVICOS</h4><p class="p0">A descricao detalhada dos servicos sera incluida apos a definicao do escopo do evento.</p>' ?>
+                    </div>
+                </div>
+                </div>
+                <div class="contrato-preview-fade pointer-events-none"></div>
+                <button type="button"
+                        @click="modalContratoAberto = true; $nextTick(() => window.lucide?.createIcons?.())"
+                        class="contrato-preview-button px-5 py-3 bg-white hover:bg-zinc-200 text-black rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 shadow-xl pointer-events-auto">
+                    <i data-lucide="maximize-2" class="w-4 h-4"></i>
+                    Visualizar contrato completo
+                </button>
+                <div id="pdf-content" class="a4-page-content pdf-export-source" aria-hidden="true">
+                    <div class="pdf-logo-wrapper">
+                        <img src="<?= raizUrl('/assets/logo-contrato.png') ?>" alt="Poncem Studio Logo" class="pdf-logo">
+                    </div>
+                    <div class="pdf-body text-justify">
+                        <?= $contratoTexto ?>
+                    </div>
+                    <div class="page-break"></div>
+                    <div class="pdf-logo-wrapper pt-10">
+                        <img src="<?= raizUrl('/assets/logo-contrato.png') ?>" alt="Poncem Studio Logo" class="pdf-logo">
+                    </div>
+                    <div class="pdf-body text-justify">
+                        <?= !empty($anexoTexto) ? $anexoTexto : '<h4>ANEXO I - DESCRICAO DOS SERVICOS</h4><p class="p0">A descricao detalhada dos servicos sera incluida apos a definicao do escopo do evento.</p>' ?>
                     </div>
                 </div>
             </div>
 
             <?php if (($contrato['status'] ?? 'rascunho') === 'assinado'): ?>
                 <!-- Sidebar de Faturamento Asaas -->
-                <div class="w-full lg:w-[380px] bg-zinc-900/60 border border-white/10 rounded-[2rem] p-6 space-y-6 flex-shrink-0">
+                <div class="contrato-financeiro-panel bg-zinc-900/60 border border-white/10 rounded-[2rem] p-6 space-y-6">
                     <div class="flex items-center justify-between border-b border-white/5 pb-4">
                         <div class="flex items-center gap-2.5">
-                            <div class="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
-                                <i data-lucide="wallet" class="w-5 h-5"></i>
+                            <div class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
+                                <i data-lucide="wallet" class="w-5 h-5 text-[#0038e5]"></i>
                             </div>
                             <div>
-                                <h4 class="font-bold text-white text-sm">Faturamento Asaas</h4>
+                                <h4 class="font-bold text-white text-sm ml-[10px]">Faturamento Asaas</h4>
                                 <p class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Integração Ativa</p>
                             </div>
                         </div>
-                        
-                        <?php if ((int)($contrato['asaas_cobranca_gerada'] ?? 0) === 0): ?>
-                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-500/10 text-amber-500 border border-amber-500/20">Pendente</span>
+
+                        <?php if ($podeGerarFinanceiro): ?>
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-amber-500/10 text-amber-500 border border-amber-500/20"><?= (int)($contrato['asaas_cobranca_gerada'] ?? 0) === 1 ? 'Regularizar' : 'Pendente' ?></span>
                         <?php else: ?>
                             <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">Gerado</span>
                         <?php endif; ?>
                     </div>
 
-                    <?php if ((int)($contrato['asaas_cobranca_gerada'] ?? 0) === 0): ?>
-                        <div class="text-center py-6">
-                            <p class="text-xs text-zinc-400 leading-relaxed mb-4">
-                                Este contrato foi assinado, mas o faturamento automático do Asaas ainda não foi gerado.
+                    <?php if ($podeGerarFinanceiro): ?>
+                        <div class="space-y-4">
+                            <?php if ((int)($contrato['asaas_cobranca_gerada'] ?? 0) === 1 && !$temLancamentosFinanceiros): ?>
+                                <div class="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-4 text-xs text-amber-200 leading-relaxed">
+                                    Este contrato estava marcado como faturado, mas não há lançamentos financeiros locais. Confira os dados abaixo para regularizar o financeiro.
+                                </div>
+                            <?php endif; ?>
+
+                            <p class="text-xs text-zinc-400 leading-relaxed">
+                                Confirme a entrada e gere o financeiro do saldo. Se a entrada já foi paga fora do Asaas, ela será lançada no financeiro sem conciliação; a conciliação acontecerá depois pelo OFX/API.
                             </p>
+
+                            <div>
+                                <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2">Entrada / Sinal</label>
+                                <select id="asaas-entrada-status" onchange="atualizarResumoCobrancaContrato()" class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-3 text-xs text-white outline-none">
+                                    <option value="pendente" <?= $entradaStatusPadrao === 'pendente' ? 'selected' : '' ?>>Cobrar entrada no Asaas</option>
+                                    <option value="pago" <?= $entradaStatusPadrao === 'pago' ? 'selected' : '' ?>>Entrada já paga fora do Asaas</option>
+                                    <option value="nao_aplica" <?= $entradaStatusPadrao === 'nao_aplica' ? 'selected' : '' ?>>Não usar entrada</option>
+                                </select>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2">Valor da entrada</label>
+                                    <input id="asaas-valor-sinal" oninput="atualizarResumoCobrancaContrato()" type="text" value="<?= sanitizar(number_format($valorEntradaPadrao, 2, ',', '.')) ?>" class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-3 text-xs text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2">Data da entrada</label>
+                                    <input id="asaas-sinal-vencimento" type="date" value="<?= sanitizar($sinalVencimentoPadrao) ?>" class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-3 text-xs text-white outline-none">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2">Parcelas do saldo</label>
+                                    <input id="asaas-total-parcelas" oninput="atualizarResumoCobrancaContrato()" type="number" min="1" max="60" value="<?= sanitizar((string)$parcelasPadrao) ?>" class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-3 text-xs text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2">1ª parcela</label>
+                                    <input id="asaas-first-due-date" type="date" value="<?= sanitizar($primeiraParcelaPadrao) ?>" class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-3 text-xs text-white outline-none">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2">Cobrança Asaas</label>
+                                <select id="asaas-billing-type" class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-3 text-xs text-white outline-none">
+                                    <option value="UNDEFINED" <?= $billingTypePadrao === 'UNDEFINED' ? 'selected' : '' ?>>Cliente escolhe boleto/pix/cartão</option>
+                                    <option value="PIX" <?= $billingTypePadrao === 'PIX' ? 'selected' : '' ?>>Pix</option>
+                                    <option value="BOLETO" <?= $billingTypePadrao === 'BOLETO' ? 'selected' : '' ?>>Boleto</option>
+                                    <option value="CREDIT_CARD" <?= $billingTypePadrao === 'CREDIT_CARD' ? 'selected' : '' ?>>Cartão de crédito</option>
+                                </select>
+                            </div>
+
+                            <div id="entrada-paga-campos" class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2">Conta recebida</label>
+                                    <select id="entrada-conta" class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-3 text-xs text-white outline-none">
+                                        <option value="c6">C6 Bank</option>
+                                        <?php foreach ($contasBancarias as $conta): ?>
+                                            <option value="<?= sanitizar($conta['id']) ?>"><?= sanitizar($conta['nome']) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2">Forma</label>
+                                    <select id="entrada-forma-pagamento" class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-3 text-xs text-white outline-none">
+                                        <option value="pix">Pix</option>
+                                        <option value="transferencia">Transferência</option>
+                                        <option value="boleto">Boleto</option>
+                                        <option value="cartao">Cartão</option>
+                                        <option value="dinheiro">Dinheiro</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <textarea id="entrada-observacao" rows="2" class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-3 text-xs text-white outline-none resize-none" placeholder="Observação interna">Entrada recebida via C6 Bank. Aguardando conciliação por OFX.</textarea>
+
+                            <div class="rounded-2xl bg-black/40 border border-white/10 p-4">
+                                <p id="resumo-cobranca-contrato" class="text-xs text-zinc-300 leading-relaxed"></p>
+                            </div>
+
                             <button type="button" onclick="gerarCobrancaVisualizar('<?= sanitizar($contrato['id']) ?>', this)"
                                     class="w-full py-3 bg-white hover:bg-zinc-200 text-black rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-lg">
-                                <i data-lucide="wallet" class="w-4 h-4"></i> Gerar Cobrança Agora
+                                <i data-lucide="wallet" class="w-4 h-4"></i> Confirmar e Gerar Financeiro
                             </button>
                         </div>
                     <?php else: ?>
                         <!-- Detalhes do Faturamento -->
                         <div class="space-y-4">
+                            <button type="button" onclick="sincronizarCobrancasAsaas('<?= sanitizar($contrato['id']) ?>', this)"
+                                    class="w-full py-3 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-purple-200 rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                                <i data-lucide="refresh-cw" class="w-4 h-4"></i> Sincronizar Asaas
+                            </button>
+
                             <?php if (empty($lancamentosAsaas)): ?>
                                 <p class="text-xs text-zinc-500 italic text-center">Nenhum lançamento local encontrado para esta cobrança.</p>
                             <?php else: ?>
@@ -299,6 +463,109 @@ require_once __DIR__ . '/../includes/layout/head.php';
 <!-- Styles specifically for A4 preview and print generation -->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;700&display=swap');
+
+.contrato-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+}
+
+.contrato-preview-card,
+.contrato-financeiro-panel {
+    height: 70vh;
+    min-height: 460px;
+}
+
+.contrato-preview-card {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.contrato-preview-paper-wrap {
+    position: absolute;
+    top: 32px;
+    left: 50%;
+    width: 210mm;
+    transform: translateX(-50%) scale(var(--preview-scale, 1));
+    transform-origin: top center;
+}
+
+.contrato-preview-fade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 10%;
+    z-index: 5;
+    background: linear-gradient(
+        to bottom,
+        rgba(17, 17, 17, 0) 0%,
+        rgba(17, 17, 17, 0.55) 45%,
+        rgba(17, 17, 17, 1) 100%
+    );
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.contrato-preview-button {
+    position: absolute;
+    z-index: 10;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+}
+
+.contrato-financeiro-panel {
+    overflow-y: auto;
+}
+
+.contrato-modal-paper {
+    flex: 0 0 auto;
+}
+
+.pdf-export-source {
+    position: fixed;
+    left: -12000px;
+    top: 0;
+    z-index: -1;
+    pointer-events: none;
+}
+
+@media (min-width: 1800px) {
+    .contrato-preview-card {
+        --preview-scale: 1.7;
+    }
+}
+
+@media (min-width: 1400px) and (max-width: 1799px) {
+    .contrato-preview-card {
+        --preview-scale: 0.94;
+    }
+}
+
+@media (min-width: 1024px) and (max-width: 1399px) {
+    .contrato-preview-card {
+        --preview-scale: 0.76;
+    }
+}
+
+@media (max-width: 1023px) {
+    .contrato-workspace {
+        grid-template-columns: 1fr;
+    }
+
+    .contrato-preview-card,
+    .contrato-financeiro-panel {
+        height: auto;
+        min-height: 520px;
+    }
+
+    .contrato-preview-card {
+        --preview-scale: 0.56;
+    }
+}
 
 .a4-page-content {
     background: #ffffff;
@@ -470,6 +737,7 @@ function contratoVisualizarApp() {
         loading: false,
         loadingAnexo: false,
         loadingMessage: '',
+        modalContratoAberto: false,
         showConfirmModal: false,
         
         exportarPDFLocal() {
@@ -643,7 +911,8 @@ function setContratoAssinaturaLoading(active, message = '') {
     if (!overlay) {
         overlay = document.createElement('div');
         overlay.id = 'contrato-assinatura-loading';
-        overlay.className = 'fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] hidden flex-col items-center justify-center gap-4';
+        overlay.className = 'fixed inset-0 bg-black/80 backdrop-blur-md hidden flex-col items-center justify-center gap-4';
+        overlay.style.zIndex = '9999';
         overlay.innerHTML = `
             <div class="w-12 h-12 border-4 border-white/10 border-t-white rounded-full animate-spin"></div>
             <p class="text-sm font-bold text-white uppercase tracking-widest"></p>
@@ -718,7 +987,7 @@ function confirmarEnvioAssinatura() {
 }
 </script>
 
-<div id="modal-assinafy" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] hidden items-center justify-center p-4">
+<div id="modal-assinafy" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4" style="z-index: 9999;">
     <div class="bg-zinc-950 border border-white/10 rounded-[2rem] p-8 w-full max-w-md shadow-2xl relative">
         <button onclick="fecharModalAssinafy()" class="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors cursor-pointer">
             <i data-lucide="x" class="w-5 h-5"></i>
@@ -864,15 +1133,67 @@ function salvarConfigAssinafy(e) {
     });
 }
 
+function numeroContratoMoeda(valor) {
+    valor = String(valor || '').replace(/[^\d,.-]/g, '');
+    if (valor.includes(',') && valor.includes('.')) {
+        valor = valor.replace(/\./g, '').replace(',', '.');
+    } else {
+        valor = valor.replace(',', '.');
+    }
+    return Number(valor) || 0;
+}
+
+function moedaContrato(valor) {
+    return (Number(valor) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+function atualizarResumoCobrancaContrato() {
+    const resumo = document.getElementById('resumo-cobranca-contrato');
+    if (!resumo) return;
+
+    const total = <?= json_encode((float)$contrato['valor_total']) ?>;
+    const statusEntrada = document.getElementById('asaas-entrada-status')?.value || 'pendente';
+    const entrada = statusEntrada === 'nao_aplica' ? 0 : numeroContratoMoeda(document.getElementById('asaas-valor-sinal')?.value);
+    const parcelas = Math.max(1, parseInt(document.getElementById('asaas-total-parcelas')?.value || '1', 10));
+    const saldo = Math.max(0, total - entrada);
+    const camposEntrada = document.getElementById('entrada-paga-campos');
+    const obsEntrada = document.getElementById('entrada-observacao');
+
+    if (camposEntrada) camposEntrada.style.display = statusEntrada === 'pago' ? 'grid' : 'none';
+    if (obsEntrada) obsEntrada.style.display = statusEntrada === 'pago' ? '' : 'none';
+
+    if (statusEntrada === 'pago') {
+        resumo.textContent = `Será lançado ${moedaContrato(entrada)} como entrada paga fora do Asaas, sem conciliar. O Asaas vai gerar ${parcelas} parcela(s) sobre o saldo de ${moedaContrato(saldo)}.`;
+    } else if (statusEntrada === 'nao_aplica') {
+        resumo.textContent = `Sem entrada. O Asaas vai gerar ${parcelas} parcela(s) sobre o total de ${moedaContrato(total)}.`;
+    } else {
+        resumo.textContent = `O Asaas vai cobrar a entrada de ${moedaContrato(entrada)} e gerar ${parcelas} parcela(s) sobre o saldo de ${moedaContrato(saldo)}.`;
+    }
+}
+
 function gerarCobrancaVisualizar(id, btn) {
     const original = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '<svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg> Gerando...';
+    const entradaStatus = document.getElementById('asaas-entrada-status')?.value || 'pendente';
+    const params = new URLSearchParams({
+        id,
+        entrada_status: entradaStatus,
+        gerar_apenas_saldo: entradaStatus === 'pago' ? '1' : '0',
+        asaas_valor_sinal: document.getElementById('asaas-valor-sinal')?.value || '0',
+        asaas_sinal_vencimento: document.getElementById('asaas-sinal-vencimento')?.value || '',
+        asaas_total_parcelas: document.getElementById('asaas-total-parcelas')?.value || '1',
+        asaas_first_due_date: document.getElementById('asaas-first-due-date')?.value || '',
+        asaas_billing_type: document.getElementById('asaas-billing-type')?.value || 'UNDEFINED',
+        entrada_conta: document.getElementById('entrada-conta')?.value || 'c6',
+        entrada_forma_pagamento: document.getElementById('entrada-forma-pagamento')?.value || 'pix',
+        entrada_observacao: document.getElementById('entrada-observacao')?.value || ''
+    });
 
     fetch('<?= raizUrl("/api/contratos/gerar_asaas.php") ?>', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ id })
+        body: params
     })
     .then(res => res.json())
     .then(data => {
@@ -888,6 +1209,33 @@ function gerarCobrancaVisualizar(id, btn) {
         btn.innerHTML = original;
     });
 }
+
+function sincronizarCobrancasAsaas(id, btn) {
+    const original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg> Sincronizando...';
+
+    fetch('<?= raizUrl("/api/contratos/sincronizar_asaas.php") ?>', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ id })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (!data.success) {
+            throw new Error(data.erro || 'Não foi possível sincronizar com o Asaas.');
+        }
+        alert(data.mensagem || 'Sincronização concluída.');
+        window.location.reload();
+    })
+    .catch(err => {
+        alert('Erro ao sincronizar Asaas: ' + err.message);
+        btn.disabled = false;
+        btn.innerHTML = original;
+    });
+}
+
+document.addEventListener('DOMContentLoaded', atualizarResumoCobrancaContrato);
 </script>
 
 <?php require_once __DIR__ . '/../includes/layout/footer.php'; ?>

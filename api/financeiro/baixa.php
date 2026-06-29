@@ -19,7 +19,7 @@ if (!$id || $valorNovo <= 0) {
 }
 
 $db = Database::get();
-$stmt = $db->prepare('SELECT id, valor, valor_pago FROM lancamentos WHERE id = ? LIMIT 1');
+$stmt = $db->prepare('SELECT id, valor, valor_pago, conciliado FROM lancamentos WHERE id = ? LIMIT 1');
 $stmt->execute([$id]);
 $lanc = $stmt->fetch();
 
@@ -30,7 +30,15 @@ if (!$lanc) {
 $novoPago = min((float)$lanc['valor_pago'] + $valorNovo, (float)$lanc['valor']);
 $novoStatus = calcularStatusAtualizado((float)$lanc['valor'], $novoPago, date('Y-m-d'));
 
-$upd = $db->prepare('UPDATE lancamentos SET valor_pago=?, status=? WHERE id=?');
-$upd->execute([$novoPago, $novoStatus, $id]);
+$conciliado = !empty($d['conciliado']) ? 1 : 0;
+$novoConciliado = ( (!empty($lanc['conciliado']) && (int)$lanc['conciliado'] === 1) || $conciliado === 1 ) ? 1 : 0;
 
-responderJson(['ok' => true, 'status' => $novoStatus, 'valor_pago' => $novoPago]);
+$dataPagamento = null;
+if ($novoPago >= (float)$lanc['valor']) {
+    $dataPagamento = $d['data_pagamento'] ?? date('Y-m-d');
+}
+
+$upd = $db->prepare('UPDATE lancamentos SET valor_pago=?, status=?, conciliado=?, data_pagamento=? WHERE id=?');
+$upd->execute([$novoPago, $novoStatus, $novoConciliado, $dataPagamento, $id]);
+
+responderJson(['ok' => true, 'status' => $novoStatus, 'valor_pago' => $novoPago, 'conciliado' => $novoConciliado]);

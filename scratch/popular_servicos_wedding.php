@@ -5,7 +5,6 @@ require_once __DIR__ . '/../includes/helpers.php';
 $db = Database::get();
 
 $produtos = [
-    // PLANOS BASE
     [
         'nome' => 'Experiência Heritage',
         'categoria' => 'wedding',
@@ -17,7 +16,7 @@ $produtos = [
             'Réplicas para a Família (Presente): Inclusão de 02 Mini Álbuns réplicas, ideais para presentear os pais com a mesma qualidade do álbum principal.',
             'Produção Cinematográfica 4K: Filme completo (8 a 12 min) com áudio dos votos e trilha sonora licenciada.',
             'Imagens Aéreas (Drone): Perspectivas cinematográficas para contextualizar o local do seu "sim".',
-            'Ecossistema Digital e Físico: Galeria online vitalícia, e pen drive personalizado.'
+            'Ecossistema Digital e Físico: Galeria online vitalícia e pen drive personalizado.'
         ],
         'preco' => 7900.00,
         'condicoes' => 'Condição especial, amigos Lagoinha Ilha.'
@@ -26,7 +25,7 @@ $produtos = [
         'nome' => 'Experiência Cinematic',
         'categoria' => 'wedding',
         'tipo' => 'plano',
-        'subtitulo' => 'A união entre a fotografia artística e a dinâmica do vídeo moderno. Ideal para casamentos íntimos (60 convidados) que buscam impacto visual e compartilhamento imediato.',
+        'subtitulo' => 'A união entre a fotografia artística e a dinâmica do vídeo moderno. Ideal para casamentos íntimos que buscam impacto visual e compartilhamento imediato.',
         'beneficios' => [
             'Fotografia de Evento (8h): Cobertura focada na essência e na espontaneidade dos convidados.',
             'Sessão Engagement (Pré-Wedding): Ensaio de até 3h para conexão do casal com a lente antes do grande dia.',
@@ -51,14 +50,13 @@ $produtos = [
         'preco' => 2800.00,
         'condicoes' => ''
     ],
-    // UPGRADES
     [
         'nome' => 'Boudoir da Noiva',
         'categoria' => 'wedding',
         'tipo' => 'servico',
         'subtitulo' => 'No dia do casamento',
         'beneficios' => [
-            'Um ensaio de 1 h realizado após a maquiagem para registrar a beleza da noiva.'
+            'Um ensaio de 1h realizado após a maquiagem para registrar a beleza da noiva.'
         ],
         'preco' => 500.00,
         'condicoes' => ''
@@ -88,23 +86,66 @@ $produtos = [
 ];
 
 try {
-    foreach ($produtos as $p) {
-        $id = gerarId();
-        $stmt = $db->prepare('INSERT INTO servicos (id, nome, categoria, tipo, subtitulo, beneficios_json, preco_venda, condicoes_comerciais, markup, ativo) VALUES (?,?,?,?,?,?,?,?,?,1)');
-        $stmt->execute([
-            $id,
-            $p['nome'],
-            $p['categoria'],
-            $p['tipo'],
-            $p['subtitulo'],
-            json_encode($p['beneficios']),
-            $p['preco'],
-            $p['condicoes'],
-            30 // Markup padrão
+    $db->beginTransaction();
+
+    $buscar = $db->prepare('SELECT id FROM servicos WHERE nome = ? AND categoria = ? AND tipo = ? LIMIT 1');
+    $atualizar = $db->prepare('
+        UPDATE servicos
+        SET subtitulo = ?,
+            beneficios_json = ?,
+            preco_venda = ?,
+            condicoes_comerciais = ?,
+            markup = ?,
+            ativo = 1
+        WHERE id = ?
+    ');
+    $inserir = $db->prepare('
+        INSERT INTO servicos
+            (id, nome, categoria, tipo, subtitulo, beneficios_json, preco_venda, condicoes_comerciais, markup, ativo)
+        VALUES
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+    ');
+
+    foreach ($produtos as $produto) {
+        $beneficiosJson = json_encode($produto['beneficios'], JSON_UNESCAPED_UNICODE);
+
+        $buscar->execute([$produto['nome'], $produto['categoria'], $produto['tipo']]);
+        $servicoId = $buscar->fetchColumn();
+
+        if ($servicoId) {
+            $atualizar->execute([
+                $produto['subtitulo'],
+                $beneficiosJson,
+                $produto['preco'],
+                $produto['condicoes'],
+                30,
+                $servicoId
+            ]);
+            echo "Atualizado: {$produto['nome']}\n";
+            continue;
+        }
+
+        $inserir->execute([
+            gerarId(),
+            $produto['nome'],
+            $produto['categoria'],
+            $produto['tipo'],
+            $produto['subtitulo'],
+            $beneficiosJson,
+            $produto['preco'],
+            $produto['condicoes'],
+            30
         ]);
-        echo "Cadastrado: {$p['nome']}\n";
+        echo "Criado: {$produto['nome']}\n";
     }
-    echo "Sucesso! Todos os produtos foram cadastrados.\n";
+
+    $db->commit();
+    echo "Pacotes e adicionais de casamento restaurados.\n";
 } catch (Exception $e) {
-    echo "Erro ao cadastrar: " . $e->getMessage() . "\n";
+    if ($db->inTransaction()) {
+        $db->rollBack();
+    }
+
+    echo "Erro ao restaurar pacotes: " . $e->getMessage() . "\n";
+    exit(1);
 }

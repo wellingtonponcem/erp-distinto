@@ -85,11 +85,16 @@ try {
     } elseif ($eventoRecebido === 'PAYMENT_OVERDUE' || $statusAsaas === 'overdue') {
         $novoStatus = 'atrasado';
     } elseif ($eventoRecebido === 'PAYMENT_DELETED' || $statusAsaas === 'deleted') {
-        $novoStatus = 'cancelado';
+        $db->prepare("DELETE FROM lancamentos WHERE id = ?")->execute([$lancamento['id']]);
+        echo json_encode([
+            'success' => true,
+            'mensagem' => "Lancamento {$lancamento['id']} removido porque a cobranca foi apagada no Asaas."
+        ]);
+        exit;
     }
 
     if ($novoStatus) {
-        $sets = ["status = ?"];
+        $sets = ["status = ?", "conciliado = 1"];
         $params = [$novoStatus];
 
         if ($novoStatus === 'pago') {

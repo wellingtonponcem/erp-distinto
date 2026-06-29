@@ -74,9 +74,15 @@ require_once __DIR__ . '/../includes/layout/head.php';
         <div class="space-y-4">
             <div class="flex items-center justify-between ml-4 mb-4">
                 <h2 class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500">Histórico de Contratos (<?= count($contratos) ?>)</h2>
-                <a href="<?= raizUrl('/gerenciamento/propostas.php') ?>" class="text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white transition-colors flex items-center gap-1">
-                    <i data-lucide="plus" class="w-3.5 h-3.5"></i> Gerar a partir de Proposta
-                </a>
+                <div class="flex items-center gap-2">
+                    <a href="<?= raizUrl('/gerenciamento/contrato_gerar.php?novo=1') ?>" class="text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white transition-colors flex items-center gap-1">
+                        <i data-lucide="file-plus" class="w-3.5 h-3.5"></i> Novo Contrato
+                    </a>
+                    <span class="text-zinc-600 dark:text-zinc-500 text-[10px]">|</span>
+                    <a href="<?= raizUrl('/gerenciamento/propostas.php') ?>" class="text-xs font-bold text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white transition-colors flex items-center gap-1">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i> Gerar a partir de Proposta
+                    </a>
+                </div>
             </div>
             
             <div class="grid grid-cols-1 gap-3">
@@ -194,7 +200,7 @@ require_once __DIR__ . '/../includes/layout/head.php';
                     <div class="py-20 text-center bg-white/50 dark:bg-zinc-900/10 rounded-[32px] border border-dashed border-zinc-200 dark:border-zinc-800">
                         <i data-lucide="scroll" class="w-12 h-12 mx-auto text-zinc-800 mb-4 opacity-20"></i>
                         <p class="text-sm font-bold text-zinc-500 mb-2">Nenhum contrato gerado ainda.</p>
-                        <p class="text-xs text-zinc-400 max-w-sm mx-auto">Vá para a seção de <a href="<?= raizUrl('/gerenciamento/propostas.php') ?>" class="text-zinc-600 dark:text-zinc-300 font-bold hover:underline">Propostas Web</a> e clique com o botão direito em uma proposta para gerar seu contrato.</p>
+                        <p class="text-xs text-zinc-400 max-w-sm mx-auto">Clique em <a href="<?= raizUrl('/gerenciamento/contrato_gerar.php?novo=1') ?>" class="text-zinc-600 dark:text-zinc-300 font-bold hover:underline">Novo Contrato</a> para criar um do zero, ou vá para a seção de <a href="<?= raizUrl('/gerenciamento/propostas.php') ?>" class="text-zinc-600 dark:text-zinc-300 font-bold hover:underline">Propostas Web</a> e clique com o botão direito em uma proposta para gerar seu contrato.</p>
                     </div>
                 <?php endif; ?>
             </div>

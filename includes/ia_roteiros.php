@@ -370,43 +370,68 @@ class IARoteiros
         $apiKey = self::getGeminiKey();
         if (!$apiKey) return "Erro: GEMINI_API_KEY não configurada em config/env.php.";
 
-        $payload = json_encode([
-            'contents' => [['parts' => $parts]],
-            'generationConfig' => [
-                'temperature'    => 0.4,
-                'maxOutputTokens' => 8192
-            ]
-        ]);
+        $modelsToTry = [$model];
+        $primary = $model;
+        if ($primary !== 'gemini-2.0-flash') $modelsToTry[] = 'gemini-2.0-flash';
+        if ($primary !== 'gemini-1.5-flash') $modelsToTry[] = 'gemini-1.5-flash';
 
-        $ch = curl_init("https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}");
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => $payload,
-            CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
-            CURLOPT_TIMEOUT        => 120,
-        ]);
+        $lastError = '';
 
-        $resposta = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        foreach ($modelsToTry as $attemptModel) {
+            for ($attempt = 1; $attempt <= 2; $attempt++) {
+                $payload = json_encode([
+                    'contents' => [['parts' => $parts]],
+                    'generationConfig' => [
+                        'temperature'    => 0.4,
+                        'maxOutputTokens' => 8192
+                    ]
+                ]);
 
-        if ($httpCode !== 200) {
-            $err = json_decode($resposta, true);
-            $msg = $err['error']['message'] ?? $resposta;
-            return "Erro Gemini (HTTP $httpCode): $msg";
+                $ch = curl_init("https://generativelanguage.googleapis.com/v1beta/models/{$attemptModel}:generateContent?key={$apiKey}");
+                curl_setopt_array($ch, [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_POST           => true,
+                    CURLOPT_POSTFIELDS     => $payload,
+                    CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
+                    CURLOPT_TIMEOUT        => 120,
+                ]);
+
+                $resposta = curl_exec($ch);
+                $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+                if ($httpCode === 200) {
+                    $dados = json_decode($resposta, true);
+
+                    if (isset($dados['usageMetadata'])) {
+                        $tokensIn  = (int) ($dados['usageMetadata']['promptTokenCount'] ?? 0);
+                        $tokensOut = (int) ($dados['usageMetadata']['candidatesTokenCount'] ?? 0);
+                        self::logarChamadaIA($userId, 'gemini', $operacao, $tokensIn, $tokensOut);
+                    }
+
+                    return $dados['candidates'][0]['content']['parts'][0]['text']
+                        ?? "Erro: resposta inesperada do Gemini. Body: " . substr($resposta, 0, 300);
+                }
+
+                $err = json_decode($resposta, true);
+                $msg = $err['error']['message'] ?? $resposta;
+                $lastError = "Erro Gemini (HTTP $httpCode): $msg";
+
+                // Auth/quota errors — don't retry or fallback
+                if (in_array($httpCode, [429, 403, 401, 400])) {
+                    return $lastError;
+                }
+
+                // 503 overloaded — try next model
+                if ($httpCode === 503) {
+                    usleep(500_000);
+                    break;
+                }
+
+                usleep(300_000);
+            }
         }
 
-        $dados = json_decode($resposta, true);
-
-        // Log de consumo
-        if (isset($dados['usageMetadata'])) {
-            $tokensIn  = (int) ($dados['usageMetadata']['promptTokenCount'] ?? 0);
-            $tokensOut = (int) ($dados['usageMetadata']['candidatesTokenCount'] ?? 0);
-            self::logarChamadaIA($userId, 'gemini', $operacao, $tokensIn, $tokensOut);
-        }
-
-        return $dados['candidates'][0]['content']['parts'][0]['text']
-            ?? "Erro: resposta inesperada do Gemini. Body: " . substr($resposta, 0, 300);
+        return $lastError ?: "Erro: não foi possível contactar a API do Gemini após múltiplas tentativas.";
     }
 
     // =========================================================================

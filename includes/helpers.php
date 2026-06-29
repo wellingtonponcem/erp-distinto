@@ -74,6 +74,7 @@ function contatoResponsavel(array $dados): string {
     $contatoTipo = $dados['contato_tipo'] ?? '';
     $nomeNoivo = trim($dados['nome_noivo'] ?? '');
     $nomeNoiva = trim($dados['nome_noiva'] ?? '');
+    $responsavel = trim($dados['responsavel'] ?? '');
 
     if ($contatoTipo === 'noivo' && $nomeNoivo !== '') {
         return $nomeNoivo;
@@ -83,7 +84,15 @@ function contatoResponsavel(array $dados): string {
         return $nomeNoiva;
     }
 
-    return trim($dados['responsavel'] ?? '');
+    if ($contatoTipo === 'casal') {
+        if ($nomeNoivo !== '' && $nomeNoiva !== '') {
+            return $nomeNoivo . ' & ' . $nomeNoiva;
+        }
+
+        return $nomeNoiva !== '' ? $nomeNoiva : $nomeNoivo;
+    }
+
+    return $responsavel !== '' ? $responsavel : ($nomeNoiva !== '' ? $nomeNoiva : $nomeNoivo);
 }
 
 function labelStatus(string $status): string {
@@ -140,4 +149,79 @@ function decodificarEntidades(?string $valor): string {
         $valor = html_entity_decode($valor, ENT_QUOTES, 'UTF-8');
     }
     return $valor;
+}
+
+function detectarPlanoCasamento(array $dadosJson): string {
+    foreach (['pacote_dado_andamento', 'plano_dado_andamento'] as $campoAdmin) {
+        if (!empty($dadosJson[$campoAdmin]) && in_array($dadosJson[$campoAdmin], ['heritage', 'cinematic', 'essencial'], true)) {
+            return $dadosJson[$campoAdmin];
+        }
+    }
+
+    $escolha = $dadosJson['cliente_escolha'] ?? [];
+    if (!empty($escolha['plano_id']) && in_array($escolha['plano_id'], ['heritage', 'cinematic', 'essencial'], true)) {
+        return $escolha['plano_id'];
+    }
+
+    $planos = [
+        'heritage' => 'show_heritage',
+        'cinematic' => 'show_cinematic',
+        'essencial' => 'show_essencial',
+    ];
+
+    foreach ($planos as $planoId => $campo) {
+        if (($dadosJson[$campo] ?? false) !== false) {
+            return $planoId;
+        }
+    }
+
+    return 'cinematic';
+}
+
+function limiteParcelasPorPlanoCasamento(string $planoId): int {
+    return $planoId === 'heritage' ? 9 : 7;
+}
+
+function adicionarMesesData(string $data, int $meses): string {
+    if (!$data) return '';
+    $dt = DateTime::createFromFormat('Y-m-d', $data);
+    if (!$dt) return '';
+
+    $dt->modify('+' . $meses . ' months');
+    return $dt->format('Y-m-d');
+}
+
+function contarMesesInclusivo(string $inicio, string $fim): int {
+    if (!$inicio || !$fim) return 1;
+
+    $inicioDt = DateTime::createFromFormat('Y-m-d', $inicio);
+    $fimDt = DateTime::createFromFormat('Y-m-d', $fim);
+    if (!$inicioDt || !$fimDt) return 1;
+
+    if ($fimDt <= $inicioDt) {
+        return 1;
+    }
+
+    return (($fimDt->format('Y') - $inicioDt->format('Y')) * 12)
+        + ((int)$fimDt->format('m') - (int)$inicioDt->format('m'))
+        + 1;
+}
+
+function calcularParcelasSaldoCasamento(array $dadosJson, int $parcelasInformadas = 1): int {
+    $planoId = detectarPlanoCasamento($dadosJson);
+    $limitePacote = limiteParcelasPorPlanoCasamento($planoId);
+    $sinalVencimento = $dadosJson['asaas_sinal_vencimento'] ?? '';
+    if (!$sinalVencimento) {
+        $sinalVencimento = date('Y-m-d');
+    }
+
+    $primeiraParcela = adicionarMesesData($sinalVencimento, 1);
+    $parcelasAteEvento = contarMesesInclusivo($primeiraParcela, $dadosJson['data_evento'] ?? '');
+    $parcelas = min($parcelasAteEvento, $limitePacote);
+
+    if ($parcelasInformadas > 0) {
+        $parcelas = min($parcelas, $parcelasInformadas);
+    }
+
+    return max(1, (int)$parcelas);
 }

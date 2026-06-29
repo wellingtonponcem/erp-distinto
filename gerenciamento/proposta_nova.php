@@ -50,6 +50,7 @@ if (!function_exists('obterBeneficiosTexto')) {
 $beneficiosH = obterBeneficiosTexto($heritagePkg);
 $beneficiosC = obterBeneficiosTexto($cinematicPkg);
 $beneficiosE = obterBeneficiosTexto($essencialPkg);
+$pacoteDadoAndamento = 'cinematic';
 
 include __DIR__ . '/../includes/layout/head.php';
 ?>
@@ -80,6 +81,33 @@ include __DIR__ . '/../includes/layout/head.php';
     }
     .is-modal-layout .input::placeholder {
         color: rgba(255, 255, 255, 0.2) !important;
+    }
+    .proposal-stepper {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+    .proposal-stepper button {
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.04);
+        color: rgba(255,255,255,0.45);
+        border-radius: 14px;
+        padding: 12px 10px;
+        font-size: 10px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        transition: all .2s ease;
+    }
+    .proposal-stepper button.is-active {
+        background: #fff;
+        color: #000;
+        border-color: #fff;
+    }
+    .proposal-stepper button.is-done {
+        color: #10b981;
+        border-color: rgba(16,185,129,.35);
     }
 </style>
 
@@ -118,7 +146,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto px-4">
                     <!-- Marketing -->
-                    <div @click="tipoProposta = 'marketing'; passo = 2; $nextTick(() => lucide.createIcons())" 
+                    <div @click="tipoProposta = 'marketing'; passo = 2; subPasso = 1; $nextTick(() => lucide.createIcons())" 
                          class="group cursor-pointer bg-white/5 border border-white/5 hover:border-white/20 rounded-[2.5rem] p-8 transition-all hover:bg-white/[0.08] text-center flex flex-col items-center justify-center min-h-[320px] backdrop-blur-md">
                         <div class="w-24 h-24 bg-white/5 rounded-[2.3rem] flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-500 group-hover:bg-white group-hover:text-black">
                             <i data-lucide="megaphone" class="w-10 h-10"></i>
@@ -128,7 +156,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     </div>
 
                     <!-- Filmmaker -->
-                    <div @click="tipoProposta = 'filmmaker'; passo = 2; $nextTick(() => lucide.createIcons())" 
+                    <div @click="tipoProposta = 'filmmaker'; passo = 2; subPasso = 1; $nextTick(() => lucide.createIcons())" 
                          class="group cursor-pointer bg-white/5 border border-white/5 hover:border-white/20 rounded-[2.5rem] p-8 transition-all hover:bg-white/[0.08] text-center flex flex-col items-center justify-center min-h-[320px] backdrop-blur-md">
                         <div class="w-24 h-24 bg-white/5 rounded-[2.3rem] flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-500 group-hover:bg-white group-hover:text-black">
                             <i data-lucide="video" class="w-10 h-10"></i>
@@ -138,7 +166,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     </div>
 
                     <!-- Casamento -->
-                    <div @click="tipoProposta = 'casamento'; passo = 2; $nextTick(() => lucide.createIcons())" 
+                    <div @click="tipoProposta = 'casamento'; passo = 2; subPasso = 1; $nextTick(() => lucide.createIcons())" 
                          class="group cursor-pointer bg-white/5 border border-white/5 hover:border-white/20 rounded-[2.5rem] p-8 transition-all hover:bg-white/[0.08] text-center flex flex-col items-center justify-center min-h-[320px] backdrop-blur-md">
                         <div class="w-24 h-24 bg-white/5 rounded-[2.3rem] flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-500 group-hover:bg-white group-hover:text-black">
                             <i data-lucide="heart" class="w-10 h-10"></i>
@@ -148,7 +176,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     </div>
 
                     <!-- 15 Anos -->
-                    <div @click="tipoProposta = '15anos'; passo = 2; $nextTick(() => lucide.createIcons())" 
+                    <div @click="tipoProposta = '15anos'; passo = 2; subPasso = 1; $nextTick(() => lucide.createIcons())" 
                          class="group cursor-pointer bg-white/5 border border-white/5 hover:border-white/20 rounded-[2.5rem] p-8 transition-all hover:bg-white/[0.08] text-center flex flex-col items-center justify-center min-h-[320px] backdrop-blur-md">
                         <div class="w-24 h-24 bg-white/5 rounded-[2.3rem] flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-500 group-hover:bg-white group-hover:text-black">
                             <i data-lucide="star" class="w-10 h-10"></i>
@@ -165,6 +193,12 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     <button type="button" @click="passo = 1" class="text-zinc-400 hover:text-zinc-900 transition-colors flex items-center gap-1 text-xs font-bold uppercase tracking-wider">
                         <i data-lucide="arrow-left" class="w-4 h-4"></i> Voltar para escolha de tipo
                     </button>
+                </div>
+                <div class="proposal-stepper" x-show="tipoProposta === 'casamento'">
+                    <button type="button" @click="subPasso = 1" :class="{ 'is-active': subPasso === 1, 'is-done': subPasso > 1 }">1. Dados</button>
+                    <button type="button" @click="subPasso = 2" :class="{ 'is-active': subPasso === 2, 'is-done': subPasso > 2 }">2. Pacotes</button>
+                    <button type="button" @click="subPasso = 3" :class="{ 'is-active': subPasso === 3, 'is-done': subPasso > 3 }">3. Detalhes</button>
+                    <button type="button" @click="subPasso = 4" :class="{ 'is-active': subPasso === 4 }">4. Gerar</button>
                 </div>
                 <!-- Informações Básicas (Oculto para Casamento) -->
                 <section class="card p-6" x-show="tipoProposta !== 'casamento'">
@@ -281,7 +315,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                 </section>
 
                 <!-- CONFIGURAÇÕES DE CASAMENTO -->
-                <section class="card p-6" x-show="tipoProposta === 'casamento'">
+                <section class="card p-6" x-show="tipoProposta === 'casamento' && subPasso === 1">
                     <h2 class="section-header-premium">
                         <i data-lucide="heart" class="w-5 h-5 text-rose-500"></i>
                         Dados do Casamento
@@ -362,6 +396,13 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         <p class="text-[10px] text-zinc-500 mt-2">Esse briefing alimenta a IA. Se a mensagem pessoal ficar em branco, ela sera gerada a partir daqui.</p>
                     </div>
 
+                </section>
+
+                <section class="card p-6" x-show="tipoProposta === 'casamento' && subPasso === 2">
+                    <h2 class="section-header-premium">
+                        <i data-lucide="package-check" class="w-5 h-5 text-amber-400"></i>
+                        Pacotes e adicionais
+                    </h2>
                     <div class="space-y-6">
                     <div class="space-y-6">
                         <?php foreach ($weddingPackages as $pkg): 
@@ -482,6 +523,19 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         <?php endforeach; ?>
 
                         <div class="border-t border-zinc-100/50 pt-8 mt-8">
+                            <div class="form-group">
+                                <label class="label-premium">Pacote dado andamento</label>
+                                <select name="pacote_dado_andamento" class="input" x-model="pacoteDadoAndamento" :disabled="tipoProposta !== 'casamento'">
+                                    <option value="">Ainda não definido</option>
+                                    <option value="heritage" x-show="showHeritage">Experiência Heritage</option>
+                                    <option value="cinematic" x-show="showCinematic">Experiência Cinematic</option>
+                                    <option value="essencial" x-show="showEssencial">Registro Essencial</option>
+                                </select>
+                                <p class="text-[10px] text-zinc-500 mt-2">Escolha qual pacote será usado ao gerar contrato, Asaas e próximos passos.</p>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-zinc-100/50 pt-8 mt-8">
                             <h4 class="text-[11px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-6">Andamento da proposta</h4>
                             <div class="space-y-6">
                                 <div class="form-group">
@@ -529,7 +583,7 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                     </div>
                 </section>
 
-                <section class="card p-6" x-show="tipoProposta === 'casamento'">
+                <section class="card p-6" x-show="tipoProposta === 'casamento' && subPasso === 3">
                     <h3 class="text-sm font-bold text-zinc-900 mb-6 flex items-center gap-2">
                         <i data-lucide="heart" class="w-4 h-4 text-zinc-400"></i> Personalização Premium
                     </h3>
@@ -734,10 +788,40 @@ $isModal = ($_GET['layout'] ?? '') === 'modal';
                         <textarea name="briefing" class="input min-h-[120px]" placeholder="Dê detalhes sobre o cliente ou o projeto para que a IA gere textos mais precisos..."></textarea>
                     </div>
                 </section>
+
+                <section class="card p-6" x-show="tipoProposta === 'casamento' && subPasso === 4">
+                    <h3 class="section-header-premium">
+                        <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400"></i>
+                        Revisar e gerar
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-zinc-400">
+                        <div class="p-4 rounded-2xl bg-white/5 border border-white/5">
+                            <p class="text-[10px] uppercase tracking-widest font-black mb-1">Casal</p>
+                            <p class="font-bold text-white" x-text="(nomeNoivo || 'Noivo') + ' & ' + (nomeNoiva || 'Noiva')"></p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-white/5 border border-white/5">
+                            <p class="text-[10px] uppercase tracking-widest font-black mb-1">Pacote em andamento</p>
+                            <p class="font-bold text-white" x-text="pacoteDadoAndamento || 'Ainda não definido'"></p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-zinc-500 mt-4">Se estiver tudo certo, use o botão ao lado para gerar a proposta web.</p>
+                </section>
+
+                <div class="flex items-center justify-between gap-4 pt-2" x-show="tipoProposta === 'casamento'">
+                    <button type="button" @click="subPasso = Math.max(1, subPasso - 1); $nextTick(() => lucide.createIcons())" class="px-6 h-12 rounded-xl bg-white/5 text-white font-bold border border-white/10 hover:bg-white/10 transition-all flex items-center gap-2" x-show="subPasso > 1">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                        Voltar
+                    </button>
+                    <span x-show="subPasso === 1"></span>
+                    <button type="button" @click="subPasso = Math.min(4, subPasso + 1); $nextTick(() => lucide.createIcons())" class="ml-auto px-8 h-12 rounded-xl bg-white text-black font-bold hover:bg-zinc-100 transition-all flex items-center gap-2" x-show="subPasso < 4">
+                        Próximo
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
             </div>
 
             <!-- PASSO 2: SIDEBAR (COLUNA LATERAL) -->
-            <div x-show="passo === 2" class="lg:col-span-1 space-y-6 animate-fade-in" style="display: none;">
+            <div x-show="passo === 2 && (tipoProposta !== 'casamento' || subPasso === 4)" class="lg:col-span-1 space-y-6 animate-fade-in" style="display: none;">
                 <section class="card p-6 bg-zinc-900 text-white shadow-xl shadow-zinc-900/20 border-0">
                     <h3 class="text-sm font-bold mb-4 opacity-80">Ações</h3>
                     <button type="submit" id="btnGerar" class="w-full h-12 rounded-xl font-bold bg-white text-black hover:bg-zinc-100 transition-all flex items-center justify-center gap-2 group !text-black">
@@ -791,6 +875,7 @@ document.addEventListener('alpine:init', () => {
         valorTotal: 0,
         tipoProposta: 'marketing',
         passo: 1,
+        subPasso: 1,
         mesesContrato: 12,
         // Campos de Casamento
         nomeNoivo: '',
@@ -802,6 +887,7 @@ document.addEventListener('alpine:init', () => {
         showHeritage: true,
         showCinematic: true,
         showEssencial: true,
+        pacoteDadoAndamento: '<?= $pacoteDadoAndamento ?>',
         
         // Upgrades Selecionados (Inicia tudo como true para facilitar)
         includeBoudoirHeritage: true,
