@@ -899,6 +899,7 @@ function contratoVisualizarApp() {
                 alert('Erro ao enviar documento para o servidor.');
                 this.loading = false;
             });
+            }, 150);
         },
         
         sincronizarStatus() {
@@ -1053,6 +1054,7 @@ function confirmarEnvioAssinatura() {
             setContratoAssinaturaLoading(false);
             alert('Erro ao enviar documento para o servidor.');
         });
+    }, 150);
 }
 </script>
 
