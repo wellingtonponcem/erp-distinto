@@ -168,6 +168,16 @@ require_once __DIR__ . '/../includes/layout/head.php';
                     Voltar
                 </a>
                 
+                <button type="button" onclick="clonarContratoVisualizar('<?= sanitizar($id) ?>', this)" class="px-5 py-2.5 bg-zinc-900 border border-white/5 hover:bg-zinc-850 text-zinc-300 rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5">
+                    <i data-lucide="copy" class="w-4 h-4"></i> Clonar
+                </button>
+
+                <?php if (($contrato['status'] ?? 'rascunho') !== 'rascunho'): ?>
+                    <button type="button" onclick="resetarContratoVisualizar('<?= sanitizar($id) ?>', this)" class="px-5 py-2.5 bg-amber-500/10 text-amber-500 border border-amber-500/20 hover:bg-amber-500 hover:text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Reverter Rascunho
+                    </button>
+                <?php endif; ?>
+
                 <?php if (($contrato['status'] ?? 'rascunho') === 'rascunho'): ?>
                     <a href="<?= raizUrl('/gerenciamento/contrato_gerar.php?id=' . $id) ?>" class="px-5 py-2.5 bg-zinc-900 border border-white/5 hover:bg-zinc-800 text-zinc-300 rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5">
                         <i data-lucide="edit-3" class="w-4 h-4"></i> Editar
@@ -224,6 +234,11 @@ require_once __DIR__ . '/../includes/layout/head.php';
                             <i data-lucide="refresh-cw" class="w-4 h-4" :class="loading ? 'animate-spin' : ''"></i> Sincronizar Status
                         </button>
                     <?php endif; ?>
+
+                    <button type="button" onclick="resetarContratoVisualizar('<?= sanitizar($id) ?>', this)"
+                            class="px-5 py-2.5 bg-amber-500/10 text-amber-500 border border-amber-500/20 hover:bg-amber-500 hover:text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-1.5 cursor-pointer shadow-lg">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Reverter Rascunho
+                    </button>
                 </div>
             </div>
         <?php endif; ?>
@@ -1303,6 +1318,62 @@ function sincronizarCobrancasAsaas(id, btn) {
         alert('Erro ao sincronizar Asaas: ' + err.message);
         btn.disabled = false;
         btn.innerHTML = original;
+    });
+}
+
+function clonarContratoVisualizar(id, btn) {
+    const original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg>';
+
+    fetch('<?= raizUrl("/api/contratos/clonar.php") ?>', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ id })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (!data.success) {
+            throw new Error(data.erro || 'Não foi possível clonar o contrato.');
+        }
+        alert(data.mensagem || 'Contrato clonado com sucesso.');
+        window.location.href = '<?= raizUrl("/gerenciamento/contrato_visualizar.php?id=") ?>' + data.novo_id;
+    })
+    .catch(err => {
+        alert('Erro ao clonar contrato: ' + err.message);
+        btn.disabled = false;
+        btn.innerHTML = original;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    });
+}
+
+function resetarContratoVisualizar(id, btn) {
+    if (!confirm('Tem certeza que deseja reverter este contrato de volta para Rascunho? Isso invalidará o processo de assinatura anterior e permitirá editá-lo ou reenviá-lo.')) {
+        return;
+    }
+    
+    const original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg>';
+
+    fetch('<?= raizUrl("/api/contratos/resetar.php") ?>', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ id })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (!data.success) {
+            throw new Error(data.erro || 'Não foi possível reverter o contrato.');
+        }
+        alert(data.mensagem || 'Contrato revertido para rascunho com sucesso.');
+        window.location.reload();
+    })
+    .catch(err => {
+        alert('Erro ao reverter contrato: ' + err.message);
+        btn.disabled = false;
+        btn.innerHTML = original;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
     });
 }
 
