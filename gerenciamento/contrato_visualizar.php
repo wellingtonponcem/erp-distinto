@@ -773,10 +773,10 @@ function contratoVisualizarApp() {
 
             const element = original.cloneNode(true);
             element.classList.remove('pdf-export-source');
-            element.style.position = 'fixed';
+            element.style.position = 'absolute';
             element.style.left = '0';
             element.style.top = '0';
-            element.style.zIndex = '99999';
+            element.style.zIndex = '-99999';
             element.style.width = '210mm';
             element.style.backgroundColor = '#ffffff';
             element.style.color = '#231f20';
@@ -793,7 +793,13 @@ function contratoVisualizarApp() {
                 margin: [15, 0, 18, 0],
                 filename: 'Contrato_' + this.id + '.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, logging: false },
+                html2canvas: { 
+                    scale: 2, 
+                    useCORS: true, 
+                    logging: false,
+                    scrollX: 0,
+                    scrollY: 0
+                },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
                 pagebreak: {
                     mode: ['css', 'legacy'],
@@ -857,10 +863,10 @@ function contratoVisualizarApp() {
             const original = document.getElementById('pdf-content');
             const element = original.cloneNode(true);
             element.classList.remove('pdf-export-source');
-            element.style.position = 'fixed';
+            element.style.position = 'absolute';
             element.style.left = '0';
             element.style.top = '0';
-            element.style.zIndex = '99999';
+            element.style.zIndex = '-99999';
             element.style.width = '210mm';
             element.style.backgroundColor = '#ffffff';
             element.style.color = '#231f20';
@@ -877,7 +883,13 @@ function contratoVisualizarApp() {
                 margin: [15, 0, 18, 0],
                 filename: 'Contrato_' + this.id + '.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, logging: false },
+                html2canvas: { 
+                    scale: 2, 
+                    useCORS: true, 
+                    logging: false,
+                    scrollX: 0,
+                    scrollY: 0
+                },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
                 pagebreak: { 
                     mode: ['css', 'legacy'], 
@@ -1005,10 +1017,10 @@ function confirmarEnvioAssinatura() {
 
     const element = original.cloneNode(true);
     element.classList.remove('pdf-export-source');
-    element.style.position = 'fixed';
+    element.style.position = 'absolute';
     element.style.left = '0';
     element.style.top = '0';
-    element.style.zIndex = '99999';
+    element.style.zIndex = '-99999';
     element.style.width = '210mm';
     element.style.backgroundColor = '#ffffff';
     element.style.color = '#231f20';
@@ -1029,7 +1041,13 @@ function confirmarEnvioAssinatura() {
         margin: [15, 0, 18, 0],
         filename: 'Contrato_' + contratoId + '.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
+        html2canvas: { 
+            scale: 2, 
+            useCORS: true, 
+            logging: false,
+            scrollX: 0,
+            scrollY: 0
+        },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: {
             mode: ['css', 'legacy'],

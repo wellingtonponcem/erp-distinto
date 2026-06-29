@@ -41,7 +41,7 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
 - **Recurso de Clonagem e Reversão de Contratos para Testes** *(jun/2026)*:
   - Criados os endpoints [clonar.php](file:///c:/xampp/htdocs/erp-distinto/api/contratos/clonar.php) e [resetar.php](file:///c:/xampp/htdocs/erp-distinto/api/contratos/resetar.php).
   - Adicionadas ações rápidas de "Clonar" e "Reverter para Rascunho" (resetar Assinafy/Asaas) na listagem ([contratos.php](file:///c:/xampp/htdocs/erp-distinto/gerenciamento/contratos.php)) e visualização ([contrato_visualizar.php](file:///c:/xampp/htdocs/erp-distinto/gerenciamento/contrato_visualizar.php)).
-  - Corrigida a geração de PDF em branco na exportação de arquivo local, aplicando delay de 150ms via `setTimeout` para permitir que o navegador renderize o clone do elemento A4 no DOM.
+  - Corrigida a geração de PDF em branco (tanto na exportação local quanto no Assinafy) alterando o posicionamento do clone temporário de `fixed` para `absolute` (escondido via `zIndex = -99999`) e forçando `scrollX: 0, scrollY: 0` nas opções do `html2canvas` para mitigar o deslocamento de scroll da página.
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.
