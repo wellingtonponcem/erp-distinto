@@ -32,6 +32,7 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
   - Implementada auto-migração no [database.php](file:///c:/xampp/htdocs/erp-distinto/config/database.php) para criar automaticamente as colunas `sistema_origem`, `subscription_status` e `subscription_plan` na tabela `users` se estiverem ausentes.
   - Atualizada a senha de `faustinosdg@gmail.com` no Neon de produção para bater com a senha fornecida pelo cliente (`!@Jeane&w#1`), e removidas as depurações temporárias do fluxo de login.
   - Habilitada exibição temporária de erros PHP em [dashboard.php](file:///c:/xampp/htdocs/erp-distinto/dashboard.php) para identificar a causa raiz do erro 500 em produção.
+  - Criado o script temporário [corrigir_env_producao.php](file:///c:/xampp/htdocs/erp-distinto/corrigir_env_producao.php) para apontar o ERP em produção para o banco de dados Neon correto do ERP (`ep-crimson-sun-ac4t9f9a`) em vez do banco do site institucional.
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.
