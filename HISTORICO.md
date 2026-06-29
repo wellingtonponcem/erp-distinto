@@ -27,13 +27,12 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
   - Implementada sincronização mútua e automática em tempo real entre o input "Vencimento do Sinal" da Calculadora e o da seção de "Cobrança Asaas".
   - Corrigido problema de sobreposição visual na pré-visualização de contrato (`contrato_visualizar.php`) aplicando z-index inline (`style="z-index: 9998/9999;"`) em modais e overlays, garantindo correto empilhamento de camadas independentemente do build do Tailwind.
   - Resolvido o travamento da rolagem (scroll) do papel de contrato dentro do modal adicionando as propriedades `min-h-0` e `overflow-y-auto` na div flexível, e utilizando `mx-auto` no elemento filho para centralização correta.
-- **Correção de Conexão Neon (SNI) no ERP** *(jun/2026)*:
-  - Corrigida a montagem da string DSN em [database.php](file:///c:/xampp/htdocs/erp-distinto/config/database.php) envolvendo o endpoint ID em aspas simples sem escapes de barra invertida, garantindo o funcionamento do Neon tanto no Laragon/XAMPP local quanto em produção no Hostinger.
-  - Implementada auto-migração no [database.php](file:///c:/xampp/htdocs/erp-distinto/config/database.php) para criar automaticamente as colunas `sistema_origem`, `subscription_status` e `subscription_plan` na tabela `users` se estiverem ausentes.
-  - Atualizada a senha de `faustinosdg@gmail.com` no Neon de produção para bater com a senha fornecida pelo cliente (`!@Jeane&w#1`), e removidas as depurações temporárias do fluxo de login.
-  - Habilitada exibição temporária de erros PHP em [dashboard.php](file:///c:/xampp/htdocs/erp-distinto/dashboard.php) para identificar a causa raiz do erro 500 em produção.
-  - Criado o script temporário [corrigir_env_producao.php](file:///c:/xampp/htdocs/erp-distinto/corrigir_env_producao.php) para apontar o ERP em produção para o banco de dados Neon correto do ERP (`ep-crimson-sun-ac4t9f9a`) em vez do banco do site institucional.
-  - Criado o script temporário [check_git_prod.php](file:///c:/xampp/htdocs/erp-distinto/check_git_prod.php) para diagnosticar o status do repositório Git e arquivos em produção da Hostinger devido a assets retornando 404.
+- **Correção de Conexão Neon (SNI) e Acesso ao ERP** *(jun/2026)*:
+  - Corrigida a montagem do DSN do Neon em [database.php](file:///c:/xampp/htdocs/erp-distinto/config/database.php) (resolvendo o erro 500) e implementada a auto-migração de colunas de plano em `users`.
+  - Corrigido o apontamento incorreto de banco de dados do ERP na Hostinger via reconfiguração do `env.php` de produção, restaurando todos os lançamentos reais.
+  - Atualizada a senha de `faustinosdg@gmail.com` no banco Neon de produção para sincronizar com a senha informada, e removidos todos os arquivos de diagnóstico temporários.
+- **Aprimoramento do Anexo I de Contratos via IA** *(jun/2026)*:
+  - Atualizado o prompt do Gemini em [ia_propostas.php](file:///c:/xampp/htdocs/erp-distinto/includes/ia_propostas.php) impondo regras estritas de escopo de pacotes, garantindo que o plano Essencial contenha exclusivamente fotografia, sem itens ou entregas de vídeo/audiovisual.
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.

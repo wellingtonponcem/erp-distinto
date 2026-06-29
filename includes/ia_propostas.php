@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * ServiÃ§o de IA para Propostas e Contratos
  * - Utiliza o Google Gemini (gemini-2.5-flash) para geraÃ§Ã£o de anexos e otimizaÃ§Ã£o jurÃ­dica de clÃ¡usulas
@@ -110,25 +110,40 @@ Retorne APENAS o texto revisado e otimizado da clÃ¡usula, sem introduÃ§Ãµe
     }
 
     /**
-     * Gera o Anexo I (DescriÃ§Ã£o dos ServiÃ§os) formatado em HTML com base nos dados da proposta.
+     * Gera o Anexo I (Descrição dos Serviços) formatado em HTML com base nos dados da proposta.
      */
     public static function gerarAnexoI(array $proposta): string
     {
         $propostaJson = json_encode($proposta, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
-        $prompt = "VocÃª Ã© um analista de operaÃ§Ãµes e especialista em contratos de prestaÃ§Ã£o de serviÃ§os de luxo (casamentos, 15 anos) e produÃ§Ãµes de marketing/filmmaker.
-Sua tarefa Ã© gerar o 'Anexo I - DescriÃ§Ã£o Detalhada dos ServiÃ§os' com base nos dados da proposta comercial fornecidos abaixo em formato JSON.
+        $prompt = "Você é um analista de operações e especialista em contratos de prestação de serviços de fotografia e vídeo de luxo (casamentos, 15 anos) e produções de marketing/filmmaker.
+Sua tarefa é gerar o 'Anexo I - Descrição Detalhada dos Serviços' com base nos dados da proposta comercial fornecidos abaixo em formato JSON.
+
+REGRAS DE ESCOPO RÍGIDAS DE ACORDO COM O PLANO SELECIONADO NA PROPOSTA:
+- Se o plano escolhido for 'Registro Essencial', 'Pacote Essencial', 'essencial' (ou o valor total for em torno de R$ 2.800,00):
+  * Focado EXCLUSIVAMENTE em FOTOGRAFIA.
+  * NÃO inclui nenhuma captação audiovisual, filmagem, vídeo, cinegrafia, videomaker, drone ou áudio.
+  * A equipe no dia do evento consiste de apenas 1 (um) profissional (fotógrafo).
+  * NÃO liste trailers de vídeo, highlights, save the date em vídeo ou qualquer outro entregável de audiovisual.
+- Se o plano escolhido for 'Registro Cinematic', 'Pacote Cinematic', 'cinematic' (ou o valor total for em torno de R$ 4.500,00):
+  * Inclui tanto fotografia quanto vídeo.
+  * A equipe consiste de 1 (um) fotógrafo e 1 (um) videomaker.
+  * Inclui entregáveis de vídeo (ex: Highlights de até 3 minutos e cobertura documental).
+- Se o plano escolhido for 'Registro Heritage', 'Pacote Heritage', 'heritage' (ou o valor total for em torno de R$ 7.900,00):
+  * Pacote de luxo completo de fotografia e vídeo de alta fidelidade.
+  * Inclui equipe expandida de fotografia e vídeo.
+  * Inclui todos os entregáveis premium de foto e vídeo (filme de casamento completo, teaser, ensaios pré-wedding/boudoir).
 
 O anexo deve detalhar:
-1. Escopo dos ServiÃ§os (serviÃ§os selecionados, pacotes, itens).
-2. EntregÃ¡veis e Prazos (arquivos finais, quantidade de fotos/vÃ­deos, Ã¡lbuns fÃ­sicos, relatÃ³rios, tempo estimado de entrega pÃ³s-evento).
-3. LimitaÃ§Ãµes de Escopo (o que NÃƒO estÃ¡ incluso, como alimentaÃ§Ã£o adicional, horas extras, taxas de deslocamento/hospedagem que fiquem a cargo do contratante).
+1. Escopo dos Serviços (serviços selecionados, pacotes, itens).
+2. Entregáveis e Prazos (arquivos finais, quantidade de fotos/vídeos, álbuns físicos, tempo estimado de entrega pós-evento).
+3. Limitações de Escopo (o que NÃO está incluso, como alimentação adicional, horas extras, taxas de deslocamento/hospedagem que fiquem a cargo do contratante).
 
-Regras de FormataÃ§Ã£o:
+Regras de Formatação:
 - Responda APENAS em HTML estrutural limpo (utilizando somente <h4>, <p>, <ul>, <li>, <strong>, sem CSS inline nem classes complexas).
 - O texto final deve ser perfeitamente encaixado em um contrato oficial.
 - Seja formal, detalhado e operacionalmente preciso.
-- NÃ£o inclua blocos markdown do tipo ```html ou ```. Retorne apenas o cÃ³digo HTML direto.
+- Não inclua blocos markdown do tipo ```html ou ```. Retorne apenas o código HTML direto.
 
 Dados da Proposta:
 $propostaJson";
