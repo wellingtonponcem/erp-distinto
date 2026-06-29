@@ -29,9 +29,8 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
   - Resolvido o travamento da rolagem (scroll) do papel de contrato dentro do modal adicionando as propriedades `min-h-0` e `overflow-y-auto` na div flexível, e utilizando `mx-auto` no elemento filho para centralização correta.
 - **Correção de Conexão Neon (SNI) no ERP** *(jun/2026)*:
   - Corrigida a montagem da string DSN em [database.php](file:///c:/xampp/htdocs/erp-distinto/config/database.php) envolvendo o endpoint ID em aspas simples sem escapes de barra invertida, garantindo o funcionamento do Neon tanto no Laragon/XAMPP local quanto em produção no Hostinger.
-  - Habilitada exibição temporária de erros PHP em [index.php](file:///c:/xampp/htdocs/erp-distinto/index.php) para expor a causa raiz do erro 500 no login do servidor Hostinger.
   - Implementada auto-migração no [database.php](file:///c:/xampp/htdocs/erp-distinto/config/database.php) para criar automaticamente as colunas `sistema_origem`, `subscription_status` e `subscription_plan` na tabela `users` se estiverem ausentes.
-  - Injetado dump de diagnóstico detalhado de banco e hash de senha no fluxo de POST do [index.php](file:///c:/xampp/htdocs/erp-distinto/index.php) para isolar por que a senha é rejeitada no Hostinger.
+  - Atualizada a senha de `faustinosdg@gmail.com` no Neon de produção para bater com a senha fornecida pelo cliente (`!@Jeane&w#1`), e removidas as depurações temporárias do fluxo de login.
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.
