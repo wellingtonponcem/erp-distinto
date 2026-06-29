@@ -20,15 +20,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($email && $senha) {
         $db   = Database::get();
+        
+        // DUMP DE DIAGNÓSTICO TEMPORÁRIO
+        echo "<h3>[Diagnóstico de Login]</h3>";
+        echo "Servidor de Banco Conectado: " . DB_HOST . ":" . DB_PORT . " / " . DB_NAME . "<br>";
+        echo "Usuário Solicitado: " . htmlspecialchars($email) . "<br>";
+        
         $stmt = $db->prepare('SELECT id, nome, email, senha, nivel, sistema_origem, roteiros_workspace_id, subscription_status, subscription_plan FROM users WHERE LOWER(TRIM(email)) = LOWER(TRIM(?)) LIMIT 1');
         $stmt->execute([$email]);
         $user = $stmt->fetch();
-
-        if ($user && password_verify($senha, $user['senha'])) {
-            logarUsuario($user);
-            header('Location: ' . raizUrl('/dashboard.php'));
-            exit;
+        
+        if (!$user) {
+            echo "Resultado: <b>Usuário NÃO encontrado no banco de dados ativo em produção!</b><br>";
+        } else {
+            echo "Resultado: <b>Usuário encontrado no banco!</b><br>";
+            echo "Nome cadastrado: " . htmlspecialchars($user['nome']) . "<br>";
+            echo "Hash da senha no banco: <code>" . htmlspecialchars($user['senha']) . "</code><br>";
+            $valida = password_verify($senha, $user['senha']);
+            echo "A senha fornecida é compatível com o Hash? <b>" . ($valida ? "SIM" : "NÃO") . "</b><br>";
         }
+        die("<br>--- Fim do Diagnóstico ---");
     }
     $erro = 'E-mail ou senha incorretos.';
 }
