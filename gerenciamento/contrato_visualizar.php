@@ -801,17 +801,19 @@ function contratoVisualizarApp() {
                 }
             };
 
-            html2pdf().set(opt).from(element).save()
-            .then(() => {
-                element.remove();
-                this.loading = false;
-            })
-            .catch(err => {
-                console.error(err);
-                element.remove();
-                alert('Erro ao exportar PDF.');
-                this.loading = false;
-            });
+            setTimeout(() => {
+                html2pdf().set(opt).from(element).save()
+                .then(() => {
+                    element.remove();
+                    this.loading = false;
+                })
+                .catch(err => {
+                    console.error(err);
+                    element.remove();
+                    alert('Erro ao exportar PDF.');
+                    this.loading = false;
+                });
+            }, 150);
         },
         
         atualizarAnexo() {
