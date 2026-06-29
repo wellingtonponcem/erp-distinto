@@ -12,7 +12,7 @@ class Database {
                     $dsn = 'mysql:host=' . DB_HOST . ';port=' . DB_PORT . ';dbname=' . DB_NAME . ';charset=utf8mb4';
                 } else {
                     $endpoint = explode('.', DB_HOST)[0];
-                    $dsn = 'pgsql:host=' . DB_HOST . ';port=' . DB_PORT . ';dbname=' . DB_NAME . ';sslmode=require;options=endpoint=' . $endpoint;
+                    $dsn = "pgsql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";sslmode=require;options='endpoint=" . $endpoint . "'";
                 }
                 
                 self::$instance = new PDO($dsn, DB_USER, DB_PASS, [

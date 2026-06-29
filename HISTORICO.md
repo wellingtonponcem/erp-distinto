@@ -27,6 +27,8 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
   - Implementada sincronização mútua e automática em tempo real entre o input "Vencimento do Sinal" da Calculadora e o da seção de "Cobrança Asaas".
   - Corrigido problema de sobreposição visual na pré-visualização de contrato (`contrato_visualizar.php`) aplicando z-index inline (`style="z-index: 9998/9999;"`) em modais e overlays, garantindo correto empilhamento de camadas independentemente do build do Tailwind.
   - Resolvido o travamento da rolagem (scroll) do papel de contrato dentro do modal adicionando as propriedades `min-h-0` e `overflow-y-auto` na div flexível, e utilizando `mx-auto` no elemento filho para centralização correta.
+- **Correção de Conexão Neon (SNI) no ERP** *(jun/2026)*:
+  - Corrigida a montagem da string DSN em [database.php](file:///c:/xampp/htdocs/erp-distinto/config/database.php) envolvendo o endpoint ID em aspas simples sem escapes de barra invertida, garantindo o funcionamento do Neon tanto no Laragon/XAMPP local quanto em produção no Hostinger.
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.
