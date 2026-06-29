@@ -46,6 +46,42 @@ class Database {
                 }
             } catch (Exception $e) {}
 
+            // 1.1. Verifica coluna 'sistema_origem'
+            try {
+                $checkOrigemColSql = $isMysql 
+                    ? "SHOW COLUMNS FROM users LIKE 'sistema_origem'"
+                    : "SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='sistema_origem'";
+                
+                $stmtOrigem = self::$instance->query($checkOrigemColSql);
+                if (!$stmtOrigem->fetch()) {
+                    self::$instance->exec("ALTER TABLE users ADD COLUMN sistema_origem VARCHAR(32) DEFAULT 'distinto'");
+                }
+            } catch (Exception $e) {}
+
+            // 1.2. Verifica coluna 'subscription_status'
+            try {
+                $checkStatusColSql = $isMysql 
+                    ? "SHOW COLUMNS FROM users LIKE 'subscription_status'"
+                    : "SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='subscription_status'";
+                
+                $stmtStatus = self::$instance->query($checkStatusColSql);
+                if (!$stmtStatus->fetch()) {
+                    self::$instance->exec("ALTER TABLE users ADD COLUMN subscription_status VARCHAR(32) DEFAULT 'trial'");
+                }
+            } catch (Exception $e) {}
+
+            // 1.3. Verifica coluna 'subscription_plan'
+            try {
+                $checkPlanColSql = $isMysql 
+                    ? "SHOW COLUMNS FROM users LIKE 'subscription_plan'"
+                    : "SELECT 1 FROM information_schema.columns WHERE table_name='users' AND column_name='subscription_plan'";
+                
+                $stmtPlan = self::$instance->query($checkPlanColSql);
+                if (!$stmtPlan->fetch()) {
+                    self::$instance->exec("ALTER TABLE users ADD COLUMN subscription_plan VARCHAR(64) NULL");
+                }
+            } catch (Exception $e) {}
+
             // 2. Verifica coluna 'roteiros_workspace_id'
             try {
                 $checkWorkspaceColSql = $isMysql

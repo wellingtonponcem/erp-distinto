@@ -30,6 +30,7 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
 - **Correção de Conexão Neon (SNI) no ERP** *(jun/2026)*:
   - Corrigida a montagem da string DSN em [database.php](file:///c:/xampp/htdocs/erp-distinto/config/database.php) envolvendo o endpoint ID em aspas simples sem escapes de barra invertida, garantindo o funcionamento do Neon tanto no Laragon/XAMPP local quanto em produção no Hostinger.
   - Habilitada exibição temporária de erros PHP em [index.php](file:///c:/xampp/htdocs/erp-distinto/index.php) para expor a causa raiz do erro 500 no login do servidor Hostinger.
+  - Implementada auto-migração no [database.php](file:///c:/xampp/htdocs/erp-distinto/config/database.php) para criar automaticamente as colunas `sistema_origem`, `subscription_status` e `subscription_plan` na tabela `users` se estiverem ausentes.
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.
