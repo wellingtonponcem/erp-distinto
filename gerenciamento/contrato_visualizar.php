@@ -753,25 +753,51 @@ document.addEventListener('alpine:init', () => {
             }
             this.loadingMessage = 'Gerando arquivo PDF...';
 
-            const element = document.getElementById('pdf-content');
+            const original = document.getElementById('pdf-content');
+            if (!original) {
+                alert('Conteúdo do contrato não encontrado.');
+                this.loading = false;
+                return;
+            }
+
+            const element = original.cloneNode(true);
+            element.classList.remove('pdf-export-source');
+            element.style.position = 'fixed';
+            element.style.left = '0';
+            element.style.top = '0';
+            element.style.zIndex = '99999';
+            element.style.width = '210mm';
+            element.style.backgroundColor = '#ffffff';
+            element.style.color = '#231f20';
+            element.style.pointerEvents = 'none';
+
+            element.querySelectorAll('*').forEach(child => {
+                child.style.color = '#231f20';
+                child.style.backgroundColor = 'transparent';
+            });
+
+            document.body.appendChild(element);
+
             const opt = {
                 margin: [15, 0, 18, 0],
                 filename: 'Contrato_' + this.id + '.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2, useCORS: true, logging: false },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak: { 
-                    mode: ['css', 'legacy'], 
-                    avoid: ['p', 'h3', 'h4', 'li', 'tr', '.pdf-signatures-wrapper', 'table'] 
+                pagebreak: {
+                    mode: ['css', 'legacy'],
+                    avoid: ['p', 'h3', 'h4', 'li', 'tr', '.pdf-signatures-wrapper', 'table']
                 }
             };
-            
+
             html2pdf().set(opt).from(element).save()
             .then(() => {
+                element.remove();
                 this.loading = false;
             })
             .catch(err => {
                 console.error(err);
+                element.remove();
                 alert('Erro ao exportar PDF.');
                 this.loading = false;
             });
