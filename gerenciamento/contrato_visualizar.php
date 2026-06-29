@@ -813,12 +813,22 @@ function contratoVisualizarApp() {
             
             const original = document.getElementById('pdf-content');
             const element = original.cloneNode(true);
+            element.classList.remove('pdf-export-source');
             element.style.position = 'fixed';
             element.style.left = '0';
             element.style.top = '0';
-            element.style.zIndex = '-1';
+            element.style.zIndex = '99999';
             element.style.width = '210mm';
+            element.style.backgroundColor = '#ffffff';
+            element.style.color = '#231f20';
             element.style.pointerEvents = 'none';
+
+            // Força a cor do texto para escuro em todas as tags filhas (evita que o modo escuro a herde como branca)
+            element.querySelectorAll('*').forEach(child => {
+                child.style.color = '#231f20';
+                child.style.backgroundColor = 'transparent';
+            });
+
             document.body.appendChild(element);
 
             const opt = {
@@ -833,11 +843,12 @@ function contratoVisualizarApp() {
                 }
             };
             
-            // Generate PDF Blob
-            html2pdf().set(opt).from(element).outputPdf('blob')
-            .then(blob => {
-                element.remove();
-                this.loadingMessage = 'Enviando documento para o Assinafy...';
+            // Aguarda 150ms para garantir a renderização e reflow do clone no DOM pelo navegador antes do canvas capturar
+            setTimeout(() => {
+                html2pdf().set(opt).from(element).outputPdf('blob')
+                .then(blob => {
+                    element.remove();
+                    this.loadingMessage = 'Enviando documento para o Assinafy...';
                 
                 const formData = new FormData();
                 formData.append('pdf', blob, 'Contrato_' + this.id + '.pdf');
@@ -951,12 +962,22 @@ function confirmarEnvioAssinatura() {
     }
 
     const element = original.cloneNode(true);
+    element.classList.remove('pdf-export-source');
     element.style.position = 'fixed';
     element.style.left = '0';
     element.style.top = '0';
-    element.style.zIndex = '-1';
+    element.style.zIndex = '99999';
     element.style.width = '210mm';
+    element.style.backgroundColor = '#ffffff';
+    element.style.color = '#231f20';
     element.style.pointerEvents = 'none';
+
+    // Força a cor do texto para escuro em todas as tags filhas (evita que o modo escuro a herde como branca)
+    element.querySelectorAll('*').forEach(child => {
+        child.style.color = '#231f20';
+        child.style.backgroundColor = 'transparent';
+    });
+
     document.body.appendChild(element);
 
     setContratoAssinaturaLoading(true, 'Gerando PDF de alta definicao...');
@@ -974,10 +995,12 @@ function confirmarEnvioAssinatura() {
         }
     };
 
-    html2pdf().set(opt).from(element).outputPdf('blob')
-        .then(blob => {
-            element.remove();
-            setContratoAssinaturaLoading(true, 'Enviando documento para o Assinafy...');
+    // Aguarda 150ms para garantir a renderização e reflow do clone no DOM pelo navegador antes do canvas capturar
+    setTimeout(() => {
+        html2pdf().set(opt).from(element).outputPdf('blob')
+            .then(blob => {
+                element.remove();
+                setContratoAssinaturaLoading(true, 'Enviando documento para o Assinafy...');
 
             const formData = new FormData();
             formData.append('pdf', blob, 'Contrato_' + contratoId + '.pdf');

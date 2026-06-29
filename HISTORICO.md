@@ -35,6 +35,7 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
 - **Aprimoramento do Anexo I de Contratos via IA** *(jun/2026)*:
   - Atualizado o prompt do Gemini em [ia_propostas.php](file:///c:/xampp/htdocs/erp-distinto/includes/ia_propostas.php) impondo regras estritas de escopo de pacotes, garantindo que o plano Essencial contenha exclusivamente fotografia, sem itens ou entregas de vídeo/audiovisual.
   - Inseridas regras no prompt para detalhar a entrega de fotos (galeria geral com tratamento básico de luz e cor) e a escolha de até 30 fotos pelo casal para tratamento profissional avançado e detalhado.
+  - Corrigido o envio de PDFs em branco para o Assinafy em [contrato_visualizar.php](file:///c:/xampp/htdocs/erp-distinto/gerenciamento/contrato_visualizar.php) forçando a remoção da classe de exportação do clone, aplicando cores escuras/background branco diretamente no DOM temporário contra interferências do Modo Escuro, e adicionando um delay de 150ms para garantir o reflow completo antes da captura pelo html2pdf.
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.
