@@ -75,7 +75,7 @@ $podeGerarFinanceiro = (($contrato['status'] ?? 'rascunho') === 'assinado')
 $tituloPagina = 'Visualizar Contrato';
 require_once __DIR__ . '/../includes/layout/head.php';
 ?>
-<div id="app-wrapper" x-data="contratoVisualizarApp">
+<div id="app-wrapper" x-data="contratoVisualizarApp()">
     <!-- Modal de Confirmação de Assinatura -->
     <div id="modal-confirm-assinatura"
          class="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] hidden items-center justify-center p-4"
@@ -731,19 +731,15 @@ require_once __DIR__ . '/../includes/layout/head.php';
 <script src="<?= raizUrl('/assets/js/html2pdf.bundle.min.js') ?>"></script>
 
 <script>
-document.addEventListener('alpine:init', () => {
-    Alpine.data('contratoVisualizarApp', () => ({
+function contratoVisualizarApp() {
+    return {
         id: <?= json_encode($id) ?>,
         loading: false,
         loadingAnexo: false,
         loadingMessage: '',
         modalContratoAberto: false,
         showConfirmModal: false,
-
-        init() {
-            this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
-        },
-
+        
         exportarPDFLocal() {
             this.loading = true;
             if (typeof html2pdf === 'undefined') {
@@ -853,7 +849,6 @@ document.addEventListener('alpine:init', () => {
             element.style.color = '#231f20';
             element.style.pointerEvents = 'none';
 
-            // Força a cor do texto para escuro em todas as tags filhas (evita que o modo escuro a herde como branca)
             element.querySelectorAll('*').forEach(child => {
                 child.style.color = '#231f20';
                 child.style.backgroundColor = 'transparent';
@@ -873,7 +868,6 @@ document.addEventListener('alpine:init', () => {
                 }
             };
             
-            // Aguarda 150ms para garantir a renderização e reflow do clone no DOM pelo navegador antes do canvas capturar
             setTimeout(() => {
                 html2pdf().set(opt).from(element).outputPdf('blob')
                 .then(blob => {
@@ -934,8 +928,8 @@ document.addEventListener('alpine:init', () => {
                 this.loading = false;
             });
         }
-    }))
-})
+    }
+}
 </script>
 
 <!-- Modal de Configuração Assinafy -->
