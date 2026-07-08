@@ -43,8 +43,24 @@ require_once __DIR__ . '/../includes/layout/head.php';
                     
                     <div class="space-y-4">
                         <div>
-                            <p class="text-xs text-gray-500 uppercase font-bold mb-1">Saldo Atual</p>
-                            <div class="text-2xl font-black" :class="conta.saldo_atual < 0 ? 'text-red-500' : 'text-distinto-ink dark:text-white'" x-text="formatarMoeda(conta.saldo_atual)"></div>
+                            <p class="text-xs text-gray-500 uppercase font-bold mb-1">
+                                Saldo Atual
+                                <span x-show="conta.saldo_asaas_api" class="ml-2 px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-purple-500/10 text-purple-400 border border-purple-500/20">Via API</span>
+                            </p>
+                            <div class="text-2xl font-black flex items-center gap-3" :class="conta.saldo_atual < 0 ? 'text-red-500' : 'text-distinto-ink dark:text-white'">
+                                <span x-text="formatarMoeda(conta.saldo_atual)"></span>
+                                <template x-if="conta.id === 'asaas'">
+                                    <button @click="sincronizarAsaas()" :disabled="sincronizandoAsaas"
+                                            class="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1.5"
+                                            :class="sincronizandoAsaas ? 'bg-zinc-800 text-zinc-500 cursor-wait' : 'bg-purple-500/10 text-purple-400 hover:bg-purple-500 hover:text-white cursor-pointer'"
+                                            title="Sincronizar todas as cobranças do Asaas">
+                                        <svg x-show="sincronizandoAsaas" class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+                                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/>
+                                        </svg>
+                                        <span x-text="sincronizandoAsaas ? 'Sincronizando...' : 'Sincronizar'"></span>
+                                    </button>
+                                </template>
+                            </div>
                         </div>
                         <div class="pt-4 border-top border-gray-100 dark:border-gray-800">
                             <p class="text-xs text-gray-500 mb-1">Saldo Inicial: <span x-text="formatarMoeda(conta.saldo_inicial)"></span></p>
@@ -118,6 +134,7 @@ document.addEventListener('alpine:init', () => {
         lista: [],
         modalAberto: false,
         salvando: false,
+        sincronizandoAsaas: false,
         form: {},
         novoSaldoAtual: 0,
         tipoAjuste: 'lancamento',
@@ -133,6 +150,24 @@ document.addEventListener('alpine:init', () => {
                 this.lista = await r.json();
                 this.$nextTick(() => lucide.createIcons());
             } catch(e) { toast('Erro ao carregar contas', 'erro'); }
+        },
+
+        async sincronizarAsaas() {
+            if (this.sincronizandoAsaas) return;
+            this.sincronizandoAsaas = true;
+            try {
+                const r = await fetch('<?= raizUrl('/api/financeiro/sincronizar_asaas_completo.php') ?>', { method: 'POST' });
+                const data = await r.json();
+                if (data.success) {
+                    toast(data.mensagem, 'sucesso');
+                } else {
+                    toast(data.erro || 'Erro ao sincronizar Asaas', 'erro');
+                }
+            } catch(e) {
+                toast('Erro de conexão ao sincronizar Asaas', 'erro');
+            }
+            this.sincronizandoAsaas = false;
+            await this.carregar();
         },
 
         abrirModal(conta = null) {

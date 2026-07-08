@@ -3,6 +3,7 @@ require_once __DIR__ . '/../../config/env.php';
 require_once __DIR__ . '/../../config/auth.php';
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../includes/helpers.php';
+require_once __DIR__ . '/../../includes/asaas.php';
 
 exigirAutenticacao();
 
@@ -40,17 +41,37 @@ switch ($metodo) {
     case 'GET':
         $contas = $db->query("SELECT * FROM contas_bancarias WHERE ativo=1 ORDER BY nome")->fetchAll();
         
+        $asaas = new AsaasService();
+        $asaasConfigurado = $asaas->estaConfigurado();
+        $saldoAsaasApi = null;
+
+        if ($asaasConfigurado) {
+            try {
+                $dadosPainel = $asaas->obterSaldoEExtrato();
+                $saldoAsaasApi = $dadosPainel['saldo'] ?? null;
+            } catch (Exception $e) {
+                // Silencioso — fallback para cálculo local
+            }
+        }
+
         // Calcular saldo atual somando saldo inicial + lancamentos (receber - pagar)
         foreach ($contas as &$c) {
-            $calc = $db->prepare("
-                SELECT 
-                    SUM(CASE WHEN tipo='receber' THEN valor_pago ELSE -valor_pago END) as fluxo
-                FROM lancamentos 
-                WHERE conta_id = ? AND valor_pago > 0
-            ");
-            $calc->execute([$c['id']]);
-            $fluxo = $calc->fetch()['fluxo'] ?? 0;
-            $c['saldo_atual'] = (float)$c['saldo_inicial'] + (float)$fluxo;
+            // Para a conta Asaas, usar saldo real da API quando disponível
+            if ($c['id'] === 'asaas' && $saldoAsaasApi !== null) {
+                $c['saldo_atual'] = $saldoAsaasApi;
+                $c['saldo_asaas_api'] = true;
+            } else {
+                $calc = $db->prepare("
+                    SELECT 
+                        SUM(CASE WHEN tipo='receber' THEN valor_pago ELSE -valor_pago END) as fluxo
+                    FROM lancamentos 
+                    WHERE conta_id = ? AND valor_pago > 0
+                ");
+                $calc->execute([$c['id']]);
+                $fluxo = $calc->fetch()['fluxo'] ?? 0;
+                $c['saldo_atual'] = (float)$c['saldo_inicial'] + (float)$fluxo;
+                $c['saldo_asaas_api'] = false;
+            }
         }
         
         responderJson($contas);

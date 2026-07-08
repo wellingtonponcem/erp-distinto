@@ -313,6 +313,10 @@ class AsaasService {
         return $res['data'] ?? [];
     }
 
+    public function listarCobrancas(int $limit = 100, int $offset = 0): array {
+        return $this->request('payments?limit=' . max(1, min(100, $limit)) . '&offset=' . max(0, $offset));
+    }
+
     /**
      * Consulta o extrato e saldo financeiro
      */
