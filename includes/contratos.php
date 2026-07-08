@@ -86,6 +86,49 @@ function processarAssinaturaContrato(string $contratoId, array $opcoesFaturament
             $sigEscolhido = $sig2;
         }
         $clienteFornecedorNome = $sigEscolhido['nome'] ?? $contrato['cliente_nome'];
+
+        // GARANTIA DE CLIENTE_ID: Se o cliente_id do contrato estiver vazio, buscamos ou criamos um cliente local
+        if (empty($contrato['cliente_id']) && $sigEscolhido) {
+            $cpfSignatario = preg_replace('/\D/', '', $sigEscolhido['cpf'] ?? '');
+            $clienteIdEncontrado = null;
+            
+            // 1. Tenta buscar cliente local pelo CPF
+            if (!empty($cpfSignatario)) {
+                $stmtBuscaCpf = $db->query("SELECT id, cpf_cnpj FROM clientes");
+                while ($cRow = $stmtBuscaCpf->fetch(PDO::FETCH_ASSOC)) {
+                    $cRowCpf = preg_replace('/\D/', '', $cRow['cpf_cnpj'] ?? '');
+                    if ($cRowCpf === $cpfSignatario) {
+                        $clienteIdEncontrado = $cRow['id'];
+                        break;
+                    }
+                }
+            }
+            
+            // 2. Se não achou por CPF, tenta buscar por Nome aproximado
+            if (empty($clienteIdEncontrado)) {
+                $stmtBuscaNome = $db->prepare("SELECT id FROM clientes WHERE nome = ? LIMIT 1");
+                $stmtBuscaNome->execute([$sigEscolhido['nome']]);
+                $clienteIdEncontrado = $stmtBuscaNome->fetchColumn();
+            }
+            
+            // 3. Se ainda assim não existe, criamos o cliente localmente
+            if (empty($clienteIdEncontrado)) {
+                $clienteIdEncontrado = gerarId();
+                $stmtInsertCli = $db->prepare("INSERT INTO clientes (id, nome, cpf_cnpj, contato) VALUES (?, ?, ?, ?)");
+                $stmtInsertCli->execute([
+                    $clienteIdEncontrado,
+                    $sigEscolhido['nome'] ?? $contrato['cliente_nome'],
+                    $sigEscolhido['cpf'] ?? '',
+                    $sigEscolhido['email'] ?? ''
+                ]);
+            }
+            
+            // 4. Associa o cliente_id encontrado/criado ao contrato e atualiza o objeto na memória
+            $stmtUpContrato = $db->prepare("UPDATE contratos SET cliente_id = ? WHERE id = ?");
+            $stmtUpContrato->execute([$clienteIdEncontrado, $contratoId]);
+            $contrato['cliente_id'] = $clienteIdEncontrado;
+        }
+
         if ($sig1 && !empty($sig1['nome']) && !empty($contrato['cliente_id'])) {
             $stmtGetCli = $db->prepare("SELECT cpf_cnpj, contato FROM clientes WHERE id = ?");
             $stmtGetCli->execute([$contrato['cliente_id']]);
