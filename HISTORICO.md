@@ -48,6 +48,7 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
 - **Correção de Erros 500 no Webhook Asaas e Lançamentos** *(jul/2026)*:
   - Movido fallback de `getallheaders()` para [helpers.php](file:///c:/xampp/htdocs/erp-distinto/includes/helpers.php), permitindo inicialização global e corrigindo erro 500 no webhook do Asaas (causado por Nginx/FPM em produção chamar a função antes da sua declaração local).
   - Envelopadas consultas de clientes e fornecedores no [lancamentos.php](file:///c:/xampp/htdocs/erp-distinto/financeiro/lancamentos.php) com try/catch para garantir resiliência contra indisponibilidade, timeout ou falhas de banco de dados no carregamento inicial.
+  - Adicionado `require_once database.php` em [auth.php](file:///c:/xampp/htdocs/erp-distinto/config/auth.php), resolvendo o Fatal Error `Class "Database" not found` ao executar `exigirDistinto()` em páginas que não incluem o banco de dados explicitamente no topo (como `contas.php`).
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.
