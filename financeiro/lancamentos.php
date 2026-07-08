@@ -5,9 +5,15 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/helpers.php';
 exigirDistinto();
 $tituloPagina = 'Lançamentos';
-$db = Database::get();
-$clientes = $db->query("SELECT id, nome FROM clientes ORDER BY nome ASC")->fetchAll();
-$fornecedores = $db->query("SELECT id, nome FROM fornecedores ORDER BY nome ASC")->fetchAll();
+$clientes = [];
+$fornecedores = [];
+try {
+    $db = Database::get();
+    $clientes = $db->query("SELECT id, nome FROM clientes ORDER BY nome ASC")->fetchAll();
+    $fornecedores = $db->query("SELECT id, nome FROM fornecedores ORDER BY nome ASC")->fetchAll();
+} catch (Exception $e) {
+    error_log("Erro ao carregar clientes/fornecedores na inicialização de lançamentos: " . $e->getMessage());
+}
 include __DIR__ . '/../includes/layout/head.php';
 ?>
 

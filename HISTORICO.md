@@ -45,6 +45,10 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
   - Criado o endpoint [gerar_pdf.php](file:///c:/xampp/htdocs/erp-distinto/api/contratos/gerar_pdf.php) para renderização determinística do contrato A4.
   - Atualizada a API [enviar_assinatura.php](file:///c:/xampp/htdocs/erp-distinto/api/contratos/enviar_assinatura.php) para gerar o PDF diretamente no servidor e enviá-lo ao Assinafy, removendo o upload manual pelo cliente e eliminando de vez erros de PDF em branco e interferências do Modo Escuro.
 
+- **Correção de Erros 500 no Webhook Asaas e Lançamentos** *(jul/2026)*:
+  - Movido fallback de `getallheaders()` para [helpers.php](file:///c:/xampp/htdocs/erp-distinto/includes/helpers.php), permitindo inicialização global e corrigindo erro 500 no webhook do Asaas (causado por Nginx/FPM em produção chamar a função antes da sua declaração local).
+  - Envelopadas consultas de clientes e fornecedores no [lancamentos.php](file:///c:/xampp/htdocs/erp-distinto/financeiro/lancamentos.php) com try/catch para garantir resiliência contra indisponibilidade, timeout ou falhas de banco de dados no carregamento inicial.
+
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.
 2. **Commit**: Sugira título de commit em português ao finalizar uma ação.
