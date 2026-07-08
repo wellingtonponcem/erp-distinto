@@ -36,13 +36,13 @@ $inicial = strtoupper(substr($usuarioLogado['nome'] ?? 'U', 0, 1));
     <div class="flex items-center gap-4">
         <!-- Notification Button -->
         <button class="hover:bg-surface-container-highest/50 text-on-surface-variant hover:text-on-surface transition-colors p-2 rounded-full flex items-center justify-center relative group" title="Notificações">
-            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span class="material-symbols-outlined">notifications</span>
             <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-primary rounded-full border-2 border-[#050505] hidden group-hover:block"></span>
         </button>
         
         <!-- Help Button -->
         <button class="hover:bg-surface-container-highest/50 text-on-surface-variant hover:text-on-surface transition-colors p-2 rounded-full flex items-center justify-center" title="Ajuda">
-            <i data-lucide="help-circle" class="w-5 h-5"></i>
+            <span class="material-symbols-outlined">help_outline</span>
         </button>
         
         <!-- New Entry Action -->
@@ -57,4 +57,3 @@ $inicial = strtoupper(substr($usuarioLogado['nome'] ?? 'U', 0, 1));
         </div>
     </div>
 </header>
-

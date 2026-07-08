@@ -5,6 +5,30 @@
         }
     }
 
+    // Dark mode toggle (vanilla JS, substitui o Alpine anterior)
+    function initDarkModeToggle() {
+        const btn = document.getElementById('dark-mode-toggle');
+        const icon = document.getElementById('dark-mode-icon');
+        const label = document.getElementById('dark-mode-label');
+        if (!btn) return;
+
+        function updateUI(isDark) {
+            if (icon) icon.textContent = isDark ? 'light_mode' : 'dark_mode';
+            if (label) label.textContent = isDark ? 'Claro' : 'Escuro';
+        }
+
+        btn.addEventListener('click', function() {
+            const isDark = !document.documentElement.classList.contains('dark');
+            document.documentElement.classList.toggle('dark', isDark);
+            localStorage.setItem('dark-mode', isDark ? 'true' : 'false');
+            updateUI(isDark);
+        });
+
+        // Sync UI on page load
+        const isDark = document.documentElement.classList.contains('dark');
+        updateUI(isDark);
+    }
+
     window.toast = function(msg, tipo = 'sucesso') {
         const cores = {
             sucesso: 'border-green-500/20 bg-white text-green-700',
@@ -34,11 +58,17 @@
         return `${d}/${m}/${y}`;
     };
 
-    document.addEventListener('DOMContentLoaded', initIcons);
+    document.addEventListener('DOMContentLoaded', function() {
+        initIcons();
+        initDarkModeToggle();
+    });
     document.addEventListener('alpine:initialized', initIcons);
     
     // Fallback para garantir que ícones carreguem mesmo com atraso de rede
-    window.addEventListener('load', initIcons);
+    window.addEventListener('load', function() {
+        initIcons();
+        initDarkModeToggle();
+    });
     setTimeout(initIcons, 500);
     setTimeout(initIcons, 2000);
 </script>

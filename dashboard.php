@@ -204,7 +204,7 @@ include __DIR__ . '/includes/layout/head.php';
 <div id="app-wrapper">
     <?php include __DIR__ . '/includes/layout/sidebar.php'; ?>
 
-    <main id="main-content" class="pl-20 transition-all duration-300 min-h-screen flex flex-col flex-1">
+    <main id="main-content" class="main-sidebar-fixed transition-all duration-300 min-h-screen flex flex-col flex-1">
         <?php include __DIR__ . '/includes/layout/top_nav.php'; ?>
 
         <!-- Dashboard Content -->

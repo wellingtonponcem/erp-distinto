@@ -16,6 +16,7 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0..1&display=swap" rel="stylesheet">
 
     <!-- Tailwind CSS (Compiled for Production) -->
     <link href="<?= raizUrl('/assets/css/tailwind.css') ?>" rel="stylesheet">
@@ -65,28 +66,39 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
         }
 
         .sidebar {
-            width: 256px !important;
-            min-height: calc(100vh - 32px) !important;
-            height: calc(100vh - 32px) !important;
-            margin-left: 0;
-            flex-shrink: 0;
-            position: sticky;
-            top: 16px;
-            color: #111111;
-            background: #f7f3da;
-            border-right: none;
-            border-radius: 32px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            width: 80px !important;
             overflow: hidden;
+            background: #f7f3da;
+            border-right: 1px solid rgba(0,0,0,0.05);
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        .sidebar.collapsed {
-            width: 88px !important;
+        .sidebar:hover {
+            width: 256px !important;
         }
-        
-        .sidebar.collapsed .hide-on-collapse {
-            display: none !important;
+
+        .sidebar .nav-link {
+            padding: 10px 12px;
+            border-radius: 10px;
+            gap: 0;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .sidebar .nav-label,
+        .sidebar .sidebar-copy,
+        .sidebar .user-meta,
+        .sidebar .nav-section,
+        .sidebar .bottom-premium {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .sidebar:hover .nav-label,
+        .sidebar:hover .sidebar-copy,
+        .sidebar:hover .user-meta,
+        .sidebar:hover .nav-section,
+        .sidebar:hover .bottom-premium {
+            opacity: 1;
         }
 
         #main-content,
@@ -102,6 +114,11 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
             border: 0;
             border-radius: 32px;
             box-shadow: none;
+        }
+
+        /* Layout com sidebar fixa (hover-to-expand) */
+        .main-sidebar-fixed {
+            margin: 0 0 0 80px !important;
         }
 
         .app-topbar {
@@ -360,27 +377,32 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.18); border-radius: 999px; }
 
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #484555; border-radius: 10px; }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            line-height: 1;
+        }
+
         @media (max-width: 1024px) {
             .sidebar {
-                width: 92px !important;
-                margin-left: 0;
-                top: 0;
-                height: 100vh !important;
-                min-height: 100vh !important;
+                width: 72px !important;
             }
-
-            .sidebar .sidebar-copy,
-            .sidebar .nav-section,
-            .sidebar .nav-label,
-            .sidebar .user-meta {
-                display: none;
+            .sidebar:hover {
+                width: 240px !important;
             }
 
             .nav-link {
                 justify-content: center;
-                padding: 12px;
+                padding: 10px;
             }
 
+            .main-sidebar-fixed {
+                margin-left: 72px !important;
+            }
             #main-content,
             .content-sheet {
                 padding: 24px 18px !important;
@@ -396,11 +418,16 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
             .sidebar {
                 position: relative;
                 top: auto;
+                left: auto;
                 width: auto !important;
                 height: auto !important;
                 min-height: auto !important;
                 margin: 10px;
                 border-radius: 22px;
+                overflow: visible;
+            }
+            .sidebar:hover {
+                width: auto !important;
             }
 
             .sidebar nav {
@@ -415,6 +442,9 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
                 margin: 10px;
                 border-radius: 22px;
             }
+            .main-sidebar-fixed {
+                margin: 10px !important;
+            }
 
             .app-topbar {
                 align-items: flex-start;
@@ -426,9 +456,10 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
         .dark body { background: #0F0F12; color: #e4e1e6; }
         .dark #main-content, 
         .dark .content-sheet { background: #131316; border-color: #2D2D39; }
-        .dark .sidebar { background: #131316; color: #ffffff; border-right: 1px solid #2D2D39; box-shadow: none; }
+        .dark .sidebar { background: #1b1b1e; color: #ffffff; border-right: 1px solid #2D2D39; box-shadow: 4px 0 20px rgba(0,0,0,0.3); }
         .dark .nav-link { color: #c9c4d8; }
         .dark .nav-link:hover, .dark .nav-link.ativo { color: #fff; background: rgba(124,92,255,0.15); }
+        .dark .sidebar .nav-link.active-nav { background: #947dff; color: #2a0088; }
         .dark .card { background: #131316; border-color: #2D2D39; box-shadow: none; }
         .dark .card:hover { border-color: #7c5cff; box-shadow: 0 0 20px rgba(124, 92, 255, 0.15); }
         .dark .page-title { color: #ffffff; }
