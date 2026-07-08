@@ -19,7 +19,7 @@ include __DIR__ . '/../includes/layout/head.php';
 <div id="app-wrapper" class="flex min-h-screen">
     <?php include __DIR__ . '/../includes/layout/sidebar.php'; ?>
 
-    <main id="main-content" class="content-sheet !bg-background !p-6 flex flex-col flex-1 max-w-[calc(100vw-240px)]">
+    <main id="main-content" class="content-sheet !bg-background !p-6 flex flex-col flex-1">
         <?php include __DIR__ . '/../includes/layout/top_nav.php'; ?>
 
         <!-- Topbar -->

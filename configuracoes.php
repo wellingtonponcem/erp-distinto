@@ -163,7 +163,7 @@ include __DIR__ . '/includes/layout/head.php';
 <div id="app-wrapper" class="flex min-h-screen">
     <?php include __DIR__ . '/includes/layout/sidebar.php'; ?>
 
-    <main id="main-content" class="content-sheet !bg-background !p-6 flex flex-col flex-1 max-w-[calc(100vw-240px)]">
+    <main id="main-content" class="content-sheet !bg-background !p-6 flex flex-col flex-1">
         <?php include __DIR__ . '/includes/layout/top_nav.php'; ?>
 
         <!-- Topbar -->
@@ -181,9 +181,9 @@ include __DIR__ . '/includes/layout/head.php';
             </div>
         <?php endif; ?>
 
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 max-w-6xl">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-6xl">
             <!-- Formulário Principal -->
-            <div class="xl:col-span-2 glass-card p-6 rounded-xl border border-outline-variant/20 shadow-sm space-y-6">
+            <div class="lg:col-span-2 glass-card p-6 rounded-xl border border-outline-variant/20 shadow-sm space-y-6">
                 <form method="POST">
                     <!-- Dados da Empresa -->
                     <div class="space-y-4">

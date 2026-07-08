@@ -14,10 +14,11 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
   - Correção de erro 500 no webhook Asaas via fallback global de headers em [helpers.php](file:///c:/xampp/htdocs/erp-distinto/includes/helpers.php).
   - Adicionado `require_once database.php` no `auth.php` para sanar o erro de `Class "Database" not found` no `contas.php`.
 
-- **Redesign de Interface do Sistema (Stitch/Obsidian)** *(jul/2026)*:
-  - Redesenhadas 8 telas (Extrato, Custos Fixos, Asaas, Serviços, PDF Templates, Clientes, Pipeline Kanban e Configurações Gerais).
-  - Unificado o layout com `app-wrapper`, `sidebar` e `top_nav` em todas as páginas.
-  - Aplicadas classes do design system Obsidian (`glass-card`, `font-display-lg`, `label`, `input`, `select`, `btn-primary`, `btn-secondary`).
+- **Redesign e Ajustes Visuais de Fidelidade do Sistema (Stitch)** *(jul/2026)*:
+  - Redesenhados o Dashboard e Top Nav com Bento Grid responsivo de duas colunas, dados reais de KPIs, Fluxo de Caixa e despesas.
+  - Customizado o `tailwind.config.js` com cores, espaçamentos (`gap-card-gap`) e fontes do protótipo e recompilado o Tailwind de produção.
+  - Removidas larguras máximas fixas (`max-w-[calc(100vw-240px)]`) dos contêineres principais de todas as 9 páginas para permitir dimensionamento fluido.
+  - Corrigida a duplicidade oculta da lógica de carregamento do banco de dados no `dashboard.php` que realizava requisições redundantes.
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.

@@ -3,8 +3,8 @@
 function garantirEstruturaFinanceira(PDO $db): void {
     // Limpa estado de erro do PostgreSQL antes de começar as migrações
     try {
-        if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'pgsql' && $db->inTransaction()) {
-            $db->rollBack();
+        if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'pgsql') {
+            $db->exec('ROLLBACK');
         }
     } catch (Exception $e) {}
 
@@ -29,7 +29,11 @@ function garantirEstruturaFinanceira(PDO $db): void {
                 $stmtInsertAsaas = $db->prepare("INSERT INTO contas_bancarias (id, nome, saldo_inicial, cor, ativo) VALUES (?, ?, ?, ?, ?)");
                 $stmtInsertAsaas->execute(['asaas', 'Asaas', 0.00, '#7c3aed', 1]);
             }
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+            if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'pgsql') {
+                try { $db->exec('ROLLBACK'); } catch (Exception $rollEx) {}
+            }
+        }
 
         // Garante a coluna conta_id na tabela lancamentos
         if (!tabelaTemColuna($db, 'lancamentos', 'conta_id')) {
@@ -44,7 +48,11 @@ function garantirEstruturaFinanceira(PDO $db): void {
         // Vincula retrospectivamente todos os lançamentos gerados pelo Asaas à nova conta Asaas
         try {
             $db->exec("UPDATE lancamentos SET conta_id = 'asaas' WHERE asaas_id IS NOT NULL AND (conta_id IS NULL OR conta_id = '')");
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+            if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'pgsql') {
+                try { $db->exec('ROLLBACK'); } catch (Exception $rollEx) {}
+            }
+        }
 
         // Garante a coluna conciliado na tabela lancamentos
         garantirColuna($db, 'lancamentos', 'conciliado', "INT NOT NULL DEFAULT 0");
@@ -55,7 +63,11 @@ function garantirEstruturaFinanceira(PDO $db): void {
         // Migração retroativa de conciliados
         try {
             $db->exec("UPDATE lancamentos SET conciliado = 1 WHERE asaas_id IS NOT NULL OR ofx_fitid IS NOT NULL");
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+            if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'pgsql') {
+                try { $db->exec('ROLLBACK'); } catch (Exception $rollEx) {}
+            }
+        }
 
         if (tabelaTemColuna($db, 'contratos', 'asaas_cobranca_gerada')) {
             return;
