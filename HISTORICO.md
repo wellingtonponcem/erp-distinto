@@ -15,7 +15,7 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
   - Adicionado `require_once database.php` no `auth.php` para sanar o erro de `Class "Database" not found` no `contas.php`.
 
 - **Redesign e Ajustes Visuais de Fidelidade do Sistema (Stitch)** *(jul/2026)*:
-  - Redesenhados o Dashboard e Top Nav com Bento Grid responsivo de duas colunas, dados reais de KPIs, Fluxo de Caixa e despesas.
+  - Redesenhados o Dashboard e Top Nav com grid plano de 12 colunas, categorias de despesas limpas (sem cards internos de fundo), compatibilidade de fontes Hanken Grotesk e dados reais de KPIs e Fluxo de Caixa.
   - Customizado o `tailwind.config.js` com cores, espaçamentos (`gap-card-gap`) e fontes do protótipo e recompilado o Tailwind de produção.
   - Removidas larguras máximas fixas (`max-w-[calc(100vw-240px)]`) dos contêineres principais de todas as 9 páginas para permitir dimensionamento fluido.
   - Corrigida a duplicidade oculta da lógica de carregamento do banco de dados no `dashboard.php` que realizava requisições redundantes.
