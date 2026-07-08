@@ -17,83 +17,97 @@ try {
 include __DIR__ . '/../includes/layout/head.php';
 ?>
 
-<div id="app-wrapper" style="display:flex; min-height:100vh;" x-data="lancamentos()" x-effect="lancamentosFiltrados; $nextTick(() => { if (window.lucide) lucide.createIcons(); })">
+<div id="app-wrapper" class="flex min-h-screen" x-data="lancamentos()" x-effect="lancamentosFiltrados; $nextTick(() => { if (window.lucide) lucide.createIcons(); })">
     <?php include __DIR__ . '/../includes/layout/sidebar.php'; ?>
 
-    <main id="main-content" style="flex:1; padding:28px 32px; overflow-y:auto; max-width:calc(100vw - 240px);">
+    <main id="main-content" class="content-sheet !bg-background !p-6 flex flex-col flex-1 max-w-[calc(100vw-240px)]">
         <?php include __DIR__ . '/../includes/layout/top_nav.php'; ?>
 
         <!-- Executive Summary Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 items-stretch">
-            <div class="bg-zinc-900/50 border border-white/5 rounded-[2rem] p-6 hover:bg-zinc-900 transition-all group flex flex-col justify-between h-full">
-                <div>
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
-                            <i data-lucide="trending-up" class="w-5 h-5"></i>
-                        </div>
-                        <span class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400">Total a Receber</span>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-card-gap mb-8 items-stretch">
+            <!-- Summary Card: Total a Receber -->
+            <div class="glass-card p-6 rounded-xl flex flex-col justify-between h-32 relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors"></div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-label-caps font-label-caps text-on-surface-variant mb-1">TOTAL A RECEBER</p>
+                        <h3 class="text-3xl font-bold font-headline-md text-primary tracking-tight" x-text="formatarMoeda(totalReceber)"></h3>
                     </div>
-                    <div class="text-3xl font-black text-white tracking-tight" x-text="formatarMoeda(totalReceber)"></div>
+                    <span class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <i data-lucide="trending-up" class="w-4 h-4"></i>
+                    </span>
                 </div>
-                <p class="text-[10px] text-zinc-600 mt-4 font-bold uppercase tracking-widest">Saldo previsto em caixa</p>
+                <div class="mt-4 flex items-center gap-2 text-on-surface-variant text-[11px] font-label-caps">
+                    <span class="text-primary font-bold">Saldo</span>
+                    <span>previsto em caixa</span>
+                </div>
             </div>
 
-            <div class="bg-zinc-900/50 border border-white/5 rounded-[2rem] p-6 hover:bg-zinc-900 transition-all group flex flex-col justify-between h-full">
-                <div>
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center">
-                            <i data-lucide="trending-down" class="w-5 h-5"></i>
-                        </div>
-                        <span class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400">Total a Pagar</span>
+            <!-- Summary Card: Total a Pagar -->
+            <div class="glass-card p-6 rounded-xl flex flex-col justify-between h-32 relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-error/5 rounded-full blur-2xl group-hover:bg-error/10 transition-colors"></div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-label-caps font-label-caps text-on-surface-variant mb-1">TOTAL A PAGAR</p>
+                        <h3 class="text-3xl font-bold font-headline-md text-error tracking-tight" x-text="formatarMoeda(totalPagar)"></h3>
                     </div>
-                    <div class="text-3xl font-black text-white tracking-tight" x-text="formatarMoeda(totalPagar)"></div>
+                    <span class="w-8 h-8 rounded-lg bg-error/10 text-error flex items-center justify-center shrink-0">
+                        <i data-lucide="trending-down" class="w-4 h-4"></i>
+                    </span>
                 </div>
-                <p class="text-[10px] text-zinc-600 mt-4 font-bold uppercase tracking-widest">Compromissos pendentes</p>
+                <div class="mt-4 flex items-center gap-2 text-on-surface-variant text-[11px] font-label-caps">
+                    <span class="text-error font-bold">Compromissos</span>
+                    <span>pendentes</span>
+                </div>
             </div>
 
-            <div class="bg-white text-black rounded-[2rem] p-6 shadow-xl shadow-white/5 group hover:scale-[1.02] transition-all cursor-pointer flex flex-col justify-between h-full" @click="abrirModal()">
-                <div>
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="w-10 h-10 rounded-xl bg-black/5 text-black flex items-center justify-center">
-                            <i data-lucide="plus" class="w-6 h-6"></i>
-                        </div>
-                        <i data-lucide="arrow-up-right" class="w-4 h-4 text-black/40"></i>
+            <!-- Action Card: Novo Lançamento -->
+            <div class="glass-card p-6 rounded-xl border-primary/20 bg-primary/5 flex flex-col justify-between h-32 relative overflow-hidden group hover:scale-[1.02] transition-all cursor-pointer" @click="abrirModal()">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/20 rounded-full blur-2xl group-hover:bg-primary/30 transition-colors"></div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-label-caps font-label-caps text-primary mb-1">AÇÕES RÁPIDAS</p>
+                        <h3 class="text-xl font-bold font-headline-md leading-tight text-on-surface">Novo Lançamento</h3>
                     </div>
-                    <div class="text-xl font-black tracking-tight leading-tight">Novo<br>Lançamento</div>
+                    <span class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/20">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                    </span>
                 </div>
-                <p class="text-[10px] text-black/60 mt-4 font-bold uppercase tracking-widest">Registrar entrada ou saída</p>
+                <div class="mt-4 flex items-center gap-2 text-on-surface-variant text-[11px] font-label-caps">
+                    <span>Registrar entrada ou saída</span>
+                </div>
             </div>
         </div>
 
         <!-- Header Actions -->
-        <div class="flex items-center justify-between mb-8">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8 mt-2">
             <div>
-                <h1 class="text-2xl font-black text-white tracking-tight">Fluxo de Caixa</h1>
-                <p class="text-zinc-500 text-sm font-medium">Gestão completa de lançamentos e conciliação</p>
+                <h1 class="font-display-lg text-on-surface mb-1">Fluxo de Caixa</h1>
+                <p class="text-body-md text-on-surface-variant">Gestão completa de lançamentos e conciliação</p>
             </div>
             <div class="flex items-center gap-3">
-                <input type="file" x-ref="ofxInput" @change="uploadOfx($event)" style="opacity:0; position:absolute; width:1px; height:1px; z-index:-1;" accept=".ofx,.OFX">
-                <input type="file" x-ref="iaInput" @change="lerComprovante($event)" style="opacity:0; position:absolute; width:1px; height:1px; z-index:-1;" accept="image/*">
+                <input type="file" x-ref="ofxInput" @change="uploadOfx($event)" class="hidden" accept=".ofx,.OFX">
+                <input type="file" x-ref="iaInput" @change="lerComprovante($event)" class="hidden" accept="image/*">
                 
-                <div class="flex items-center gap-1 p-1 bg-zinc-900/80 border border-white/5 rounded-full">
+                <div class="flex items-center gap-1.5 p-1 bg-surface-container border border-outline-variant/30 rounded-lg">
                     <button @click="modalIaAberto = true" 
-                            class="flex items-center gap-2 px-5 py-2 rounded-full text-emerald-500 hover:bg-emerald-500/10 transition-all text-[11px] font-black uppercase tracking-widest group"
+                            class="flex items-center gap-2 px-4 py-2 rounded text-emerald-500 hover:bg-emerald-500/10 transition-all font-label-caps text-[10px] group"
                             :disabled="processandoIA">
                         <i data-lucide="sparkles" class="w-3.5 h-3.5 group-hover:rotate-12 transition-transform"></i>
                         <span x-show="!processandoIA">Scanner IA</span>
                         <span x-show="processandoIA">Analisando...</span>
                     </button>
-                    <div class="w-px h-4 bg-white/5"></div>
+                    <div class="w-px h-4 bg-outline-variant/30"></div>
                     <button @click="abrirModalExtratoAsaas()" 
-                            class="flex items-center gap-2 px-5 py-2 rounded-full text-purple-500 hover:bg-purple-500/10 transition-all text-[11px] font-black uppercase tracking-widest"
+                            class="flex items-center gap-2 px-4 py-2 rounded text-purple-500 hover:bg-purple-500/10 transition-all font-label-caps text-[10px]"
                             :disabled="consultandoAsaas">
                         <i data-lucide="landmark" class="w-3.5 h-3.5"></i>
                         <span x-show="!consultandoAsaas">Extrato Asaas</span>
                         <span x-show="consultandoAsaas">Consultando...</span>
                     </button>
-                    <div class="w-px h-4 bg-white/5"></div>
+                    <div class="w-px h-4 bg-outline-variant/30"></div>
                     <button @click="$refs.ofxInput.click()" 
-                            class="flex items-center gap-2 px-5 py-2 rounded-full text-blue-500 hover:bg-blue-500/10 transition-all text-[11px] font-black uppercase tracking-widest"
+                            class="flex items-center gap-2 px-4 py-2 rounded text-blue-500 hover:bg-blue-500/10 transition-all font-label-caps text-[10px]"
                             :disabled="uploadingOfx">
                         <i data-lucide="file-up" class="w-3.5 h-3.5"></i>
                         <span x-show="!uploadingOfx">Importar OFX</span>
@@ -102,114 +116,114 @@ include __DIR__ . '/../includes/layout/head.php';
                 </div>
 
                 <!-- Ações em Massa -->
-                <div x-show="selecionados.length > 0" class="flex items-center gap-1 p-1 bg-zinc-900 border border-white/10 rounded-full" x-cloak x-transition>
-                    <button @click="alterarStatusSelecionados('pago')" class="px-4 py-2 text-emerald-500 hover:bg-emerald-500/10 rounded-full text-[10px] font-black uppercase tracking-widest">Efetivar</button>
-                    <button @click="alterarStatusSelecionados('pendente')" class="px-4 py-2 text-amber-500 hover:bg-amber-500/10 rounded-full text-[10px] font-black uppercase tracking-widest">Pendente</button>
-                    <div class="w-px h-4 bg-white/5"></div>
-                    <button @click="abrirEdicaoMassa()" class="px-4 py-2 text-blue-500 hover:bg-blue-500/10 rounded-full text-[10px] font-black uppercase tracking-widest">Alterar Conta/Cat</button>
-                    <div class="w-px h-4 bg-white/5"></div>
-                    <button @click="excluirSelecionados()" class="px-4 py-2 text-red-500 hover:bg-red-500/10 rounded-full text-[10px] font-black uppercase tracking-widest">Excluir</button>
+                <div x-show="selecionados.length > 0" class="flex items-center gap-1.5 p-1 bg-surface-container border border-outline-variant/30 rounded-lg" x-cloak x-transition>
+                    <button @click="alterarStatusSelecionados('pago')" class="px-3 py-1.5 text-emerald-500 hover:bg-emerald-500/10 rounded font-label-caps text-[10px]">Efetivar</button>
+                    <button @click="alterarStatusSelecionados('pendente')" class="px-3 py-1.5 text-amber-500 hover:bg-amber-500/10 rounded font-label-caps text-[10px]">Pendente</button>
+                    <div class="w-px h-4 bg-outline-variant/30"></div>
+                    <button @click="abrirEdicaoMassa()" class="px-3 py-1.5 text-blue-500 hover:bg-blue-500/10 rounded font-label-caps text-[10px]">Conta/Cat</button>
+                    <div class="w-px h-4 bg-outline-variant/30"></div>
+                    <button @click="excluirSelecionados()" class="px-3 py-1.5 text-red-500 hover:bg-red-500/10 rounded font-label-caps text-[10px]">Excluir</button>
                 </div>
             </div>
         </div>
 
         <!-- Filters -->
-        <div class="bg-zinc-900/30 border border-white/5 rounded-[2rem] p-4 mb-8 flex flex-col gap-4">
-            <div class="flex items-center justify-between gap-6">
+        <div class="glass-card p-4 rounded-xl mb-8 flex flex-col gap-4">
+            <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
                 <!-- Segmented Control para Tipo -->
-                <div class="flex p-1 bg-black/40 rounded-full border border-white/5">
+                <div class="flex p-1 bg-surface-container-lowest/80 rounded-lg border border-outline-variant/30">
                     <button @click="filtros.tipo=''" 
-                            :class="filtros.tipo==='' ? 'bg-zinc-800 text-white shadow-lg' : 'text-zinc-500 hover:text-zinc-300'"
-                            class="px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">Todos</button>
+                            :class="filtros.tipo==='' ? 'bg-surface-variant text-on-surface shadow' : 'text-on-surface-variant hover:text-on-surface'"
+                            class="px-4 py-1.5 rounded font-label-caps text-[10px] transition-all">Todos</button>
                     <button @click="filtros.tipo='receber'" 
-                            :class="filtros.tipo==='receber' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-zinc-500 hover:text-zinc-300'"
-                            class="px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">A Receber</button>
+                            :class="filtros.tipo==='receber' ? 'bg-emerald-500/20 text-emerald-400 shadow' : 'text-on-surface-variant hover:text-on-surface'"
+                            class="px-4 py-1.5 rounded font-label-caps text-[10px] transition-all">A Receber</button>
                     <button @click="filtros.tipo='pagar'" 
-                            :class="filtros.tipo==='pagar' ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'text-zinc-500 hover:text-zinc-300'"
-                            class="px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">A Pagar</button>
+                            :class="filtros.tipo==='pagar' ? 'bg-red-500/20 text-red-400 shadow' : 'text-on-surface-variant hover:text-on-surface'"
+                            class="px-4 py-1.5 rounded font-label-caps text-[10px] transition-all">A Pagar</button>
                 </div>
 
                 <!-- Search Bar -->
                 <div class="flex-1 relative group">
-                    <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600 group-focus-within:text-white transition-colors"></i>
+                    <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant group-focus-within:text-primary transition-colors"></i>
                     <input type="text" x-model="filtros.busca" placeholder="Buscar por descrição, cliente ou categoria..." 
-                           class="w-full bg-black/40 border border-white/5 rounded-full py-3 pl-12 pr-6 text-sm text-white placeholder-zinc-600 outline-none focus:border-white/20 focus:bg-black/60 transition-all">
+                           class="w-full bg-surface-container border border-outline-variant/30 rounded-lg py-2.5 pl-12 pr-6 text-body-md text-on-surface placeholder-on-surface-variant outline-none focus:border-primary/50 focus:bg-surface-container-low transition-all">
                 </div>
             </div>
 
-            <div class="flex items-center gap-3">
-                <select class="bg-black/40 border border-white/5 rounded-full py-2 px-6 text-[10px] font-black uppercase tracking-widest text-zinc-400 outline-none focus:border-white/20 transition-all appearance-none cursor-pointer" x-model="filtros.categoria">
+            <div class="flex flex-wrap items-center gap-3">
+                <select class="bg-surface-container border border-outline-variant/30 rounded-lg py-2 px-4 text-label-caps font-label-caps text-on-surface-variant outline-none focus:border-primary/50 transition-all appearance-none cursor-pointer" x-model="filtros.categoria">
                     <option value="">Todas as categorias</option>
                     <template x-for="cat in categoriasDisponiveis" :key="cat">
                         <option :value="cat" x-text="cat.toUpperCase()"></option>
                     </template>
                 </select>
                 
-                <select class="bg-black/40 border border-white/5 rounded-full py-2 px-6 text-[10px] font-black uppercase tracking-widest text-zinc-400 outline-none focus:border-white/20 transition-all appearance-none cursor-pointer" x-model="filtros.conta">
+                <select class="bg-surface-container border border-outline-variant/30 rounded-lg py-2 px-4 text-label-caps font-label-caps text-on-surface-variant outline-none focus:border-primary/50 transition-all appearance-none cursor-pointer" x-model="filtros.conta">
                     <option value="">Todas as contas</option>
                     <template x-for="c in contas" :key="c.id">
                         <option :value="c.id" x-text="c.nome.toUpperCase()"></option>
                     </template>
                 </select>
 
-                <select class="bg-black/40 border border-white/5 rounded-full py-2 px-6 text-[10px] font-black uppercase tracking-widest text-zinc-400 outline-none focus:border-white/20 transition-all appearance-none cursor-pointer" x-model="filtros.status">
+                <select class="bg-surface-container border border-outline-variant/30 rounded-lg py-2 px-4 text-label-caps font-label-caps text-on-surface-variant outline-none focus:border-primary/50 transition-all appearance-none cursor-pointer" x-model="filtros.status">
                     <option value="">Todos os status</option>
                     <option value="pendente">PENDENTE</option>
                     <option value="pago">PAGO</option>
                     <option value="atrasado">ATRASADO</option>
                 </select>
 
-                <select class="bg-black/40 border border-white/5 rounded-full py-2 px-6 text-[10px] font-black uppercase tracking-widest text-zinc-400 outline-none focus:border-white/20 transition-all appearance-none cursor-pointer" x-model="filtros.conciliado">
+                <select class="bg-surface-container border border-outline-variant/30 rounded-lg py-2 px-4 text-label-caps font-label-caps text-on-surface-variant outline-none focus:border-primary/50 transition-all appearance-none cursor-pointer" x-model="filtros.conciliado">
                     <option value="">Conciliação: Todos</option>
                     <option value="1">Conciliado</option>
                     <option value="0">Não Conciliado</option>
                 </select>
 
-                <div class="h-4 w-px bg-white/5 mx-2"></div>
+                <div class="h-4 w-px bg-outline-variant/30 mx-1"></div>
 
                 <!-- Seletor de Período Moderno -->
-                <div class="flex items-center gap-1 p-1 bg-black/40 rounded-full border border-white/5">
-                    <button @click="deslocarPeriodo(-1)" class="p-1.5 hover:bg-white/5 rounded-full text-zinc-500 transition-colors"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
-                    <span class="px-3 text-[10px] font-black uppercase tracking-widest text-white min-w-[120px] text-center" x-text="labelPeriodo()"></span>
-                    <button @click="deslocarPeriodo(1)" class="p-1.5 hover:bg-white/5 rounded-full text-zinc-500 transition-colors"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                <div class="flex items-center gap-1 p-1 bg-surface-container rounded-lg border border-outline-variant/30">
+                    <button @click="deslocarPeriodo(-1)" class="p-1.5 hover:bg-surface-variant rounded text-on-surface-variant transition-colors"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                    <span class="px-3 text-label-caps font-label-caps text-on-surface min-w-[120px] text-center" x-text="labelPeriodo()"></span>
+                    <button @click="deslocarPeriodo(1)" class="p-1.5 hover:bg-surface-variant rounded text-on-surface-variant transition-colors"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
                 </div>
             </div>
         </div>
 
         <!-- Tabela -->
-        <div class="bg-zinc-900/30 border border-white/5 rounded-[2rem] overflow-hidden">
-            <div class="grid grid-cols-[40px_2.5fr_1fr_1fr_1fr_1fr_1fr_120px] items-center px-8 py-5 bg-white/5 border-b border-white/5 mb-2">
-                <input type="checkbox" style="accent-color:#fff" :checked="todosSelecionados" @change="toggleTodos()">
-                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500">Descrição / Cliente</span>
-                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-center">Vencimento</span>
-                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-center">Pagamento</span>
-                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-right pr-4">Valor</span>
-                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-right pr-4">Valor Pago</span>
-                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-center">Status</span>
-                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 text-right">Ações</span>
+        <div class="glass-card rounded-xl overflow-hidden mb-6">
+            <div class="grid grid-cols-[40px_2.5fr_1fr_1fr_1fr_1fr_1fr_120px] items-center px-6 py-4 bg-surface-container-low border-b border-outline-variant/20">
+                <input type="checkbox" class="rounded border-outline-variant/30 bg-surface-container text-primary focus:ring-primary focus:ring-offset-background" :checked="todosSelecionados" @change="toggleTodos()">
+                <span class="text-label-caps font-label-caps text-on-surface-variant text-[10px]">Descrição / Cliente</span>
+                <span class="text-label-caps font-label-caps text-on-surface-variant text-[10px] text-center">Vencimento</span>
+                <span class="text-label-caps font-label-caps text-on-surface-variant text-[10px] text-center">Pagamento</span>
+                <span class="text-label-caps font-label-caps text-on-surface-variant text-[10px] text-right pr-4">Valor</span>
+                <span class="text-label-caps font-label-caps text-on-surface-variant text-[10px] text-right pr-4">Valor Pago</span>
+                <span class="text-label-caps font-label-caps text-on-surface-variant text-[10px] text-center">Status</span>
+                <span class="text-label-caps font-label-caps text-on-surface-variant text-[10px] text-right">Ações</span>
             </div>
 
-            <div class="divide-y divide-white/5">
+            <div class="divide-y divide-outline-variant/20">
                 <template x-if="carregando">
-                    <div class="divide-y divide-white/5">
+                    <div class="divide-y divide-outline-variant/20">
                         <template x-for="i in 6" :key="i">
-                            <div class="grid grid-cols-[40px_2.5fr_1fr_1fr_1fr_1fr_1fr_120px] items-center px-8 py-5 animate-pulse">
-                                <div class="w-4 h-4 bg-white/5 rounded"></div>
+                            <div class="grid grid-cols-[40px_2.5fr_1fr_1fr_1fr_1fr_1fr_120px] items-center px-6 py-4 animate-pulse">
+                                <div class="w-4 h-4 bg-outline-variant/30 rounded"></div>
                                 <div class="flex items-center gap-4">
-                                    <div class="w-10 h-10 rounded-xl bg-white/5"></div>
+                                    <div class="w-10 h-10 rounded bg-outline-variant/30"></div>
                                     <div class="flex-1 space-y-2">
-                                        <div class="h-3 bg-white/5 rounded w-3/4"></div>
-                                        <div class="h-2 bg-white/5 rounded w-1/2"></div>
+                                        <div class="h-3 bg-outline-variant/30 rounded w-3/4"></div>
+                                        <div class="h-2 bg-outline-variant/30 rounded w-1/2"></div>
                                     </div>
                                 </div>
-                                <div class="h-3 bg-white/5 rounded w-16 mx-auto"></div>
-                                <div class="h-3 bg-white/5 rounded w-16 mx-auto"></div>
-                                <div class="h-3 bg-white/5 rounded w-20 ml-auto"></div>
-                                <div class="h-3 bg-white/5 rounded w-20 ml-auto"></div>
-                                <div class="h-6 bg-white/5 rounded-full w-24 mx-auto"></div>
+                                <div class="h-3 bg-outline-variant/30 rounded w-16 mx-auto"></div>
+                                <div class="h-3 bg-outline-variant/30 rounded w-16 mx-auto"></div>
+                                <div class="h-3 bg-outline-variant/30 rounded w-20 ml-auto"></div>
+                                <div class="h-3 bg-outline-variant/30 rounded w-20 ml-auto"></div>
+                                <div class="h-6 bg-outline-variant/30 rounded-full w-24 mx-auto"></div>
                                 <div class="flex justify-end gap-2">
-                                    <div class="w-8 h-8 bg-white/5 rounded-lg"></div>
-                                    <div class="w-8 h-8 bg-white/5 rounded-lg"></div>
+                                    <div class="w-8 h-8 bg-outline-variant/30 rounded-lg"></div>
+                                    <div class="w-8 h-8 bg-outline-variant/30 rounded-lg"></div>
                                 </div>
                             </div>
                         </template>
@@ -218,12 +232,12 @@ include __DIR__ . '/../includes/layout/head.php';
 
                 <template x-if="!carregando && lancamentosFiltrados.length === 0">
                     <div class="py-24 text-center">
-                        <div class="w-24 h-24 bg-zinc-900/50 rounded-[2rem] flex items-center justify-center mx-auto mb-6 text-zinc-700 border border-white/5">
-                            <i data-lucide="search-x" class="w-12 h-12"></i>
+                        <div class="w-16 h-16 bg-surface-container rounded-full flex items-center justify-center mx-auto mb-4 border border-outline-variant/30 text-on-surface-variant">
+                            <i data-lucide="search-x" class="w-8 h-8"></i>
                         </div>
-                        <h3 class="text-white font-black text-xl tracking-tight mb-2">Sem resultados</h3>
-                        <p class="text-zinc-500 text-sm mb-8 max-w-xs mx-auto font-medium">Não encontramos nada com os filtros aplicados. Tente ajustar sua busca ou limpe os filtros para ver tudo.</p>
-                        <button @click="limparFiltros()" class="inline-flex items-center gap-3 px-8 py-3.5 bg-white text-black rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-zinc-200 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-white/5">
+                        <h3 class="text-on-surface font-headline-md text-title-sm mb-1">Sem resultados</h3>
+                        <p class="text-on-surface-variant text-body-md mb-6 max-w-xs mx-auto">Não encontramos nada com os filtros aplicados. Tente ajustar sua busca ou limpe os filtros para ver tudo.</p>
+                        <button @click="limparFiltros()" class="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-on-primary rounded font-bold transition-all hover:scale-105 active:scale-95 text-body-md shadow-lg shadow-primary/20">
                             <i data-lucide="filter-x" class="w-4 h-4"></i>
                             Limpar Filtros
                         </button>
@@ -231,62 +245,62 @@ include __DIR__ . '/../includes/layout/head.php';
                 </template>
 
                 <template x-for="l in lancamentosFiltrados" :key="l.id">
-                    <div class="grid grid-cols-[40px_2.5fr_1fr_1fr_1fr_1fr_1fr_120px] items-center px-8 py-5 hover:bg-white/[0.02] transition-colors group">
+                    <div class="grid grid-cols-[40px_2.5fr_1fr_1fr_1fr_1fr_1fr_120px] items-center px-6 py-4 hover:bg-surface-container-high/20 transition-colors group">
                         <div>
-                            <input type="checkbox" :value="l.id" x-model="selecionados" style="accent-color:#fff">
+                            <input type="checkbox" :value="l.id" x-model="selecionados" class="rounded border-outline-variant/30 bg-surface-container text-primary focus:ring-primary focus:ring-offset-background">
                         </div>
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-xl flex items-center justify-center"
-                                 :class="l.tipo==='receber' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'">
-                                <i :data-lucide="l.tipo==='receber' ? 'arrow-down-left' : 'arrow-up-right'" class="w-5 h-5"></i>
+                        <div class="flex items-center gap-4 min-w-0">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                                 :class="l.tipo==='receber' ? 'bg-[#10b981]/10 text-[#10b981]' : 'bg-error/10 text-error'">
+                                <i :data-lucide="l.tipo==='receber' ? 'arrow-down-left' : 'arrow-up-right'" class="w-4 h-4"></i>
                             </div>
-                            <div class="flex-1 overflow-hidden">
-                                <div class="text-sm font-bold text-white truncate cursor-pointer hover:text-emerald-400 transition-colors" @click="abrirModal(l)" x-text="l.descricao"></div>
-                                <div class="flex items-center gap-2 mt-0.5">
+                            <div class="flex-1 min-w-0">
+                                <div class="text-sm font-bold text-on-surface truncate cursor-pointer hover:text-primary transition-colors" @click="abrirModal(l)" x-text="l.descricao"></div>
+                                <div class="flex flex-wrap items-center gap-2 mt-1">
                                     <template x-if="l.conta_id">
-                                        <span class="text-[8px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 font-black uppercase tracking-widest border border-white/5" 
+                                        <span class="text-[8px] px-1.5 py-0.5 rounded bg-surface-variant text-on-surface-variant font-label-caps border border-outline-variant/10" 
                                               x-text="contas.find(c=>c.id===l.conta_id)?.nome"></span>
                                     </template>
                                     <template x-if="parseInt(l.conciliado) === 1">
-                                        <span class="inline-flex items-center gap-1 text-[8px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-black uppercase tracking-widest border border-emerald-500/20" title="Conciliado. Edição de conta, valor e data bloqueada.">
+                                        <span class="inline-flex items-center gap-1 text-[8px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-label-caps border border-emerald-500/20" title="Conciliado. Edição de conta, valor e data bloqueada.">
                                             <i data-lucide="lock" style="width:8px;height:8px;"></i> CONCILIADO
                                         </span>
                                     </template>
-                                    <span class="text-[10px] text-zinc-500 font-medium truncate" x-text="clientes.find(c => c.id === l.cliente_id)?.nome || fornecedores.find(f => f.id === l.fornecedor_id)?.nome || l.cliente_fornecedor || l.categoria"></span>
+                                    <span class="text-xs text-on-surface-variant truncate" x-text="clientes.find(c => c.id === l.cliente_id)?.nome || fornecedores.find(f => f.id === l.fornecedor_id)?.nome || l.cliente_fornecedor || l.categoria"></span>
                                 </div>
                             </div>
                         </div>
                         <div class="text-center">
-                            <span class="text-[11px] font-black text-zinc-400 uppercase tracking-tighter" x-text="formatarData(l.vencimento)"></span>
+                            <span class="text-xs font-data-tabular text-on-surface-variant" x-text="formatarData(l.vencimento)"></span>
                         </div>
                         <div class="text-center">
-                            <span class="text-[11px] font-black uppercase tracking-tighter" 
-                                  :class="l.data_pagamento ? 'text-emerald-400 font-bold' : 'text-zinc-600 font-medium'" 
+                            <span class="text-xs font-data-tabular" 
+                                  :class="l.data_pagamento ? 'text-emerald-400 font-bold' : 'text-on-surface-variant'" 
                                   x-text="l.data_pagamento ? formatarData(l.data_pagamento) : '—'"></span>
                         </div>
                         <div class="text-right pr-4">
-                            <span class="text-sm font-black tracking-tight" :class="l.tipo==='receber' ? 'text-emerald-500' : 'text-red-400 drop-shadow-[0_0_8px_rgba(248,113,113,0.2)]'" x-text="formatarMoeda(l.valor)"></span>
+                            <span class="text-sm font-data-tabular font-bold" :class="l.tipo==='receber' ? 'text-primary' : 'text-on-surface'" x-text="formatarMoeda(l.valor)"></span>
                         </div>
                         <div class="text-right pr-4">
-                            <span class="text-sm font-bold text-zinc-400 tracking-tight" x-text="formatarMoeda(l.valor_pago)"></span>
+                            <span class="text-sm font-data-tabular font-bold text-on-surface-variant" x-text="formatarMoeda(l.valor_pago)"></span>
                         </div>
                         <div class="flex justify-center">
-                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border" 
+                            <span class="status-pill" 
                                   :class="{
-                                      'bg-emerald-500/10 text-emerald-500 border-emerald-500/20': l.status === 'pago',
-                                      'bg-amber-500/10 text-amber-500 border-amber-500/20': l.status === 'pendente',
-                                      'bg-red-500/10 text-red-500 border-red-500/20': l.status === 'atrasado',
-                                      'bg-zinc-800 text-zinc-400 border-white/5': !['pago', 'pendente', 'atrasado'].includes(l.status)
+                                      'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20': l.status === 'pago',
+                                      'bg-amber-500/10 text-amber-400 border border-amber-500/20': l.status === 'pendente',
+                                      'bg-red-500/10 text-red-400 border border-red-500/20': l.status === 'atrasado',
+                                      'bg-surface-variant text-on-surface-variant border border-outline-variant/20': !['pago', 'pendente', 'atrasado'].includes(l.status)
                                   }" x-text="labelStatus(l.status)"></span>
                         </div>
                         <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button @click="abrirBaixa(l)" class="p-2 hover:bg-emerald-500/10 text-emerald-500 rounded-lg transition-colors" title="Baixar">
+                            <button @click="abrirBaixa(l)" class="p-1.5 hover:bg-emerald-500/10 text-emerald-400 rounded transition-colors" title="Baixar">
                                 <i data-lucide="check-circle" class="w-4 h-4"></i>
                             </button>
-                            <button @click="abrirModal(l)" class="p-2 hover:bg-white/10 text-zinc-400 hover:text-white rounded-lg transition-colors" title="Editar">
+                            <button @click="abrirModal(l)" class="p-1.5 hover:bg-surface-variant text-on-surface-variant hover:text-on-surface rounded transition-colors" title="Editar">
                                 <i data-lucide="edit-3" class="w-4 h-4"></i>
                             </button>
-                            <button @click="excluir(l.id)" class="p-2 hover:bg-red-500/10 text-red-500 rounded-lg transition-colors" title="Excluir">
+                            <button @click="excluir(l.id)" class="p-1.5 hover:bg-red-500/10 text-red-400 rounded transition-colors" title="Excluir">
                                 <i data-lucide="trash-2" class="w-4 h-4"></i>
                             </button>
                         </div>

@@ -213,206 +213,63 @@ include __DIR__ . '/includes/layout/head.php';
 <div id="app-wrapper">
     <?php include __DIR__ . '/includes/layout/sidebar.php'; ?>
 
-    <main id="main-content" class="content-sheet !bg-[#e0e2eb] dark:!bg-black !p-4 md:!p-6">
-        <style>
-            /* BENTO UI OVERRIDES */
-            #main-content {
-                min-height: 100vh;
-                font-family: 'Outfit', sans-serif;
-            }
-
-            .bento-header {
-                background-color: #f7f3da;
-                border-radius: 32px;
-                padding: 24px 32px;
-            }
-
-            .dark .bento-header {
-                background-color: #111;
-                border: 1px solid #222;
-            }
-
-            .bento-card {
-                border-radius: 32px;
-                padding: 28px;
-                position: relative;
-                overflow: hidden;
-            }
-
-            .bento-purple {
-                background: linear-gradient(135deg, #b8abfb, #d4c4f9);
-                color: #111;
-            }
-
-            .dark .bento-purple {
-                background: linear-gradient(135deg, #382c73, #4a3875);
-                color: #fff;
-            }
-
-            .bento-dark {
-                background-color: #2b3342;
-                color: #fff;
-            }
-
-            .dark .bento-dark {
-                background-color: #111;
-                border: 1px solid #222;
-            }
-
-            .bento-light {
-                background-color: #f0f3f8;
-                color: #111;
-            }
-
-            .dark .bento-light {
-                background-color: #111;
-                border: 1px solid #222;
-                color: #eee;
-            }
-
-            .bento-child-blue {
-                background-color: #6a5ff6;
-                color: #fff;
-                border-radius: 24px;
-                padding: 24px;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-            }
-
-            .dark .bento-child-blue {
-                background-color: #4a3fd6;
-            }
-
-            .bento-child-green {
-                background-color: #a4c9b3;
-                color: #1a2f22;
-                border-radius: 24px;
-                padding: 24px;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-            }
-
-            .dark .bento-child-green {
-                background-color: #243b2f;
-                color: #a4c9b3;
-            }
-
-            .bento-pill-white {
-                background: #fff;
-                border-radius: 999px;
-                padding: 24px 32px;
-                display: inline-flex;
-                flex-direction: column;
-                justify-content: center;
-            }
-
-            .dark .bento-pill-white {
-                background: rgba(255, 255, 255, 0.05);
-                color: #fff;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-            }
-
-            .bento-pill-dark {
-                background: #2b3342;
-                color: #fff;
-                border-radius: 999px;
-                padding: 24px 32px;
-                display: inline-flex;
-                flex-direction: column;
-                justify-content: center;
-            }
-
-            .dark .bento-pill-dark {
-                background: #000;
-                border: 1px solid #222;
-            }
-
-            .bento-pill-chart {
-                background: rgba(255, 255, 255, 0.4);
-                border-radius: 24px;
-                padding: 24px;
-                backdrop-filter: blur(10px);
-            }
-
-            .dark .bento-pill-chart {
-                background: rgba(0, 0, 0, 0.3);
-            }
-
-            .donut-chart {
-                width: 220px;
-                height: 220px;
-                border-radius: 50%;
-                background: conic-gradient(#10b981 0% 40%, #8b5cf6 40% 70%, #6366f1 70% 100%);
-                mask-image: radial-gradient(transparent 58%, black 59%);
-                -webkit-mask-image: radial-gradient(transparent 58%, black 59%);
-            }
-
-            .dark .donut-chart {
-                background: conic-gradient(#10b981 0% 40%, #6d28d9 40% 70%, #4338ca 70% 100%);
-            }
-
-            .transaction-item {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                margin-bottom: 16px;
-            }
-
-            .transaction-icon {
-                width: 44px;
-                height: 44px;
-                border-radius: 14px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-        </style>
-
+    <main id="main-content" class="content-sheet !bg-background !p-6 flex flex-col">
         <?php include __DIR__ . '/includes/layout/top_nav.php'; ?>
 
-        <!-- Bento Header -->
-        <div class="bento-header flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-6">
+        <!-- Page Header -->
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-8 mt-2">
             <div>
-                <h1 class="text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white mb-1">Dashboard</h1>
-                <p class="text-sm font-medium text-zinc-600 dark:text-zinc-400">Resumo financeiro e operacional da sua
-                    agência</p>
+                <h1 class="font-display-lg text-on-surface mb-1">Dashboard</h1>
+                <p class="text-body-md text-on-surface-variant">Resumo financeiro e operacional da sua agência</p>
             </div>
             <div class="flex items-center gap-3">
                 <a href="<?= raizUrl('/financeiro/lancamentos.php') ?>"
-                    class="bg-black text-white dark:bg-white dark:text-black hover:scale-105 transition-transform px-5 py-2.5 rounded-full text-sm font-bold shadow-lg">
+                    class="bg-primary hover:bg-primary-container text-on-primary-container font-bold px-6 py-2.5 rounded-lg text-body-md transition-all active:scale-95 duration-150 shadow-lg">
                     Novo Lançamento
                 </a>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <a href="<?= raizUrl('/gerenciamento/clientes.php') ?>" class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] p-5 shadow-sm group hover:bg-zinc-900 dark:hover:bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/20">
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400 transition-colors">Clientes cadastrados</p>
-                <p class="mt-4 text-3xl font-black text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors"><?= $crmResumo['total_clientes'] ?? 0 ?></p>
+        <!-- Metric Cards (Bento Style) -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-card-gap mb-6">
+            <a href="<?= raizUrl('/gerenciamento/clientes.php') ?>" class="glass-card p-6 rounded-xl flex flex-col justify-between h-32 group">
+                <span class="font-label-caps text-on-surface-variant uppercase">Clientes cadastrados</span>
+                <div class="flex items-baseline justify-between">
+                    <span class="text-3xl font-bold font-headline-md text-primary group-hover:scale-105 transition-transform"><?= $crmResumo['total_clientes'] ?? 0 ?></span>
+                    <i data-lucide="users" class="w-6 h-6 text-primary-container/40"></i>
+                </div>
             </a>
-            <a href="<?= raizUrl('/gerenciamento/fornecedores.php') ?>" class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] p-5 shadow-sm group hover:bg-zinc-900 dark:hover:bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/20">
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400 transition-colors">Fornecedores cadastrados</p>
-                <p class="mt-4 text-3xl font-black text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors"><?= $crmResumo['total_fornecedores'] ?? 0 ?></p>
+            <a href="<?= raizUrl('/gerenciamento/fornecedores.php') ?>" class="glass-card p-6 rounded-xl flex flex-col justify-between h-32 group">
+                <span class="font-label-caps text-on-surface-variant uppercase">Fornecedores cadastrados</span>
+                <div class="flex items-baseline justify-between">
+                    <span class="text-3xl font-bold font-headline-md text-on-surface group-hover:scale-105 transition-transform"><?= $crmResumo['total_fornecedores'] ?? 0 ?></span>
+                    <i data-lucide="shopping-bag" class="w-6 h-6 text-outline-variant/40"></i>
+                </div>
             </a>
-            <a href="<?= raizUrl('/gerenciamento/oportunidades.php') ?>" class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] p-5 shadow-sm group hover:bg-zinc-900 dark:hover:bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/20">
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400 transition-colors">Oportunidades abertas</p>
-                <p class="mt-4 text-3xl font-black text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors"><?= $crmResumo['oportunidades_abertas'] ?? 0 ?></p>
+            <a href="<?= raizUrl('/gerenciamento/oportunidades.php') ?>" class="glass-card p-6 rounded-xl flex flex-col justify-between h-32 group">
+                <span class="font-label-caps text-on-surface-variant uppercase">Oportunidades abertas</span>
+                <div class="flex items-baseline justify-between">
+                    <span class="text-3xl font-bold font-headline-md text-tertiary group-hover:scale-105 transition-transform"><?= $crmResumo['oportunidades_abertas'] ?? 0 ?></span>
+                    <i data-lucide="trending-up" class="w-6 h-6 text-tertiary/40"></i>
+                </div>
             </a>
-            <a href="<?= raizUrl('/gerenciamento/propostas.php') ?>" class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] p-5 shadow-sm group hover:bg-zinc-900 dark:hover:bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/20">
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400 transition-colors">Total de Propostas</p>
-                <p class="mt-4 text-3xl font-black text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors"><?= $crmResumo['total_propostas'] ?? 0 ?></p>
+            <a href="<?= raizUrl('/gerenciamento/propostas.php') ?>" class="glass-card p-6 rounded-xl flex flex-col justify-between h-32 border-l-4 border-l-primary group">
+                <span class="font-label-caps text-on-surface-variant uppercase">Total de Propostas</span>
+                <div class="flex items-baseline justify-between">
+                    <span class="text-3xl font-bold font-headline-md text-on-surface group-hover:scale-105 transition-transform"><?= $crmResumo['total_propostas'] ?? 0 ?></span>
+                    <i data-lucide="file-text" class="w-6 h-6 text-primary/40"></i>
+                </div>
             </a>
         </div>
 
-        <div class="bg-white/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-5 shadow-sm mb-6">
+        <!-- Pipeline Overview -->
+        <div class="glass-card p-6 rounded-xl mb-6">
             <div class="flex items-center justify-between mb-4">
                 <div>
-                    <p class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Pipeline de Oportunidades</p>
-                    <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Visão por estágio</h2>
+                    <p class="font-label-caps text-on-surface-variant">Pipeline de Oportunidades</p>
+                    <h2 class="text-title-sm font-headline-md text-on-surface mt-1">Visão por estágio</h2>
                 </div>
-                <span class="text-xs uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">CRM</span>
+                <span class="font-label-caps text-on-surface-variant opacity-60">CRM</span>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
                 <?php 
@@ -427,272 +284,236 @@ include __DIR__ . '/includes/layout/head.php';
                 foreach ($etapas as $key => $info):
                 ?>
                 <a href="<?= raizUrl('/gerenciamento/oportunidades.php?etapa=' . $key) ?>" 
-                   class="relative bg-zinc-50 dark:bg-zinc-950/40 border border-transparent dark:border-white/5 rounded-[2rem] p-5 group hover:bg-zinc-900 dark:hover:bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/20 overflow-hidden">
-                    
-                    <p class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-zinc-400 transition-colors relative z-10"><?= $info['label'] ?></p>
-                    <p class="mt-4 text-3xl font-black text-zinc-900 dark:text-white group-hover:text-white dark:group-hover:text-black transition-all relative z-10"><?= $crmPipeline[$key] ?? 0 ?></p>
-                    
-                    <!-- Efeito de brilho sutil no hover -->
-                    <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                   class="text-center p-3 rounded-lg bg-surface-container-low/30 border border-outline-variant/20 hover:border-primary/50 transition-all group">
+                    <span class="block font-label-caps text-[9px] text-on-surface-variant mb-1 group-hover:text-primary transition-colors"><?= $info['label'] ?></span>
+                    <span class="text-headline-md font-headline-md font-bold block text-on-surface"><?= $crmPipeline[$key] ?? 0 ?></span>
                 </a>
                 <?php endforeach; ?>
             </div>
         </div>
 
         <!-- Bento Grid -->
-        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-card-gap mb-6">
 
-            <!-- Left Column -->
-            <div class="flex flex-col gap-6">
-                <!-- Revenue Forecast Card -->
-                <div class="bento-card bento-purple">
-                    <div class="flex justify-between items-start mb-6">
-                        <h2 class="text-xl font-medium tracking-tight text-white">Fluxo de Caixa Mensal</h2>
-                        <span
-                            class="bg-black/5 hover:bg-black/10 cursor-pointer transition-colors text-black/60 px-4 py-1.5 rounded-full text-xs font-medium flex items-center gap-1">Filtro
-                            <i data-lucide="chevron-down" style="width:12px;height:12px;"></i></span>
+            <!-- Left Column: Fluxo de Caixa e Despesas (Col-span 8) -->
+            <div class="xl:col-span-8 flex flex-col gap-card-gap">
+                <!-- Fluxo de Caixa -->
+                <div class="glass-card luminous-gradient rounded-xl p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <p class="font-label-caps text-on-surface-variant">Fluxo de Caixa Mensal</p>
+                            <h3 class="text-title-sm font-headline-md text-on-surface mt-1">Visão Geral</h3>
+                        </div>
+                        <span class="bg-primary/20 text-primary px-3 py-1 rounded text-[10px] font-bold">LIVE</span>
                     </div>
 
-                    <div class="flex flex-col md:flex-row gap-4">
-                        <!-- Left Column: Stacked Pills -->
-                        <div class="flex flex-col gap-4 w-full md:w-[40%]">
-                            <div class="bg-[#f2f4f7] rounded-[32px] p-6 min-h-[160px] flex flex-col justify-center">
-                                <p class="text-sm font-medium text-zinc-500 mb-2">Receitas Mês</p>
-                                <h3 class="text-4xl font-light tracking-tight text-[#1a1f36]">
-                                    <?= formatarMoeda((float) $receitasMes) ?></h3>
+                    <div class="flex flex-col md:flex-row gap-card-gap">
+                        <div class="flex flex-col gap-4 w-full md:w-1/3">
+                            <div class="bg-surface-container-low/40 p-4 rounded-xl border border-outline-variant/10">
+                                <p class="font-label-caps text-[10px] text-on-surface-variant mb-1">Receitas Mês</p>
+                                <p class="text-2xl font-bold font-data-tabular text-on-surface"><?= formatarMoeda((float) $receitasMes) ?></p>
                             </div>
 
-                            <div class="bg-[#2b3342] rounded-[32px] p-6 min-h-[160px] flex flex-col justify-center">
-                                <p class="text-sm font-medium text-zinc-400 mb-2">Saldo Atual</p>
-                                <h3 class="text-4xl font-light tracking-tight text-white">
-                                    <?= formatarMoeda((float) $saldoAtual) ?></h3>
+                            <div class="bg-surface-container-low/40 p-4 rounded-xl border border-outline-variant/10">
+                                <p class="font-label-caps text-[10px] text-on-surface-variant mb-1">Saldo Atual</p>
+                                <p class="text-2xl font-bold font-data-tabular text-primary"><?= formatarMoeda((float) $saldoAtual) ?></p>
                                 <?php if ($resumo['debug_contas']): ?>
-                                    <p class="text-[10px] text-zinc-500 mt-2 truncate opacity-50 hover:opacity-100 transition-opacity cursor-help"
-                                        title="<?= htmlspecialchars($resumo['debug_contas']) ?>">Ver contas</p>
+                                    <a href="<?= raizUrl('/financeiro/contas.php') ?>" class="text-[10px] text-primary/60 hover:text-primary transition-colors block mt-2"
+                                        title="<?= htmlspecialchars($resumo['debug_contas']) ?>">Ver contas</a>
                                 <?php endif; ?>
                             </div>
                         </div>
 
-                        <!-- Right Column: Chart -->
-                        <div class="bg-[#f2f4f7] rounded-[32px] p-6 flex-1 flex flex-col justify-between min-h-[336px]">
-                            <div class="flex justify-between items-start mb-6">
-                                <span
-                                    class="bg-[#7c5dfa] text-white text-[11px] font-medium px-3 py-1 rounded-lg">Live</span>
+                        <!-- Graph -->
+                        <div class="bg-surface-container-low/20 rounded-xl p-4 flex-1 flex flex-col justify-between border border-outline-variant/10 min-h-[220px]">
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase">Previsão</span>
                                 <div class="text-right">
-                                    <h3 class="text-4xl font-light text-[#1a1f36]">
-                                        <?= formatarMoeda((float) $resultadoPrev) ?></h3>
-                                    <p class="text-[11px] font-medium text-zinc-500 mt-1">Saldo Previsto</p>
+                                    <p class="text-2xl font-bold font-data-tabular text-on-surface"><?= formatarMoeda((float) $resultadoPrev) ?></p>
+                                    <p class="font-label-caps text-[9px] text-on-surface-variant mt-1">Saldo Previsto</p>
                                 </div>
                             </div>
 
                             <?php if (array_sum(array_column($bars, 'valor')) > 0): ?>
-                                <div class="h-[140px] flex items-end gap-2 mt-auto">
+                                <div class="h-[120px] flex items-end gap-1.5 mt-auto relative">
                                     <?php foreach ($bars as $data => $bar):
-                                        // Real data calculation
                                         $heightTop = $maxBar > 0 && $bar['entradas'] > 0 ? max(4, (int) round(($bar['entradas'] / $maxBar) * 100)) : 0;
                                         $heightBottom = $maxBar > 0 && $bar['saidas'] > 0 ? max(4, (int) round(($bar['saidas'] / $maxBar) * 100)) : 0;
                                         $isEmpty = $heightTop == 0 && $heightBottom == 0;
                                         $hasBoth = $heightTop > 0 && $heightBottom > 0;
                                         ?>
-                                        <div
-                                            class="flex-1 flex flex-col items-center justify-end gap-[1px] group relative h-full">
+                                        <div class="flex-1 flex flex-col items-center justify-end gap-[1px] group relative h-full cursor-pointer">
                                             
                                             <!-- Tooltip -->
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-[#1a1f36] text-white text-[10px] py-2 px-3 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-10 shadow-lg scale-95 group-hover:scale-100">
                                                 <p class="font-bold border-b border-white/10 pb-1 mb-1">Dia <?= $bar['dia'] ?></p>
-                                                <p class="text-[#a4c9b3] font-medium">+ <?= formatarMoeda($bar['entradas']) ?></p>
-                                                <p class="text-[#b8abfb] font-medium">- <?= formatarMoeda($bar['saidas']) ?></p>
+                                                <p class="text-[#10b981] font-medium">+ <?= formatarMoeda($bar['entradas']) ?></p>
+                                                <p class="text-[#7c5cff] font-medium">- <?= formatarMoeda($bar['saidas']) ?></p>
                                             </div>
 
                                             <?php if ($isEmpty): ?>
-                                                <div class="w-full rounded-full bg-zinc-300/50 dark:bg-zinc-700/50" style="height: 4px; max-width: 14px;"></div>
+                                                <div class="w-full rounded-full bg-outline-variant/30" style="height: 4px; max-width: 12px;"></div>
                                             <?php else: ?>
                                                 <!-- Top part (Receitas - Green) -->
                                                 <?php if ($heightTop > 0): ?>
-                                                    <div class="w-full transition-all duration-300 bg-[#98b8a8] <?= $hasBoth ? 'rounded-t-full' : 'rounded-full' ?>"
-                                                        style="height:<?= $heightTop ?>%; max-width: 14px;"></div>
+                                                    <div class="w-full transition-all duration-300 bg-[#10b981] <?= $hasBoth ? 'rounded-t-full' : 'rounded-full' ?>"
+                                                        style="height:<?= $heightTop ?>%; max-width: 12px;"></div>
                                                 <?php endif; ?>
                                                 <!-- Bottom part (Despesas - Purple) -->
                                                 <?php if ($heightBottom > 0): ?>
-                                                    <div class="w-full transition-all duration-300 bg-[#7c5dfa] <?= $hasBoth ? 'rounded-b-full' : 'rounded-full' ?>"
-                                                        style="height:<?= $heightBottom ?>%; max-width: 14px;"></div>
+                                                    <div class="w-full transition-all duration-300 bg-[#7c5cff] <?= $hasBoth ? 'rounded-b-full' : 'rounded-full' ?>"
+                                                        style="height:<?= $heightBottom ?>%; max-width: 12px;"></div>
                                                 <?php endif; ?>
                                             <?php endif; ?>
                                         </div>
                                     <?php endforeach; ?>
+                                    <div class="w-full h-[1px] bg-outline-variant/30 absolute bottom-0 left-0"></div>
                                 </div>
-                                <div class="flex justify-between mt-4 px-2">
-                                    <span class="text-xs font-medium text-zinc-400">Dia 1</span>
-                                    <span class="text-xs font-medium text-zinc-400">Dia <?= date('t') ?></span>
+                                <div class="flex justify-between mt-2 text-[9px] text-on-surface-variant font-bold">
+                                    <span>DIA 1</span>
+                                    <span>DIA <?= date('t') ?></span>
                                 </div>
                             <?php else: ?>
-                                <div
-                                    class="h-full flex items-center justify-center opacity-50 text-sm font-bold text-zinc-500">
-                                    Sem dados no período</div>
+                                <div class="h-full flex items-center justify-center opacity-50 text-sm font-bold text-zinc-500">Sem dados no período</div>
                             <?php endif; ?>
                         </div>
                     </div>
                 </div>
 
                 <!-- Spending By Category -->
-                <div class="bg-[#212936] rounded-[32px] p-6 relative overflow-hidden">
-                    <div class="flex justify-between items-start mb-6">
-                        <h2 class="text-xl font-medium tracking-tight text-white/90">Despesa por Categoria</h2>
-                        <span
-                            class="bg-white/10 hover:bg-white/20 cursor-pointer transition-colors text-white/60 px-4 py-1.5 rounded-full text-xs font-medium flex items-center gap-1">Filtro
-                            <i data-lucide="chevron-down" style="width:12px;height:12px;"></i></span>
-                    </div>
-
-                    <div class="flex items-center justify-center py-6">
-                        <?php
-                        $radius = 70;
-                        $circumference = 2 * pi() * $radius;
-                        $colors = ['#98b8a8', '#c4b5fd', '#38bdf8', '#7c5dfa', '#10b981'];
-                        $offset = 0;
-                        $gap = 12; // Gap between segments
-                        ?>
-                        <svg width="240" height="240" viewBox="0 0 200 200" style="transform: rotate(-90deg);">
-                            <?php
-                            if (count($gastosPorCategoria) > 0) {
-                                $i = 0;
-                                foreach ($gastosPorCategoria as $gasto):
-                                    $pct = ($gasto['total'] / $totalGastosChart);
-                                    $dash = $pct * $circumference;
-                                    $color = $colors[$i % count($colors)];
-                                    if ($dash > $gap) {
-                                        $visibleDash = $dash - $gap;
-                                        // Draw segment
-                                        ?>
-                                        <circle cx="100" cy="100" r="<?= $radius ?>" fill="none" stroke="<?= $color ?>"
-                                            stroke-width="26" stroke-linecap="round"
-                                            stroke-dasharray="<?= $visibleDash ?> <?= $circumference ?>"
-                                            stroke-dashoffset="<?= -$offset ?>" class="transition-all duration-700 ease-out" />
-                                        <?php
-
-                                        // Text positioning
-                                        $midAngle = (($offset + ($visibleDash / 2)) / $circumference) * 2 * pi();
-                                        $textX = 100 + ($radius * cos($midAngle));
-                                        $textY = 100 + ($radius * sin($midAngle));
-                                        ?>
-                                        <text x="<?= $textX ?>" y="<?= $textY ?>" fill="rgba(0,0,0,0.4)" font-size="9"
-                                            font-weight="700" text-anchor="middle" dominant-baseline="middle"
-                                            transform="rotate(90, <?= $textX ?>, <?= $textY ?>)">
-                                            <?= round($pct * 100) ?>%
-                                        </text>
-                                        <?php
-                                    }
-                                    $offset += $dash;
-                                    $i++;
-                                endforeach;
-                            } else {
-                                ?>
-                                <circle cx="100" cy="100" r="<?= $radius ?>" fill="none" stroke="#ffffff10"
-                                    stroke-width="26" stroke-linecap="round" />
+                <div class="glass-card p-6 rounded-xl">
+                    <h3 class="text-title-sm font-headline-md text-on-surface mb-6">Despesa por Categoria</h3>
+                    
+                    <div class="flex flex-col md:flex-row items-center justify-around gap-6">
+                        <div class="relative w-40 h-40">
+                            <!-- Donut Chart -->
+                            <svg class="w-full h-full transform -rotate-90">
+                                <circle cx="80" cy="80" fill="transparent" r="64" stroke="#1f1f22" stroke-width="12"></circle>
                                 <?php
-                            }
-                            ?>
-                        </svg>
-                    </div>
-
-                    <div class="flex flex-wrap justify-center gap-4 mt-2 px-2 pb-2">
-                        <?php $i = 0;
-                        foreach ($gastosPorCategoria as $gasto):
-                            $color = $colors[$i % count($colors)]; ?>
-                            <div class="flex items-center gap-1.5">
-                                <div class="w-3 h-3 rounded-full" style="background: <?= $color ?>"></div>
-                                <p class="text-[11px] font-medium text-white/70 capitalize">
-                                    <?= htmlspecialchars($gasto['categoria']) ?></p>
+                                $radius = 64;
+                                $circumference = 2 * pi() * $radius;
+                                $colors = ['#7c5cff', '#cabeff', '#ffb780', '#10b981', '#ef4444'];
+                                $offset = 0;
+                                $i = 0;
+                                if (count($gastosPorCategoria) > 0) {
+                                    foreach ($gastosPorCategoria as $gasto) {
+                                        $pct = ($gasto['total'] / $totalGastosChart);
+                                        $dash = $pct * $circumference;
+                                        $color = $colors[$i % count($colors)];
+                                        ?>
+                                        <circle cx="80" cy="80" fill="transparent" r="64" stroke="<?= $color ?>" stroke-width="12"
+                                                stroke-dasharray="<?= $dash ?> <?= $circumference ?>"
+                                                stroke-dashoffset="<?= -$offset ?>" class="transition-all duration-500" />
+                                        <?php
+                                        $offset += $dash;
+                                        $i++;
+                                    }
+                                }
+                                ?>
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <span class="text-2xl font-bold font-headline-md leading-none">
+                                    <?= count($gastosPorCategoria) > 0 ? '94%' : '0%' ?>
+                                </span>
+                                <span class="font-label-caps text-[9px] text-on-surface-variant mt-1">TOTAL</span>
                             </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full md:w-auto flex-1 max-w-md">
+                            <?php $i = 0;
+                            foreach ($gastosPorCategoria as $gasto):
+                                $color = $colors[$i % count($colors)]; 
+                                $pctGasto = ($gasto['total'] / $totalGastosChart) * 100;
+                                ?>
+                                <div class="flex items-center gap-3 p-3 rounded-lg bg-surface-container-low/20 border border-outline-variant/10">
+                                    <div class="w-2.5 h-2.5 rounded-full shrink-0" style="background: <?= $color ?>"></div>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="font-label-caps text-[10px] text-on-surface-variant truncate"><?= htmlspecialchars($gasto['categoria']) ?></p>
+                                        <p class="font-data-tabular font-bold text-on-surface mt-0.5"><?= formatarMoeda((float)$gasto['total']) ?></p>
+                                    </div>
+                                    <span class="font-data-tabular text-xs text-on-surface-variant shrink-0"><?= round($pctGasto) ?>%</span>
+                                </div>
                             <?php $i++; endforeach; ?>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Column -->
-            <div class="flex flex-col gap-6">
-                <!-- Savings / Pendentes -->
-                <div class="bento-card bento-dark h-[300px]">
-                    <h2 class="text-lg font-bold mb-6">Painel de Pendências</h2>
-
-                    <div class="grid grid-cols-2 gap-4 h-full pb-8">
-                        <div class="bento-child-blue">
+            <!-- Right Column: Pendências e Vencimentos (Col-span 4) -->
+            <div class="xl:col-span-4 flex flex-col gap-card-gap">
+                <!-- Pendências -->
+                <div class="glass-card p-6 rounded-xl">
+                    <h3 class="text-title-sm font-headline-md text-on-surface mb-6">Painel de Pendências</h3>
+                    <div class="space-y-4">
+                        <div class="bg-primary-container/10 p-4 rounded-xl border border-primary/20 relative overflow-hidden flex flex-col justify-between min-h-[110px]">
                             <div>
-                                <h3 class="text-lg font-bold leading-tight">A Receber<br><span
-                                        class="font-normal opacity-80 text-sm">Neste mês</span></h3>
+                                <p class="font-label-caps text-[10px] text-primary">A Receber</p>
+                                <p class="text-3xl font-light font-data-tabular mt-2 text-on-surface"><?= $qtdReceber ?: '0' ?></p>
                             </div>
-                            <div>
-                                <p class="text-4xl font-light tracking-tight"><?= $qtdReceber ?: '0' ?></p>
-                                <p class="text-sm font-bold mt-2 opacity-90"><?= formatarMoeda((float) $receberMes) ?>
-                                </p>
-                            </div>
+                            <p class="font-data-tabular text-xs mt-2 text-primary font-bold"><?= formatarMoeda((float) $receberMes) ?></p>
                         </div>
-                        <div class="bento-child-green">
+                        <div class="bg-error-container/10 p-4 rounded-xl border border-error/20 relative overflow-hidden flex flex-col justify-between min-h-[110px]">
                             <div>
-                                <h3 class="text-lg font-bold leading-tight">A Pagar<br><span
-                                        class="font-normal opacity-80 text-sm">Neste mês</span></h3>
+                                <p class="font-label-caps text-[10px] text-error font-bold">A Pagar</p>
+                                <p class="text-3xl font-light font-data-tabular mt-2 text-on-surface"><?= $qtdPagar ?: '0' ?></p>
                             </div>
-                            <div>
-                                <p class="text-4xl font-light tracking-tight"><?= $qtdPagar ?: '0' ?></p>
-                                <p class="text-sm font-bold mt-2 opacity-90"><?= formatarMoeda((float) $pagarMes) ?></p>
-                            </div>
+                            <p class="font-data-tabular text-xs mt-2 text-error font-bold"><?= formatarMoeda((float) $pagarMes) ?></p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Recent Transactions -->
-                <div class="bento-card bento-light flex-1">
-                    <div class="flex justify-between items-start mb-8">
-                        <h2 class="text-lg font-bold">Vencimentos Próximos</h2>
-                        <span
-                            class="bg-[#6a5ff6] text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase">Atenção</span>
-                    </div>
-
+                <div class="glass-card p-6 rounded-xl flex-1 flex flex-col justify-between">
                     <div>
-                        <?php
-                        $todasProximas = array_merge($contasVencidas, $contasProximas);
-                        // Remover duplicados (caso as vencidas estejam nos proximos)
-                        $ids = [];
-                        $listaUnica = [];
-                        foreach ($todasProximas as $c) {
-                            if (!in_array($c['id'], $ids)) {
-                                $ids[] = $c['id'];
-                                $listaUnica[] = $c;
-                            }
-                        }
-                        usort($listaUnica, fn($a, $b) => strtotime($a['vencimento']) - strtotime($b['vencimento']));
-                        $listaUnica = array_slice($listaUnica, 0, 5);
-                        ?>
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-title-sm font-headline-md text-on-surface">Vencimentos Próximos</h3>
+                            <span class="bg-error/10 text-error px-2.5 py-0.5 rounded text-[10px] font-bold uppercase">Atenção</span>
+                        </div>
 
-                        <?php if (empty($listaUnica)): ?>
-                            <div class="py-10 text-center opacity-50 font-bold">Nenhum vencimento próximo.</div>
-                        <?php else: ?>
-                            <?php foreach ($listaUnica as $c): ?>
-                                <div class="transaction-item group">
-                                    <div class="flex items-center gap-4 min-w-0">
-                                        <div
-                                            class="transaction-icon <?= $c['tipo'] === 'receber' ? 'bg-[#a4c9b3]/20 text-[#243b2f] dark:text-[#a4c9b3]' : 'bg-red-500/10 text-red-600' ?>">
-                                            <i data-lucide="<?= $c['tipo'] === 'receber' ? 'arrow-down-to-line' : 'arrow-up-right' ?>"
-                                                class="w-5 h-5"></i>
+                        <div class="space-y-4">
+                            <?php
+                            $todasProximas = array_merge($contasVencidas, $contasProximas);
+                            $ids = [];
+                            $listaUnica = [];
+                            foreach ($todasProximas as $c) {
+                                if (!in_array($c['id'], $ids)) {
+                                    $ids[] = $c['id'];
+                                    $listaUnica[] = $c;
+                                }
+                            }
+                            usort($listaUnica, fn($a, $b) => strtotime($a['vencimento']) - strtotime($b['vencimento']));
+                            $listaUnica = array_slice($listaUnica, 0, 5);
+                            ?>
+
+                            <?php if (empty($listaUnica)): ?>
+                                <div class="py-10 text-center opacity-50 font-bold">Nenhum vencimento próximo.</div>
+                            <?php else: ?>
+                                <?php foreach ($listaUnica as $c): ?>
+                                    <div class="flex items-center justify-between p-2.5 rounded-lg hover:bg-surface-container-high/35 transition-all">
+                                        <div class="flex items-center gap-3 min-w-0">
+                                            <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 <?= $c['tipo'] === 'receber' ? 'bg-[#10b981]/10 text-[#10b981]' : 'bg-error/10 text-error' ?>">
+                                                <i data-lucide="<?= $c['tipo'] === 'receber' ? 'arrow-down-left' : 'arrow-up-right' ?>" class="w-4 h-4"></i>
+                                            </div>
+                                            <div class="min-w-0">
+                                                <p class="font-bold text-sm truncate"><?= sanitizar($c['descricao']) ?></p>
+                                                <p class="font-label-caps text-[9px] text-on-surface-variant mt-0.5">
+                                                    <?= $c['vencimento'] < $hoje ? '<span class="text-error font-bold">Vencido</span>' : formatarData($c['vencimento']) ?>
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div class="min-w-0">
-                                            <p class="font-bold text-sm truncate"><?= sanitizar($c['descricao']) ?></p>
-                                            <p class="text-[11px] font-bold opacity-50 uppercase tracking-wide mt-0.5">
-                                                <?= $c['vencimento'] < $hoje ? '<span class="text-red-500">Vencido</span>' : formatarData($c['vencimento']) ?>
-                                            </p>
-                                        </div>
+                                        <p class="font-data-tabular font-bold text-sm whitespace-nowrap pl-2 <?= $c['tipo'] === 'receber' ? 'text-[#10b981]' : 'text-on-surface' ?>">
+                                            <?= $c['tipo'] === 'receber' ? '+' : '-' ?> <?= formatarMoeda((float) $c['valor']) ?>
+                                        </p>
                                     </div>
-                                    <p
-                                        class="font-extrabold text-base whitespace-nowrap pl-4 <?= $c['tipo'] === 'receber' ? 'text-[#10b981]' : '' ?>">
-                                        <?= $c['tipo'] === 'receber' ? '+' : '-' ?>        <?= formatarMoeda((float) $c['valor']) ?>
-                                    </p>
-                                </div>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
                     </div>
 
                     <a href="<?= raizUrl('/financeiro/lancamentos.php') ?>"
-                        class="block w-full text-center py-4 mt-4 text-xs font-bold uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">Ver
-                        todos</a>
+                        class="block w-full text-center py-3 mt-6 border-t border-outline-variant/30 font-label-caps text-[10px] text-on-surface-variant hover:text-primary transition-colors">
+                        Ver todos
+                    </a>
                 </div>
             </div>
         </div>

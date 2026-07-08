@@ -368,6 +368,16 @@ require_once __DIR__ . '/../includes/layout/head.php';
                                 </select>
                             </div>
 
+                            <?php if (!empty($sig2['nome'])): ?>
+                                <div>
+                                    <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2">Emitir em nome de</label>
+                                    <select id="asaas-sig-choice" onchange="atualizarResumoCobrancaContrato()" class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-3 text-xs text-white outline-none">
+                                        <option value="1"><?= sanitizar($sig1['nome']) ?> (<?= sanitizar($sig1['cpf']) ?>)</option>
+                                        <option value="2"><?= sanitizar($sig2['nome']) ?> (<?= sanitizar($sig2['cpf']) ?>)</option>
+                                    </select>
+                                </div>
+                            <?php endif; ?>
+
                             <div id="entrada-paga-campos" class="grid grid-cols-2 gap-3">
                                 <div>
                                     <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2">Conta recebida</label>
@@ -478,6 +488,11 @@ require_once __DIR__ . '/../includes/layout/head.php';
 <!-- Styles specifically for A4 preview and print generation -->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;700&display=swap');
+
+.text-white {
+    --tw-text-opacity: 1;
+    color: rgb(62 62 62);
+}
 
 .contrato-workspace {
     display: grid;
@@ -1082,6 +1097,8 @@ function atualizarResumoCobrancaContrato() {
     if (!resumo) return;
 
     const total = <?= json_encode((float)$contrato['valor_total']) ?>;
+    const sigChoice = document.getElementById('asaas-sig-choice');
+    const sigNome = sigChoice ? sigChoice.options[sigChoice.selectedIndex]?.text?.split(' (')[0] || '' : '';
     const statusEntrada = document.getElementById('asaas-entrada-status')?.value || 'pendente';
     const entrada = statusEntrada === 'nao_aplica' ? 0 : numeroContratoMoeda(document.getElementById('asaas-valor-sinal')?.value);
     const parcelas = Math.max(1, parseInt(document.getElementById('asaas-total-parcelas')?.value || '1', 10));
@@ -1092,12 +1109,14 @@ function atualizarResumoCobrancaContrato() {
     if (camposEntrada) camposEntrada.style.display = statusEntrada === 'pago' ? 'grid' : 'none';
     if (obsEntrada) obsEntrada.style.display = statusEntrada === 'pago' ? '' : 'none';
 
+    const sigPrefix = sigNome ? ` em nome de ${sigNome}` : '';
+
     if (statusEntrada === 'pago') {
-        resumo.textContent = `Será lançado ${moedaContrato(entrada)} como entrada paga fora do Asaas, sem conciliar. O Asaas vai gerar ${parcelas} parcela(s) sobre o saldo de ${moedaContrato(saldo)}.`;
+        resumo.textContent = `Será lançado ${moedaContrato(entrada)} como entrada paga fora do Asaas${sigPrefix}, sem conciliar. O Asaas vai gerar ${parcelas} parcela(s) sobre o saldo de ${moedaContrato(saldo)}.`;
     } else if (statusEntrada === 'nao_aplica') {
-        resumo.textContent = `Sem entrada. O Asaas vai gerar ${parcelas} parcela(s) sobre o total de ${moedaContrato(total)}.`;
+        resumo.textContent = `Sem entrada. O Asaas vai gerar ${parcelas} parcela(s)${sigPrefix} sobre o total de ${moedaContrato(total)}.`;
     } else {
-        resumo.textContent = `O Asaas vai cobrar a entrada de ${moedaContrato(entrada)} e gerar ${parcelas} parcela(s) sobre o saldo de ${moedaContrato(saldo)}.`;
+        resumo.textContent = `O Asaas vai cobrar a entrada de ${moedaContrato(entrada)} e gerar ${parcelas} parcela(s)${sigPrefix} sobre o saldo de ${moedaContrato(saldo)}.`;
     }
 }
 
@@ -1106,6 +1125,7 @@ function gerarCobrancaVisualizar(id, btn) {
     btn.disabled = true;
     btn.innerHTML = '<svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4" stroke-dashoffset="10"/></svg> Gerando...';
     const entradaStatus = document.getElementById('asaas-entrada-status')?.value || 'pendente';
+    const sigChoiceInput = document.getElementById('asaas-sig-choice');
     const params = new URLSearchParams({
         id,
         entrada_status: entradaStatus,
@@ -1117,7 +1137,8 @@ function gerarCobrancaVisualizar(id, btn) {
         asaas_billing_type: document.getElementById('asaas-billing-type')?.value || 'UNDEFINED',
         entrada_conta: document.getElementById('entrada-conta')?.value || 'c6',
         entrada_forma_pagamento: document.getElementById('entrada-forma-pagamento')?.value || 'pix',
-        entrada_observacao: document.getElementById('entrada-observacao')?.value || ''
+        entrada_observacao: document.getElementById('entrada-observacao')?.value || '',
+        sig_choice: sigChoiceInput?.value || '1'
     });
 
     fetch('<?= raizUrl("/api/contratos/gerar_asaas.php") ?>', {

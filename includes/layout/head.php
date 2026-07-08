@@ -15,7 +15,7 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 
     <!-- Tailwind CSS (Compiled for Production) -->
     <link href="<?= raizUrl('/assets/css/tailwind.css') ?>" rel="stylesheet">
@@ -50,7 +50,7 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
             margin: 0;
             background: #050505;
             color: #111111;
-            font-family: 'Outfit', Arial, sans-serif;
+            font-family: 'Hanken Grotesk', Arial, sans-serif;
             overflow-x: hidden;
         }
 
@@ -422,40 +422,42 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
             }
         }
 
-        /* Estilos Modo Escuro */
-        .dark body { background: #000000; color: #f1f1f1; }
+        /* Estilos Modo Escuro (Obsidian Finance System) */
+        .dark body { background: #0F0F12; color: #e4e1e6; }
         .dark #main-content, 
-        .dark .content-sheet { background: #0a0a0a; border-color: #1a1a1a; }
-        .dark .sidebar { background: #111111; color: #ffffff; border: 1px solid #222; box-shadow: none; }
-        .dark .nav-link { color: #888; }
-        .dark .nav-link:hover, .dark .nav-link.ativo { color: #fff; background: rgba(255,255,255,0.08); }
-        .dark .card { background: #111111; border-color: #222222; box-shadow: none; }
-        .dark .card:hover { border-color: #333333; }
+        .dark .content-sheet { background: #131316; border-color: #2D2D39; }
+        .dark .sidebar { background: #131316; color: #ffffff; border-right: 1px solid #2D2D39; box-shadow: none; }
+        .dark .nav-link { color: #c9c4d8; }
+        .dark .nav-link:hover, .dark .nav-link.ativo { color: #fff; background: rgba(124,92,255,0.15); }
+        .dark .card { background: #131316; border-color: #2D2D39; box-shadow: none; }
+        .dark .card:hover { border-color: #7c5cff; box-shadow: 0 0 20px rgba(124, 92, 255, 0.15); }
         .dark .page-title { color: #ffffff; }
-        .dark .page-subtitle { color: #777777; }
-        .dark .app-topbar { border-color: #222222; }
-        .dark .top-nav a { color: #aaaaaa; }
-        .dark .top-nav a:hover { background: #1a1a1a; color: #ffffff; }
-        .dark .label { color: #aaaaaa; }
-        .dark .input, .dark .select { background: #1a1a1a; border-color: #333333; color: #ffffff; }
-        .dark .input:focus, .dark .select:focus { border-color: #444444; box-shadow: 0 0 0 3px rgba(255,255,255,0.05); }
-        .dark select option, .dark .input option, .dark .select option { background-color: #1a1a1a !important; color: #ffffff !important; }
-        .dark .table-header { background: #1a1a1a; color: #888888; border-color: #222222; }
-        .dark .table-row { border-color: #1a1a1a; }
-        .dark .table-cell { color: #dddddd; }
-        .dark .btn-secondary { background: #111111; color: #ffffff; border-color: #333333; }
-        .dark .btn-secondary:hover { background: #1a1a1a; border-color: #444444; }
-        .dark .trend-up { background: rgba(0,135,88,0.1); color: #00c882; }
-        .dark .trend-down { background: rgba(196,59,59,0.1); color: #ff6b6b; }
-        .dark .modal { background: #111111; border-color: #222222; color: #ffffff; }
-        .dark .modal-overlay { background: rgba(0,0,0,0.85); }
-        .dark ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+        .dark .page-subtitle { color: #c9c4d8; }
+        .dark .app-topbar { border-color: #2D2D39; }
+        .dark .top-nav a { color: #c9c4d8; }
+        .dark .top-nav a:hover { background: #1f1f22; color: #ffffff; }
+        .dark .label { color: #c9c4d8; }
+        .dark .input, .dark .select { background: #1f1f22; border-color: #2D2D39; color: #ffffff; }
+        .dark .input:focus, .dark .select:focus { border-color: #7c5cff; box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.15); }
+        .dark select option, .dark .input option, .dark .select option { background-color: #1f1f22 !important; color: #ffffff !important; }
+        .dark .table-header { background: #1f1f22; color: #c9c4d8; border-color: #2D2D39; }
+        .dark .table-row { border-color: #2d2d39; }
+        .dark .table-cell { color: #e4e1e6; }
+        .dark .btn-secondary { background: #1f1f22; color: #ffffff; border-color: #2D2D39; }
+        .dark .btn-secondary:hover { background: #2D2D39; border-color: #484555; }
+        .dark .btn-primary { background: #7c5cff; color: #ffffff; border-color: #7c5cff; }
+        .dark .btn-primary:hover { background: #947dff; border-color: #947dff; }
+        .dark .trend-up { background: rgba(16,185,129,0.1); color: #10b981; }
+        .dark .trend-down { background: rgba(239,68,68,0.1); color: #ef4444; }
+        .dark .modal { background: #131316; border-color: #2D2D39; color: #ffffff; }
+        .dark .modal-overlay { background: rgba(14,14,17,0.85); }
+        .dark ::-webkit-scrollbar-thumb { background: rgba(148, 125, 255, 0.2); }
 
         /* Ajustes específicos para cores forçadas inline e classes Tailwind */
         .dark [style*="#f1f5f9"], .dark [style*="#e2e8f0"], .dark [style*="#cbd5e1"], .dark [style*="#ffffff"] { color: #f1f1f1 !important; }
         .dark [style*="#94a3b8"], .dark [style*="#6b7280"], .dark [style*="#4b5563"], .dark [style*="#8a8a8a"] { color: #999999 !important; }
-        .dark [style*="background:#ffffff"], .dark [style*="background:#fbfbfb"], .dark [style*="background: #ffffff"], .dark [style*="background: #fbfbfb"] { background: #111111 !important; }
-        .dark [style*="border-color:#eeeeee"], .dark [style*="border-color:#ececec"], .dark [style*="border: 1px solid #ececec"] { border-color: #222222 !important; }
+        .dark [style*="background:#ffffff"], .dark [style*="background:#fbfbfb"], .dark [style*="background: #ffffff"], .dark [style*="background: #fbfbfb"] { background: #131316 !important; }
+        .dark [style*="border-color:#eeeeee"], .dark [style*="border-color:#ececec"], .dark [style*="border: 1px solid #ececec"] { border-color: #2d2d39 !important; }
         
         .dark .text-zinc-950 { color: #ffffff !important; }
         .dark .text-zinc-900 { color: #f1f1f1 !important; }
@@ -463,7 +465,7 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
         .dark .text-zinc-700 { color: #d4d4d8 !important; }
         .dark .text-zinc-500 { color: #a1a1aa !important; }
         .dark .text-zinc-400 { color: #71717a !important; }
-        .dark .bg-zinc-50 { background-color: #18181b !important; }
+        .dark .bg-zinc-50 { background-color: #1f1f22 !important; }
         .dark .border-zinc-100 { border-color: #27272a !important; }
         
         /* Garantir que ícones Lucide sigam a cor do texto no modo dark */
@@ -588,6 +590,48 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
         #main-content [style*="#e2e8f0"],
         #main-content [style*="#cbd5e1"] {
             color: #ffffff !important;
+        }
+
+        /* Classes Adicionais do Redesign Stitch */
+        .glass-card {
+            background: rgba(19, 19, 22, 0.7) !important;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(45, 45, 57, 0.5) !important;
+            transition: all 0.3s ease;
+        }
+        .dark .glass-card {
+            background: rgba(19, 19, 22, 0.8) !important;
+            border-color: rgba(45, 45, 57, 0.4) !important;
+        }
+        .glass-card:hover {
+            border-color: #7c5cff !important;
+            box-shadow: 0 0 20px rgba(124, 92, 255, 0.15);
+        }
+        .luminous-gradient {
+            background: linear-gradient(135deg, rgba(124, 92, 255, 0.15) 0%, rgba(202, 190, 255, 0.05) 100%) !important;
+        }
+        .font-data-tabular {
+            font-family: 'JetBrains Mono', monospace !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+        }
+        .font-label-caps {
+            font-family: 'JetBrains Mono', monospace !important;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.08em !important;
+            text-transform: uppercase;
+        }
+        .font-headline-md {
+            font-family: 'Hanken Grotesk', sans-serif !important;
+            font-size: 24px !important;
+            font-weight: 600 !important;
+        }
+        .font-display-lg {
+            font-family: 'Hanken Grotesk', sans-serif !important;
+            font-size: 36px !important;
+            font-weight: 700 !important;
+            letter-spacing: -0.02em !important;
         }
     </style>
 </head>

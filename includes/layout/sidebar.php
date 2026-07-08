@@ -12,7 +12,7 @@ function menuAtivo(string $path): string {
     <div style="padding:24px 20px 18px;">
         <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
             <a href="/" class="hide-on-collapse transition-opacity hover:opacity-80">
-                <div class="dark:text-white uppercase tracking-tighter" style="color:#111; font-size:22px; font-weight:900; line-height: 1;">DISTINTO</div>
+                <div class="dark:text-[#cabeff] uppercase tracking-tighter" style="color:#111; font-size:22px; font-weight:900; line-height: 1;">DISTINTO</div>
                 <div class="sidebar-copy" style="margin-top:2px; color:#888; font-size:9px; font-weight:800; letter-spacing:0.1em;">AGENCY ERP</div>
             </a>
             <button @click="collapsed = !collapsed" 
@@ -93,16 +93,28 @@ function menuAtivo(string $path): string {
             <i data-lucide="message-square-quote" style="width:20px;height:20px; flex-shrink:0;"></i>
             <span class="nav-label hide-on-collapse transition-opacity">Depoimentos</span>
         </a>
+        <a href="<?= raizUrl('/roteiros/index.php') ?>" class="nav-link <?= menuAtivo('/roteiros') ?>">
+            <i data-lucide="video" style="width:20px;height:20px; flex-shrink:0;"></i>
+            <span class="nav-label hide-on-collapse transition-opacity">Roteiros</span>
+        </a>
 
         <div class="nav-section hide-on-collapse">Configurações</div>
         <a href="<?= raizUrl('/configuracoes.php') ?>" class="nav-link <?= menuAtivo('/configuracoes') ?>">
             <i data-lucide="settings" style="width:20px;height:20px; flex-shrink:0;"></i>
             <span class="nav-label hide-on-collapse transition-opacity">Ajustes Gerais</span>
         </a>
+        <a href="<?= raizUrl('/assinar.php') ?>" class="nav-link <?= menuAtivo('/assinar') ?>">
+            <i data-lucide="credit-card" style="width:20px;height:20px; flex-shrink:0;"></i>
+            <span class="nav-label hide-on-collapse transition-opacity">Assinatura</span>
+        </a>
         <?php if ($usuario['nivel'] == 1): ?>
         <a href="<?= raizUrl('/gerenciamento/usuarios.php') ?>" class="nav-link <?= menuAtivo('/gerenciamento/usuarios') ?>">
             <i data-lucide="shield-check" style="width:20px;height:20px; flex-shrink:0;"></i>
             <span class="nav-label hide-on-collapse transition-opacity">Gestão de Equipe</span>
+        </a>
+        <a href="<?= raizUrl('/financeiro/saas.php') ?>" class="nav-link <?= menuAtivo('/financeiro/saas') ?>">
+            <i data-lucide="bar-chart-2" style="width:20px;height:20px; flex-shrink:0;"></i>
+            <span class="nav-label hide-on-collapse transition-opacity">Financeiro SaaS</span>
         </a>
         <?php endif; ?>
     </nav>
@@ -110,7 +122,7 @@ function menuAtivo(string $path): string {
     <div class="dark:border-white/10" style="padding:16px 14px 20px; border-top:1px solid rgba(0,0,0,0.05); overflow:hidden;">
         <div class="dark:bg-white/5" style="display:flex; flex-direction:column; gap:10px; padding:10px; border-radius:16px; background:rgba(0,0,0,0.03);">
             <div style="display:flex; align-items:center; gap:10px;">
-                <div style="width:40px; height:40px; display:grid; place-items:center; flex-shrink:0; border-radius:12px; background:#111; color:#fff; font-size:16px; font-weight:800; mx-auto">
+                <div class="dark:bg-[#7c5cff] dark:text-white" style="width:40px; height:40px; display:grid; place-items:center; flex-shrink:0; border-radius:12px; background:#111; color:#fff; font-size:16px; font-weight:800; mx-auto">
                     <?= strtoupper(substr($usuario['nome'], 0, 1)) ?>
                 </div>
                 <div class="user-meta hide-on-collapse" style="min-width:0; flex:1;">

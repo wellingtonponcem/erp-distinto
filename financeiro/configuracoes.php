@@ -8,103 +8,142 @@ $tituloPagina = 'Custos Fixos';
 include __DIR__ . '/../includes/layout/head.php';
 ?>
 
-<div id="app-wrapper" style="display:flex; min-height:100vh;" x-data="custosFixos()">
+<div id="app-wrapper" class="flex min-h-screen" x-data="custosFixos()">
     <?php include __DIR__ . '/../includes/layout/sidebar.php'; ?>
 
-    <main id="main-content" style="flex:1; padding:28px 32px; overflow-y:auto; max-width:calc(100vw - 240px);">
+    <main id="main-content" class="content-sheet !bg-background !p-6 flex flex-col flex-1 max-w-[calc(100vw-240px)]">
         <?php include __DIR__ . '/../includes/layout/top_nav.php'; ?>
 
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:28px;">
+        <!-- Topbar -->
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-8 mt-2">
             <div>
-                <h1 style="font-size:22px; font-weight:700; color:#f1f5f9;">Custos Fixos</h1>
-                <p style="font-size:14px; color:#6b7280; margin-top:2px;">Despesas mensais recorrentes da agência</p>
+                <h1 class="font-display-lg text-on-surface mb-1">Custos Fixos</h1>
+                <p class="text-body-md text-on-surface-variant">Despesas mensais recorrentes da agência</p>
             </div>
-            <button class="btn-primary" @click="abrirModal()">
-                <i data-lucide="plus" style="width:15px;height:15px;"></i> Novo Custo
+            <button class="bg-primary hover:bg-primary-container text-on-primary-container font-bold px-6 py-2.5 rounded-lg text-body-md transition-all active:scale-95 duration-150 shadow-lg flex items-center gap-2" @click="abrirModal()">
+                <i data-lucide="plus" class="w-4 h-4"></i> Novo Custo
             </button>
         </div>
 
         <!-- Card Resumo -->
-        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px;">
-            <div class="card" style="padding:20px;">
-                <div style="font-size:12px; color:#6b7280; margin-bottom:8px;">Total Mensal</div>
-                <div style="font-size:24px; font-weight:700; color:#ef4444;" x-text="formatarMoeda(totalMensal)"></div>
-                <div style="font-size:12px; color:#6b7280; margin-top:4px;">Custos mensais + anuais ÷ 12</div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-card-gap mb-8">
+            <div class="glass-card p-6 rounded-xl flex flex-col justify-between h-32 relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-error/5 rounded-full blur-2xl group-hover:bg-error/10 transition-colors"></div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-label-caps font-label-caps text-on-surface-variant mb-1">Total Mensal</p>
+                        <h3 class="text-3xl font-bold font-headline-md text-error tracking-tight font-data-tabular" x-text="formatarMoeda(totalMensal)"></h3>
+                    </div>
+                    <span class="w-8 h-8 rounded-lg bg-error/10 text-error flex items-center justify-center shrink-0">
+                        <i data-lucide="trending-down" class="w-4 h-4"></i>
+                    </span>
+                </div>
+                <p class="text-[9px] font-label-caps text-on-surface-variant mt-3">Custos mensais + anuais ÷ 12</p>
             </div>
-            <div class="card" style="padding:20px;">
-                <div style="font-size:12px; color:#6b7280; margin-bottom:8px;">Custo Anual</div>
-                <div style="font-size:24px; font-weight:700; color:#f59e0b;" x-text="formatarMoeda(totalMensal * 12)"></div>
-                <div style="font-size:12px; color:#6b7280; margin-top:4px;">Projeção anual dos custos</div>
+
+            <div class="glass-card p-6 rounded-xl flex flex-col justify-between h-32 relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-tertiary/5 rounded-full blur-2xl group-hover:bg-tertiary/10 transition-colors"></div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-label-caps font-label-caps text-on-surface-variant mb-1">Custo Anual</p>
+                        <h3 class="text-3xl font-bold font-headline-md text-tertiary tracking-tight font-data-tabular" x-text="formatarMoeda(totalMensal * 12)"></h3>
+                    </div>
+                    <span class="w-8 h-8 rounded-lg bg-tertiary/10 text-tertiary flex items-center justify-center shrink-0">
+                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                    </span>
+                </div>
+                <p class="text-[9px] font-label-caps text-on-surface-variant mt-3">Projeção anual dos custos</p>
             </div>
-            <div class="card" style="padding:20px;">
-                <div style="font-size:12px; color:#6b7280; margin-bottom:8px;">Itens Ativos</div>
-                <div style="font-size:24px; font-weight:700; color:#a78bfa;" x-text="lista.filter(c=>c.ativo=='1').length"></div>
-                <div style="font-size:12px; color:#6b7280; margin-top:4px;">Custos sendo considerados</div>
+
+            <div class="glass-card p-6 rounded-xl flex flex-col justify-between h-32 relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors"></div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-label-caps font-label-caps text-on-surface-variant mb-1">Itens Ativos</p>
+                        <h3 class="text-3xl font-bold font-headline-md text-primary tracking-tight font-data-tabular" x-text="lista.filter(c=>c.ativo=='1').length"></h3>
+                    </div>
+                    <span class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <i data-lucide="check" class="w-4 h-4"></i>
+                    </span>
+                </div>
+                <p class="text-[9px] font-label-caps text-on-surface-variant mt-3">Custos sendo considerados</p>
             </div>
         </div>
 
         <!-- Tabela -->
-        <div class="card" style="overflow:hidden;">
-            <div class="table-header" style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 80px;">
-                <span>Nome</span><span>Categoria</span><span>Recorrência</span><span>Valor</span><span style="text-align:right;">Ações</span>
+        <div class="glass-card rounded-xl overflow-hidden mb-6">
+            <div class="grid grid-cols-[2fr_1fr_1fr_1fr_80px] items-center px-6 py-4 bg-surface-container-low border-b border-outline-variant/20">
+                <span class="text-label-caps font-label-caps text-on-surface-variant text-[10px]">Nome</span>
+                <span class="text-label-caps font-label-caps text-on-surface-variant text-[10px]">Categoria</span>
+                <span class="text-label-caps font-label-caps text-on-surface-variant text-[10px]">Recorrência</span>
+                <span class="text-label-caps font-label-caps text-on-surface-variant text-[10px]">Valor</span>
+                <span class="text-label-caps font-label-caps text-on-surface-variant text-[10px] text-right">Ações</span>
             </div>
 
             <template x-if="carregando">
-                <div style="padding:40px; text-align:center; color:#4b5563;">Carregando...</div>
+                <div class="p-10 text-center text-on-surface-variant">Carregando...</div>
             </template>
 
             <template x-if="!carregando && lista.length === 0">
-                <div style="padding:40px; text-align:center; color:#4b5563;">
-                    <i data-lucide="receipt" style="width:36px;height:36px;margin:0 auto 12px;display:block;opacity:0.4;"></i>
+                <div class="p-10 text-center text-on-surface-variant">
+                    <i data-lucide="receipt" class="w-8 h-8 mx-auto mb-3 opacity-40"></i>
                     Nenhum custo fixo cadastrado
                 </div>
             </template>
 
-            <template x-for="c in lista" :key="c.id">
-                <div class="table-row" style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 80px; align-items:center;" :style="c.ativo=='0' ? 'opacity:0.5' : ''">
-                    <div class="table-cell">
-                        <span style="color:#e2e8f0; font-weight:500;" x-text="c.nome"></span>
+            <div class="divide-y divide-outline-variant/20">
+                <template x-for="c in lista" :key="c.id">
+                    <div class="grid grid-cols-[2fr_1fr_1fr_1fr_80px] items-center px-6 py-4 hover:bg-surface-container-high/20 transition-colors group" :class="c.ativo=='0' ? 'opacity-40' : ''">
+                        <div class="min-w-0">
+                            <span class="text-sm font-bold text-on-surface truncate" x-text="c.nome"></span>
+                        </div>
+                        <div>
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-label-caps border bg-primary/10 text-primary border-primary/20 inline-block w-fit text-center" x-text="labelCategoria(c.categoria)"></span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-on-surface-variant font-label-caps" x-text="c.recorrencia === 'anual' ? 'Anual' : 'Mensal'"></span>
+                        </div>
+                        <div>
+                            <span class="text-sm font-data-tabular font-bold text-on-surface" x-text="formatarMoeda(c.valor)"></span>
+                        </div>
+                        <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button @click="abrirModal(c)" class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded transition-colors" title="Editar">
+                                <i data-lucide="pencil" class="w-4 h-4"></i>
+                            </button>
+                            <button @click="excluir(c.id)" class="p-1.5 text-error/70 hover:text-error hover:bg-error-container/10 rounded transition-colors" title="Excluir">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="table-cell">
-                        <span class="badge" style="background:rgba(124,58,237,0.15); color:#a78bfa; border:1px solid rgba(124,58,237,0.3);" x-text="labelCategoria(c.categoria)"></span>
-                    </div>
-                    <div class="table-cell" style="color:#94a3b8;" x-text="c.recorrencia === 'anual' ? 'Anual' : 'Mensal'"></div>
-                    <div class="table-cell" style="color:#f1f5f9; font-weight:600;" x-text="formatarMoeda(c.valor)"></div>
-                    <div class="table-cell" style="display:flex; gap:6px; justify-content:flex-end;">
-                        <button @click="abrirModal(c)" style="color:#6b7280; background:none; border:none; cursor:pointer; padding:4px;">
-                            <i data-lucide="pencil" style="width:16px;height:16px;"></i>
-                        </button>
-                        <button @click="excluir(c.id)" style="color:#6b7280; background:none; border:none; cursor:pointer; padding:4px;">
-                            <i data-lucide="trash-2" style="width:16px;height:16px;"></i>
-                        </button>
-                    </div>
-                </div>
-            </template>
+                </template>
+            </div>
         </div>
 
-        <p style="font-size:12px; color:#4b5563; margin-top:12px;">
+        <p class="text-xs text-on-surface-variant mt-2">
             💡 Estes valores são usados automaticamente no cálculo de preço mínimo dos serviços e no prompt do Simulador IA.
         </p>
     </main>
 
     <!-- Modal -->
-    <div class="modal-overlay" x-show="modalAberto" x-cloak>
-        <div class="modal" style="max-width:500px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-                <h2 style="font-size:17px; font-weight:600; color:#f1f5f9;" x-text="form.id ? 'Editar Custo Fixo' : 'Novo Custo Fixo'"></h2>
-                <button @click="modalAberto=false" style="color:#6b7280; background:none; border:none; cursor:pointer;">
-                    <i data-lucide="x" style="width:18px;height:18px;"></i>
+    <div class="modal-overlay" x-show="modalAberto" x-cloak @click.self="modalAberto=false">
+        <div class="modal w-full max-w-lg p-6 bg-surface-container-low border border-outline-variant/30 rounded-2xl shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-title-sm font-headline-md font-bold text-on-surface" x-text="form.id ? 'Editar Custo Fixo' : 'Novo Custo Fixo'"></h2>
+                <button @click="modalAberto=false" class="text-on-surface-variant hover:text-on-surface transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
+            
             <form @submit.prevent="salvar()">
-                <div style="margin-bottom:16px;">
+                <div class="mb-4">
                     <label class="label">Nome *</label>
-                    <input class="input" x-model="form.nome" required placeholder="Ex: Aluguel do escritório">
+                    <input class="input w-full" x-model="form.nome" required placeholder="Ex: Aluguel do escritório">
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="label">Categoria *</label>
-                        <select class="select" x-model="form.categoria" required
+                        <select class="select w-full" x-model="form.categoria" required
                             @change="mostrarCampoCustom = form.categoria === '__custom__'; categoriaCustom = '';">
                             <option value="aluguel">Aluguel</option>
                             <option value="contabilidade">Contabilidade</option>
@@ -114,33 +153,35 @@ include __DIR__ . '/../includes/layout/head.php';
                             <option value="outros">Outros</option>
                             <option value="__custom__">+ Nova categoria...</option>
                         </select>
-                        <div x-show="mostrarCampoCustom" style="margin-top:8px;">
-                            <input class="input" x-model="categoriaCustom" placeholder="Digite o nome da categoria"
+                        <div x-show="mostrarCampoCustom" class="mt-2">
+                            <input class="input w-full" x-model="categoriaCustom" placeholder="Digite o nome da categoria"
                                 x-ref="inputCustom" @focus="$el.select()">
                         </div>
                     </div>
                     <div>
                         <label class="label">Recorrência *</label>
-                        <select class="select" x-model="form.recorrencia" required>
+                        <select class="select w-full" x-model="form.recorrencia" required>
                             <option value="mensal">Mensal</option>
                             <option value="anual">Anual (÷12 no cálculo)</option>
                         </select>
                     </div>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="label">Valor (R$) *</label>
-                        <input class="input" type="number" step="0.01" min="0.01" x-model="form.valor" required placeholder="0,00">
+                        <input class="input w-full" type="number" step="0.01" min="0.01" x-model="form.valor" required placeholder="0,00">
                     </div>
                     <div>
                         <label class="label">Dia do vencimento *</label>
-                        <input class="input" type="number" min="1" max="28" x-model="form.dia_vencimento" required placeholder="Ex: 5">
-                        <p style="font-size:11px;color:#6b7280;margin-top:4px;">Todo mês neste dia</p>
+                        <input class="input w-full" type="number" min="1" max="28" x-model="form.dia_vencimento" required placeholder="Ex: 5">
+                        <p class="text-[10px] text-on-surface-variant mt-1.5 font-label-caps">Todo mês neste dia</p>
                     </div>
                 </div>
-                <div style="margin-bottom:24px;">
+                
+                <div class="mb-6">
                     <label class="label">Forma de pagamento *</label>
-                    <select class="select" x-model="form.forma_pagamento" required>
+                    <select class="select w-full" x-model="form.forma_pagamento" required>
                         <option value="pix">Pix</option>
                         <option value="boleto">Boleto</option>
                         <option value="debito_automatico">Débito Automático</option>
@@ -150,17 +191,20 @@ include __DIR__ . '/../includes/layout/head.php';
                         <option value="dinheiro">Dinheiro</option>
                     </select>
                 </div>
-                <div style="background:rgba(124,58,237,0.08); border:1px solid rgba(124,58,237,0.2); border-radius:8px; padding:12px 14px; margin-bottom:20px; font-size:13px; color:#a78bfa;">
-                    <i data-lucide="info" style="width:13px;height:13px;vertical-align:middle;margin-right:6px;"></i>
-                    Ao salvar, os lançamentos em <strong>Contas a Pagar</strong> serão gerados automaticamente para os próximos 12 meses.
+                
+                <div class="bg-primary/5 border border-primary/20 rounded-xl p-4 mb-6 text-xs text-primary flex items-start gap-2">
+                    <i data-lucide="info" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                    <span>Ao salvar, os lançamentos em <strong>Contas a Pagar</strong> serão gerados automaticamente para os próximos 12 meses.</span>
                 </div>
-                <div style="display:flex; gap:10px; justify-content:flex-end;">
+                
+                <div class="flex gap-3 justify-end">
                     <button type="button" class="btn-secondary" @click="modalAberto=false">Cancelar</button>
                     <button type="submit" class="btn-primary" :disabled="salvando" x-text="salvando ? 'Salvando...' : (form.id ? 'Atualizar' : 'Criar')"></button>
                 </div>
             </form>
         </div>
     </div>
+</div>
 </div>
 
 <script>

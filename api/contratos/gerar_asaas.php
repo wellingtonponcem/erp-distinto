@@ -60,6 +60,7 @@ try {
         'asaas_first_due_date' => $_POST['asaas_first_due_date'] ?? null,
         'asaas_valor_sinal' => isset($_POST['asaas_valor_sinal']) ? decimalContratoFormulario($_POST['asaas_valor_sinal']) : null,
         'asaas_sinal_vencimento' => $_POST['asaas_sinal_vencimento'] ?? null,
+        'sig_choice' => $_POST['sig_choice'] ?? null,
         'entrada_status' => in_array($entradaStatus, ['pago', 'pendente', 'nao_aplica'], true) ? $entradaStatus : null,
         'entrada_forma_pagamento' => $_POST['entrada_forma_pagamento'] ?? null,
         'entrada_conta' => $_POST['entrada_conta'] ?? null,

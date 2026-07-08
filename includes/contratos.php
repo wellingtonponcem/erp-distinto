@@ -73,6 +73,12 @@ function processarAssinaturaContrato(string $contratoId, array $opcoesFaturament
 
         // 3. Atualizar dados do cliente cadastrado (CPF/CNPJ e Contato) caso estejam vazios
         $sig1 = $dadosJson['signatario_1'] ?? null;
+        $sig2 = $dadosJson['signatario_2'] ?? null;
+        $sigEscolhido = $sig1;
+        if (!empty($opcoesFaturamento['sig_choice']) && $opcoesFaturamento['sig_choice'] === '2' && !empty($sig2['nome'])) {
+            $sigEscolhido = $sig2;
+        }
+        $clienteFornecedorNome = $sigEscolhido['nome'] ?? $contrato['cliente_nome'];
         if ($sig1 && !empty($sig1['nome']) && !empty($contrato['cliente_id'])) {
             $stmtGetCli = $db->prepare("SELECT cpf_cnpj, contato FROM clientes WHERE id = ?");
             $stmtGetCli->execute([$contrato['cliente_id']]);
@@ -159,10 +165,10 @@ function processarAssinaturaContrato(string $contratoId, array $opcoesFaturament
 
                 $dadosCobranca = [
                     'cliente_id' => $contrato['cliente_id'],
-                    'cliente_nome' => $sig1['nome'] ?? $contrato['cliente_nome'],
-                    'cliente_cpf_cnpj' => preg_replace('/\D/', '', $sig1['cpf'] ?? ''),
-                    'cliente_email' => $sig1['email'] ?? '',
-                    'cliente_telefone' => preg_replace('/\D/', '', $sig1['telefone'] ?? ''),
+                    'cliente_nome' => $sigEscolhido['nome'] ?? $contrato['cliente_nome'],
+                    'cliente_cpf_cnpj' => preg_replace('/\D/', '', $sigEscolhido['cpf'] ?? ''),
+                    'cliente_email' => $sigEscolhido['email'] ?? '',
+                    'cliente_telefone' => preg_replace('/\D/', '', $sigEscolhido['telefone'] ?? ''),
                     'valor_total' => $valorTotalCobranca,
                     'vencimento' => $firstDueDate,
                     'billing_type' => $billingType,
@@ -187,6 +193,7 @@ function processarAssinaturaContrato(string $contratoId, array $opcoesFaturament
                             $sinalVencimento,
                             $opcoesFaturamento['entrada_forma_pagamento'] ?? $dadosJson['entrada_forma_pagamento'] ?? 'pix',
                             $opcoesFaturamento['entrada_conta'] ?? $dadosJson['entrada_conta'] ?? 'c6',
+                            $clienteFornecedorNome,
                             $opcoesFaturamento['entrada_observacao'] ?? $dadosJson['entrada_observacao'] ?? 'Entrada paga fora do Asaas.'
                         );
                     }
@@ -197,7 +204,7 @@ function processarAssinaturaContrato(string $contratoId, array $opcoesFaturament
                         $saldo = $cobrancaRes['saldo'];
 
                         // 1. Gravar lançamento do Sinal
-                        gravarLancamentoAsaas($db, $contrato, $sinal, "[Sinal] " . $contrato['titulo'], $valorSinal, $sinalVencimento);
+                        gravarLancamentoAsaas($db, $contrato, $sinal, "[Sinal] " . $contrato['titulo'], $valorSinal, $sinalVencimento, null, $clienteFornecedorNome);
 
                         // 2. Gravar lançamentos do Saldo
                         $saldoRestante = (float)$contrato['valor_total'] - $valorSinal;
@@ -206,11 +213,11 @@ function processarAssinaturaContrato(string $contratoId, array $opcoesFaturament
                             // Saldo Parcelado
                             $totalParcelasSaldo = count($parcelasSaldo);
                             foreach ($parcelasSaldo as $idx => $inst) {
-                                gravarLancamentoAsaas($db, $contrato, $inst, "[Parcela " . ($idx + 1) . " de {$totalParcelasSaldo}] " . $contrato['titulo'], (float)$inst['value'], $inst['dueDate'], $inst['id']);
+                                gravarLancamentoAsaas($db, $contrato, $inst, "[Parcela " . ($idx + 1) . " de {$totalParcelasSaldo}] " . $contrato['titulo'], (float)$inst['value'], $inst['dueDate'], $inst['id'], $clienteFornecedorNome);
                             }
                         } else {
                             // Saldo em parcela única
-                            gravarLancamentoAsaas($db, $contrato, $saldo, "[Saldo] " . $contrato['titulo'], $saldoRestante, $firstDueDate);
+                            gravarLancamentoAsaas($db, $contrato, $saldo, "[Saldo] " . $contrato['titulo'], $saldoRestante, $firstDueDate, null, $clienteFornecedorNome);
                         }
                     } else {
                         // Cobrança simples (única ou parcelamento direto do total sem sinal)
@@ -219,11 +226,11 @@ function processarAssinaturaContrato(string $contratoId, array $opcoesFaturament
                             // Parcelado direto
                             $totalParcelasDiretas = count($parcelasDiretas);
                             foreach ($parcelasDiretas as $idx => $inst) {
-                                gravarLancamentoAsaas($db, $contrato, $inst, "[Parcela " . ($idx + 1) . " de {$totalParcelasDiretas}] " . $contrato['titulo'], (float)$inst['value'], $inst['dueDate'], $inst['id']);
+                                gravarLancamentoAsaas($db, $contrato, $inst, "[Parcela " . ($idx + 1) . " de {$totalParcelasDiretas}] " . $contrato['titulo'], (float)$inst['value'], $inst['dueDate'], $inst['id'], $clienteFornecedorNome);
                             }
                         } else {
                             // Parcela única
-                            gravarLancamentoAsaas($db, $contrato, $cobrancaRes, $contrato['titulo'], (float)$contrato['valor_total'], $firstDueDate);
+                            gravarLancamentoAsaas($db, $contrato, $cobrancaRes, $contrato['titulo'], (float)$contrato['valor_total'], $firstDueDate, null, $clienteFornecedorNome);
                         }
                     }
 
@@ -293,7 +300,7 @@ function obterParcelasAsaas(AsaasService $asaas, array $asaasPayment): array {
     return $parcelas;
 }
 
-function gravarLancamentoAsaas(PDO $db, array $contrato, array $asaasPayment, string $descricao, float $valor, string $vencimento, ?string $installmentId = null): void {
+function gravarLancamentoAsaas(PDO $db, array $contrato, array $asaasPayment, string $descricao, float $valor, string $vencimento, ?string $installmentId = null, ?string $clienteFornecedor = null): void {
     if (empty($asaasPayment['id'])) {
         return;
     }
@@ -338,7 +345,7 @@ function gravarLancamentoAsaas(PDO $db, array $contrato, array $asaasPayment, st
         $id,
         $descricao,
         $valor,
-        $contrato['cliente_nome'],
+        $clienteFornecedor ?? $contrato['cliente_nome'],
         $vencimento,
         $statusLocal,
         "Cobrança gerada via Asaas de forma automática.",
@@ -414,6 +421,7 @@ function gravarLancamentoEntradaManual(
     string $dataPagamento,
     string $formaPagamento = 'pix',
     string $contaId = 'c6',
+    ?string $clienteFornecedor = null,
     string $observacao = 'Entrada paga fora do Asaas, aguardando conciliação por OFX.'
 ): void {
     if ($valor <= 0) {
@@ -433,7 +441,7 @@ function gravarLancamentoEntradaManual(
         "[Entrada paga] " . $contrato['titulo'],
         $valor,
         $valor,
-        $contrato['cliente_nome'],
+        $clienteFornecedor ?? $contrato['cliente_nome'],
         $dataPagamento,
         trim($observacao . " Contrato: " . $contrato['id']),
         $contrato['cliente_id']

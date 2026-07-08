@@ -129,104 +129,115 @@ $clientes = $db->query("SELECT id, nome, cpf_cnpj FROM clientes ORDER BY nome AS
 $tituloPagina = 'Asaas Pagamentos';
 require_once __DIR__ . '/../includes/layout/head.php';
 ?>
-<div id="app-wrapper" style="display:flex; min-height:100vh;" x-data="{ modalNovaCobranca: false }">
+<div id="app-wrapper" class="flex min-h-screen" x-data="{ modalNovaCobranca: false }">
     <?php include __DIR__ . '/../includes/layout/sidebar.php'; ?>
 
-    <main id="main-content" style="flex:1; padding:28px 32px; overflow-y:auto; background:#0A0A0A !important;">
-        
-        <div style="margin-bottom:28px; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+    <main id="main-content" class="content-sheet !bg-background !p-6 flex flex-col flex-1 max-w-[calc(100vw-240px)]">
+        <?php include __DIR__ . '/../includes/layout/top_nav.php'; ?>
+
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-8 mt-2">
             <div>
-                <h1 style="font-size:22px; font-weight:700; color:#FFFFFF !important; display:flex; align-items:center; gap:8px;">
-                    <i data-lucide="wallet" style="width:24px; height:24px; color:#a78bfa;"></i>
+                <h1 class="font-display-lg text-on-surface mb-1 flex items-center gap-2">
+                    <i data-lucide="wallet" class="w-6 h-6 text-primary"></i>
                     Asaas Pagamentos
                 </h1>
-                <p style="font-size:14px; color:#9CA3AF !important; margin-top:2px;">Gestão de faturamento de clientes, conciliação e extrato em tempo real</p>
+                <p class="text-body-md text-on-surface-variant">Gestão de faturamento de clientes, conciliação e extrato em tempo real</p>
             </div>
             
-            <div style="display:flex; gap:10px;">
+            <div class="flex items-center gap-3">
                 <?php if ($estaConfigurado): ?>
-                    <button @click="modalNovaCobranca = true" class="btn-primary" style="background:#a78bfa !important; border:none; color:#000000 !important; font-weight:800; padding:10px 20px; border-radius:12px; cursor:pointer; display:flex; align-items:center; gap:6px;">
-                        <i data-lucide="plus" style="width:16px; height:16px;"></i> Nova Cobrança Manual
+                    <button @click="modalNovaCobranca = true" class="bg-primary hover:bg-primary-container text-on-primary-container font-bold px-6 py-2.5 rounded-lg text-body-md transition-all active:scale-95 duration-150 shadow-lg flex items-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Nova Cobrança Manual
                     </button>
                 <?php endif; ?>
-                <a href="<?= raizUrl('/configuracoes.php') ?>" class="btn-secondary" style="background:#141414 !important; border:1px solid rgba(255,255,255,0.1); color:#FFFFFF !important; font-weight:700; padding:10px 20px; border-radius:12px; display:inline-flex; align-items:center; gap:6px;">
-                    <i data-lucide="settings" style="width:16px; height:16px;"></i> Configurar Credenciais
+                <a href="<?= raizUrl('/configuracoes.php') ?>" class="btn-secondary flex items-center gap-2">
+                    <i data-lucide="settings" class="w-4 h-4"></i> Credenciais
                 </a>
             </div>
         </div>
 
         <?php if ($sucesso): ?>
-            <div style="background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:12px; padding:16px; margin-bottom:24px; font-size:14px; color:#34d399;">
+            <div class="bg-primary/10 border border-primary/20 rounded-xl p-4 mb-6 text-sm text-primary">
                 <?= sanitizar($sucesso) ?>
             </div>
         <?php endif; ?>
 
         <?php if ($erro): ?>
-            <div style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); border-radius:12px; padding:16px; margin-bottom:24px; font-size:14px; color:#f87171;">
+            <div class="bg-error/10 border border-error/20 rounded-xl p-4 mb-6 text-sm text-error">
                 <?= sanitizar($erro) ?>
             </div>
         <?php endif; ?>
 
         <?php if (!$estaConfigurado): ?>
-            <div style="background:#141414; border:1px dashed rgba(167,139,250,0.3); border-radius:24px; padding:48px; text-align:center; max-width:600px; margin: 40px auto;">
-                <i data-lucide="shield-alert" style="width:48px; height:48px; color:#a78bfa; margin:0 auto 20px; opacity:0.8;"></i>
-                <h3 style="font-size:18px; font-weight:700; color:#FFFFFF; margin-bottom:10px;">Configuração do Asaas Pendente</h3>
-                <p style="font-size:14px; color:#9CA3AF; margin-bottom:24px;">Insira a sua chave API Key do Asaas no menu de configurações para habilitar extratos e automação de cobranças.</p>
-                <a href="<?= raizUrl('/configuracoes.php') ?>" class="btn-primary" style="background:#a78bfa !important; border:none; color:#000000 !important; font-weight:800; padding:12px 32px; border-radius:12px; text-decoration:none; display:inline-block;">
+            <div class="glass-card p-12 rounded-2xl text-center max-w-lg mx-auto my-12 border-dashed border-primary/30">
+                <i data-lucide="shield-alert" class="w-12 h-12 text-primary mx-auto mb-4 opacity-80 animate-pulse"></i>
+                <h3 class="text-title-sm font-headline-md font-bold text-on-surface mb-2">Configuração do Asaas Pendente</h3>
+                <p class="text-body-md text-on-surface-variant mb-6">Insira a sua chave API Key do Asaas no menu de configurações para habilitar extratos e automação de cobranças.</p>
+                <a href="<?= raizUrl('/configuracoes.php') ?>" class="bg-primary hover:bg-primary-container text-on-primary-container font-bold px-8 py-3 rounded-lg text-body-md transition-all active:scale-95 duration-150 shadow-lg inline-block">
                     Configurar Agora
                 </a>
             </div>
         <?php else: ?>
             <!-- Card de Saldo -->
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px; margin-bottom:28px;">
-                <div style="background:#141414; border:1px solid rgba(255,255,255,0.06); border-radius:20px; padding:24px; position:relative; overflow:hidden;">
-                    <div style="position:absolute; top:20px; right:20px; color:#a78bfa; opacity:0.15;">
-                        <i data-lucide="landmark" style="width:40px; height:40px;"></i>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-card-gap mb-8">
+                <div class="glass-card p-6 rounded-xl relative overflow-hidden flex flex-col justify-between h-32 group">
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors"></div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-label-caps font-label-caps text-on-surface-variant mb-1">Saldo em Conta Asaas</p>
+                            <h3 class="text-3xl font-bold font-headline-md text-primary tracking-tight font-data-tabular"><?= formatarMoeda((float)$saldoAsaas) ?></h3>
+                        </div>
+                        <span class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                            <i data-lucide="landmark" class="w-4 h-4"></i>
+                        </span>
                     </div>
-                    <div style="font-size:11px; font-weight:800; color:#9CA3AF; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Saldo em Conta Asaas</div>
-                    <div style="font-size:32px; font-weight:900; color:#FFFFFF; line-height:1;"><?= formatarMoeda($saldoAsaas) ?></div>
-                    <div style="font-size:12px; color:#9CA3AF; margin-top:10px;">Saldo líquido disponível para transferência imediata</div>
+                    <p class="text-[9px] font-label-caps text-on-surface-variant mt-3">Saldo líquido disponível para transferência imediata</p>
                 </div>
 
-                <div style="background:#141414; border:1px solid rgba(255,255,255,0.06); border-radius:20px; padding:24px; position:relative; overflow:hidden;">
-                    <div style="position:absolute; top:20px; right:20px; color:#34d399; opacity:0.15;">
-                        <i data-lucide="check-circle" style="width:40px; height:40px;"></i>
+                <div class="glass-card p-6 rounded-xl relative overflow-hidden flex flex-col justify-between h-32 group">
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-tertiary/5 rounded-full blur-2xl group-hover:bg-tertiary/10 transition-colors"></div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-label-caps font-label-caps text-on-surface-variant mb-1">Ambiente de Faturamento</p>
+                            <h3 class="text-xl font-bold font-headline-md text-tertiary tracking-tight mt-2">
+                                <?= ($asaas->estaConfigurado() && $config = $db->query("SELECT asaas_mode FROM configuracao_empresa WHERE id='principal'")->fetchColumn()) === 'prod' ? '🟢 Produção (Real)' : '🧪 Sandbox (Testes)' ?>
+                            </h3>
+                        </div>
+                        <span class="w-8 h-8 rounded-lg bg-tertiary/10 text-tertiary flex items-center justify-center shrink-0">
+                            <i data-lucide="check-circle" class="w-4 h-4"></i>
+                        </span>
                     </div>
-                    <div style="font-size:11px; font-weight:800; color:#9CA3AF; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Ambiente de Faturamento</div>
-                    <div style="font-size:24px; font-weight:900; color:#34d399; line-height:1; display:flex; align-items:center; gap:8px; margin-top:8px;">
-                        <?= ($asaas->estaConfigurado() && $config = $db->query("SELECT asaas_mode FROM configuracao_empresa WHERE id='principal'")->fetchColumn()) === 'prod' ? '🟢 Produção (Real)' : '🧪 Sandbox (Testes)' ?>
-                    </div>
-                    <div style="font-size:12px; color:#9CA3AF; margin-top:14px;">Chave API do Asaas ativa e validada</div>
+                    <p class="text-[9px] font-label-caps text-on-surface-variant mt-3">Chave API do Asaas activa e validada</p>
                 </div>
             </div>
 
             <!-- Tabela de Cobranças (Extrato) -->
-            <div style="background:#141414; border:1px solid rgba(255,255,255,0.06); border-radius:20px; padding:24px; overflow:hidden;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <h3 style="font-size:16px; font-weight:700; color:#FFFFFF; display:flex; align-items:center; gap:8px;">
-                        <i data-lucide="list-ordered" style="width:18px; height:18px; color:#9CA3AF;"></i>
+            <div class="glass-card rounded-xl overflow-hidden mb-6 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-title-sm font-headline-md text-on-surface flex items-center gap-2">
+                        <i data-lucide="list-ordered" class="w-5 h-5 text-on-surface-variant"></i>
                         Cobranças Recentes no Asaas (Últimas 15)
                     </h3>
                 </div>
 
-                <div style="overflow-x:auto;">
-                    <table style="width:100%; border-collapse:collapse; font-size:13px; text-align:left;">
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse text-left text-xs">
                         <thead>
-                            <tr style="border-bottom:1px solid rgba(255,255,255,0.06); color:#9CA3AF; font-size:11px; text-transform:uppercase; font-weight:800;">
-                                <th style="padding:16px 12px;">ID Cobrança</th>
-                                <th style="padding:16px 12px;">Cliente</th>
-                                <th style="padding:16px 12px;">Descrição</th>
-                                <th style="padding:16px 12px;">Vencimento</th>
-                                <th style="padding:16px 12px; text-align:right;">Valor</th>
-                                <th style="padding:16px 12px;">Meio</th>
-                                <th style="padding:16px 12px;">Status</th>
-                                <th style="padding:16px 12px; text-align:right;">Ações</th>
+                            <tr class="bg-surface-container-low border-b border-outline-variant/20 text-on-surface-variant font-label-caps">
+                                <th class="p-4 font-label-caps text-[10px]">ID Cobrança</th>
+                                <th class="p-4 font-label-caps text-[10px]">Cliente</th>
+                                <th class="p-4 font-label-caps text-[10px]">Descrição</th>
+                                <th class="p-4 font-label-caps text-[10px]">Vencimento</th>
+                                <th class="p-4 font-label-caps text-[10px] text-right">Valor</th>
+                                <th class="p-4 font-label-caps text-[10px]">Meio</th>
+                                <th class="p-4 font-label-caps text-[10px]">Status</th>
+                                <th class="p-4 font-label-caps text-[10px] text-right">Ações</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="divide-y divide-outline-variant/20">
                             <?php if (empty($cobrancasAsaas)): ?>
                                 <tr>
-                                    <td colspan="8" style="padding:40px; text-align:center; color:#6b7280; font-style:italic;">
+                                    <td colspan="8" class="p-10 text-center text-on-surface-variant italic">
                                         Nenhuma cobrança encontrada no painel do Asaas.
                                     </td>
                                 </tr>
@@ -235,21 +246,17 @@ require_once __DIR__ . '/../includes/layout/head.php';
                                     <?php
                                     $cStatus = strtolower($cob['status'] ?? '');
                                     $statusLabel = 'Pendente';
-                                    $statusColor = '#60a5fa';
-                                    $statusBg = 'rgba(96,165,250,0.1)';
+                                    $statusClass = 'bg-blue-500/10 text-blue-400 border border-blue-500/20';
                                     
                                     if (in_array($cStatus, ['received', 'confirmed'])) {
                                         $statusLabel = 'Pago';
-                                        $statusColor = '#34d399';
-                                        $statusBg = 'rgba(52,211,153,0.1)';
+                                        $statusClass = 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
                                     } elseif ($cStatus === 'overdue') {
                                         $statusLabel = 'Vencido';
-                                        $statusColor = '#f87171';
-                                        $statusBg = 'rgba(248,113,113,0.1)';
+                                        $statusClass = 'bg-red-500/10 text-red-400 border border-red-500/20';
                                     } elseif ($cStatus === 'deleted') {
                                         $statusLabel = 'Cancelado';
-                                        $statusColor = '#9ca3af';
-                                        $statusBg = 'rgba(156,163,175,0.1)';
+                                        $statusClass = 'bg-surface-variant text-on-surface-variant border border-outline-variant/20';
                                     }
 
                                     $meio = $cob['billingType'] ?? '—';
@@ -261,28 +268,28 @@ require_once __DIR__ . '/../includes/layout/head.php';
                                         default => $meio
                                     };
                                     ?>
-                                    <tr style="border-bottom:1px solid rgba(255,255,255,0.02);">
-                                        <td style="padding:16px 12px; font-weight:700; color:#a78bfa;"><?= $cob['id'] ?></td>
-                                        <td style="padding:16px 12px; color:#FFFFFF; font-weight:600;"><?= sanitizar($cob['customerName'] ?? 'Cliente sem nome') ?></td>
-                                        <td style="padding:16px 12px; color:#9CA3AF; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><?= sanitizar($cob['description'] ?? 'Sem descrição') ?></td>
-                                        <td style="padding:16px 12px; color:#9CA3AF;"><?= formatarData($cob['dueDate']) ?></td>
-                                        <td style="padding:16px 12px; text-align:right; color:#FFFFFF; font-weight:700;"><?= formatarMoeda((float)$cob['value']) ?></td>
-                                        <td style="padding:16px 12px; color:#9CA3AF;"><span style="font-size:11px; font-weight:800; border:1px solid rgba(255,255,255,0.08); padding:3px 8px; border-radius:6px;"><?= $meioLabel ?></span></td>
-                                        <td style="padding:16px 12px;">
-                                            <span style="font-size:11px; font-weight:800; color:<?= $statusColor ?>; background:<?= $statusBg ?>; padding:4px 10px; border-radius:99px; border:1px solid <?= str_replace('0.1', '0.2', $statusBg) ?>;">
+                                    <tr class="hover:bg-surface-container-high/20 transition-colors group">
+                                        <td class="p-4 font-data-tabular font-bold text-primary"><?= $cob['id'] ?></td>
+                                        <td class="p-4 font-bold text-on-surface"><?= sanitizar($cob['customerName'] ?? 'Cliente sem nome') ?></td>
+                                        <td class="p-4 text-on-surface-variant max-w-[200px] truncate" title="<?= sanitizar($cob['description'] ?? 'Sem descrição') ?>"><?= sanitizar($cob['description'] ?? 'Sem descrição') ?></td>
+                                        <td class="p-4 font-data-tabular text-on-surface-variant"><?= formatarData($cob['dueDate']) ?></td>
+                                        <td class="p-4 text-right font-data-tabular font-bold text-on-surface"><?= formatarMoeda((float)$cob['value']) ?></td>
+                                        <td class="p-4"><span class="px-2 py-0.5 rounded border border-outline-variant/20 bg-surface-container text-on-surface-variant font-label-caps text-[9px]"><?= $meioLabel ?></span></td>
+                                        <td class="p-4">
+                                            <span class="status-pill inline-block text-[9px] px-2.5 py-0.5 rounded-full font-label-caps <?= $statusClass ?>">
                                                 <?= $statusLabel ?>
                                             </span>
                                         </td>
-                                        <td style="padding:16px 12px; text-align:right;">
-                                            <div style="display:flex; justify-content:flex-end; gap:6px;">
+                                        <td class="p-4 text-right">
+                                            <div class="flex justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <?php if (!empty($cob['invoiceUrl'])): ?>
-                                                    <a href="<?= $cob['invoiceUrl'] ?>" target="_blank" class="btn-secondary" style="background:rgba(255,255,255,0.03) !important; border:1px solid rgba(255,255,255,0.08); padding:6px 12px; font-size:11px; border-radius:8px; display:inline-flex; align-items:center; gap:4px;" title="Ver Fatura">
-                                                        <i data-lucide="external-link" style="width:13px; height:13px;"></i> Fatura
+                                                    <a href="<?= $cob['invoiceUrl'] ?>" target="_blank" class="px-2.5 py-1 rounded bg-surface-variant text-on-surface-variant hover:text-on-surface font-label-caps text-[9px] border border-outline-variant/20 inline-flex items-center gap-1" title="Ver Fatura">
+                                                        <i data-lucide="external-link" class="w-3 h-3"></i> Fatura
                                                     </a>
                                                 <?php endif; ?>
                                                 <?php if (!empty($cob['bankSlipUrl'])): ?>
-                                                    <a href="<?= $cob['bankSlipUrl'] ?>" target="_blank" class="btn-secondary" style="background:rgba(255,255,255,0.03) !important; border:1px solid rgba(255,255,255,0.08); padding:6px 12px; font-size:11px; border-radius:8px; display:inline-flex; align-items:center; gap:4px;" title="Ver Boleto">
-                                                        <i data-lucide="file-text" style="width:13px; height:13px;"></i> Boleto
+                                                    <a href="<?= $cob['bankSlipUrl'] ?>" target="_blank" class="px-2.5 py-1 rounded bg-surface-variant text-on-surface-variant hover:text-on-surface font-label-caps text-[9px] border border-outline-variant/20 inline-flex items-center gap-1" title="Ver Boleto">
+                                                        <i data-lucide="file-text" class="w-3 h-3"></i> Boleto
                                                     </a>
                                                 <?php endif; ?>
                                             </div>
@@ -297,27 +304,23 @@ require_once __DIR__ . '/../includes/layout/head.php';
         <?php endif; ?>
 
         <!-- Modal Nova Cobrança Manual -->
-        <div class="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] flex items-center justify-center p-4"
-             x-show="modalNovaCobranca" x-cloak style="z-index: 9999;">
-            <div class="bg-zinc-950 border border-white/10 rounded-[2rem] p-8 w-full max-w-lg shadow-2xl relative" @click.away="modalNovaCobranca = false">
-                <button @click="modalNovaCobranca = false" class="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors cursor-pointer" style="background:none; border:none;">
+        <div class="modal-overlay" x-show="modalNovaCobranca" x-cloak @click.self="modalNovaCobranca = false">
+            <div class="modal w-full max-w-lg p-6 bg-surface-container-low border border-outline-variant/30 rounded-2xl shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+                <button @click="modalNovaCobranca = false" class="absolute top-6 right-6 text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
                 
                 <div class="mb-6">
-                    <div class="w-12 h-12 rounded-2xl bg-zinc-900 flex items-center justify-center text-zinc-300 mb-4 border border-white/5">
-                        <i data-lucide="wallet" class="w-6 h-6 text-a78bfa"></i>
-                    </div>
-                    <h3 class="text-xl font-black text-white">Nova Cobrança Manual Asaas</h3>
-                    <p class="text-xs text-zinc-400 mt-1">Gere uma cobrança única ou parcelada para um cliente. A cobrança e os lançamentos do ERP serão criados ao mesmo tempo.</p>
+                    <h3 class="text-title-sm font-headline-md font-bold text-on-surface">Nova Cobrança Manual Asaas</h3>
+                    <p class="text-body-md text-on-surface-variant mt-1">Gere uma cobrança única ou parcelada para um cliente. A cobrança e os lançamentos do ERP serão criados ao mesmo tempo.</p>
                 </div>
                 
                 <form method="POST">
                     <input type="hidden" name="acao" value="nova_cobranca">
                     <div class="space-y-4 mb-6">
                         <div>
-                            <label class="block text-[11px] font-black uppercase tracking-wider text-zinc-400 mb-2">Cliente *</label>
-                            <select name="cliente_id" required class="w-full bg-zinc-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 transition-all cursor-pointer">
+                            <label class="label">Cliente *</label>
+                            <select name="cliente_id" required class="select w-full">
                                 <option value="">Selecione um cliente...</option>
                                 <?php foreach ($clientes as $cli): ?>
                                     <option value="<?= $cli['id'] ?>"><?= sanitizar($cli['nome']) ?> (<?= formatarCpfCnpj($cli['cpf_cnpj'] ?? '') ?>)</option>
@@ -326,18 +329,18 @@ require_once __DIR__ . '/../includes/layout/head.php';
                         </div>
 
                         <div>
-                            <label class="block text-[11px] font-black uppercase tracking-wider text-zinc-400 mb-2">Descrição / Serviço *</label>
-                            <input type="text" name="descricao" required class="w-full bg-zinc-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 transition-all" placeholder="Ex: Cobertura Fotográfica Casamento">
+                            <label class="label">Descrição / Serviço *</label>
+                            <input type="text" name="descricao" required class="input w-full" placeholder="Ex: Cobertura Fotográfica Casamento">
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-[11px] font-black uppercase tracking-wider text-zinc-400 mb-2">Valor Total *</label>
-                                <input type="text" name="valor_total" required class="w-full bg-zinc-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 transition-all" placeholder="R$ 0,00" oninput="this.value = formatarCampoMoeda(this.value)">
+                                <label class="label">Valor Total *</label>
+                                <input type="text" name="valor_total" required class="input w-full" placeholder="R$ 0,00" oninput="this.value = formatarCampoMoeda(this.value)">
                             </div>
                             <div>
-                                <label class="block text-[11px] font-black uppercase tracking-wider text-zinc-400 mb-2">Meio de Faturamento</label>
-                                <select name="billing_type" class="w-full bg-zinc-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 transition-all cursor-pointer">
+                                <label class="label">Meio de Faturamento</label>
+                                <select name="billing_type" class="select w-full">
                                     <option value="UNDEFINED">Indefinido (Cliente Escolhe)</option>
                                     <option value="BOLETO">Boleto Bancário</option>
                                     <option value="PIX">Apenas Pix</option>
@@ -346,36 +349,34 @@ require_once __DIR__ . '/../includes/layout/head.php';
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-[11px] font-black uppercase tracking-wider text-zinc-400 mb-2">Qtd. de Parcelas</label>
-                                <input type="number" name="total_parcelas" value="1" min="1" max="60" class="w-full bg-zinc-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 transition-all">
+                                <label class="label">Qtd. de Parcelas</label>
+                                <input type="number" name="total_parcelas" value="1" min="1" max="60" class="input w-full">
                             </div>
                             <div>
-                                <label class="block text-[11px] font-black uppercase tracking-wider text-zinc-400 mb-2">Vencimento da 1ª Parcela *</label>
-                                <input type="date" name="vencimento" required class="w-full bg-zinc-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 transition-all">
+                                <label class="label">Vencimento da 1ª Parcela *</label>
+                                <input type="date" name="vencimento" required class="input w-full">
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4 border-t border-white/5 pt-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-outline-variant/10 pt-4">
                             <div>
-                                <label class="block text-[11px] font-black uppercase tracking-wider text-zinc-400 mb-2">Valor do Sinal (Entrada)</label>
-                                <input type="text" name="valor_sinal" class="w-full bg-zinc-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 transition-all" placeholder="R$ 0,00" oninput="this.value = formatarCampoMoeda(this.value)">
+                                <label class="label">Valor do Sinal (Entrada)</label>
+                                <input type="text" name="valor_sinal" class="input w-full" placeholder="R$ 0,00" oninput="this.value = formatarCampoMoeda(this.value)">
                             </div>
                             <div>
-                                <label class="block text-[11px] font-black uppercase tracking-wider text-zinc-400 mb-2">Vencimento do Sinal</label>
-                                <input type="date" name="sinal_vencimento" class="w-full bg-zinc-900 border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/20 transition-all">
+                                <label class="label">Vencimento do Sinal</label>
+                                <input type="date" name="sinal_vencimento" class="input w-full">
                             </div>
                         </div>
                     </div>
                     
-                    <div class="flex gap-3">
-                        <button type="button" @click="modalNovaCobranca = false" 
-                                class="flex-1 py-3 bg-zinc-900 hover:bg-zinc-850 text-zinc-400 hover:text-white rounded-xl text-xs font-bold uppercase tracking-widest transition-all cursor-pointer">
+                    <div class="flex gap-3 justify-end">
+                        <button type="button" @click="modalNovaCobranca = false" class="btn-secondary">
                             Cancelar
                         </button>
-                        <button type="submit" 
-                                class="flex-1 py-3 bg-white hover:bg-zinc-200 text-black rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                        <button type="submit" class="btn-primary">
                             Emitir Cobrança
                         </button>
                     </div>
