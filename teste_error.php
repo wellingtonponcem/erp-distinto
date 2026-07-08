@@ -7,6 +7,13 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 header('Content-Type: text/plain; charset=utf-8');
 
+// Resetar o OPcache para garantir que o PHP leia as correções do disco na Hostinger
+if (function_exists('opcache_reset')) {
+    echo "Limpando OPcache: " . (opcache_reset() ? "✓ SUCESSO" : "✗ FALHA") . "\n\n";
+} else {
+    echo "OPcache não disponível ou desativado.\n\n";
+}
+
 echo "=== INICIANDO TESTE DE CARREGAMENTO ===\n\n";
 
 try {
