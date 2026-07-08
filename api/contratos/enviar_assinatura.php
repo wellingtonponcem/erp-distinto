@@ -486,10 +486,15 @@ try {
         throw new Exception('Falha ao registrar ou localizar os signatários no Assinafy.');
     }
     // 7. Passo 3 no Assinafy: Associar Assinaturas (Assignments)
+    $webhookUrl = preg_replace('#/sistema/?$#', '', rtrim(APP_URL, '/')) . raizUrl('/api/contratos/webhook_assinafy.php');
+    $redirectUrl = preg_replace('#/sistema/?$#', '', rtrim(APP_URL, '/')) . raizUrl('/api/contratos/retorno_assinatura.php?contrato_id=' . $id);
+
     $assignPayload = [
         'method' => 'virtual',
         'signerIds' => $signerIds,
-        'message' => 'Por favor, assine o contrato de prestação de serviços da Distinto | Poncem Studio.'
+        'message' => 'Por favor, assine o contrato de prestação de serviços da Distinto | Poncem Studio.',
+        'redirect_url' => $redirectUrl,
+        'webhook_url' => $webhookUrl
     ];
     
     $assignRes = chamarAssinafy("/documents/{$documentId}/assignments", 'POST', $assignPayload, false, $apiKey, $mode);
