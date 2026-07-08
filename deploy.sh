@@ -12,7 +12,7 @@ set -e
 SERVER_USER="u306254544"
 SERVER_HOST="147.93.38.189"
 SERVER_PORT="65002"
-SSH_KEY="$HOME/.ssh/distinto"
+SSH_KEY="$HOME/.ssh/id_rsa"
 
 # Caminhos no servidor
 PATH_ERP="/home/u306254544/domains/wedistinto.com/public_html/sistema"
