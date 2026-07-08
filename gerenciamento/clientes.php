@@ -55,74 +55,73 @@ $clientes = $db->query("
 $tituloPagina = 'CRM • Clientes';
 require_once __DIR__ . '/../includes/layout/head.php';
 ?>
-<div id="app-wrapper">
+<div id="app-wrapper" class="flex min-h-screen">
     <?php require_once __DIR__ . '/../includes/layout/sidebar.php'; ?>
-    <main id="main-content">
-        <div class="flex items-center justify-between mb-8">
+    <main id="main-content" class="content-sheet !bg-background !p-6 flex flex-col flex-1 max-w-[calc(100vw-240px)]">
+        <?php include __DIR__ . '/../includes/layout/top_nav.php'; ?>
+
+        <!-- Topbar -->
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-8 mt-2">
             <div>
-                <h1 class="text-3xl font-black tracking-tight text-zinc-900 dark:text-white flex items-center gap-3">
-                    <i data-lucide="users" class="w-8 h-8 text-zinc-400"></i>
+                <h1 class="font-display-lg text-on-surface mb-1 flex items-center gap-2">
+                    <i data-lucide="users" class="w-6 h-6 text-primary"></i>
                     Clientes
                 </h1>
-                <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mt-1">Gerencie a base de contatos que alimenta seu pipeline comercial.</p>
+                <p class="text-body-md text-on-surface-variant">Gerencie a base de contatos que alimenta seu pipeline comercial</p>
             </div>
         </div>
 
         <?php if ($statusMessage): ?>
-            <div class="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-sm font-bold flex items-center gap-3">
-                <i data-lucide="check-circle" class="w-5 h-5"></i>
-                <?= sanitizar($statusMessage) ?>
+            <div class="bg-primary/10 border border-primary/20 rounded-xl p-4 mb-6 text-sm text-primary flex items-center gap-2">
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                <span><?= sanitizar($statusMessage) ?></span>
             </div>
         <?php endif; ?>
 
         <?php if ($errorMessage): ?>
-            <div class="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm font-bold flex items-center gap-3">
-                <i data-lucide="alert-circle" class="w-5 h-5"></i>
-                <?= sanitizar($errorMessage) ?>
+            <div class="bg-error/10 border border-error/20 rounded-xl p-4 mb-6 text-sm text-error flex items-center gap-2">
+                <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                <span><?= sanitizar($errorMessage) ?></span>
             </div>
         <?php endif; ?>
 
         <!-- Formulário de Cadastro -->
-        <div class="bg-white/80 dark:bg-zinc-900/50 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-[32px] p-8 mb-10 shadow-sm">
-            <h2 class="text-lg font-bold text-zinc-900 dark:text-white mb-6 flex items-center gap-2">
-                <i data-lucide="<?= $editCliente ? 'edit-3' : 'plus-circle' ?>" class="w-5 h-5 opacity-50"></i>
+        <div class="glass-card p-6 rounded-xl border border-outline-variant/20 mb-8 shadow-sm">
+            <h2 class="text-title-sm font-headline-md font-bold text-on-surface mb-6 flex items-center gap-2">
+                <i data-lucide="<?= $editCliente ? 'edit-3' : 'plus-circle' ?>" class="w-5 h-5 text-on-surface-variant"></i>
                 <?= $editCliente ? 'Editar Cliente' : 'Novo Cliente' ?>
             </h2>
             
             <form method="post" action="<?= raizUrl('/gerenciamento/clientes.php') ?>">
                 <input type="hidden" name="id" value="<?= $editCliente['id'] ?? '' ?>">
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-2">
-                        <label class="text-[11px] font-black uppercase tracking-widest text-zinc-500 ml-1">Nome Completo / Razão Social *</label>
-                        <input class="w-full bg-zinc-100 dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-3.5 text-sm focus:ring-2 ring-zinc-500/20 transition-all outline-none" 
-                               type="text" name="nome" value="<?= sanitizar($editCliente['nome'] ?? '') ?>" required placeholder="Ex: João Silva ou Empresa LTDA">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label class="label">Nome Completo / Razão Social *</label>
+                        <input class="input w-full" type="text" name="nome" value="<?= sanitizar($editCliente['nome'] ?? '') ?>" required placeholder="Ex: João Silva ou Empresa LTDA">
                     </div>
                     
-                    <div class="space-y-2">
-                        <label class="text-[11px] font-black uppercase tracking-widest text-zinc-500 ml-1">CPF / CNPJ</label>
-                        <input class="w-full bg-zinc-100 dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-3.5 text-sm focus:ring-2 ring-zinc-500/20 transition-all outline-none" 
-                               type="text" name="cpf_cnpj" value="<?= sanitizar($editCliente['cpf_cnpj'] ?? '') ?>" placeholder="000.000.000-00">
+                    <div>
+                        <label class="label">CPF / CNPJ</label>
+                        <input class="input w-full" type="text" name="cpf_cnpj" value="<?= sanitizar($editCliente['cpf_cnpj'] ?? '') ?>" placeholder="000.000.000-00">
                     </div>
                     
-                    <div class="space-y-2">
-                        <label class="text-[11px] font-black uppercase tracking-widest text-zinc-500 ml-1">Contato (WhatsApp/E-mail)</label>
-                        <input class="w-full bg-zinc-100 dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-3.5 text-sm focus:ring-2 ring-zinc-500/20 transition-all outline-none" 
-                               type="text" name="contato" value="<?= sanitizar($editCliente['contato'] ?? '') ?>" placeholder="Ex: (27) 99999-0000">
+                    <div>
+                        <label class="label">Contato (WhatsApp/E-mail)</label>
+                        <input class="input w-full" type="text" name="contato" value="<?= sanitizar($editCliente['contato'] ?? '') ?>" placeholder="Ex: (27) 99999-0000">
                     </div>
                     
-                    <div class="space-y-2">
-                        <label class="text-[11px] font-black uppercase tracking-widest text-zinc-500 ml-1">Segmento / Atividade</label>
-                        <input class="w-full bg-zinc-100 dark:bg-black border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-3.5 text-sm focus:ring-2 ring-zinc-500/20 transition-all outline-none" 
-                               type="text" name="segmento" value="<?= sanitizar($editCliente['segmento'] ?? '') ?>" placeholder="Ex: Tecnologia, Varejo, Saúde...">
+                    <div>
+                        <label class="label">Segmento / Atividade</label>
+                        <input class="input w-full" type="text" name="segmento" value="<?= sanitizar($editCliente['segmento'] ?? '') ?>" placeholder="Ex: Tecnologia, Varejo, Saúde...">
                     </div>
                 </div>
 
-                <div class="flex justify-end items-center gap-4 mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-800/50">
+                <div class="flex justify-end items-center gap-3 pt-4 border-t border-outline-variant/10">
                     <?php if ($editCliente): ?>
-                        <a href="<?= raizUrl('/gerenciamento/clientes.php') ?>" class="text-sm font-bold text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">Cancelar</a>
+                        <a href="<?= raizUrl('/gerenciamento/clientes.php') ?>" class="btn-secondary">Cancelar</a>
                     <?php endif; ?>
-                    <button type="submit" class="bg-zinc-900 dark:bg-white text-white dark:text-black px-8 py-3.5 rounded-2xl text-sm font-black hover:scale-[1.02] active:scale-95 transition-all shadow-xl">
+                    <button type="submit" class="bg-primary hover:bg-primary-container text-on-primary-container font-bold px-6 py-2.5 rounded-lg text-body-md transition-all active:scale-95 duration-150 shadow-lg">
                         <?= $editCliente ? 'Salvar Alterações' : 'Cadastrar Cliente' ?>
                     </button>
                 </div>
@@ -131,51 +130,51 @@ require_once __DIR__ . '/../includes/layout/head.php';
 
         <!-- Lista de Clientes -->
         <div class="space-y-4">
-            <h2 class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500 ml-4 mb-4">Base de Clientes (<?= count($clientes) ?>)</h2>
+            <h2 class="text-[10px] font-label-caps tracking-wider text-on-surface-variant ml-2 mb-4">Base de Clientes (<?= count($clientes) ?>)</h2>
             
             <div class="grid grid-cols-1 gap-3">
                 <?php foreach ($clientes as $cliente): ?>
-                    <div class="bg-white/50 dark:bg-zinc-900/30 border border-zinc-200/60 dark:border-zinc-800/60 rounded-3xl p-5 flex flex-wrap items-center justify-between gap-4 group hover:border-zinc-400 dark:hover:border-zinc-600 transition-all">
-                        <div class="flex items-center gap-5">
-                            <div class="w-12 h-12 rounded-2xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
-                                <i data-lucide="user" class="w-6 h-6"></i>
+                    <div class="glass-card p-5 flex flex-wrap items-center justify-between gap-4 group hover:border-primary/40 transition-colors rounded-xl border border-outline-variant/20">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant group-hover:text-primary transition-colors">
+                                <i data-lucide="user" class="w-5 h-5"></i>
                             </div>
                             <div>
-                                <h3 class="font-bold text-zinc-900 dark:text-white"><?= sanitizar($cliente['nome']) ?></h3>
-                                <p class="text-[11px] font-medium text-zinc-500 uppercase tracking-widest mt-0.5"><?= sanitizar($cliente['segmento'] ?: 'Sem segmento') ?></p>
+                                <h3 class="text-sm font-bold text-on-surface"><?= sanitizar($cliente['nome']) ?></h3>
+                                <span class="px-2 py-0.5 rounded-full text-[9px] font-label-caps border bg-primary/10 text-primary border-primary/20 inline-block w-fit text-center mt-1" x-text="'<?= strtolower(sanitizar($cliente['segmento'] ?: 'Sem segmento')) ?>'"></span>
                             </div>
                         </div>
 
-                        <div class="flex flex-wrap gap-8 items-center">
+                        <div class="flex flex-wrap gap-6 items-center">
                             <div class="hidden sm:block">
-                                <p class="text-[10px] font-black text-zinc-400 uppercase tracking-tighter">Documento</p>
-                                <p class="text-xs font-bold text-zinc-600 dark:text-zinc-400 mt-0.5"><?= sanitizar($cliente['cpf_cnpj'] ?: '—') ?></p>
+                                <p class="text-[9px] font-label-caps text-on-surface-variant">Documento</p>
+                                <p class="text-xs font-bold text-on-surface mt-0.5 font-data-tabular"><?= sanitizar($cliente['cpf_cnpj'] ?: '—') ?></p>
                             </div>
                             <div class="hidden md:block">
-                                <p class="text-[10px] font-black text-zinc-400 uppercase tracking-tighter">Contato</p>
-                                <p class="text-xs font-bold text-zinc-600 dark:text-zinc-400 mt-0.5"><?= sanitizar($cliente['contato'] ?: '—') ?></p>
+                                <p class="text-[9px] font-label-caps text-on-surface-variant">Contato</p>
+                                <p class="text-xs font-bold text-on-surface mt-0.5"><?= sanitizar($cliente['contato'] ?: '—') ?></p>
                             </div>
 
-                            <div class="flex items-center gap-4 border-l border-zinc-100 dark:border-zinc-800/50 pl-6">
+                            <div class="flex items-center gap-4 border-l border-outline-variant/20 pl-6">
                                 <div class="text-center">
-                                    <p class="text-[10px] font-black text-zinc-400 uppercase tracking-tighter">Oportunidades</p>
-                                    <p class="text-sm font-black text-zinc-900 dark:text-white"><?= $cliente['total_oportunidades'] ?></p>
+                                    <p class="text-[9px] font-label-caps text-on-surface-variant">Oportunidades</p>
+                                    <p class="text-sm font-bold text-on-surface font-data-tabular"><?= $cliente['total_oportunidades'] ?></p>
                                 </div>
                                 <div class="text-center">
-                                    <p class="text-[10px] font-black text-zinc-400 uppercase tracking-tighter">Propostas</p>
-                                    <p class="text-sm font-black text-zinc-900 dark:text-white"><?= $cliente['total_propostas'] ?></p>
+                                    <p class="text-[9px] font-label-caps text-on-surface-variant">Propostas</p>
+                                    <p class="text-sm font-bold text-on-surface font-data-tabular"><?= $cliente['total_propostas'] ?></p>
                                 </div>
                             </div>
                             
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <a href="<?= raizUrl('/gerenciamento/clientes.php?editar=' . $cliente['id']) ?>" 
-                                   class="p-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-900 dark:hover:bg-white hover:text-white dark:hover:text-black transition-all"
+                                   class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded transition-colors"
                                    title="Editar">
-                                    <i data-lucide="edit-2" class="w-4 h-4"></i>
+                                    <i data-lucide="pencil" class="w-4 h-4"></i>
                                 </a>
                                 <a href="<?= raizUrl('/gerenciamento/clientes.php?deletar=' . $cliente['id']) ?>" 
                                    onclick="return confirm('Excluir este cliente?');"
-                                   class="p-2.5 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all"
+                                   class="p-1.5 text-error/70 hover:text-error hover:bg-error-container/10 rounded transition-colors"
                                    title="Excluir">
                                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                                 </a>
@@ -185,9 +184,9 @@ require_once __DIR__ . '/../includes/layout/head.php';
                 <?php endforeach; ?>
 
                 <?php if (empty($clientes)): ?>
-                    <div class="py-20 text-center">
-                        <i data-lucide="users" class="w-12 h-12 mx-auto text-zinc-800 mb-4 opacity-20"></i>
-                        <p class="text-sm font-bold text-zinc-500">Nenhum cliente cadastrado ainda.</p>
+                    <div class="py-20 text-center text-on-surface-variant italic">
+                        <i data-lucide="users" class="w-8 h-8 mx-auto mb-3 opacity-40"></i>
+                        Nenhum cliente cadastrado ainda.
                     </div>
                 <?php endif; ?>
             </div>

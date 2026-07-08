@@ -71,33 +71,18 @@ $tituloPagina = 'CRM • Pipeline';
 require_once __DIR__ . '/../includes/layout/head.php';
 ?>
 <style>
-.kanban-wrapper { display:flex; gap:12px; overflow-x:auto; padding-bottom:20px; min-height:calc(100vh - 240px); }
-.kanban-col { min-width:280px; max-width:300px; flex:1; display:flex; flex-direction:column; }
-.kanban-col-header { padding:14px 16px; border-radius:16px 16px 0 0; display:flex; align-items:center; justify-content:space-between; }
-.kanban-col-body { flex:1; padding:8px; border-radius:0 0 16px 16px; min-height:120px; display:flex; flex-direction:column; gap:8px; transition:background 0.2s; }
-.kanban-col-body.drag-over { background:rgba(197,168,128,0.12) !important; outline:2px dashed rgba(197,168,128,0.4); }
-.kanban-card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:14px; padding:14px 16px; cursor:grab; transition:all 0.2s; position:relative; }
-.kanban-card:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.15); border-color:rgba(197,168,128,0.4); }
+.kanban-wrapper { display:flex; gap:16px; overflow-x:auto; padding-bottom:20px; min-height:calc(100vh - 240px); }
+.kanban-col { min-width:290px; max-width:320px; flex:1; display:flex; flex-direction:column; background:rgba(255,255,255,0.01) !important; border:1px solid rgba(255,255,255,0.04); border-radius:16px; overflow:hidden; }
+.kanban-col-header { padding:14px 16px; border-bottom:1px solid rgba(255,255,255,0.04); display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,0.02) !important; }
+.kanban-col-body { flex:1; padding:12px; min-height:400px; display:flex; flex-direction:column; gap:12px; transition:all 0.2s; background:transparent !important; }
+.kanban-col-body.drag-over { background:rgba(167,139,250,0.05) !important; outline:2px dashed rgba(167,139,250,0.3); }
+.kanban-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); border-radius:12px; padding:14px 16px; cursor:grab; transition:all 0.2s; position:relative; }
+.kanban-card:hover { transform:translateY(-2px); box-shadow:0 12px 24px rgba(0,0,0,0.3); border-color:rgba(167,139,250,0.3); background:rgba(255,255,255,0.05); }
 .kanban-card:active { cursor:grabbing; opacity:0.7; }
 .kanban-card.dragging { opacity:0.4; transform:scale(0.95); }
 
-:root { --card-bg:#fff; --card-border:rgba(0,0,0,0.08); --col-bg:rgba(0,0,0,0.03); --col-header-bg:rgba(0,0,0,0.06); }
-@media(prefers-color-scheme:dark) {
-    :root { --card-bg:rgba(255,255,255,0.04); --card-border:rgba(255,255,255,0.08); --col-bg:rgba(255,255,255,0.02); --col-header-bg:rgba(255,255,255,0.05); }
-}
-.dark .kanban-card { --card-bg:rgba(255,255,255,0.04); --card-border:rgba(255,255,255,0.08); }
-.dark .kanban-col-body { background:rgba(255,255,255,0.02); }
-.dark .kanban-col-header { background:rgba(255,255,255,0.05); }
-
-/* Modal */
-.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(8px); z-index:9999; display:none; align-items:center; justify-content:center; }
-.modal-overlay.active { display:flex; }
-.modal-panel { background:#fff; border-radius:24px; width:95%; max-width:680px; max-height:90vh; overflow-y:auto; box-shadow:0 32px 64px rgba(0,0,0,0.3); animation:modalIn 0.25s ease; }
-.dark .modal-panel { background:#1a1a1a; }
-@keyframes modalIn { from{opacity:0;transform:translateY(20px)scale(0.97)} to{opacity:1;transform:none} }
-
-.pipeline-stats { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
-.stat-chip { padding:8px 16px; border-radius:12px; font-size:11px; font-weight:800; letter-spacing:0.05em; text-transform:uppercase; display:flex; align-items:center; gap:6px; }
+.pipeline-stats { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:24px; }
+.stat-chip { padding:8px 14px; border-radius:10px; font-size:10px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; display:flex; align-items:center; gap:8px; border:1px solid rgba(255,255,255,0.04); background:rgba(255,255,255,0.02); }
 </style>
 
 <div id="app-wrapper">
@@ -118,16 +103,16 @@ require_once __DIR__ . '/../includes/layout/head.php';
         </div>
 
         <!-- Pipeline Stats -->
-        <div class="pipeline-stats">
+        <div class="pipeline-stats mb-6 mt-4">
             <?php 
             $cores = ['novo'=>'bg-zinc-500','qualificado'=>'bg-blue-500','proposta'=>'bg-purple-500','negociacao'=>'bg-amber-500','ganha'=>'bg-emerald-500','perdida'=>'bg-red-500'];
             foreach ($etapas as $k => $label): ?>
-            <div class="stat-chip bg-zinc-100 dark:bg-zinc-800/50 text-zinc-600 dark:text-zinc-400">
+            <div class="stat-chip">
                 <span class="w-2 h-2 rounded-full <?= $cores[$k] ?>"></span>
-                <?= $label ?>: <span class="text-zinc-900 dark:text-white"><?= count($colunas[$k]) ?></span>
+                <?= $label ?>: <span class="text-on-surface ml-1"><?= count($colunas[$k]) ?></span>
             </div>
             <?php endforeach; ?>
-            <div class="stat-chip bg-zinc-900 dark:bg-white text-white dark:text-black ml-auto">
+            <div class="stat-chip bg-primary text-on-primary border-primary/20 ml-auto font-data-tabular">
                 Total: <?= formatarMoeda($totalValor) ?>
             </div>
         </div>
@@ -136,14 +121,14 @@ require_once __DIR__ . '/../includes/layout/head.php';
         <div class="kanban-wrapper">
             <?php foreach ($etapas as $etapaKey => $etapaLabel): ?>
             <div class="kanban-col">
-                <div class="kanban-col-header" style="background:var(--col-header-bg);">
+                <div class="kanban-col-header">
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full <?= $cores[$etapaKey] ?>"></span>
-                        <span class="text-[11px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400"><?= $etapaLabel ?></span>
+                        <span class="text-[10px] font-label-caps tracking-wider text-on-surface"><?= $etapaLabel ?></span>
                     </div>
-                    <span class="text-[10px] font-black text-zinc-400 bg-zinc-200 dark:bg-zinc-700 px-2 py-0.5 rounded-full"><?= count($colunas[$etapaKey]) ?></span>
+                    <span class="text-[9px] font-label-caps px-2 py-0.5 rounded-full bg-surface-container-high border border-outline-variant/10 text-on-surface-variant font-data-tabular"><?= count($colunas[$etapaKey]) ?></span>
                 </div>
-                <div class="kanban-col-body" style="background:var(--col-bg);" 
+                <div class="kanban-col-body" 
                      data-etapa="<?= $etapaKey ?>"
                      ondragover="event.preventDefault();this.classList.add('drag-over')" 
                      ondragleave="this.classList.remove('drag-over')"
@@ -157,26 +142,27 @@ require_once __DIR__ . '/../includes/layout/head.php';
                     <div class="kanban-card" draggable="true" data-id="<?= $o['id'] ?>"
                          ondragstart="startDrag(event)" ondragend="endDrag(event)"
                          onclick="openDetail('<?= $o['id'] ?>')">
-                        <div class="flex items-start justify-between gap-2 mb-2">
-                            <h4 class="text-sm font-bold text-zinc-900 dark:text-white leading-tight"><?= sanitizar($o['nome']) ?></h4>
+                        <div class="flex items-start justify-between gap-2 mb-1.5">
+                            <h4 class="text-xs font-bold text-on-surface leading-tight truncate" title="<?= sanitizar($o['nome']) ?>"><?= sanitizar($o['nome']) ?></h4>
                             <?php if ($o['proposta_slug']): ?>
-                            <span class="shrink-0 text-[8px] font-black uppercase px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-500 border border-purple-500/20">Proposta</span>
+                                <span class="px-1.5 py-0.5 rounded text-[8px] font-label-caps border bg-primary/10 text-primary border-primary/20 shrink-0">Proposta</span>
                             <?php endif; ?>
                         </div>
-                        <p class="text-[11px] text-zinc-500 dark:text-zinc-500 mb-2"><?= sanitizar($o['cliente_nome'] ?: 'Sem cliente') ?></p>
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-black text-zinc-700 dark:text-zinc-300"><?= formatarMoeda((float)($o['proposta_valor'] ?: $o['valor_estimado'])) ?></span>
+                        <p class="text-[10px] text-on-surface-variant truncate"><?= sanitizar($o['cliente_nome'] ?: 'Sem cliente') ?></p>
+                        
+                        <div class="flex items-center justify-between mt-3 pt-2.5 border-t border-outline-variant/10">
+                            <span class="text-xs font-bold text-on-surface font-data-tabular"><?= formatarMoeda((float)($o['proposta_valor'] ?: $o['valor_estimado'])) ?></span>
                             <?php if ($waClean): ?>
-                            <a href="https://wa.me/<?= $waClean ?>" target="_blank" onclick="event.stopPropagation()" 
-                               class="w-6 h-6 rounded-full bg-emerald-500/15 text-emerald-500 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all">
-                                <i data-lucide="message-circle" class="w-3 h-3"></i>
-                            </a>
+                                <a href="https://wa.me/<?= $waClean ?>" target="_blank" onclick="event.stopPropagation()" 
+                                   class="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500 hover:text-white flex items-center justify-center transition-all border border-emerald-500/20">
+                                    <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                                </a>
                             <?php endif; ?>
                         </div>
                         <?php if ($o['previsao']): ?>
-                        <p class="text-[10px] text-zinc-400 mt-2 flex items-center gap-1">
-                            <i data-lucide="calendar" class="w-3 h-3"></i> <?= date('d/m', strtotime($o['previsao'])) ?>
-                        </p>
+                            <p class="text-[9px] font-label-caps text-on-surface-variant mt-2 flex items-center gap-1">
+                                <i data-lucide="calendar" class="w-3 h-3 text-on-surface-variant"></i> <?= date('d/m', strtotime($o['previsao'])) ?>
+                            </p>
                         <?php endif; ?>
                     </div>
                     <?php endforeach; ?>
@@ -189,61 +175,72 @@ require_once __DIR__ . '/../includes/layout/head.php';
 
 <!-- Modal Nova Oportunidade -->
 <div id="modal-novo" class="modal-overlay" onclick="if(event.target===this)this.classList.remove('active')">
-    <div class="modal-panel p-8">
-        <h2 class="text-lg font-black text-zinc-900 dark:text-white mb-6 flex items-center gap-2">
-            <i data-lucide="plus-circle" class="w-5 h-5 text-zinc-400"></i> Nova Oportunidade
+    <div class="modal w-full max-w-lg p-6 bg-surface-container-low border border-outline-variant/30 rounded-2xl shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+        <button onclick="document.getElementById('modal-novo').classList.remove('active')" class="absolute top-6 right-6 text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+        
+        <h2 class="text-title-sm font-headline-md font-bold text-on-surface mb-6 flex items-center gap-2">
+            <i data-lucide="plus-circle" class="w-5 h-5 text-on-surface-variant"></i> Nova Oportunidade
         </h2>
+        
         <form method="post" action="<?= raizUrl('/gerenciamento/oportunidades.php') ?>">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div class="md:col-span-2">
-                    <label class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1 block">Nome *</label>
-                    <input class="w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 ring-zinc-400/30" 
-                           type="text" name="nome" required placeholder="Ex: Casamento Igor & Gabriela">
-                </div>
+            <div class="space-y-4 mb-6">
                 <div>
-                    <label class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1 block">Cliente</label>
-                    <select class="w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm outline-none" name="cliente_id">
-                        <option value="">— Nenhum —</option>
-                        <?php foreach ($clientes as $c): ?>
-                        <option value="<?= $c['id'] ?>"><?= sanitizar($c['nome']) ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                    <label class="label">Nome da Oportunidade *</label>
+                    <input class="input w-full" type="text" name="nome" required placeholder="Ex: Casamento Igor & Gabriela">
                 </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="label">Cliente</label>
+                        <select class="select w-full" name="cliente_id">
+                            <option value="">— Nenhum —</option>
+                            <?php foreach ($clientes as $c): ?>
+                                <option value="<?= $c['id'] ?>"><?= sanitizar($c['nome']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="label">Valor Estimado (R$)</label>
+                        <input class="input w-full" type="number" step="0.01" name="valor_estimado" value="0">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="label">Etapa Inicial</label>
+                        <select class="select w-full" name="etapa">
+                            <?php foreach ($etapas as $k => $v): ?>
+                                <option value="<?= $k ?>"><?= $v ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="label">Previsão de Fechamento</label>
+                        <input class="input w-full" type="date" name="previsao">
+                    </div>
+                </div>
+
                 <div>
-                    <label class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1 block">Valor Estimado</label>
-                    <input class="w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm outline-none" 
-                           type="number" step="0.01" name="valor_estimado" value="0">
-                </div>
-                <div>
-                    <label class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1 block">Etapa</label>
-                    <select class="w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm outline-none" name="etapa">
-                        <?php foreach ($etapas as $k => $v): ?>
-                        <option value="<?= $k ?>"><?= $v ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div>
-                    <label class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1 block">Previsão</label>
-                    <input class="w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm outline-none" type="date" name="previsao">
-                </div>
-                <div class="md:col-span-2">
-                    <label class="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1 block">Descrição</label>
-                    <textarea class="w-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm outline-none" name="descricao" rows="2"></textarea>
+                    <label class="label">Descrição / Observações</label>
+                    <textarea class="textarea w-full" name="descricao" rows="2" placeholder="Notas sobre a negociação..."></textarea>
                 </div>
             </div>
-            <div class="flex justify-end gap-3">
-                <button type="button" onclick="document.getElementById('modal-novo').classList.remove('active')" class="px-5 py-2.5 rounded-xl text-sm font-bold text-zinc-500 hover:text-zinc-900 dark:hover:text-white">Cancelar</button>
-                <button type="submit" class="bg-zinc-900 dark:bg-white text-white dark:text-black px-6 py-2.5 rounded-xl text-sm font-black hover:scale-105 active:scale-95 transition-all">Criar</button>
+            
+            <div class="flex gap-3 justify-end">
+                <button type="button" onclick="document.getElementById('modal-novo').classList.remove('active')" class="btn-secondary">Cancelar</button>
+                <button type="submit" class="btn-primary">Criar Oportunidade</button>
             </div>
         </form>
-    </div>
-</div>
-
-<!-- Modal Detalhe da Oportunidade -->
+    <<!-- Modal Detalhe da Oportunidade -->
 <div id="modal-detalhe" class="modal-overlay" onclick="if(event.target===this)this.classList.remove('active')">
-    <div class="modal-panel">
-        <div id="detalhe-content" class="p-8">
-            <p class="text-zinc-500 text-center py-12">Carregando...</p>
+    <div class="modal w-full max-w-xl p-6 bg-surface-container-low border border-outline-variant/30 rounded-2xl shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+        <button onclick="document.getElementById('modal-detalhe').classList.remove('active')" class="absolute top-6 right-6 text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+        <div id="detalhe-content" class="space-y-6">
+            <p class="text-on-surface-variant text-center py-12 italic">Carregando...</p>
         </div>
     </div>
 </div>
@@ -296,45 +293,63 @@ function openDetail(id) {
     const propostaUrl = o.proposta_slug ? `${raizUrl}/p/${o.proposta_slug}` : null;
     const editarUrl = o.proposta_id ? `${raizUrl}/gerenciamento/proposta_editar.php?id=${o.proposta_id}` : null;
     
-    const etapaCores = {novo:'bg-zinc-500',qualificado:'bg-blue-500',proposta:'bg-purple-500',negociacao:'bg-amber-500',ganha:'bg-emerald-500',perdida:'bg-red-500'};
+    const etapaCores = {
+        novo: 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20',
+        qualificado: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+        proposta: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+        negociacao: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+        ganha: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+        perdida: 'bg-red-500/10 text-red-400 border-red-500/20'
+    };
     const etapaNomes = {novo:'Novo',qualificado:'Qualificado',proposta:'Proposta',negociacao:'Negociação',ganha:'Ganha',perdida:'Perdida'};
     
     document.getElementById('detalhe-content').innerHTML = `
-        <div class="flex items-start justify-between mb-6">
+        <div class="flex items-start justify-between gap-6 mr-6">
             <div>
-                <h2 class="text-xl font-black text-zinc-900 dark:text-white">${o.nome || 'Sem nome'}</h2>
-                <p class="text-sm text-zinc-500 mt-1">${o.cliente_nome || 'Sem cliente vinculado'}</p>
+                <h2 class="text-base font-bold text-on-surface leading-tight">${o.nome || 'Sem nome'}</h2>
+                <p class="text-xs text-on-surface-variant mt-1">${o.cliente_nome || 'Sem cliente vinculado'}</p>
             </div>
-            <div class="flex items-center gap-2">
-                <span class="text-[10px] font-black uppercase px-3 py-1 rounded-lg text-white ${etapaCores[o.etapa] || 'bg-zinc-500'}">${etapaNomes[o.etapa] || o.etapa}</span>
-                <button onclick="document.getElementById('modal-detalhe').classList.remove('active')" class="w-8 h-8 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 hover:text-zinc-900 dark:hover:text-white">
-                    <i data-lucide="x" class="w-4 h-4"></i>
-                </button>
+            <span class="px-2 py-0.5 rounded-full text-[9px] font-label-caps border ${etapaCores[o.etapa] || 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20'} shrink-0">${etapaNomes[o.etapa] || o.etapa}</span>
+        </div>
+        
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div class="glass-card p-4 rounded-xl border border-outline-variant/10">
+                <p class="text-[9px] font-label-caps text-on-surface-variant mb-1">Valor Estimado</p>
+                <p class="text-sm font-bold text-on-surface font-data-tabular">${new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(o.proposta_valor || o.valor_estimado || 0)}</p>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-outline-variant/10">
+                <p class="text-[9px] font-label-caps text-on-surface-variant mb-1">Previsão Fechamento</p>
+                <p class="text-sm font-bold text-on-surface">${o.previsao ? new Date(o.previsao+'T12:00:00').toLocaleDateString('pt-BR') : '—'}</p>
+            </div>
+            <div class="glass-card p-4 rounded-xl border border-outline-variant/10">
+                <p class="text-[9px] font-label-caps text-on-surface-variant mb-1">Origem / Canal</p>
+                <p class="text-sm font-bold text-on-surface">${o.proposta_tipo || 'CRM'}</p>
             </div>
         </div>
         
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
-            <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-4">
-                <p class="text-[10px] font-black uppercase text-zinc-400 mb-1">Valor</p>
-                <p class="text-base font-black text-zinc-900 dark:text-white">${new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(o.proposta_valor || o.valor_estimado || 0)}</p>
-            </div>
-            <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-4">
-                <p class="text-[10px] font-black uppercase text-zinc-400 mb-1">Previsão</p>
-                <p class="text-sm font-bold text-zinc-700 dark:text-zinc-300">${o.previsao ? new Date(o.previsao+'T12:00:00').toLocaleDateString('pt-BR') : '—'}</p>
-            </div>
-            <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-4">
-                <p class="text-[10px] font-black uppercase text-zinc-400 mb-1">Tipo</p>
-                <p class="text-sm font-bold text-zinc-700 dark:text-zinc-300">${o.proposta_tipo || 'CRM'}</p>
-            </div>
-        </div>
+        ${o.descricao ? `
+        <div>
+            <p class="text-[9px] font-label-caps text-on-surface-variant mb-1.5">Descrição / Anotações</p>
+            <p class="text-xs text-on-surface leading-relaxed whitespace-pre-wrap">${o.descricao}</p>
+        </div>` : ''}
         
-        ${o.descricao ? `<div class="mb-6"><p class="text-[10px] font-black uppercase text-zinc-400 mb-2">Notas</p><p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">${o.descricao}</p></div>` : ''}
-        
-        <div class="border-t border-zinc-100 dark:border-zinc-800 pt-5 flex flex-wrap gap-2">
-            ${wa ? `<a href="https://wa.me/${wa}" target="_blank" class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500/10 text-emerald-600 text-xs font-bold hover:bg-emerald-500 hover:text-white transition-all"><i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp</a>` : ''}
-            ${propostaUrl ? `<a href="${propostaUrl}" target="_blank" class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-500/10 text-purple-600 text-xs font-bold hover:bg-purple-500 hover:text-white transition-all"><i data-lucide="external-link" class="w-4 h-4"></i> Ver Proposta</a>` : ''}
-            ${editarUrl ? `<a href="${editarUrl}" class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500/10 text-blue-600 text-xs font-bold hover:bg-blue-500 hover:text-white transition-all"><i data-lucide="edit-2" class="w-4 h-4"></i> Editar Proposta</a>` : ''}
-            <a href="${raizUrl}/gerenciamento/oportunidades.php?deletar=${o.id}" onclick="return confirm('Excluir esta oportunidade?')" class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 text-red-500 text-xs font-bold hover:bg-red-500 hover:text-white transition-all ml-auto"><i data-lucide="trash-2" class="w-4 h-4"></i> Excluir</a>
+        <div class="border-t border-outline-variant/10 pt-4 flex flex-wrap gap-2 items-center">
+            ${wa ? `
+            <a href="https://wa.me/${wa}" target="_blank" class="bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-white border border-emerald-500/20 font-bold px-4 py-2 rounded-lg text-xs transition-all active:scale-95 duration-150 flex items-center gap-1.5">
+                <i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp
+            </a>` : ''}
+            ${propostaUrl ? `
+            <a href="${propostaUrl}" target="_blank" class="bg-primary/10 hover:bg-primary text-primary hover:text-on-primary border border-primary/20 font-bold px-4 py-2 rounded-lg text-xs transition-all active:scale-95 duration-150 flex items-center gap-1.5">
+                <i data-lucide="external-link" class="w-4 h-4"></i> Ver Proposta
+            </a>` : ''}
+            ${editarUrl ? `
+            <a href="${editarUrl}" class="bg-blue-500/10 hover:bg-blue-500 text-blue-400 hover:text-white border border-blue-500/20 font-bold px-4 py-2 rounded-lg text-xs transition-all active:scale-95 duration-150 flex items-center gap-1.5">
+                <i data-lucide="pencil" class="w-4 h-4"></i> Editar Proposta
+            </a>` : ''}
+            
+            <a href="${raizUrl}/gerenciamento/oportunidades.php?deletar=${o.id}" onclick="return confirm('Excluir esta oportunidade?')" class="bg-error/10 hover:bg-error text-error hover:text-on-error border border-error/20 font-bold px-4 py-2 rounded-lg text-xs transition-all active:scale-95 duration-150 flex items-center gap-1.5 ml-auto">
+                <i data-lucide="trash-2" class="w-4 h-4"></i> Excluir
+            </a>
         </div>
     `;
     
@@ -342,5 +357,5 @@ function openDetail(id) {
     if (window.lucide) lucide.createIcons();
 }
 </script>
-
+ 
 <?php require_once __DIR__ . '/../includes/layout/footer.php'; ?>

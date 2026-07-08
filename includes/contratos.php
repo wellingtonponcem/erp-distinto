@@ -21,6 +21,13 @@ function processarAssinaturaContrato(string $contratoId, array $opcoesFaturament
     ];
 
     try {
+        // Limpa estado de erro do PostgreSQL antes de iniciar transação
+        try {
+            if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'pgsql' && $db->inTransaction()) {
+                $db->rollBack();
+            }
+        } catch (Exception $e) {}
+
         $db->beginTransaction();
 
         // 1. Carrega contrato e dados_json

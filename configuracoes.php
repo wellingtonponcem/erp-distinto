@@ -160,365 +160,333 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include __DIR__ . '/includes/layout/head.php';
 ?>
 
-<div id="app-wrapper" style="display:flex; min-height:100vh;">
+<div id="app-wrapper" class="flex min-h-screen">
     <?php include __DIR__ . '/includes/layout/sidebar.php'; ?>
 
-    <main id="main-content" style="flex:1; padding:28px 32px; overflow-y:auto; max-width:calc(100vw - 240px);">
+    <main id="main-content" class="content-sheet !bg-background !p-6 flex flex-col flex-1 max-w-[calc(100vw-240px)]">
+        <?php include __DIR__ . '/includes/layout/top_nav.php'; ?>
 
-        <div style="margin-bottom:28px;">
-            <h1 style="font-size:22px; font-weight:700; color:#f1f5f9;">Configurações</h1>
-            <p style="font-size:14px; color:#6b7280; margin-top:2px;">Dados da empresa usados nas propostas em PDF</p>
+        <!-- Topbar -->
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-8 mt-2">
+            <div>
+                <h1 class="font-display-lg text-on-surface mb-1">Configurações Gerais</h1>
+                <p class="text-body-md text-on-surface-variant">Dados da agência e chaves de API das integrações do sistema.</p>
+            </div>
         </div>
 
         <?php if ($sucesso): ?>
-        <div style="background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:8px; padding:12px 16px; margin-bottom:20px; font-size:14px; color:#34d399;">
-            <?= sanitizar($sucesso) ?>
-        </div>
+            <div class="bg-primary/10 border border-primary/20 rounded-xl p-4 mb-6 text-sm text-primary flex items-center gap-2 max-w-3xl">
+                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                <span><?= sanitizar($sucesso) ?></span>
+            </div>
         <?php endif; ?>
 
-        <div class="card" style="padding:28px; max-width:600px;">
-            <h3 style="font-size:15px; font-weight:600; color:#e2e8f0; margin-bottom:20px;">Dados da Empresa</h3>
-            <form method="POST">
-                <div style="margin-bottom:16px;">
-                    <label class="label">Nome da Agência *</label>
-                    <input class="input" name="nome" required value="<?= sanitizar($config['nome'] ?? '') ?>" placeholder="Nome da sua agência">
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
-                    <div>
-                        <label class="label">CNPJ</label>
-                        <input class="input" name="cnpj" value="<?= sanitizar($config['cnpj'] ?? '') ?>" placeholder="00.000.000/0001-00">
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 max-w-6xl">
+            <!-- Formulário Principal -->
+            <div class="xl:col-span-2 glass-card p-6 rounded-xl border border-outline-variant/20 shadow-sm space-y-6">
+                <form method="POST">
+                    <!-- Dados da Empresa -->
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-bold text-on-surface flex items-center gap-2 mb-2">
+                            <i data-lucide="building-2" class="w-4 h-4 text-primary"></i>
+                            Dados da Agência
+                        </h3>
+                        <div>
+                            <label class="label">Nome da Agência *</label>
+                            <input class="input w-full" name="nome" required value="<?= sanitizar($config['nome'] ?? '') ?>" placeholder="Nome da sua agência">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="label">CNPJ</label>
+                                <input class="input w-full" name="cnpj" value="<?= sanitizar($config['cnpj'] ?? '') ?>" placeholder="00.000.000/0001-00">
+                            </div>
+                            <div>
+                                <label class="label">Telefone</label>
+                                <input class="input w-full" name="telefone" value="<?= sanitizar($config['telefone'] ?? '') ?>" placeholder="(00) 00000-0000">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="label">E-mail da Agência</label>
+                            <input class="input w-full" type="email" name="email" value="<?= sanitizar($config['email'] ?? '') ?>" placeholder="contato@agencia.com.br">
+                        </div>
+                        <div>
+                            <label class="label">Endereço</label>
+                            <textarea class="textarea w-full" name="endereco" rows="2" placeholder="Rua, número, cidade, estado"><?= sanitizar($config['endereco'] ?? '') ?></textarea>
+                        </div>
                     </div>
-                    <div>
-                        <label class="label">Telefone</label>
-                        <input class="input" name="telefone" value="<?= sanitizar($config['telefone'] ?? '') ?>" placeholder="(00) 00000-0000">
+
+                    <!-- Credenciais de Inteligência Artificial -->
+                    <div class="border-t border-outline-variant/10 pt-6 mt-6 space-y-4">
+                        <h3 class="text-sm font-bold text-on-surface flex items-center gap-2 mb-2">
+                            <i data-lucide="cpu" class="w-4 h-4 text-primary"></i>
+                            Chaves de API das IAs
+                        </h3>
+                        <div>
+                            <label class="label flex justify-between items-center">
+                                <span>Groq API Key</span>
+                                <?php if (!empty($config['groq_api_key'])): ?>
+                                    <span class="text-[9px] font-label-caps text-primary">✓ Chave salva</span>
+                                <?php endif; ?>
+                            </label>
+                            <input class="input w-full" type="password" name="groq_api_key" placeholder="<?= !empty($config['groq_api_key']) ? '••••••••••••••••••••••••••••••••' : 'gsk_...' ?>">
+                            <p class="text-[10px] text-on-surface-variant mt-1.5">Utilizada para geração rápida de roteiros.</p>
+                        </div>
+
+                        <div>
+                            <label class="label flex justify-between items-center">
+                                <span>Gemini API Key (Google)</span>
+                                <?php if (!empty($config['gemini_api_key'])): ?>
+                                    <span class="text-[9px] font-label-caps text-primary">✓ Chave salva</span>
+                                <?php endif; ?>
+                            </label>
+                            <input class="input w-full" type="password" name="gemini_api_key" placeholder="<?= !empty($config['gemini_api_key']) ? '••••••••••••••••••••••••••••••••' : 'AIza...' ?>">
+                            <p class="text-[10px] text-on-surface-variant mt-1.5">Essencial para leitura inteligente de imagens e PDFs.</p>
+                        </div>
+
+                        <div>
+                            <label class="label flex justify-between items-center">
+                                <span>OpenRouter API Key</span>
+                                <?php if (!empty($config['openrouter_api_key'])): ?>
+                                    <span class="text-[9px] font-label-caps text-primary">✓ Chave salva</span>
+                                <?php endif; ?>
+                            </label>
+                            <input class="input w-full" type="password" name="openrouter_api_key" placeholder="<?= !empty($config['openrouter_api_key']) ? '••••••••••••••••••••••••••••••••' : 'sk-or-v1-...' ?>">
+                            <p class="text-[10px] text-on-surface-variant mt-1.5">Usada para roteiros com modelos Qwen via OpenRouter.</p>
+                        </div>
                     </div>
-                </div>
-                <div style="margin-bottom:16px;">
-                    <label class="label">E-mail da Agência</label>
-                    <input class="input" type="email" name="email" value="<?= sanitizar($config['email'] ?? '') ?>" placeholder="contato@agencia.com.br">
-                </div>
-                <div style="margin-bottom:24px;">
-                    <label class="label">Endereço</label>
-                    <textarea class="input" name="endereco" rows="2" placeholder="Rua, número, cidade, estado" style="resize:vertical;"><?= sanitizar($config['endereco'] ?? '') ?></textarea>
-                </div>
-                <div style="margin-bottom:24px; border-top:1px solid #334155; padding-top:20px;">
-                    <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
-                        <span>Groq API Key</span>
-                        <?php if (!empty($config['groq_api_key'])): ?>
-                            <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Chave salva</span>
-                        <?php endif; ?>
-                    </label>
-                    <input class="input" type="password" name="groq_api_key" placeholder="<?= !empty($config['groq_api_key']) ? '••••••••••••••••••••••••••••••••' : 'gsk_...' ?>">
-                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">Utilizada para geração de roteiros ultra-rápida.</p>
-                </div>
 
-                <div style="margin-bottom:24px;">
-                    <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
-                        <span>Gemini API Key (Google)</span>
-                        <?php if (!empty($config['gemini_api_key'])): ?>
-                            <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Chave salva</span>
-                        <?php endif; ?>
-                    </label>
-                    <input class="input" type="password" name="gemini_api_key" placeholder="<?= !empty($config['gemini_api_key']) ? '••••••••••••••••••••••••••••••••' : 'AIza...' ?>">
-                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">Essencial para Visão (OCR), leitura de imagens e PDFs.</p>
-                </div>
+                    <!-- Mercado Pago -->
+                    <div class="border-t border-outline-variant/10 pt-6 mt-6 space-y-4">
+                        <h3 class="text-sm font-bold text-on-surface flex items-center gap-2 mb-1">
+                            <i data-lucide="wallet" class="w-4 h-4 text-primary"></i>
+                            Mercado Pago
+                        </h3>
+                        <p class="text-xs text-on-surface-variant">O sistema usa automaticamente as credenciais do ambiente ativo selecionado.</p>
 
-                <div style="margin-bottom:24px;">
-                    <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
-                        <span>OpenRouter API Key</span>
-                        <?php if (!empty($config['openrouter_api_key'])): ?>
-                            <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Chave salva</span>
-                        <?php endif; ?>
-                    </label>
-                    <input class="input" type="password" name="openrouter_api_key" placeholder="<?= !empty($config['openrouter_api_key']) ? '••••••••••••••••••••••••••••••••' : 'sk-or-v1-...' ?>">
-                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">Usada para gerar roteiros com Qwen via OpenRouter e fallback gratuito.</p>
-                </div>
+                        <?php
+                        $mpToken  = $config['mercadopago_access_token'] ?? '';
+                        $mpMode   = str_starts_with($mpToken, 'TEST-') ? 'test' : ($mpToken ? 'prod' : 'none');
+                        $modeBadge = match($mpMode) {
+                            'test' => ['🧪 Sandbox Ativo', 'text-amber-400', 'bg-amber-500/10 border-amber-500/20'],
+                            'prod' => ['🟢 Produção Ativa', 'text-emerald-400', 'bg-emerald-500/10 border-emerald-500/20'],
+                            default => ['⚪ Não Configurado', 'text-on-surface-variant', 'bg-surface-container border-outline-variant/10'],
+                        };
+                        ?>
+                        <div class="px-3 py-2 rounded-lg border text-xs font-bold flex items-center gap-2 w-fit <?= $modeBadge[2] ?> <?= $modeBadge[1] ?>">
+                            <?= $modeBadge[0] ?>
+                        </div>
 
-                <!-- ── Seção Pagamento (Mercado Pago) ─────────────────────────── -->
-                <div style="margin-bottom:8px; border-top:1px solid #334155; padding-top:20px;">
-                    <h3 style="font-size:15px; font-weight:600; color:#e2e8f0; margin-bottom:4px;">Pagamento — Mercado Pago</h3>
-                    <p style="font-size:12px; color:#6b7280; margin-bottom:4px;">
-                        As credenciais são as <strong style="color:#94a3b8;">mesmas para todos os produtos</strong> (assinatura, checkout, PIX). A diferença é só teste vs produção.
-                    </p>
-                    <p style="font-size:12px; color:#6b7280; margin-bottom:20px;">
-                        O sistema usa as credenciais do bloco <strong style="color:#94a3b8;">ativo</strong> abaixo. Quando for ao ar, cole as credenciais de produção e apague as de teste.
-                    </p>
-                </div>
+                        <!-- Credenciais de Teste -->
+                        <div class="space-y-3">
+                            <div class="text-[9px] font-label-caps text-amber-400 tracking-wider">🧪 Ambiente de Teste (Sandbox)</div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="label">Access Token (Teste)</label>
+                                    <input class="input w-full" type="password" name="mercadopago_test_access_token" placeholder="<?= !empty($config['mercadopago_test_access_token']) ? '••••••••••••••••••••••••••••••••' : 'TEST-...' ?>">
+                                </div>
+                                <div>
+                                    <label class="label">Public Key (Teste)</label>
+                                    <input class="input w-full" type="text" name="mercadopago_test_public_key" value="<?= sanitizar($config['mercadopago_test_public_key'] ?? '') ?>" placeholder="TEST-xxxxxxxx...">
+                                </div>
+                            </div>
+                        </div>
 
-                <?php
-                $mpToken  = $config['mercadopago_access_token'] ?? '';
-                $mpMode   = str_starts_with($mpToken, 'TEST-') ? 'test' : ($mpToken ? 'prod' : 'none');
-                $modeBadge = match($mpMode) {
-                    'test' => ['🧪 Modo teste ativo', '#fbbf24', 'rgba(251,191,36,0.1)', 'rgba(251,191,36,0.3)'],
-                    'prod' => ['🟢 Produção ativa',  '#34d399', 'rgba(52,211,153,0.1)',  'rgba(52,211,153,0.3)'],
-                    default => ['⚪ Não configurado', '#888',   'rgba(255,255,255,0.04)', 'rgba(255,255,255,0.1)'],
-                };
-                ?>
-                <div style="background:<?= $modeBadge[2] ?>; border:1px solid <?= $modeBadge[3] ?>; border-radius:10px; padding:10px 14px; margin-bottom:20px; display:flex; align-items:center; gap:8px;">
-                    <span style="font-size:13px; font-weight:600; color:<?= $modeBadge[1] ?>;"><?= $modeBadge[0] ?></span>
-                    <?php if ($mpMode !== 'none'): ?>
-                    <span style="font-size:12px; color:#6b7280;">— token <?= $mpMode === 'test' ? 'TEST-...' : 'APP_USR-...' ?> detectado</span>
-                    <?php endif; ?>
-                </div>
+                        <!-- Credenciais de Produção -->
+                        <div class="space-y-3 pt-2">
+                            <div class="text-[9px] font-label-caps text-emerald-400 tracking-wider">🟢 Ambiente de Produção</div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="label">Access Token (Produção)</label>
+                                    <input class="input w-full" type="password" name="mercadopago_prod_access_token" placeholder="<?= !empty($config['mercadopago_prod_access_token']) ? '••••••••••••••••••••••••••••••••' : 'APP_USR-...' ?>">
+                                </div>
+                                <div>
+                                    <label class="label">Public Key (Produção)</label>
+                                    <input class="input w-full" type="text" name="mercadopago_prod_public_key" value="<?= sanitizar($config['mercadopago_prod_public_key'] ?? '') ?>" placeholder="APP_USR-xxxxxxxx...">
+                                </div>
+                            </div>
+                        </div>
 
-                <!-- Credenciais de Teste -->
-                <div style="margin-bottom:4px;">
-                    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#fbbf24; margin-bottom:12px;">🧪 Teste (Sandbox)</div>
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
-                    <div>
-                        <label class="label">Access Token de Teste</label>
-                        <input class="input" type="password" name="mercadopago_test_access_token"
-                               placeholder="<?= !empty($config['mercadopago_test_access_token']) ? '••••••••••••••••••••••••••••••••' : 'TEST-...' ?>">
+                        <!-- Ambiente Ativo -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="label">Ambiente Ativo</label>
+                                <select class="select w-full" name="mercadopago_mode">
+                                    <option value="test" <?= ($config['mercadopago_mode'] ?? 'test') === 'test' ? 'selected' : '' ?>>🧪 Teste (Sandbox)</option>
+                                    <option value="prod" <?= ($config['mercadopago_mode'] ?? 'test') === 'prod' ? 'selected' : '' ?>>🟢 Produção</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="label">Webhook Secret (Assinatura)</label>
+                                <input class="input w-full" type="password" name="mercadopago_webhook_secret" placeholder="<?= !empty($config['mercadopago_webhook_secret']) ? '••••••••••••••••••••••••••••••••' : 'Assinatura secreta do webhook' ?>">
+                            </div>
+                        </div>
+                        <div class="text-[10px] text-on-surface-variant">
+                            URL do Webhook MP para colar no painel de desenvolvedores:<br>
+                            <code class="px-1.5 py-0.5 rounded bg-surface-container border border-outline-variant/15 text-primary text-[9px] font-mono break-all inline-block mt-1">
+                                <?= APP_URL ?>/api/assinatura/webhook_mercadopago.php
+                            </code>
+                        </div>
+
+                        <!-- OAuth Opcional -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                            <div>
+                                <label class="label">Client ID (OAuth)</label>
+                                <input class="input w-full" type="text" name="mercadopago_client_id" value="<?= sanitizar($config['mercadopago_client_id'] ?? '') ?>" placeholder="Ex: 58142549...">
+                            </div>
+                            <div>
+                                <label class="label">Client Secret (OAuth)</label>
+                                <input class="input w-full" type="password" name="mercadopago_client_secret" placeholder="<?= !empty($config['mercadopago_client_secret']) ? '••••••••••••••••••••••••••••••••' : 'Secret do aplicativo' ?>">
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label class="label">Public Key de Teste</label>
-                        <input class="input" type="text" name="mercadopago_test_public_key"
-                               value="<?= sanitizar($config['mercadopago_test_public_key'] ?? '') ?>"
-                               placeholder="TEST-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+
+                    <!-- Assinafy -->
+                    <div class="border-t border-outline-variant/10 pt-6 mt-6 space-y-4">
+                        <h3 class="text-sm font-bold text-on-surface flex items-center gap-2 mb-2">
+                            <i data-lucide="pen-tool" class="w-4 h-4 text-primary"></i>
+                            Assinatura Eletrônica — Assinafy
+                        </h3>
+                        <div>
+                            <label class="label flex justify-between items-center">
+                                <span>API Key (Assinafy)</span>
+                                <?php if (!empty($config['assinafy_api_key'])): ?>
+                                    <span class="text-[9px] font-label-caps text-primary">✓ Chave salva</span>
+                                <?php endif; ?>
+                            </label>
+                            <input class="input w-full" type="password" name="assinafy_api_key" placeholder="<?= !empty($config['assinafy_api_key']) ? '••••••••••••••••••••••••••••••••' : 'Cole a chave da API do Assinafy' ?>">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="label">ID da Conta (Account ID)</label>
+                                <input class="input w-full" type="text" name="assinafy_account_id" value="<?= sanitizar($config['assinafy_account_id'] ?? '') ?>" placeholder="ID da Conta no painel">
+                            </div>
+                            <div>
+                                <label class="label">Ambiente Ativo</label>
+                                <select class="select w-full" name="assinafy_mode">
+                                    <option value="test" <?= ($config['assinafy_mode'] ?? 'test') === 'test' ? 'selected' : '' ?>>🧪 Sandbox (Testes)</option>
+                                    <option value="prod" <?= ($config['assinafy_mode'] ?? 'test') === 'prod' ? 'selected' : '' ?>>🟢 Produção (Real)</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Credenciais de Produção -->
-                <div style="margin-bottom:4px;">
-                    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:#34d399; margin-bottom:12px;">🟢 Produção</div>
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
-                    <div>
-                        <label class="label">Access Token de Produção</label>
-                        <input class="input" type="password" name="mercadopago_prod_access_token"
-                               placeholder="<?= !empty($config['mercadopago_prod_access_token']) ? '••••••••••••••••••••••••••••••••' : 'APP_USR-...' ?>">
+                    <!-- Asaas -->
+                    <div class="border-t border-outline-variant/10 pt-6 mt-6 space-y-4">
+                        <h3 class="text-sm font-bold text-on-surface flex items-center gap-2 mb-2">
+                            <i data-lucide="banknote" class="w-4 h-4 text-primary"></i>
+                            Gateway de Pagamentos — Asaas
+                        </h3>
+                        <div>
+                            <label class="label flex justify-between items-center">
+                                <span>API Key (Asaas)</span>
+                                <?php if (!empty($config['asaas_api_key'])): ?>
+                                    <span class="text-[9px] font-label-caps text-primary">✓ Chave salva</span>
+                                <?php endif; ?>
+                            </label>
+                            <input class="input w-full" type="password" name="asaas_api_key" placeholder="<?= !empty($config['asaas_api_key']) ? '••••••••••••••••••••••••••••••••' : 'Cole a chave da API do Asaas' ?>">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="label">Ambiente Ativo</label>
+                                <select class="select w-full" name="asaas_mode">
+                                    <option value="test" <?= ($config['asaas_mode'] ?? 'test') === 'test' ? 'selected' : '' ?>>🧪 Sandbox (Testes)</option>
+                                    <option value="prod" <?= ($config['asaas_mode'] ?? 'test') === 'prod' ? 'selected' : '' ?>>🟢 Produção (Real)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="label">Token do Webhook</label>
+                                <input class="input w-full" type="text" name="asaas_webhook_token" value="<?= sanitizar($config['asaas_webhook_token'] ?? '') ?>" placeholder="Token de segurança do webhook">
+                            </div>
+                        </div>
+                        <div class="text-[10px] text-on-surface-variant">
+                            URL do Webhook Asaas para colar no painel do Asaas (Integrações > Webhooks > Cobranças):<br>
+                            <code class="px-1.5 py-0.5 rounded bg-surface-container border border-outline-variant/15 text-primary text-[9px] font-mono break-all inline-block mt-1">
+                                <?= sanitizar(preg_replace('#/sistema/?$#', '', rtrim(APP_URL, '/')) . raizUrl('/api/financeiro/webhook_asaas.php')) ?>
+                            </code>
+                        </div>
                     </div>
-                    <div>
-                        <label class="label">Public Key de Produção</label>
-                        <input class="input" type="text" name="mercadopago_prod_public_key"
-                               value="<?= sanitizar($config['mercadopago_prod_public_key'] ?? '') ?>"
-                               placeholder="APP_USR-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+
+                    <!-- Botão de Salvar -->
+                    <div class="border-t border-outline-variant/10 pt-6 mt-6 flex justify-end">
+                        <button type="submit" class="bg-primary hover:bg-primary-container text-on-primary-container font-bold px-8 py-3 rounded-lg text-body-md transition-all active:scale-95 duration-150 shadow-lg flex items-center gap-2 cursor-pointer">
+                            <i data-lucide="save" class="w-4 h-4"></i> Salvar Todas as Configurações
+                        </button>
                     </div>
-                </div>
-
-                <!-- Qual usar (toggle) -->
-                <div style="margin-bottom:20px;">
-                    <label class="label">Ambiente ativo</label>
-                    <select class="input" name="mercadopago_mode" style="cursor:pointer;">
-                        <option value="test" <?= ($config['mercadopago_mode'] ?? 'test') === 'test' ? 'selected' : '' ?>>🧪 Teste (Sandbox)</option>
-                        <option value="prod" <?= ($config['mercadopago_mode'] ?? 'test') === 'prod' ? 'selected' : '' ?>>🟢 Produção</option>
-                    </select>
-                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">O sistema usa automaticamente as credenciais do ambiente selecionado.</p>
-                </div>
-
-                <!-- Access Token ativo (calculado) — campo legado, mantido para compatibilidade -->
-                <div style="margin-bottom:16px;">
-                    <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
-                        <span>Access Token <span style="font-weight:400; font-size:11px; color:#fbbf24;">(campo legado — use os campos acima)</span></span>
-                        <?php if (!empty($config['mercadopago_access_token'])): ?>
-                            <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Salvo</span>
-                        <?php endif; ?>
-                    </label>
-                    <input class="input" type="password" name="mercadopago_access_token"
-                           placeholder="<?= !empty($config['mercadopago_access_token']) ? '••••••••••••••••••••••••••••••••' : 'Preenchido automaticamente ao salvar' ?>"
-                           style="opacity:0.5;">
-                    <p style="font-size:12px; color:#6b7280; margin-top:4px;">Sobrescrito automaticamente com base no ambiente ativo.</p>
-                </div>
-
-                <div style="margin-bottom:16px;">
-                    <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
-                        <span>Public Key <span style="font-weight:400; font-size:11px; color:#fbbf24;">(campo legado)</span></span>
-                        <?php if (!empty($config['mercadopago_public_key'])): ?>
-                            <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Salva</span>
-                        <?php endif; ?>
-                    </label>
-                    <input class="input" type="text" name="mercadopago_public_key"
-                           value="<?= sanitizar($config['mercadopago_public_key'] ?? '') ?>"
-                           placeholder="Preenchido automaticamente ao salvar"
-                           style="opacity:0.5;">
-                </div>
-
-                <div style="margin-bottom:16px;">
-                    <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
-                        <span>Webhook Secret <span style="font-weight:400; font-size:11px;">(Assinatura secreta)</span></span>
-                        <?php if (!empty($config['mercadopago_webhook_secret'])): ?>
-                            <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Salvo</span>
-                        <?php endif; ?>
-                    </label>
-                    <input class="input" type="password" name="mercadopago_webhook_secret"
-                           placeholder="<?= !empty($config['mercadopago_webhook_secret']) ? '••••••••••••••••••••••••••••••••' : 'Cole a Assinatura secreta do painel de webhooks' ?>">
-                    <p style="font-size:12px; color:#6b7280; margin-top:6px;">
-                        Em <strong>MP Developers → Webhooks → Modo de produção</strong>: marque <em>Pagamentos</em>, cole a URL abaixo e copie a "Assinatura secreta":<br>
-                        <code style="color:#94a3b8; background:#1e293b; padding:2px 6px; border-radius:4px; font-size:11px; word-break:break-all;">
-                            <?= APP_URL ?>/api/assinatura/webhook_mercadopago.php
-                        </code>
-                    </p>
-                </div>
-
-                <!-- Client ID / Client Secret -->
-                <div style="margin-bottom:8px; border-top:1px solid #334155; padding-top:16px;">
-                    <h4 style="font-size:13px; font-weight:600; color:#94a3b8; margin-bottom:4px;">OAuth — uso futuro (propostas)</h4>
-                    <p style="font-size:12px; color:#6b7280; margin-bottom:14px;">Necessário para cobranças diretas nas propostas de clientes. Não obrigatório para o SaaS agora.</p>
-                </div>
-
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px;">
-                    <div>
-                        <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
-                            <span>Client ID</span>
-                            <?php if (!empty($config['mercadopago_client_id'])): ?>
-                                <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Salvo</span>
-                            <?php endif; ?>
-                        </label>
-                        <input class="input" type="text" name="mercadopago_client_id"
-                               value="<?= sanitizar($config['mercadopago_client_id'] ?? '') ?>"
-                               placeholder="5814254957324007">
-                    </div>
-                    <div>
-                        <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
-                            <span>Client Secret</span>
-                            <?php if (!empty($config['mercadopago_client_secret'])): ?>
-                                <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Salvo</span>
-                            <?php endif; ?>
-                        </label>
-                        <input class="input" type="password" name="mercadopago_client_secret"
-                               placeholder="<?= !empty($config['mercadopago_client_secret']) ? '••••••••••••••••••••••••••••••••' : 'Client Secret da aplicação' ?>">
-                    </div>
-                </div>
-
-                <!-- ── Seção Assinatura Eletrônica (Assinafy) ─────────────────── -->
-                <div style="margin-bottom:8px; border-top:1px solid #334155; padding-top:20px;">
-                    <h3 style="font-size:15px; font-weight:600; color:#e2e8f0; margin-bottom:4px;">Assinatura Eletrônica — Assinafy</h3>
-                    <p style="font-size:12px; color:#6b7280; margin-bottom:14px;">
-                        Configuração para envio automático de contratos para assinatura. Plano gratuito de 100 documentos/mês.
-                    </p>
-                </div>
-
-                <div style="margin-bottom:16px;">
-                    <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
-                        <span>API Key (Token)</span>
-                        <?php if (!empty($config['assinafy_api_key'])): ?>
-                            <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Chave salva</span>
-                        <?php endif; ?>
-                    </label>
-                    <input class="input" type="password" name="assinafy_api_key" placeholder="<?= !empty($config['assinafy_api_key']) ? '••••••••••••••••••••••••••••••••' : 'Cole a chave da API do Assinafy' ?>">
-                </div>
-
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
-                    <div>
-                        <label class="label">ID da Conta (Account ID)</label>
-                        <input class="input" type="text" name="assinafy_account_id" value="<?= sanitizar($config['assinafy_account_id'] ?? '') ?>" placeholder="ID da Conta no painel">
-                    </div>
-                    <div>
-                        <label class="label">Ambiente Ativo</label>
-                        <select class="input" name="assinafy_mode" style="cursor:pointer;">
-                            <option value="test" <?= ($config['assinafy_mode'] ?? 'test') === 'test' ? 'selected' : '' ?>>🧪 Sandbox (Testes)</option>
-                            <option value="prod" <?= ($config['assinafy_mode'] ?? 'test') === 'prod' ? 'selected' : '' ?>>🟢 Produção (Real)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- ── Seção Gateway de Pagamentos (Asaas) ─────────────────────── -->
-                <div style="margin-bottom:8px; border-top:1px solid #334155; padding-top:20px;">
-                    <h3 style="font-size:15px; font-weight:600; color:#e2e8f0; margin-bottom:4px;">Gateway de Pagamentos — Asaas</h3>
-                    <p style="font-size:12px; color:#6b7280; margin-bottom:14px;">
-                        Configuração para emissão automática de cobranças (Pix, Boleto, Cartão) e extrato financeiro.
-                    </p>
-                </div>
-
-                <div style="margin-bottom:16px;">
-                    <label class="label" style="display:flex; justify-content:space-between; align-items:center;">
-                        <span>API Key (Token)</span>
-                        <?php if (!empty($config['asaas_api_key'])): ?>
-                            <span style="font-size:12px; color:#10b981; font-weight:normal;">✓ Chave salva</span>
-                        <?php endif; ?>
-                    </label>
-                    <input class="input" type="password" name="asaas_api_key" placeholder="<?= !empty($config['asaas_api_key']) ? '••••••••••••••••••••••••••••••••' : 'Cole a chave da API do Asaas' ?>">
-                </div>
-
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
-                    <div>
-                        <label class="label">Ambiente Ativo</label>
-                        <select class="input" name="asaas_mode" style="cursor:pointer;">
-                            <option value="test" <?= ($config['asaas_mode'] ?? 'test') === 'test' ? 'selected' : '' ?>>🧪 Sandbox (Testes)</option>
-                            <option value="prod" <?= ($config['asaas_mode'] ?? 'test') === 'prod' ? 'selected' : '' ?>>🟢 Produção (Real)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="label">Token do Webhook</label>
-                        <input class="input" type="text" name="asaas_webhook_token" value="<?= sanitizar($config['asaas_webhook_token'] ?? '') ?>" placeholder="Token configurado no Asaas">
-                    </div>
-                </div>
-
-                <div style="margin-bottom:24px;">
-                    <label class="label">URL do Webhook Asaas</label>
-                    <div style="display:flex; gap:8px;">
-                        <input class="input" type="text" readonly value="<?= sanitizar(preg_replace('#/sistema/?$#', '', rtrim(APP_URL, '/')) . raizUrl('/api/financeiro/webhook_asaas.php')) ?>" style="opacity:0.7; flex:1;">
-                    </div>
-                    <p style="font-size:10px; color:#6b7280; margin-top:6px;">Use esta URL no painel do Asaas (Menu Integrações > Webhooks > Cobranças) e copie/defina o token acima.</p>
-                </div>
-
-                <button type="submit" class="btn-primary">
-                    <i data-lucide="save" style="width:15px;height:15px;"></i> Salvar Configurações
-                </button>
-            </form>
-        </div>
-
-        <!-- Informações técnicas -->
-        <div class="card" style="padding:24px; margin-top:20px; max-width:600px;">
-            <h3 style="font-size:15px; font-weight:600; color:#e2e8f0; margin-bottom:16px;">Informações do Sistema</h3>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:13px;">
-                <div>
-                    <div style="color:#6b7280; margin-bottom:2px;">Banco de dados</div>
-                    <div style="color:#94a3b8;"><?= DB_HOST ?></div>
-                </div>
-                <div>
-                    <div style="color:#6b7280; margin-bottom:2px;">Modelo IA</div>
-                    <div style="color:#94a3b8;"><?= GROQ_MODEL ?></div>
-                </div>
-                <div>
-                    <div style="color:#6b7280; margin-bottom:2px;">Groq API Key</div>
-                    <?php $temGroq = !empty($config['groq_api_key']) || !empty(GROQ_API_KEY); ?>
-                    <div style="color:<?= $temGroq ? '#10b981' : '#ef4444' ?>;">
-                        <?= $temGroq ? '✓ Configurada' : '✗ Não configurada' ?>
-                    </div>
-                </div>
-                <div>
-                    <div style="color:#6b7280; margin-bottom:2px;">Gemini API Key</div>
-                    <?php $temGemini = !empty($config['gemini_api_key']) || !empty(GEMINI_API_KEY); ?>
-                    <div style="color:<?= $temGemini ? '#10b981' : '#ef4444' ?>;">
-                        <?= $temGemini ? '✓ Configurada' : '✗ Não configurada' ?>
-                    </div>
-                </div>
-                <div>
-                    <div style="color:#6b7280; margin-bottom:2px;">OpenRouter API Key</div>
-                    <?php $temOpenRouter = !empty($config['openrouter_api_key']) || (defined('OPENROUTER_API_KEY') && !empty(OPENROUTER_API_KEY)); ?>
-                    <div style="color:<?= $temOpenRouter ? '#10b981' : '#ef4444' ?>;">
-                        <?= $temOpenRouter ? '✓ Configurada' : '✗ Não configurada' ?>
-                    </div>
-                </div>
-                <div>
-                    <div style="color:#6b7280; margin-bottom:2px;">Mercado Pago</div>
-                    <?php $temMP = !empty($config['mercadopago_access_token']); ?>
-                    <?php $isMPTest = $temMP && str_starts_with($config['mercadopago_access_token'], 'TEST-'); ?>
-                    <div style="color:<?= $temMP ? '#10b981' : '#ef4444' ?>;">
-                        <?= $temMP ? ('✓ ' . ($isMPTest ? 'Sandbox' : 'Produção')) : '✗ Não configurado' ?>
-                    </div>
-                </div>
-                <div>
-                    <div style="color:#6b7280; margin-bottom:2px;">Asaas</div>
-                    <?php $temAsaas = !empty($config['asaas_api_key']); ?>
-                    <div style="color:<?= $temAsaas ? '#10b981' : '#ef4444' ?>;">
-                        <?= $temAsaas ? ('✓ ' . (($config['asaas_mode'] ?? 'test') === 'test' ? 'Sandbox' : 'Produção')) : '✗ Não configurado' ?>
-                    </div>
-                </div>
-                <div>
-                    <div style="color:#6b7280; margin-bottom:2px;">Versão PHP</div>
-                    <div style="color:#94a3b8;"><?= PHP_VERSION ?></div>
-                </div>
+                </form>
             </div>
-            <?php if (!$temGroq): ?>
-            <div style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); border-radius:8px; padding:12px; margin-top:16px; font-size:13px; color:#fbbf24;">
-                ⚠️ A Groq API Key não está configurada. Insira sua chave acima ou edite o arquivo <code>config/env.php</code>.
-            </div>
-            <?php endif; ?>
-        </div>
 
+            <!-- Painel Lateral de Informações Técnicas -->
+            <div class="space-y-6">
+                <div class="glass-card p-6 rounded-xl border border-outline-variant/20 shadow-sm">
+                    <h3 class="text-sm font-bold text-on-surface mb-4 flex items-center gap-2">
+                        <i data-lucide="info" class="w-4 h-4 text-primary"></i>
+                        Informações do Sistema
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="text-[9px] font-label-caps text-on-surface-variant">Banco de dados</div>
+                            <div class="text-xs font-bold text-on-surface font-data-tabular mt-0.5"><?= DB_HOST ?></div>
+                        </div>
+                        <div>
+                            <div class="text-[9px] font-label-caps text-on-surface-variant">Modelo de IA Padrão</div>
+                            <div class="text-xs font-bold text-on-surface font-data-tabular mt-0.5"><?= GROQ_MODEL ?></div>
+                        </div>
+                        <div>
+                            <div class="text-[9px] font-label-caps text-on-surface-variant">Groq API Key</div>
+                            <?php $temGroq = !empty($config['groq_api_key']) || !empty(GROQ_API_KEY); ?>
+                            <div class="text-xs font-bold mt-0.5 flex items-center gap-1 <?= $temGroq ? 'text-primary' : 'text-error' ?>">
+                                <i data-lucide="<?= $temGroq ? 'check' : 'x' ?>" class="w-3.5 h-3.5"></i>
+                                <?= $temGroq ? 'Configurada' : 'Não configurada' ?>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-[9px] font-label-caps text-on-surface-variant">Gemini API Key</div>
+                            <?php $temGemini = !empty($config['gemini_api_key']) || !empty(GEMINI_API_KEY); ?>
+                            <div class="text-xs font-bold mt-0.5 flex items-center gap-1 <?= $temGemini ? 'text-primary' : 'text-error' ?>">
+                                <i data-lucide="<?= $temGemini ? 'check' : 'x' ?>" class="w-3.5 h-3.5"></i>
+                                <?= $temGemini ? 'Configurada' : 'Não configurada' ?>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-[9px] font-label-caps text-on-surface-variant">OpenRouter API Key</div>
+                            <?php $temOpenRouter = !empty($config['openrouter_api_key']) || (defined('OPENROUTER_API_KEY') && !empty(OPENROUTER_API_KEY)); ?>
+                            <div class="text-xs font-bold mt-0.5 flex items-center gap-1 <?= $temOpenRouter ? 'text-primary' : 'text-error' ?>">
+                                <i data-lucide="<?= $temOpenRouter ? 'check' : 'x' ?>" class="w-3.5 h-3.5"></i>
+                                <?= $temOpenRouter ? 'Configurada' : 'Não configurada' ?>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-[9px] font-label-caps text-on-surface-variant">Mercado Pago</div>
+                            <?php $temMP = !empty($config['mercadopago_access_token']); ?>
+                            <?php $isMPTest = $temMP && str_starts_with($config['mercadopago_access_token'], 'TEST-'); ?>
+                            <div class="text-xs font-bold mt-0.5 flex items-center gap-1 <?= $temMP ? 'text-primary' : 'text-error' ?>">
+                                <i data-lucide="<?= $temMP ? 'check' : 'x' ?>" class="w-3.5 h-3.5"></i>
+                                <?= $temMP ? ($isMPTest ? 'Sandbox Ativo' : 'Produção Ativa') : 'Não configurado' ?>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-[9px] font-label-caps text-on-surface-variant">Asaas</div>
+                            <?php $temAsaas = !empty($config['asaas_api_key']); ?>
+                            <div class="text-xs font-bold mt-0.5 flex items-center gap-1 <?= $temAsaas ? 'text-primary' : 'text-error' ?>">
+                                <i data-lucide="<?= $temAsaas ? 'check' : 'x' ?>" class="w-3.5 h-3.5"></i>
+                                <?= $temAsaas ? ((($config['asaas_mode'] ?? 'test') === 'test' ? 'Sandbox' : 'Produção') . ' Ativa') : 'Não configurado' ?>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-[9px] font-label-caps text-on-surface-variant">Versão do PHP</div>
+                            <div class="text-xs font-bold text-on-surface font-data-tabular mt-0.5"><?= PHP_VERSION ?></div>
+                        </div>
+                    </div>
+                </div>
+
+                <?php if (!$temGroq): ?>
+                    <div class="bg-amber-500/10 border border-amber-500/20 text-amber-400 p-4 rounded-xl text-xs leading-relaxed flex gap-2">
+                        <i data-lucide="alert-triangle" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                        <span>A Groq API Key não está configurada. Insira sua chave acima ou edite o arquivo <code>config/env.php</code> para habilitar IA.</span>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
     </main>
 </div>
 

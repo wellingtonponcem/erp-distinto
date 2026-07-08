@@ -1,6 +1,13 @@
 <?php
 
 function garantirEstruturaFinanceira(PDO $db): void {
+    // Limpa estado de erro do PostgreSQL antes de começar as migrações
+    try {
+        if ($db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'pgsql' && $db->inTransaction()) {
+            $db->rollBack();
+        }
+    } catch (Exception $e) {}
+
     try {
         // Garante a tabela de contas bancárias
         if (!tabelaTemColuna($db, 'contas_bancarias', 'id')) {

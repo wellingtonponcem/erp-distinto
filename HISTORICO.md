@@ -4,51 +4,20 @@
 ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco em integração do frontend público (proposta web) com o painel administrativo.
 
 - **Ordenação por Data de Pagamento no Financeiro** *(jun/2026)*:
-  - Lançamentos pagos passam a ser ordenados e filtrados no período por sua data de pagamento real (`data_pagamento`), mantendo os pendentes ordenados pelo vencimento.
-  - Criada coluna dedicada a "Pagamento" (`data_pagamento`) ao lado do Vencimento, destacando a data em verde se pago e com traço se pendente.
-  - Atualizada a gravação da `data_pagamento` na baixa manual (`baixa.php`), importação/conciliação OFX, webhook do Asaas e ajuste de saldo.
+  - Lançamentos pagos passam a ser ordenados e filtrados no período por sua data de pagamento real (`data_pagamento`).
+  - Atualizada a gravação da `data_pagamento` na baixa manual, conciliação OFX, webhook Asaas e ajuste de saldo.
 
-- **Ajuste de Codificação e Visualização de Contratos (Mojibake)** *(jun/2026)*:
-  - Corrigido o charset mojibake via iconv no `contrato_gerar.php` e habilitado o carregamento correto do CKEditor.
+- **Ajustes de Contratos, IA e PDF Dompdf no Servidor** *(jun-jul/2026)*:
+  - Flexibilizados regexes de cláusulas de pagamento contra tags extras do CKEditor.
+  - Correção da inicialização de vencimento de sinal e DSN do banco de dados PostgreSQL (Neon).
+  - Migrado motor de PDF de client-side para o servidor usando a biblioteca **Dompdf**.
+  - Correção de erro 500 no webhook Asaas via fallback global de headers em [helpers.php](file:///c:/xampp/htdocs/erp-distinto/includes/helpers.php).
+  - Adicionado `require_once database.php` no `auth.php` para sanar o erro de `Class "Database" not found` no `contas.php`.
 
-- **Financeiro, Gateway Asaas e Conciliação OFX** *(jun/2026)*:
-  - Implementada integração com Asaas API v3, webhooks de conciliação bancária automática e upload/leitura de extrato OFX local.
-
-- **Edição e Fechamento de Propostas & CRM** *(jun/2026)*:
-  - Novo stepper guiado com salvamento automático reativo, fluxo de casamento no admin e CRM promovendo status ao assinar contrato.
-
-- **Correções do Sistema e Conexão Neon** *(jun/2026)*:
-  - Habilitado PDO PGSQL no Laragon, migração e restrições únicas para índices parciais no Postgres.
-
-- **Ajuste de Exibição de Valores no Contrato** *(jun/2026)*:
-  - Atualizado o painel do "Pacote de Casamento" no formulário de geração/edição de contrato (`contrato_gerar.php`) para exibir de forma condicional apenas o input de valor do plano atualmente selecionado.
-  - Flexibilizados os regexes de detecção e atualização de cláusulas (`CLÁUSULA SEGUNDA`, `TERCEIRA` e `QUARTA`) no PHP e JS para suportar variações de tags de cabeçalho (`<h3>`, `<h4>`, `<p><strong>` etc.) geradas pelo CKEditor, garantindo o correto preenchimento dinâmico de valores e condições de pagamento.
-  - Corrigida a inicialização da calculadora de condições de pagamento, fazendo o campo de data "Vencimento do Sinal" carregar a data de sinal previamente salva no contrato (em vez de sempre resetar para o dia atual).
-  - Implementada sincronização mútua e automática em tempo real entre o input "Vencimento do Sinal" da Calculadora e o da seção de "Cobrança Asaas".
-  - Corrigido problema de sobreposição visual na pré-visualização de contrato (`contrato_visualizar.php`) aplicando z-index inline (`style="z-index: 9998/9999;"`) em modais e overlays, garantindo correto empilhamento de camadas independentemente do build do Tailwind.
-  - Resolvido o travamento da rolagem (scroll) do papel de contrato dentro do modal adicionando as propriedades `min-h-0` e `overflow-y-auto` na div flexível, e utilizando `mx-auto` no elemento filho para centralização correta.
-- **Correção de Conexão Neon (SNI) e Acesso ao ERP** *(jun/2026)*:
-  - Corrigida a montagem do DSN do Neon em [database.php](file:///c:/xampp/htdocs/erp-distinto/config/database.php) (resolvendo o erro 500) e implementada a auto-migração de colunas de plano em `users`.
-  - Corrigido o apontamento incorreto de banco de dados do ERP na Hostinger via reconfiguração do `env.php` de produção, restaurando todos os lançamentos reais.
-  - Atualizada a senha de `faustinosdg@gmail.com` no banco Neon de produção para sincronizar com a senha informada, e removidos todos os arquivos de diagnóstico temporários.
-  - Corrigida a compatibilidade dos scripts de webhooks do Asaas e Assinafy com o PostgreSQL, substituindo a sintaxe `AUTOINCREMENT` (SQLite) por `SERIAL` para chaves primárias nos logs de auditoria de eventos, solucionando erros 500 silenciosos que causavam pausa de filas no Asaas.
-- **Aprimoramento do Anexo I de Contratos via IA** *(jun/2026)*:
-  - Atualizado o prompt do Gemini em [ia_propostas.php](file:///c:/xampp/htdocs/erp-distinto/includes/ia_propostas.php) impondo regras estritas de escopo de pacotes, garantindo que o plano Essencial contenha exclusivamente fotografia, sem itens ou entregas de vídeo/audiovisual.
-  - Inseridas regras no prompt para detalhar a entrega de fotos (galeria geral com tratamento básico de luz e cor) e a escolha de até 30 fotos pelo casal para tratamento profissional avançado e detalhado.
-  - Corrigido o envio de PDFs em branco para o Assinafy em [contrato_visualizar.php](file:///c:/xampp/htdocs/erp-distinto/gerenciamento/contrato_visualizar.php) forçando a remoção da classe de exportação do clone, aplicando cores escuras/background branco diretamente no DOM temporário contra interferências do Modo Escuro, e adicionando um delay de 150ms para garantir o reflow completo antes da captura pelo html2pdf.
-  - Corrigidos erros de sintaxe JS (`Uncaught SyntaxError: missing ) after argument list`) em [contrato_visualizar.php](file:///c:/xampp/htdocs/erp-distinto/gerenciamento/contrato_visualizar.php) fechando adequadamente as chamadas de `setTimeout` nas funções `confirmarEnvio()` e `confirmarEnvioAssinatura()`, restaurando a inicialização do Alpine.js.
-
-- **Recurso de Clonagem, Reversão e Nova Geração de PDF no Servidor** *(jun/2026)*:
-  - Criados os endpoints [clonar.php](file:///c:/xampp/htdocs/erp-distinto/api/contratos/clonar.php) e [resetar.php](file:///c:/xampp/htdocs/erp-distinto/api/contratos/resetar.php).
-  - Adicionadas ações rápidas de "Clonar" e "Reverter para Rascunho" na listagem ([contratos.php](file:///c:/xampp/htdocs/erp-distinto/gerenciamento/contratos.php)) e visualização ([contrato_visualizar.php](file:///c:/xampp/htdocs/erp-distinto/gerenciamento/contrato_visualizar.php)).
-  - Reestruturado o motor de PDF: migrado do motor cliente (`html2pdf.js`/`html2canvas`) para o servidor PHP usando a biblioteca **Dompdf** (instalada via Composer).
-  - Criado o endpoint [gerar_pdf.php](file:///c:/xampp/htdocs/erp-distinto/api/contratos/gerar_pdf.php) para renderização determinística do contrato A4.
-  - Atualizada a API [enviar_assinatura.php](file:///c:/xampp/htdocs/erp-distinto/api/contratos/enviar_assinatura.php) para gerar o PDF diretamente no servidor e enviá-lo ao Assinafy, removendo o upload manual pelo cliente e eliminando de vez erros de PDF em branco e interferências do Modo Escuro.
-
-- **Correção de Erros 500 no Webhook Asaas e Lançamentos** *(jul/2026)*:
-  - Movido fallback de `getallheaders()` para [helpers.php](file:///c:/xampp/htdocs/erp-distinto/includes/helpers.php), permitindo inicialização global e corrigindo erro 500 no webhook do Asaas (causado por Nginx/FPM em produção chamar a função antes da sua declaração local).
-  - Envelopadas consultas de clientes e fornecedores no [lancamentos.php](file:///c:/xampp/htdocs/erp-distinto/financeiro/lancamentos.php) com try/catch para garantir resiliência contra indisponibilidade, timeout ou falhas de banco de dados no carregamento inicial.
-  - Adicionado `require_once database.php` em [auth.php](file:///c:/xampp/htdocs/erp-distinto/config/auth.php), resolvendo o Fatal Error `Class "Database" not found` ao executar `exigirDistinto()` em páginas que não incluem o banco de dados explicitamente no topo (como `contas.php`).
+- **Redesign de Interface do Sistema (Stitch/Obsidian)** *(jul/2026)*:
+  - Redesenhadas 8 telas (Extrato, Custos Fixos, Asaas, Serviços, PDF Templates, Clientes, Pipeline Kanban e Configurações Gerais).
+  - Unificado o layout com `app-wrapper`, `sidebar` e `top_nav` em todas as páginas.
+  - Aplicadas classes do design system Obsidian (`glass-card`, `font-display-lg`, `label`, `input`, `select`, `btn-primary`, `btn-secondary`).
 
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.

@@ -11,129 +11,141 @@ include __DIR__ . '/../includes/layout/head.php';
 <div id="app-wrapper" style="display:flex; min-height:100vh;" x-data="servicos()">
     <?php include __DIR__ . '/../includes/layout/sidebar.php'; ?>
 
-    <main id="main-content" style="flex:1; padding:28px 32px; overflow-y:auto; max-width:calc(100vw - 240px);">
+    <main id="main-content" class="content-sheet !bg-background !p-6 flex flex-col flex-1 max-w-[calc(100vw-240px)]">
+        <?php include __DIR__ . '/../includes/layout/top_nav.php'; ?>
 
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:28px;">
+        <!-- Topbar -->
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-8 mt-2">
             <div>
-                <h1 style="font-size:22px; font-weight:700; color:#f1f5f9;">Tabela de Serviços</h1>
-                <p style="font-size:14px; color:#6b7280; margin-top:2px;">Catálogo com preço mínimo calculado automaticamente</p>
+                <h1 class="font-display-lg text-on-surface mb-1">Tabela de Serviços</h1>
+                <p class="text-body-md text-on-surface-variant">Catálogo com preço mínimo calculado automaticamente</p>
             </div>
-            <button class="btn-primary" @click="abrirModal()">
-                <i data-lucide="plus" style="width:15px;height:15px;"></i> Novo Serviço
+            <button class="bg-primary hover:bg-primary-container text-on-primary-container font-bold px-6 py-2.5 rounded-lg text-body-md transition-all active:scale-95 duration-150 shadow-lg flex items-center gap-2" @click="abrirModal()">
+                <i data-lucide="plus" class="w-4 h-4"></i> Novo Serviço
             </button>
         </div>
         
         <!-- Filtro de Categoria (Abas) -->
-        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:6px; display:flex; gap:6px; margin-bottom:24px; max-width:550px;">
+        <div class="glass-card p-1 rounded-xl flex gap-1.5 mb-6 max-w-md">
             <button @click="categoriaAtiva = 'marketing'" 
-                    :class="categoriaAtiva === 'marketing' ? 'bg-white text-black shadow-lg' : 'text-zinc-400 hover:text-white hover:bg-white/5'"
-                    style="flex:1; border:none; padding:10px; border-radius:10px; font-weight:700; cursor:pointer; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display:flex; align-items:center; justify-content:center; gap:8px; font-size:12px;">
-                <i data-lucide="trending-up" style="width:14px;height:14px;"></i>
+                    :class="categoriaAtiva === 'marketing' ? 'bg-primary text-on-primary shadow-lg' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40'"
+                    class="flex-1 px-4 py-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition-all duration-200">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
                 Marketing
             </button>
             <button @click="categoriaAtiva = 'wedding'" 
-                    :class="categoriaAtiva === 'wedding' ? 'bg-white text-black shadow-lg' : 'text-zinc-400 hover:text-white hover:bg-white/5'"
-                    style="flex:1; border:none; padding:10px; border-radius:10px; font-weight:700; cursor:pointer; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display:flex; align-items:center; justify-content:center; gap:8px; font-size:12px;">
-                <i data-lucide="camera" style="width:14px;height:14px;"></i>
+                    :class="categoriaAtiva === 'wedding' ? 'bg-primary text-on-primary shadow-lg' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40'"
+                    class="flex-1 px-4 py-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition-all duration-200">
+                <i data-lucide="camera" class="w-3.5 h-3.5"></i>
                 Wedding
             </button>
             <button @click="categoriaAtiva = '15anos'" 
-                    :class="categoriaAtiva === '15anos' ? 'bg-white text-black shadow-lg' : 'text-zinc-400 hover:text-white hover:bg-white/5'"
-                    style="flex:1; border:none; padding:10px; border-radius:10px; font-weight:700; cursor:pointer; transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display:flex; align-items:center; justify-content:center; gap:8px; font-size:12px;">
-                <i data-lucide="party-popper" style="width:14px;height:14px;"></i>
+                    :class="categoriaAtiva === '15anos' ? 'bg-primary text-on-primary shadow-lg' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40'"
+                    class="flex-1 px-4 py-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition-all duration-200">
+                <i data-lucide="party-popper" class="w-3.5 h-3.5"></i>
                 15 Anos
             </button>
         </div>
 
         <!-- Configuração de horas mensais -->
-        <div class="card" style="padding:16px 20px; margin-bottom:20px; display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
-            <div style="font-size:13px; color:#94a3b8;">
-                <i data-lucide="info" style="width:14px;height:14px; vertical-align:middle; margin-right:4px;"></i>
-                Horas mensais de capacidade da agência (para rateio dos custos fixos):
+        <div class="glass-card p-4 rounded-xl flex flex-wrap items-center justify-between gap-4 mb-6 text-xs text-on-surface-variant">
+            <div class="flex items-center gap-4 flex-wrap">
+                <div class="flex items-center gap-1.5">
+                    <i data-lucide="info" class="w-4 h-4 text-primary shrink-0"></i>
+                    <span>Horas mensais de capacidade da agência:</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input class="input w-24 !py-1 !px-2.5" type="number" min="1" x-model="horasMensais" placeholder="160">
+                    <button class="btn-secondary !py-1 !px-3 flex items-center gap-1" @click="abrirPlanejadorIA()">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-primary"></i> Planejar com IA
+                    </button>
+                </div>
             </div>
-            <div style="display:flex; align-items:center; gap:8px;">
-                <input class="input" type="number" min="1" x-model="horasMensais" style="width:100px;" placeholder="160">
-                <button class="btn-secondary" @click="abrirPlanejadorIA()" style="padding:6px 10px; border-color:#a78bfa; color:#a78bfa;">
-                    <i data-lucide="sparkles" style="width:14px;height:14px;"></i> Planejar com IA
-                </button>
-            </div>
-            <div style="font-size:13px; color:#6b7280;">
+            <div class="font-bold">
                 Custo fixo total mensal:
-                <strong style="color:#ef4444;" x-text="formatarMoeda(totalCustosFixos)"></strong>
+                <span class="text-error font-data-tabular ml-1" x-text="formatarMoeda(totalCustosFixos)"></span>
             </div>
         </div>
 
         <!-- Tabela de Serviços -->
-        <div class="card" style="overflow:hidden;">
-            <div class="table-header" style="display:grid; grid-template-columns:2fr 80px 1fr 1fr 1fr 80px 100px;">
-                <span>Serviço</span><span>Horas</span><span>Preço Mínimo</span><span>P. Recorrente</span><span>P. Pontual</span><span>Markup</span><span style="text-align:right;">Ações</span>
+        <div class="glass-card rounded-xl overflow-hidden mb-6">
+            <div class="grid grid-cols-[2.5fr_100px_1.5fr_1.5fr_1.5fr_100px_100px] items-center px-6 py-4 bg-surface-container-low border-b border-outline-variant/20">
+                <span class="text-label-caps font-label-caps text-on-surface-variant text-[10px]">Serviço</span>
+                <span class="text-label-caps font-label-caps text-on-surface-variant text-[10px]">Horas</span>
+                <span class="text-label-caps font-label-caps text-on-surface-variant text-[10px]">Preço Mínimo</span>
+                <span class="text-label-caps font-label-caps text-on-surface-variant text-[10px]">P. Recorrente</span>
+                <span class="text-label-caps font-label-caps text-on-surface-variant text-[10px]">P. Pontual</span>
+                <span class="text-label-caps font-label-caps text-on-surface-variant text-[10px]">Markup</span>
+                <span class="text-label-caps font-label-caps text-on-surface-variant text-[10px] text-right">Ações</span>
             </div>
 
             <template x-if="carregando">
-                <div style="padding:40px; text-align:center; color:#4b5563;">Carregando...</div>
+                <div class="p-10 text-center text-on-surface-variant">Carregando...</div>
             </template>
 
             <template x-if="!carregando && lista.length === 0">
-                <div style="padding:40px; text-align:center; color:#4b5563;">
-                    <i data-lucide="briefcase" style="width:36px;height:36px;margin:0 auto 12px;display:block;opacity:0.4;"></i>
+                <div class="p-10 text-center text-on-surface-variant">
+                    <i data-lucide="briefcase" class="w-8 h-8 mx-auto mb-3 opacity-40"></i>
                     Nenhum serviço cadastrado
                 </div>
             </template>
 
-            <template x-for="s in listaFiltrada" :key="s.id">
-                    <div class="table-row" style="display:grid; grid-template-columns:2fr 80px 1fr 1fr 1fr 80px 100px; align-items:center;">
-                        <div class="table-cell">
-                            <!-- Nome do Serviço (Título Principal) -->
-                            <div style="color:#f8fafc; font-weight:800; font-size:12px; text-transform:uppercase; letter-spacing:0.8px; line-height:1.1; margin-bottom:2px;" x-text="(s.nome || 'SEM NOME').toUpperCase()"></div>
-                            
-                            <!-- Descrição do Serviço (Detalhe Sutil) -->
-                            <div style="color:#64748b; font-size:10px; font-weight:400; max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; opacity:0.7;" :title="s.descricao" x-text="s.descricao || ''"></div>
+            <div class="divide-y divide-outline-variant/20">
+                <template x-for="s in listaFiltrada" :key="s.id">
+                    <div class="grid grid-cols-[2.5fr_100px_1.5fr_1.5fr_1.5fr_100px_100px] items-center px-6 py-4 hover:bg-surface-container-high/20 transition-colors group">
+                        <div class="min-w-0 pr-4">
+                            <div class="text-sm font-bold text-on-surface truncate" x-text="s.nome"></div>
+                            <div class="text-xs text-on-surface-variant truncate mt-0.5" :title="s.descricao" x-text="s.descricao || ''"></div>
                         </div>
-                        <div class="table-cell" style="color:#94a3b8;" x-text="s.horas_estimadas + 'h'"></div>
-                        <div class="table-cell" style="color:#94a3b8;" x-text="formatarMoeda(calcularPrecoMinimo(s))"></div>
-                        <div class="table-cell" style="font-weight:700;" :style="s.periodicidade === 'mensal' ? 'color:#10b981;' : 'color:#4b5563; opacity:0.6;'" x-text="s.preco_venda > 0 ? formatarMoeda(s.preco_venda) : '—'"></div>
-                        <div class="table-cell" style="font-weight:700;" :style="s.periodicidade === 'pontual' ? 'color:#10b981;' : 'color:#4b5563; opacity:0.6;'" x-text="s.preco_venda_pontual > 0 ? formatarMoeda(s.preco_venda_pontual) : '—'"></div>
-                        <div class="table-cell">
-                            <span style="color:#94a3b8; font-weight:600;" x-text="s.markup + '%'"></span>
+                        <div class="text-xs text-on-surface-variant font-data-tabular" x-text="s.horas_estimadas + 'h'"></div>
+                        <div class="text-xs text-on-surface-variant font-data-tabular" x-text="formatarMoeda(calcularPrecoMinimo(s))"></div>
+                        <div>
+                            <span class="text-sm font-bold font-data-tabular" :class="s.periodicidade === 'mensal' ? 'text-primary' : 'text-on-surface-variant/40'" x-text="s.preco_venda > 0 ? formatarMoeda(s.preco_venda) : '—'"></span>
                         </div>
-                    <div class="table-cell" style="display:flex; gap:6px; justify-content:flex-end;">
-                        <button @click="abrirModal(s)" style="color:#6b7280; background:none; border:none; cursor:pointer; padding:4px;">
-                            <i data-lucide="pencil" style="width:16px;height:16px;"></i>
-                        </button>
-                        <button @click="excluir(s.id)" style="color:#6b7280; background:none; border:none; cursor:pointer; padding:4px;">
-                            <i data-lucide="trash-2" style="width:16px;height:16px;"></i>
-                        </button>
+                        <div>
+                            <span class="text-sm font-bold font-data-tabular" :class="s.periodicidade === 'pontual' ? 'text-primary' : 'text-on-surface-variant/40'" x-text="s.preco_venda_pontual > 0 ? formatarMoeda(s.preco_venda_pontual) : '—'"></span>
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold text-on-surface-variant font-data-tabular" x-text="s.markup + '%'"></span>
+                        </div>
+                        <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button @click="abrirModal(s)" class="p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded transition-colors" title="Editar">
+                                <i data-lucide="pencil" class="w-4 h-4"></i>
+                            </button>
+                            <button @click="excluir(s.id)" class="p-1.5 text-error/70 hover:text-error hover:bg-error-container/10 rounded transition-colors" title="Excluir">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>
-            </template>
+                </template>
+            </div>
         </div>
 
-        <p style="font-size:12px; color:#4b5563; margin-top:12px;">
+        <p class="text-xs text-on-surface-variant mt-2">
             💡 Preço mínimo = (horas / capacidade mensal × custos fixos) + custo variável + markup aplicado.
         </p>
-
     </main>
 
-    <!-- Modal -->
+    <!-- Modal Serviço -->
     <div class="modal-overlay" x-show="modalAberto" x-cloak @click.self="modalAberto=false">
-        <div class="modal">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <h2 style="font-size:17px; font-weight:600; color:#f1f5f9;" x-text="form.id ? 'Editar Serviço' : 'Novo Serviço'"></h2>
-                    <button type="button" @click="melhorarServicoIA()" :disabled="melhorandoIA" class="btn-secondary" style="padding:4px 10px; font-size:11px; border-color:#a78bfa; color:#a78bfa; display:flex; align-items:center; gap:6px;">
-                        <i data-lucide="sparkles" style="width:12px;height:12px;"></i>
-                        <span x-text="melhorandoIA ? 'Melhorando...' : 'Editar com IA'"></span>
-                    </button>
-                </div>
-                <button @click="modalAberto=false" style="color:#6b7280; background:none; border:none; cursor:pointer;">
-                    <i data-lucide="x" style="width:18px;height:18px;"></i>
+        <div class="modal w-full max-w-2xl p-6 bg-surface-container-low border border-outline-variant/30 rounded-2xl shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+            <button @click="modalAberto=false" class="absolute top-6 right-6 text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            
+            <div class="flex items-center gap-3 mb-6 pr-8">
+                <h2 class="text-title-sm font-headline-md font-bold text-on-surface" x-text="form.id ? 'Editar Serviço' : 'Novo Serviço'"></h2>
+                <button type="button" @click="melhorarServicoIA()" :disabled="melhorandoIA" class="bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 px-3 py-1 rounded-md text-[10px] font-label-caps transition-all flex items-center gap-1 cursor-pointer">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                    <span x-text="melhorandoIA ? 'Melhorando...' : 'Editar com IA'"></span>
                 </button>
             </div>
+
             <form @submit.prevent="salvar()">
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-bottom:16px;">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="label">Categoria</label>
-                        <select class="select" x-model="form.categoria">
+                        <select class="select w-full" x-model="form.categoria">
                             <option value="marketing">Marketing</option>
                             <option value="wedding">Wedding</option>
                             <option value="15anos">15 Anos</option>
@@ -141,7 +153,7 @@ include __DIR__ . '/../includes/layout/head.php';
                     </div>
                     <div>
                         <label class="label">Tipo de Item</label>
-                        <select class="select" x-model="form.tipo">
+                        <select class="select w-full" x-model="form.tipo">
                             <option value="servico">Serviço / Upgrade</option>
                             <option value="plano">Plano Base (Pacote)</option>
                         </select>
@@ -149,58 +161,61 @@ include __DIR__ . '/../includes/layout/head.php';
                 </div>
                 
                 <!-- Configuração de Itens (Apenas para Planos que não sejam de Eventos) -->
-                <div x-show="form.tipo === 'plano' && form.categoria === 'marketing'" style="background:rgba(167,139,250,0.05); padding:16px; border-radius:8px; border:1px solid rgba(167,139,250,0.2); margin-bottom:16px;">
-                    <label class="label" style="display:flex; align-items:center; gap:8px;">
-                        <i data-lucide="list-checks" style="width:14px;height:14px;"></i>
+                <div x-show="form.tipo === 'plano' && form.categoria === 'marketing'" class="bg-primary/5 p-4 rounded-xl border border-primary/10 mb-4">
+                    <label class="label flex items-center gap-1.5 text-primary">
+                        <i data-lucide="list-checks" class="w-4 h-4"></i>
                         Configuração de Itens (JSON)
                     </label>
-                    <textarea class="input" x-model="form.itens_json" rows="4" style="font-family:monospace; font-size:11px;" placeholder='Ex: {"servico_id": "incluso", "outro_id": "opcional"}'></textarea>
-                    <p style="font-size:10px; color:#64748b; margin-top:6px;">
+                    <textarea class="input w-full font-mono text-[11px] mt-1" x-model="form.itens_json" rows="3" placeholder='Ex: {"servico_id": "incluso", "outro_id": "opcional"}'></textarea>
+                    <p class="text-[10px] text-on-surface-variant mt-1.5">
                         💡 Liste os IDs dos serviços e defina se são "incluso" ou "opcional".
                     </p>
                 </div>
-                <div style="margin-bottom:16px;">
+
+                <div class="mb-4">
                     <label class="label">Nome do Serviço *</label>
-                    <input class="input" x-model="form.nome" required placeholder="Ex: Registro Essencial">
+                    <input class="input w-full" x-model="form.nome" required placeholder="Ex: Registro Essencial">
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;" x-show="form.categoria === 'marketing'">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4" x-show="form.categoria === 'marketing'">
                     <div>
                         <label class="label">Periodicidade</label>
-                        <select class="select" x-model="form.periodicidade">
+                        <select class="select w-full" x-model="form.periodicidade">
                             <option value="mensal">Mensal (Recorrente)</option>
                             <option value="pontual">Pontual (Projeto Único)</option>
                         </select>
                     </div>
                     <div>
                         <label class="label">Prazo Mínimo (Meses)</label>
-                        <input class="input" type="number" min="0" x-model="form.prazo_minimo" placeholder="Ex: 6 (0 para s/ mínimo)">
+                        <input class="input w-full" type="number" min="0" x-model="form.prazo_minimo" placeholder="Ex: 6 (0 para s/ mínimo)">
                     </div>
                 </div>
-                <div style="margin-bottom:16px;" x-show="form.categoria === 'marketing'">
+
+                <div class="mb-4" x-show="form.categoria === 'marketing'">
                     <label class="label">Descrição Básica</label>
-                    <textarea class="input" x-model="form.descricao" rows="2" placeholder="O que é o serviço de forma resumida..." style="resize:vertical;"></textarea>
+                    <textarea class="textarea w-full" x-model="form.descricao" rows="2" placeholder="O que é o serviço de forma resumida..."></textarea>
                 </div>
 
                 <!-- Campos Específicos para Eventos (Wedding / 15 Anos) -->
-                <div x-show="form.categoria === 'wedding' || form.categoria === '15anos'" style="background:rgba(197,168,128,0.05); padding:16px; border-radius:8px; border:1px solid rgba(197,168,128,0.2); margin-bottom:16px;">
-                    <div style="margin-bottom:12px;">
-                        <label class="label" style="color:#c5a880;">Subtítulo (Tagline)</label>
-                        <input class="input" x-model="form.subtitulo" placeholder="Ex: O plano definitivo para casais...">
+                <div x-show="form.categoria === 'wedding' || form.categoria === '15anos'" class="bg-tertiary/5 p-4 rounded-xl border border-tertiary/10 mb-4">
+                    <div class="mb-3">
+                        <label class="label text-tertiary">Subtítulo (Tagline)</label>
+                        <input class="input w-full" x-model="form.subtitulo" placeholder="Ex: O plano definitivo para casais...">
                     </div>
                     
-                    <div style="margin-bottom:12px;">
-                        <label class="label" style="color:#c5a880; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <label class="label text-tertiary flex justify-between items-center mb-2">
                             Benefícios / Diferenciais (Itens)
-                            <button type="button" @click="adicionarBeneficio()" style="background:#c5a880; color:#fff; border:none; border-radius:4px; padding:2px 8px; font-size:10px; cursor:pointer;">
+                            <button type="button" @click="adicionarBeneficio()" class="bg-tertiary text-on-tertiary px-2 py-0.5 rounded text-[10px] font-bold">
                                 + Adicionar Item
                             </button>
                         </label>
-                        <div style="display:flex; flex-direction:column; gap:8px;">
+                        <div class="flex flex-col gap-2">
                             <template x-for="(b, index) in form.beneficios_lista" :key="index">
-                                <div style="display:flex; gap:8px;">
-                                    <input class="input" x-model="form.beneficios_lista[index]" style="font-size:12px;" placeholder="Descreva o benefício...">
-                                    <button type="button" @click="removerBeneficio(index)" style="color:#ef4444; background:none; border:none; cursor:pointer;">
-                                        <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
+                                <div class="flex gap-2">
+                                    <input class="input w-full text-xs" x-model="form.beneficios_lista[index]" placeholder="Descreva o benefício...">
+                                    <button type="button" @click="removerBeneficio(index)" class="text-error/70 hover:text-error p-1">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
                                     </button>
                                 </div>
                             </template>
@@ -209,136 +224,136 @@ include __DIR__ . '/../includes/layout/head.php';
                 </div>
                 
                 <!-- Vínculo de Upgrades / Adicionais (Apenas para Planos de Eventos) -->
-                <div x-show="form.tipo === 'plano' && (form.categoria === 'wedding' || form.categoria === '15anos')" style="background:rgba(167,139,250,0.05); padding:16px; border-radius:8px; border:1px solid rgba(167,139,250,0.2); margin-bottom:16px;">
-                    <label class="label" style="display:flex; align-items:center; gap:8px; margin-bottom:12px; color:#a78bfa;">
-                        <i data-lucide="layers" style="width:16px;height:16px;"></i>
+                <div x-show="form.tipo === 'plano' && (form.categoria === 'wedding' || form.categoria === '15anos')" class="bg-primary/5 p-4 rounded-xl border border-primary/10 mb-4">
+                    <label class="label flex items-center gap-1.5 text-primary mb-3">
+                        <i data-lucide="layers" class="w-4 h-4"></i>
                         Upgrades e Adicionais Sugeridos
                     </label>
-                    <div style="display:flex; flex-direction:column; gap:8px;">
+                    <div class="flex flex-col gap-2">
                         <template x-for="u in upgradesDisponiveis" :key="u.id">
-                            <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:6px; border:1px solid rgba(255,255,255,0.05);">
-                                <div style="font-size:13px; color:#f1f5f9; font-weight:500;" x-text="u.nome"></div>
-                                <div style="display:flex; gap:12px;">
-                                    <label style="display:flex; align-items:center; gap:6px; font-size:11px; cursor:pointer; color:#94a3b8;">
+                            <div class="flex items-center justify-between bg-surface-container-high/40 p-2.5 rounded-lg border border-outline-variant/10">
+                                <span class="text-xs font-bold text-on-surface" x-text="u.nome"></span>
+                                <div class="flex gap-4">
+                                    <label class="flex items-center gap-1.5 text-[11px] text-on-surface-variant cursor-pointer">
                                         <input type="checkbox" :checked="isUpgradeVinculado(u.id, 'opcional')" @change="toggleUpgrade(u.id, 'opcional')">
                                         Disponível
                                     </label>
-                                    <label style="display:flex; align-items:center; gap:6px; font-size:11px; cursor:pointer; color:#94a3b8;">
+                                    <label class="flex items-center gap-1.5 text-[11px] text-on-surface-variant cursor-pointer">
                                         <input type="checkbox" :checked="isUpgradeVinculado(u.id, 'incluso')" @change="toggleUpgrade(u.id, 'incluso')">
                                         Incluso
                                     </label>
                                 </div>
                             </div>
                         </template>
-                        <div x-show="upgradesDisponiveis.length === 0" style="font-size:12px; color:#6b7280; text-align:center; padding:10px;">
+                        <div x-show="upgradesDisponiveis.length === 0" class="text-xs text-on-surface-variant text-center py-2 italic">
                             Nenhum upgrade cadastrado nesta categoria.
                         </div>
                     </div>
                 </div>
 
-                <div style="margin-bottom:16px;" x-show="form.categoria === 'marketing'">
+                <div class="mb-4" x-show="form.categoria === 'marketing'">
                     <label class="label">Entregáveis (Escopo)</label>
-                    <textarea class="input" x-model="form.entregaveis" rows="3" placeholder="Ex: 4 posts semanais, 1 relatório mensal, etc..." style="resize:vertical;"></textarea>
+                    <textarea class="textarea w-full" x-model="form.entregaveis" rows="2" placeholder="Ex: 4 posts semanais, 1 relatório mensal, etc..."></textarea>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;" x-show="form.categoria === 'marketing'">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4" x-show="form.categoria === 'marketing'">
                     <div>
                         <label class="label">Ferramentas Adicionais</label>
-                        <input class="input" x-model="form.ferramentas" placeholder="Ex: Canva Pro, RD Station...">
+                        <input class="input w-full" x-model="form.ferramentas" placeholder="Ex: Canva Pro, RD Station...">
                     </div>
                     <div>
                         <label class="label">Terceirização (Custo/O que)</label>
-                        <input class="input" x-model="form.terceirizacao" placeholder="Ex: R$ 200,00 - Designer Freelancer">
+                        <input class="input w-full" x-model="form.terceirizacao" placeholder="Ex: R$ 200,00 - Designer Freelancer">
                     </div>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;" x-show="form.categoria === 'marketing'">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4" x-show="form.categoria === 'marketing'">
                     <div>
                         <label class="label">Horas/Dia (Dedicadas) *</label>
-                        <input class="input" type="number" step="0.1" min="0" x-model="form.horas_dia" @input="calcularHorasMensaisServico()" :required="form.categoria === 'marketing'" placeholder="Ex: 0.5">
+                        <input class="input w-full" type="number" step="0.1" min="0" x-model="form.horas_dia" @input="calcularHorasMensaisServico()" :required="form.categoria === 'marketing'" placeholder="Ex: 0.5">
                     </div>
                     <div>
                         <label class="label">Horas Estimadas (Mês) *</label>
-                        <input class="input" type="number" step="0.5" min="0.5" x-model="form.horas_estimadas" :required="form.categoria === 'marketing'" placeholder="Ex: 20">
+                        <input class="input w-full" type="number" step="0.5" min="0.5" x-model="form.horas_estimadas" :required="form.categoria === 'marketing'" placeholder="Ex: 20">
                     </div>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;" x-show="form.categoria === 'marketing'">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4" x-show="form.categoria === 'marketing'">
                     <div>
                         <label class="label">Custo de Produção (R$) *</label>
-                        <input class="input" type="number" step="0.01" min="0" x-model="form.custo_producao" :required="form.categoria === 'marketing'" placeholder="0,00">
+                        <input class="input w-full" type="number" step="0.01" min="0" x-model="form.custo_producao" :required="form.categoria === 'marketing'" placeholder="0,00">
                     </div>
                     <div>
                         <label class="label">Custos Variáveis (R$)</label>
-                        <input class="input" type="number" step="0.01" min="0" x-model="form.custos_variaveis" placeholder="Ferramentas, etc.">
-                    </div>
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px;">
-                    <div style="background:rgba(167,139,250,0.05); padding:16px; border-radius:8px; border:1px solid rgba(167,139,250,0.2);">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
-                            <label class="label" style="margin-bottom:0;" x-text="form.categoria === 'marketing' ? 'Preço Recorrente (R$)' : 'Investimento (R$)'"></label>
-                            <button type="button" class="btn-secondary" @click="sugerirPrecoIA('recorrente')" :disabled="sugerindoPreco" style="padding:2px 6px; font-size:10px; border-color:#a78bfa; color:#a78bfa;" x-show="form.categoria === 'marketing'">
-                                <i data-lucide="sparkles" style="width:10px;height:10px;"></i> Sugerir
-                            </button>
-                        </div>
-                        <input class="input" type="number" step="0.01" x-model="form.preco_venda" style="font-size:16px; font-weight:800; color:#10b981; background:transparent; border:none; padding:0;" placeholder="0,00">
-                    </div>
-
-                    <div style="background:rgba(167,139,250,0.05); padding:16px; border-radius:8px; border:1px solid rgba(167,139,250,0.2);" x-show="form.categoria === 'marketing'">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
-                            <label class="label" style="margin-bottom:0;">Preço Pontual (R$)</label>
-                            <button type="button" class="btn-secondary" @click="sugerirPrecoIA('pontual')" :disabled="sugerindoPreco" style="padding:2px 6px; font-size:10px; border-color:#a78bfa; color:#a78bfa;">
-                                <i data-lucide="sparkles" style="width:10px;height:10px;"></i> Sugerir
-                            </button>
-                        </div>
-                        <input class="input" type="number" step="0.01" x-model="form.preco_venda_pontual" style="font-size:16px; font-weight:800; color:#10b981; background:transparent; border:none; padding:0;" placeholder="0,00">
+                        <input class="input w-full" type="number" step="0.01" min="0" x-model="form.custos_variaveis" placeholder="Ferramentas, etc.">
                     </div>
                 </div>
 
-                <div style="font-size:11px; color:#6b7280; margin-bottom:16px; padding-left:4px;" x-show="form.categoria === 'marketing'">
-                    💡 Piso mínimo (custo + rateio): <span x-text="formatarMoeda(calcularPrecoMinimo(form))"></span>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                    <div class="bg-primary/5 p-4 rounded-xl border border-primary/20">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="label !mb-0" x-text="form.categoria === 'marketing' ? 'Preço Recorrente (R$)' : 'Investimento (R$)'"></label>
+                            <button type="button" class="bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 px-2 py-0.5 rounded text-[10px] font-bold transition-all flex items-center gap-1" @click="sugerirPrecoIA('recorrente')" :disabled="sugerindoPreco" x-show="form.categoria === 'marketing'">
+                                <i data-lucide="sparkles" class="w-3 h-3"></i> Sugerir
+                            </button>
+                        </div>
+                        <input class="input w-full !text-base !font-bold text-primary font-data-tabular bg-transparent border-none focus:ring-0 p-0" type="number" step="0.01" x-model="form.preco_venda" placeholder="0,00">
+                    </div>
+
+                    <div class="bg-primary/5 p-4 rounded-xl border border-primary/20" x-show="form.categoria === 'marketing'">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="label !mb-0">Preço Pontual (R$)</label>
+                            <button type="button" class="bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 px-2 py-0.5 rounded text-[10px] font-bold transition-all flex items-center gap-1" @click="sugerirPrecoIA('pontual')" :disabled="sugerindoPreco">
+                                <i data-lucide="sparkles" class="w-3 h-3"></i> Sugerir
+                            </button>
+                        </div>
+                        <input class="input w-full !text-base !font-bold text-primary font-data-tabular bg-transparent border-none focus:ring-0 p-0" type="number" step="0.01" x-model="form.preco_venda_pontual" placeholder="0,00">
+                    </div>
+                </div>
+
+                <div class="text-[10px] text-on-surface-variant font-label-caps mb-4 pl-1" x-show="form.categoria === 'marketing'">
+                    💡 Piso mínimo (custo + rateio): <span class="font-bold font-data-tabular" x-text="formatarMoeda(calcularPrecoMinimo(form))"></span>
                 </div>
                 
-                <div style="margin-bottom:16px;" x-show="form.categoria === 'marketing'">
+                <div class="mb-6" x-show="form.categoria === 'marketing'">
                     <label class="label">Markup Manual (%)</label>
-                    <input class="input" type="number" step="0.5" min="0" x-model="form.markup" @input="recalcularPrecoPeloMarkup()" placeholder="Ex: 30">
+                    <input class="input w-full" type="number" step="0.5" min="0" x-model="form.markup" @input="recalcularPrecoPeloMarkup()" placeholder="Ex: 30">
                 </div>
-                <div style="display:flex; gap:10px; justify-content:flex-end;">
+
+                <div class="flex gap-3 justify-end">
                     <button type="button" class="btn-secondary" @click="modalAberto=false">Cancelar</button>
                     <button type="submit" class="btn-primary" :disabled="salvando" x-text="salvando ? 'Salvando...' : (form.id ? 'Atualizar' : 'Criar Serviço')"></button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal Planejador IA -->
+                    <!-- Modal Planejador IA -->
     <div class="modal-overlay" x-show="modalPlanejadorAberto" x-cloak @click.self="modalPlanejadorAberto=false">
-        <div class="modal" style="max-width:500px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h2 style="font-size:17px; font-weight:600; color:#f1f5f9; display:flex; align-items:center; gap:8px;">
-                    <i data-lucide="sparkles" style="width:18px;height:18px;color:#a78bfa;"></i>
+        <div class="modal w-full max-w-md p-6 bg-surface-container-low border border-outline-variant/30 rounded-2xl shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+            <button @click="modalPlanejadorAberto=false" class="absolute top-6 right-6 text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="mb-6">
+                <h2 class="text-title-sm font-headline-md font-bold text-on-surface flex items-center gap-2">
+                    <i data-lucide="sparkles" class="w-5 h-5 text-primary"></i>
                     Planejador de Capacidade IA
                 </h2>
-                <button @click="modalPlanejadorAberto=false" style="color:#6b7280; background:none; border:none; cursor:pointer;">
-                    <i data-lucide="x" style="width:18px;height:18px;"></i>
-                </button>
-            </div>
-            
-            <div style="background:rgba(124,58,237,0.1); border:1px solid rgba(124,58,237,0.2); padding:12px; border-radius:8px; margin-bottom:20px; font-size:13px; color:#cbd5e1;">
-                Responda brevemente para a IA calcular sua capacidade mensal real.
+                <p class="text-body-md text-on-surface-variant mt-1">Responda brevemente para a IA calcular sua capacidade mensal real.</p>
             </div>
 
-            <div style="margin-bottom:16px;">
-                <label class="label">Quantas pessoas trabalham na produção?</label>
-                <input class="input" x-model="planejador.equipe" placeholder="Ex: 2 pessoas + eu">
-            </div>
-            <div style="margin-bottom:16px;">
-                <label class="label">Qual a jornada diária e dias por semana?</label>
-                <input class="input" x-model="planejador.jornada" placeholder="Ex: 8h por dia, segunda a sexta">
-            </div>
-            <div style="margin-bottom:20px;">
-                <label class="label">Alguma observação sobre produtividade?</label>
-                <textarea class="input" x-model="planejador.obs" rows="2" placeholder="Ex: Perdemos 20% do tempo em reuniões..."></textarea>
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="label">Quantas pessoas trabalham na produção?</label>
+                    <input class="input w-full" x-model="planejador.equipe" placeholder="Ex: 2 pessoas + eu">
+                </div>
+                <div>
+                    <label class="label">Qual a jornada diária e dias por semana?</label>
+                    <input class="input w-full" x-model="planejador.jornada" placeholder="Ex: 8h por dia, segunda a sexta">
+                </div>
+                <div>
+                    <label class="label">Alguma observação sobre produtividade?</label>
+                    <textarea class="textarea w-full" x-model="planejador.obs" rows="2" placeholder="Ex: Perdemos 20% do tempo em reuniões..."></textarea>
+                </div>
             </div>
 
-            <div style="display:flex; gap:10px; justify-content:flex-end;">
+            <div class="flex gap-3 justify-end">
                 <button class="btn-secondary" @click="modalPlanejadorAberto=false">Cancelar</button>
                 <button class="btn-primary" @click="calcularCapacidadeIA()" :disabled="planejando">
                     <span x-show="!planejando">Calcular Capacidade</span>
@@ -349,36 +364,40 @@ include __DIR__ . '/../includes/layout/head.php';
     </div>
 
     <!-- Painel de Chat IA -->
-    <div class="chat-ai-panel" :class="chatAberto ? 'active' : ''" x-cloak>
-        <div style="display:flex; flex-direction:column; h-100; height:100%;">
-            <div style="padding:20px; border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2);">
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <div style="width:32px; height:32px; border-radius:8px; background:linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%); display:flex; align-items:center; justify-content:center;">
-                        <i data-lucide="sparkles" style="width:16px;height:16px;color:#fff;"></i>
+    <div class="chat-ai-panel bg-surface-container-low border-l border-outline-variant/30 shadow-2xl" :class="chatAberto ? 'active' : ''" x-cloak>
+        <div class="flex flex-col h-full">
+            <div class="p-5 border-b border-outline-variant/20 flex justify-between items-center bg-surface-container-low/60 backdrop-blur-md">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
                     </div>
                     <div>
-                        <div style="font-weight:700; color:#f1f5f9; font-size:13px; text-transform:uppercase; letter-spacing:0.5px;" x-text="form.nome || 'Novo Serviço'"></div>
-                        <div style="font-size:10px; color:#a78bfa; font-weight:600; letter-spacing:0.3px;">ESTRUTURAÇÃO & PRECIFICAÇÃO</div>
+                        <div class="font-bold text-on-surface text-xs font-label-caps truncate max-w-[200px]" x-text="form.nome || 'Novo Serviço'"></div>
+                        <div class="text-[9px] font-label-caps text-primary tracking-wider mt-0.5">ESTRUTURAÇÃO & PRECIFICAÇÃO</div>
                     </div>
                 </div>
-                <button @click="chatAberto=false" style="color:#6b7280; background:none; border:none; cursor:pointer;">
-                    <i data-lucide="chevron-right" style="width:20px;height:20px;"></i>
+                <button @click="chatAberto=false" class="text-on-surface-variant hover:text-on-surface transition-colors">
+                    <i data-lucide="chevron-right" class="w-5 h-5"></i>
                 </button>
             </div>
 
             <!-- Corpo do Chat -->
-            <div id="chat-body" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:16px; scroll-behavior:smooth;">
+            <div id="chat-body" class="flex-1 overflow-y-auto p-5 flex flex-col gap-4 scroll-smooth">
                 <template x-for="msg in chatHistorico">
-                    <div :style="msg.role === 'user' ? 'align-self:flex-end; max-width:85%;' : 'align-self:flex-start; max-width:85%;'">
-                        <div :style="msg.role === 'user' 
-                            ? 'background:#a78bfa; color:#fff; padding:12px 16px; border-radius:16px 16px 4px 16px; font-size:13px; line-height:1.5;' 
-                            : 'background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#e2e8f0; padding:12px 16px; border-radius:16px 16px 16px 4px; font-size:13px; line-height:1.5;'"
-                            x-text="msg.content">
+                    <div class="max-w-[85%] flex flex-col" :class="msg.role === 'user' ? 'self-end' : 'self-start'">
+                        <div class="p-3.5 rounded-2xl text-xs line-height-relaxed"
+                             :class="msg.role === 'user' 
+                                ? 'bg-primary text-on-primary rounded-tr-none' 
+                                : 'bg-surface-container-high border border-outline-variant/20 text-on-surface rounded-tl-none'"
+                             x-text="msg.content">
                         </div>
-                        <div :style="msg.role === 'user' ? 'text-align:right;' : 'text-align:left;'" style="font-size:10px; color:#4b5563; margin-top:4px;" x-text="msg.role === 'user' ? 'Você' : 'Assistente IA'"></div>
+                        <span class="text-[9px] text-on-surface-variant font-label-caps mt-1"
+                              :class="msg.role === 'user' ? 'text-right' : 'text-left'"
+                              x-text="msg.role === 'user' ? 'Você' : 'Assistente IA'"></span>
                     </div>
                 </template>
-                <div x-show="melhorandoIA" style="align-self:flex-start; background:rgba(255,255,255,0.03); padding:10px 16px; border-radius:16px; display:flex; gap:4px; align-items:center;">
+                
+                <div x-show="melhorandoIA" class="self-start bg-surface-container-high/40 p-3 rounded-2xl border border-outline-variant/10 flex gap-1 items-center">
                     <span class="dot-loading"></span>
                     <span class="dot-loading" style="animation-delay:0.2s"></span>
                     <span class="dot-loading" style="animation-delay:0.4s"></span>
@@ -386,26 +405,25 @@ include __DIR__ . '/../includes/layout/head.php';
             </div>
 
             <!-- Input do Chat -->
-            <div style="padding:20px; background:rgba(0,0,0,0.2); border-top:1px solid rgba(255,255,255,0.05);">
-                <div style="position:relative;">
+            <div class="p-5 bg-surface-container-low border-t border-outline-variant/20">
+                <div class="relative">
                     <textarea 
                         x-model="chatMensagem" 
                         @keydown.enter.prevent="enviarMensagemChatIA()" 
                         placeholder="Diga o que deseja alterar..." 
                         rows="1" 
-                        style="width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:12px 45px 12px 16px; color:#fff; font-size:13px; outline:none; resize:none; transition:all 0.2s; focus:border-color:#a78bfa;"
+                        class="w-full input pr-12 text-xs focus:ring-1 focus:ring-primary/40 resize-none py-3"
                         :disabled="melhorandoIA"
                     ></textarea>
                     <button 
                         @click="enviarMensagemChatIA()" 
                         :disabled="!chatMensagem.trim() || melhorandoIA"
-                        style="position:absolute; right:8px; top:50%; transform:translateY(-50%); width:32px; height:32px; border-radius:8px; background:#a78bfa; border:none; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s;"
-                        :style="(!chatMensagem.trim() || melhorandoIA) ? 'opacity:0.5; cursor:not-allowed;' : ''"
+                        class="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container transition-all flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
                     >
-                        <i data-lucide="send" style="width:16px;height:16px;"></i>
+                        <i data-lucide="send" class="w-4 h-4"></i>
                     </button>
                 </div>
-                <div style="text-align:center; margin-top:10px; font-size:10px; color:#4b5563;">
+                <div class="text-center mt-2.5 text-[9px] text-on-surface-variant font-label-caps">
                     Pressione Enter para enviar
                 </div>
             </div>
@@ -420,18 +438,14 @@ include __DIR__ . '/../includes/layout/head.php';
         top: 0;
         bottom: 0;
         width: 380px;
-        background: #0f172a; /* Azul muito escuro e sólido para bloquear o fundo */
-        border-left: 1px solid rgba(255,255,255,0.1);
         z-index: 10001;
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: -15px 0 40px rgba(0,0,0,0.7);
         display: flex;
         flex-direction: column;
     }
     .chat-ai-panel.active {
         right: 0;
     }
-    /* Impedir que as linhas do HUD ou outros elementos apareçam dentro do painel */
     .chat-ai-panel * {
         position: relative;
         z-index: 2;
@@ -439,7 +453,7 @@ include __DIR__ . '/../includes/layout/head.php';
     .dot-loading {
         width: 6px;
         height: 6px;
-        background: #6b7280;
+        background: var(--color-on-surface-variant, #6b7280);
         border-radius: 50%;
         display: inline-block;
         animation: dot-pulse 1.4s infinite ease-in-out;
@@ -447,8 +461,6 @@ include __DIR__ . '/../includes/layout/head.php';
     @keyframes dot-pulse {
         0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
         40% { transform: scale(1); opacity: 1; }
-    }
-    /* Estilo para garantir que o modal não fique por cima do chat se necessário */
     .modal-overlay {
         z-index: 10000;
     }
