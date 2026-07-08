@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit" class="btn">Enviar link de redefinicao</button>
         </form>
 
-        <div class="link"><a href="<?= raizUrl('/login-roteiros.php') ?>">Voltar ao login</a></div>
+        <div class="link"><a href="<?= raizUrl('/index.php') ?>">Voltar ao login</a></div>
     </div>
 </body>
 </html>

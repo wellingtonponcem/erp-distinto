@@ -4,7 +4,7 @@ require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/helpers.php';
 
-exigirDistinto();
+exigirAutenticacao();
 
 $tituloPagina = 'Depoimentos';
 include __DIR__ . '/../includes/layout/head.php';

@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $db->commit();
             error_log("✓ RESET SUCESSO: Email={$resetRow['email']}, User_id={$resetRow['user_id']}");
             deslogarUsuario();
-            header('Location: ' . raizUrl('/login-roteiros.php?senha_redefinida=1'));
+            header('Location: ' . raizUrl('/index.php?senha_redefinida=1'));
             exit;
         } catch (Exception $e) {
             if ($db->inTransaction()) $db->rollBack();
@@ -179,7 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <div class="link">
-            <a href="<?= raizUrl('/login-roteiros.php') ?>">Ir para o login</a>
+            <a href="<?= raizUrl('/index.php') ?>">Ir para o login</a>
             <?php if (!$tokenValido && !$mensagem): ?>
                 <br><br><a href="<?= raizUrl('/esqueci-senha.php') ?>">Solicitar novo link</a>
             <?php endif; ?>

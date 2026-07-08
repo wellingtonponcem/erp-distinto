@@ -9,7 +9,7 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/helpers.php';
 require_once __DIR__ . '/../includes/ia_propostas.php';
 
-exigirDistinto();
+exigirAutenticacao();
 $db = Database::get();
 
 $statusMessage = '';

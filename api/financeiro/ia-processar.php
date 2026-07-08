@@ -3,7 +3,7 @@ require_once __DIR__ . '/../../config/env.php';
 require_once __DIR__ . '/../../config/auth.php';
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../includes/helpers.php';
-require_once __DIR__ . '/../../includes/ia_roteiros.php';
+require_once __DIR__ . '/../../includes/ia_propostas.php';
 
 exigirAutenticacao();
 
@@ -48,12 +48,12 @@ Cada objeto deve ter:
 Se não encontrar algum dado em um item, deixe null.";
 
 try {
-    $respostaIa = IARoteiros::chamarGemini([
+    $respostaIa = IAPropostas::chamarGemini([
         ['text' => $prompt],
         ['inline_data' => ['mime_type' => $mimeType, 'data' => $base64Data]]
     ]);
 
-    // Se retornar erro da classe IARoteiros
+    // Se retornar erro da classe IAPropostas
     if (strpos($respostaIa, 'Erro') === 0) {
         responderJson(['erro' => $respostaIa], 500);
     }

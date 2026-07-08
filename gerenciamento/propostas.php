@@ -1,10 +1,10 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../config/env.php';
 require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/helpers.php';
 
-exigirDistinto();
+exigirAutenticacao();
 
 $tituloPagina = 'Propostas Web';
 $db = Database::get();
@@ -174,7 +174,7 @@ include __DIR__ . '/../includes/layout/head.php';
         <!-- Grid Layout -->
         <div class="folder-grid flex-1">
 
-            <!-- PASTAS (Categorias) - Apenas na raiz ou se nÃ£o estiver filtrando pasta especÃ­fica -->
+            <!-- PASTAS (Categorias) - Apenas na raiz ou se não estiver filtrando pasta específica -->
             <template x-if="!currentFolder">
                 <template x-for="f in pastas" :key="f.id">
                     <div class="item-folder group transition-all duration-500"
@@ -198,7 +198,7 @@ include __DIR__ . '/../includes/layout/head.php';
                         </div>
 
                         <div class="folder-icon-wrapper relative">
-                            <!-- Ãcone DinÃ¢mico -->
+                            <!-- Ícone Dinâmico -->
                             <i :data-lucide="countItemsInFolder(f.id) === 0 ? 'folder' : (countItemsInFolder(f.id) > 5 ? 'folders' : 'folder-open')"
                                class="w-16 h-16 transition-all duration-500"
                                :class="{
@@ -262,7 +262,7 @@ include __DIR__ . '/../includes/layout/head.php';
                 </div>
             </template>
 
-            <!-- BotÃ£o de CriaÃ§Ã£o de Pasta na Raiz -->
+            <!-- Botão de Criação de Pasta na Raiz -->
             <template x-if="!currentFolder && pastas.length === 0">
                 <div class="item-folder border-dashed border-zinc-800 bg-transparent flex items-center justify-center cursor-pointer hover:border-zinc-600 transition-colors"
                      @click="criarPasta()">
@@ -279,14 +279,14 @@ include __DIR__ . '/../includes/layout/head.php';
         <template x-if="filteredItems.length === 0 && (currentFolder || searchQuery)">
             <div class="text-center py-20 flex-1">
                 <i data-lucide="file-x" class="w-12 h-12 mx-auto mb-4 text-zinc-900"></i>
-                <p class="text-zinc-600 font-medium">Nenhum item nesta localizaÃ§Ã£o.</p>
+                <p class="text-zinc-600 font-medium">Nenhum item nesta localização.</p>
             </div>
         </template>
 
         <!-- FOOTER: Mantenha o ambiente organizado -->
         <div class="mt-auto pt-20 pb-10">
             <div class="text-center mb-6">
-                <span class="text-zinc-800 text-[10px] font-bold uppercase tracking-[0.3em]">GestÃ£o de Ativos</span>
+                <span class="text-zinc-800 text-[10px] font-bold uppercase tracking-[0.3em]">Gestão de Ativos</span>
             </div>
             <div class="max-w-xl mx-auto bg-zinc-900/30 border border-zinc-800/30 rounded-2xl p-6 flex items-center gap-6">
                 <div class="w-14 h-14 rounded-xl bg-zinc-900 flex items-center justify-center text-zinc-500">
@@ -309,7 +309,7 @@ include __DIR__ . '/../includes/layout/head.php';
              :style="`top: ${contextMenu.y}px; left: ${contextMenu.x}px;`"
              @click.away="contextMenu.show = false">
 
-            <!-- OpÃ§Ãµes Root -->
+            <!-- Opções Root -->
             <template x-if="contextMenu.type === 'root'">
                 <div>
                     <button @click="criarPasta()">
@@ -321,7 +321,7 @@ include __DIR__ . '/../includes/layout/head.php';
                 </div>
             </template>
 
-            <!-- OpÃ§Ãµes Folder -->
+            <!-- Opções Folder -->
             <template x-if="contextMenu.type === 'folder'">
                 <div>
                     <button @click="currentFolder = contextMenu.item.id; contextMenu.show = false">
@@ -337,7 +337,7 @@ include __DIR__ . '/../includes/layout/head.php';
                 </div>
             </template>
 
-            <!-- OpÃ§Ãµes Proposal -->
+            <!-- Opções Proposal -->
             <template x-if="contextMenu.type === 'proposal'">
                 <div>
                     <button @click="window.open(`<?= APP_URL ?>/p/${contextMenu.item.slug}`, '_blank'); contextMenu.show = false">
@@ -442,7 +442,7 @@ include __DIR__ . '/../includes/layout/head.php';
                                              <div class="w-8 h-8 rounded-lg bg-zinc-900 flex items-center justify-center text-zinc-500">
                                                  <i data-lucide="phone" class="w-4 h-4"></i>
                                              </div>
-                                             <span class="text-sm font-bold text-zinc-300" x-text="getResumoDados().whatsapp || 'NÃ£o informado'"></span>
+                                             <span class="text-sm font-bold text-zinc-300" x-text="getResumoDados().whatsapp || 'Não informado'"></span>
                                          </div>
                                      </div>
                                  </div>
@@ -457,12 +457,12 @@ include __DIR__ . '/../includes/layout/head.php';
                                              <div class="h-full bg-emerald-500 transition-all duration-1000"
                                                  :style="`width: ${selectedProposta.status === 'rascunho' ? '10%' : (selectedProposta.status === 'pendente' ? '50%' : '100%')}`"></div>
                                          </div>
-                                         <p class="text-[10px] text-zinc-500 mt-3 italic" x-text="selectedProposta.status === 'aceita' ? 'Proposta fechada e aprovada pelo cliente.' : 'Aguardando interaÃ§Ã£o do cliente.'"></p>
+                                         <p class="text-[10px] text-zinc-500 mt-3 italic" x-text="selectedProposta.status === 'aceita' ? 'Proposta fechada e aprovada pelo cliente.' : 'Aguardando interação do cliente.'"></p>
                                      </div>
                                  </div>
                                  <template x-if="recomendacao">
                                      <div>
-                                         <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4">PrÃ³ximo passo recomendado</h3>
+                                         <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4">Próximo passo recomendado</h3>
                                          <div class="bg-emerald-500/10 border border-emerald-500/15 rounded-2xl p-4 text-sm text-zinc-100">
                                              <p x-text="recomendacao"></p>
                                          </div>
@@ -470,14 +470,14 @@ include __DIR__ . '/../includes/layout/head.php';
                                  </template>
                              </div>
 
-                             <!-- HistÃ³rico / Timeline -->
+                             <!-- Histórico / Timeline -->
                              <div class="mb-8">
-                                 <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4">HistÃ³rico de InteraÃ§Ãµes</h3>
+                                 <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4">Histórico de Interações</h3>
 
                                  <!-- Input de Nota -->
                                  <div class="bg-zinc-900/30 border border-white/5 rounded-2xl p-4 mb-4">
                                      <textarea x-model="novaNota"
-                                               placeholder="O que aconteceu nesta conversa? (ex: cliente vai pensar, objeÃ§Ã£o de preÃ§o...)"
+                                               placeholder="O que aconteceu nesta conversa? (ex: cliente vai pensar, objeção de preço...)"
                                                class="w-full bg-transparent border-0 focus:ring-0 text-sm text-zinc-300 placeholder:text-zinc-600 resize-none"
                                                rows="2"></textarea>
                                      <div class="flex justify-end mt-2">
@@ -517,7 +517,7 @@ include __DIR__ . '/../includes/layout/head.php';
 
                                      <template x-if="!carregandoHistorico && historico.length === 0">
                                          <div class="text-center py-6 border border-dashed border-white/5 rounded-3xl">
-                                             <p class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Nenhuma interaÃ§Ã£o registrada ainda.</p>
+                                             <p class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Nenhuma interação registrada ainda.</p>
                                          </div>
                                      </template>
                                  </div>
@@ -528,7 +528,7 @@ include __DIR__ . '/../includes/layout/head.php';
                                  <div class="flex items-start justify-between gap-4 mb-6">
                                      <div>
                                          <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2">Fechamento, contrato e Asaas</h3>
-                                         <p class="text-xs text-zinc-500">Dados usados para gerar contrato, assinatura e cobrança.</p>
+                                         <p class="text-xs text-zinc-500">Dados usados para gerar contrato, assinatura e cobran�a.</p>
                                      </div>
                                      <span class="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-black uppercase tracking-widest" x-text="getPlanoEscolhidoLabel()"></span>
                                  </div>
@@ -537,9 +537,9 @@ include __DIR__ . '/../includes/layout/head.php';
                                      <div>
                                          <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2">Plano escolhido</label>
                                          <select x-model="fechamentoForm.pacote_dado_andamento" @change="aplicarRegrasPagamento(true)" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none">
-                                             <option value="">Ainda não definido</option>
-                                             <option value="heritage">Experiência Heritage</option>
-                                             <option value="cinematic">Experiência Cinematic</option>
+                                             <option value="">Ainda n�o definido</option>
+                                             <option value="heritage">Experi�ncia Heritage</option>
+                                             <option value="cinematic">Experi�ncia Cinematic</option>
                                              <option value="essencial">Registro Essencial</option>
                                          </select>
                                      </div>
@@ -548,18 +548,18 @@ include __DIR__ . '/../includes/layout/head.php';
                                          <input x-model="fechamentoForm.valor_total" @input="aplicarRegrasPagamento(false)" type="text" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none" placeholder="R$ 0,00">
                                      </div>
                                      <div>
-                                         <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2">Cobrança Asaas</label>
+                                         <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2">Cobran�a Asaas</label>
                                          <select x-model="fechamentoForm.asaas_billing_type" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none">
                                              <option value="UNDEFINED">Cliente escolhe no Asaas</option>
                                              <option value="PIX">Pix</option>
                                              <option value="BOLETO">Boleto</option>
-                                             <option value="CREDIT_CARD">Cartão de crédito</option>
+                                             <option value="CREDIT_CARD">Cart�o de cr�dito</option>
                                          </select>
                                      </div>
                                      <div>
                                          <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2">Forma de pagamento</label>
                                          <select x-model="fechamentoForm.pagamento_modo" @change="aplicarRegrasPagamento(true)" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none">
-                                             <option value="avista">À vista</option>
+                                             <option value="avista">� vista</option>
                                              <option value="parcelado">Parcelado</option>
                                          </select>
                                      </div>
@@ -582,21 +582,21 @@ include __DIR__ . '/../includes/layout/head.php';
                                          <input x-model="fechamentoForm.asaas_first_due_date" @change="validarParcelasFechamento()" type="date" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none">
                                      </div>
                                      <div>
-                                         <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2">Prazo / observação</label>
-                                         <input x-model="fechamentoForm.prazo_contrato" type="text" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none" placeholder="Ex: quitar até 15 dias antes do evento">
+                                         <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2">Prazo / observa��o</label>
+                                         <input x-model="fechamentoForm.prazo_contrato" type="text" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none" placeholder="Ex: quitar at� 15 dias antes do evento">
                                      </div>
                                      <div class="md:col-span-2" x-show="fechamentoForm.pagamento_modo === 'parcelado'">
                                          <label class="flex items-center justify-between gap-4 p-4 rounded-2xl bg-black/30 border border-white/10 cursor-pointer">
                                              <div>
                                                  <span class="block text-xs font-bold text-white">Permitir parcela depois da data do evento</span>
-                                                 <span class="block text-[10px] text-zinc-500 mt-1">Use somente quando isso fizer parte da negociação com o casal.</span>
+                                                 <span class="block text-[10px] text-zinc-500 mt-1">Use somente quando isso fizer parte da negocia��o com o casal.</span>
                                              </div>
                                              <input type="checkbox" x-model="fechamentoForm.permitir_parcela_pos_evento" @change="validarParcelasFechamento()" class="w-5 h-5">
                                          </label>
                                          <p class="text-[10px] mt-2" :class="alertaParcelas ? 'text-amber-400' : 'text-zinc-500'" x-text="alertaParcelas || resumoParcelasFechamento()"></p>
                                      </div>
                                      <div class="md:col-span-2">
-                                         <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2">Condições de pagamento para o contrato</label>
+                                         <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2">Condi��es de pagamento para o contrato</label>
                                          <textarea x-model="fechamentoForm.escolha_condicoes" rows="3" class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none resize-none" placeholder="Ex: Entrada de 20% via Pix e saldo parcelado..."></textarea>
                                      </div>
                                  </div>
@@ -784,7 +784,7 @@ include __DIR__ . '/../includes/layout/head.php';
             </div>
         </template>
 
-        <!-- Modal de ConfirmaÃ§Ã£o de ExclusÃ£o -->
+        <!-- Modal de Confirmação de Exclusão -->
         <template x-teleport="body">
             <div x-show="deleteModal.show"
                  class="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
@@ -804,7 +804,7 @@ include __DIR__ . '/../includes/layout/head.php';
                         <div class="w-16 h-16 bg-red-900/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
                             <i data-lucide="alert-triangle" class="w-8 h-8"></i>
                         </div>
-                        <h3 class="text-xl font-bold text-white mb-2">Confirmar ExclusÃ£o</h3>
+                        <h3 class="text-xl font-bold text-white mb-2">Confirmar Exclusão</h3>
                         <p class="text-zinc-400 text-sm" x-text="deleteModal.message"></p>
                     </div>
 
@@ -966,7 +966,7 @@ function propostasApp() {
         },
 
         textoLimiteParcelas() {
-            return `Máximo padrão: ${this.maxParcelasPlano()} parcelas para este plano.`;
+            return `M�ximo padr�o: ${this.maxParcelasPlano()} parcelas para este plano.`;
         },
 
         addMesesIso(dataIso, meses) {
@@ -1000,9 +1000,9 @@ function propostasApp() {
         },
 
         resumoParcelasFechamento() {
-            if (this.fechamentoForm.pagamento_modo === 'avista') return 'Pagamento à vista: sem saldo parcelado.';
+            if (this.fechamentoForm.pagamento_modo === 'avista') return 'Pagamento � vista: sem saldo parcelado.';
             const ultima = this.ultimaParcelaIso();
-            return ultima ? `Última parcela prevista para ${new Date(ultima + 'T00:00:00').toLocaleDateString('pt-BR')}.` : '';
+            return ultima ? `�ltima parcela prevista para ${new Date(ultima + 'T00:00:00').toLocaleDateString('pt-BR')}.` : '';
         },
 
         montarCondicoesAutomaticas() {
@@ -1011,10 +1011,10 @@ function propostasApp() {
             const valorFinal = this.numeroFechamento(this.fechamentoForm.valor_total);
             const entrada = this.numeroFechamento(this.fechamentoForm.asaas_valor_sinal);
             if (modo === 'avista') {
-                return `Pagamento à vista no valor total de R$ ${valorFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.`;
+                return `Pagamento � vista no valor total de R$ ${valorFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}.`;
             }
             const parcelas = parseInt(this.fechamentoForm.asaas_total_parcelas || 1, 10) || 1;
-            return `Entrada de ${percentual}% no valor de R$ ${entrada.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} + saldo parcelado em até ${parcelas}x.`;
+            return `Entrada de ${percentual}% no valor de R$ ${entrada.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} + saldo parcelado em at� ${parcelas}x.`;
         },
 
         validarParcelasFechamento() {
@@ -1031,15 +1031,15 @@ function propostasApp() {
                 parcelas = limite;
                 this.fechamentoForm.asaas_total_parcelas = limite;
                 this.alertaParcelas = this.fechamentoForm.permitir_parcela_pos_evento
-                    ? `Ajustado para o máximo padrão do plano: ${limite} parcelas.`
-                    : `Ajustado para ${limite} parcela(s), para não passar da data do evento.`;
+                    ? `Ajustado para o m�ximo padr�o do plano: ${limite} parcelas.`
+                    : `Ajustado para ${limite} parcela(s), para n�o passar da data do evento.`;
             }
 
             const dados = this.getResumoDados();
             const evento = dados.data_casamento || dados.data_evento || '';
             const ultima = this.ultimaParcelaIso();
             if (evento && ultima && ultima > evento && !this.fechamentoForm.permitir_parcela_pos_evento) {
-                this.alertaParcelas = 'A última parcela passaria da data do evento. Ative a permissão para negociar isso.';
+                this.alertaParcelas = 'A �ltima parcela passaria da data do evento. Ative a permiss�o para negociar isso.';
             }
         },
 
@@ -1136,7 +1136,7 @@ function propostasApp() {
             }
         },
 
-        // HistÃ³rico / CRM
+        // Histórico / CRM
         historico: [],
         novaNota: '',
         carregandoHistorico: false,
@@ -1145,33 +1145,33 @@ function propostasApp() {
             this.carregandoHistorico = true;
             const apiBase = '<?= raizUrl('/api/gerenciamento/proposta_historico.php') ?>';
             const url = apiBase + '?id=' + encodeURIComponent(id);
-            console.log('[HistÃ³rico] GET:', url);
+            console.log('[Histórico] GET:', url);
             try {
                 const response = await fetch(url);
-                console.log('[HistÃ³rico] GET status:', response.status);
+                console.log('[Histórico] GET status:', response.status);
                 const text = await response.text();
-                console.log('[HistÃ³rico] GET raw response:', text);
+                console.log('[Histórico] GET raw response:', text);
                 let data;
                 try { data = JSON.parse(text); } catch(pe) {
-                    console.error('[HistÃ³rico] JSON parse failed:', pe, text.substring(0, 200));
+                    console.error('[Histórico] JSON parse failed:', pe, text.substring(0, 200));
                     this.historico = [];
                     return;
                 }
                 if (Array.isArray(data)) {
                     this.historico = data;
                     this.recomendacao = '';
-                    console.log('[HistÃ³rico] Loaded', data.length, 'records');
+                    console.log('[Histórico] Loaded', data.length, 'records');
                 } else if (data && typeof data === 'object') {
                     this.historico = Array.isArray(data.historico) ? data.historico : [];
                     this.recomendacao = data.recomendacao || '';
-                    console.log('[HistÃ³rico] Loaded', this.historico.length, 'records');
+                    console.log('[Histórico] Loaded', this.historico.length, 'records');
                 } else {
-                    console.error('[HistÃ³rico] Resposta nÃ£o Ã© array nem objeto:', data);
+                    console.error('[Histórico] Resposta não é array nem objeto:', data);
                     this.historico = [];
                     this.recomendacao = '';
                 }
             } catch (e) {
-                console.error('[HistÃ³rico] Fetch error:', e);
+                console.error('[Histórico] Fetch error:', e);
                 this.historico = [];
             } finally {
                 this.carregandoHistorico = false;
@@ -1187,7 +1187,7 @@ function propostasApp() {
                 tipo: 'nota',
                 conteudo: this.novaNota
             };
-            console.log('[HistÃ³rico] POST:', apiBase, payload);
+            console.log('[Histórico] POST:', apiBase, payload);
 
             try {
                 const response = await fetch(apiBase, {
@@ -1195,27 +1195,27 @@ function propostasApp() {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                console.log('[HistÃ³rico] POST status:', response.status);
+                console.log('[Histórico] POST status:', response.status);
                 const text = await response.text();
-                console.log('[HistÃ³rico] POST raw response:', text);
+                console.log('[Histórico] POST raw response:', text);
                 let res;
                 try { res = JSON.parse(text); } catch(pe) {
-                    console.error('[HistÃ³rico] POST JSON parse failed:', pe, text.substring(0, 200));
-                    alert('Erro: Servidor retornou resposta invÃ¡lida. Veja o console (F12).');
+                    console.error('[Histórico] POST JSON parse failed:', pe, text.substring(0, 200));
+                    alert('Erro: Servidor retornou resposta inválida. Veja o console (F12).');
                     return;
                 }
                 if (res.sucesso) {
-                    console.log('[HistÃ³rico] Salvo com sucesso!', res.debug);
+                    console.log('[Histórico] Salvo com sucesso!', res.debug);
                     this.novaNota = '';
                     this.recomendacao = res.recomendacao || this.recomendacao || '';
                     await this.fetchHistorico(this.selectedProposta.id);
                 } else {
-                    console.error('[HistÃ³rico] Erro do servidor:', res);
+                    console.error('[Histórico] Erro do servidor:', res);
                     alert('Erro ao salvar: ' + (res.erro || JSON.stringify(res)));
                 }
             } catch (e) {
-                console.error('[HistÃ³rico] POST fetch error:', e);
-                alert('Erro de conexÃ£o: ' + e.message);
+                console.error('[Histórico] POST fetch error:', e);
+                alert('Erro de conexão: ' + e.message);
             }
         },
 
@@ -1242,7 +1242,7 @@ function propostasApp() {
             }
         },
 
-        // AÃ§Ãµes de API (Mockadas por enquanto para resposta rÃ¡pida na UI)
+        // Ações de API (Mockadas por enquanto para resposta rápida na UI)
         moverPara(propostaId, pastaId) {
             // Atualiza localmente
             const p = this.propostas.find(x => x.id === propostaId);
@@ -1301,7 +1301,7 @@ function propostasApp() {
                 show: true,
                 id: id,
                 type: 'pasta',
-                message: 'Excluir esta pasta? As propostas dentro dela voltarÃ£o para a raiz.'
+                message: 'Excluir esta pasta? As propostas dentro dela voltarão para a raiz.'
             };
             this.contextMenu.show = false;
         },
@@ -1380,7 +1380,7 @@ function propostasApp() {
             const numero = (dados.whatsapp || '').replace(/\D/g, '');
 
             if (!numero) {
-                alert('NÃºmero de WhatsApp nÃ£o cadastrado nesta proposta.\nAdicione o WhatsApp do cliente ao editar a proposta.');
+                alert('Número de WhatsApp não cadastrado nesta proposta.\nAdicione o WhatsApp do cliente ao editar a proposta.');
                 return;
             }
 
@@ -1404,7 +1404,7 @@ function propostasApp() {
                 const nomeF = this.getResponsavelFromDados(dadosF, proposta);
                 const primeiroNome = nomeF.split(' ')[0];
                 const link = `<?= APP_URL ?>/p/${proposta.slug}`;
-                const fallback = `Oi, ${primeiroNome}! Tudo bem?\n\nAcabei de subir o material do ${proposta.titulo} aqui no sistema. Deixei tudo bem visual pra vocÃª conseguir enxergar o projeto ganhando forma, exatamente como a gente conversou.\n\nDÃ¡ uma olhada aqui:\nðŸ‘‰ ${link}`;
+                const fallback = `Oi, ${primeiroNome}! Tudo bem?\n\nAcabei de subir o material do ${proposta.titulo} aqui no sistema. Deixei tudo bem visual pra você conseguir enxergar o projeto ganhando forma, exatamente como a gente conversou.\n\nDá uma olhada aqui:\n👉 ${link}`;
                 window.open(`https://wa.me/${numero}?text=${encodeURIComponent(fallback)}`, '_blank');
             } finally {
                 this.whatsappLoading = false;

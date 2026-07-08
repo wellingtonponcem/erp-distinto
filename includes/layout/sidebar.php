@@ -2,29 +2,10 @@
 require_once __DIR__ . '/../../config/database.php';
 $usuario = usuarioAtual();
 
-// Patch: Se o nível na sessão não for 1, tenta validar no banco (caso tenha acabado de ser promovido)
-if (!isset($_SESSION['user_nivel']) || $_SESSION['user_nivel'] != 1) {
-    $db = Database::get();
-    $stmt = $db->prepare("SELECT nivel FROM users WHERE id = ?");
-    $stmt->execute([$usuario['id']]);
-    $nivel = $stmt->fetchColumn();
-    if ($nivel !== false) {
-        $_SESSION['user_nivel'] = (int)$nivel;
-        $usuario['nivel'] = (int)$nivel;
-    }
-}
-
 $paginaAtual = $_SERVER['SCRIPT_NAME'];
 function menuAtivo(string $path): string {
     global $paginaAtual;
     return str_contains($paginaAtual, $path) ? 'ativo' : '';
-}
-
-// Se estiver na área de roteiros OU o usuário não for do sistema Distinto, exibe o menu simplificado
-$isAreaRoteiros = str_contains($_SERVER['SCRIPT_NAME'], '/roteiros/');
-if ($usuario['sistema_origem'] !== 'distinto' || $isAreaRoteiros) {
-    include __DIR__ . '/sidebar-roteiros.php';
-    return;
 }
 ?>
 <aside x-data="{ collapsed: true }" :class="{ 'collapsed': collapsed }" class="sidebar flex flex-col transition-all duration-300 relative group">
@@ -47,7 +28,6 @@ if ($usuario['sistema_origem'] !== 'distinto' || $isAreaRoteiros) {
         </div>
     </div>
     
-
 
     <nav style="flex:1; padding:8px 14px; overflow-y:auto; overflow-x:hidden;">
         <div class="nav-section hide-on-collapse">Principal</div>
@@ -113,28 +93,16 @@ if ($usuario['sistema_origem'] !== 'distinto' || $isAreaRoteiros) {
             <i data-lucide="message-square-quote" style="width:20px;height:20px; flex-shrink:0;"></i>
             <span class="nav-label hide-on-collapse transition-opacity">Depoimentos</span>
         </a>
-        <a href="<?= raizUrl('/roteiros/index.php') ?>" class="nav-link <?= menuAtivo('/roteiros') ?>">
-            <i data-lucide="video" style="width:20px;height:20px; flex-shrink:0;"></i>
-            <span class="nav-label hide-on-collapse transition-opacity">Roteiros</span>
-        </a>
 
         <div class="nav-section hide-on-collapse">Configurações</div>
         <a href="<?= raizUrl('/configuracoes.php') ?>" class="nav-link <?= menuAtivo('/configuracoes') ?>">
             <i data-lucide="settings" style="width:20px;height:20px; flex-shrink:0;"></i>
             <span class="nav-label hide-on-collapse transition-opacity">Ajustes Gerais</span>
         </a>
-        <a href="<?= raizUrl('/assinar.php') ?>" class="nav-link <?= menuAtivo('/assinar') ?>">
-            <i data-lucide="credit-card" style="width:20px;height:20px; flex-shrink:0;"></i>
-            <span class="nav-label hide-on-collapse transition-opacity">Assinatura</span>
-        </a>
         <?php if ($usuario['nivel'] == 1): ?>
         <a href="<?= raizUrl('/gerenciamento/usuarios.php') ?>" class="nav-link <?= menuAtivo('/gerenciamento/usuarios') ?>">
             <i data-lucide="shield-check" style="width:20px;height:20px; flex-shrink:0;"></i>
             <span class="nav-label hide-on-collapse transition-opacity">Gestão de Equipe</span>
-        </a>
-        <a href="<?= raizUrl('/financeiro/saas.php') ?>" class="nav-link <?= menuAtivo('/financeiro/saas') ?>">
-            <i data-lucide="bar-chart-2" style="width:20px;height:20px; flex-shrink:0;"></i>
-            <span class="nav-label hide-on-collapse transition-opacity">Financeiro SaaS</span>
         </a>
         <?php endif; ?>
     </nav>
