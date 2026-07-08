@@ -4,68 +4,57 @@ $is_dashboard = strpos($current_uri, '/dashboard.php') !== false;
 $is_lancamentos = strpos($current_uri, '/financeiro/lancamentos.php') !== false;
 $is_custos = strpos($current_uri, '/financeiro/configuracoes.php') !== false;
 $is_simulador = strpos($current_uri, '/precificacao/simulador.php') !== false;
+
+$usuarioLogado = usuarioAtual();
+$inicial = strtoupper(substr($usuarioLogado['nome'] ?? 'U', 0, 1));
 ?>
-<style>
-    .top-nav-bento {
-        background: #fff;
-        border-radius: 999px;
-        padding: 6px;
-        display: inline-flex;
-        gap: 4px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-    }
 
-    .dark .top-nav-bento {
-        background: #111;
-        border: 1px solid #222;
-    }
-
-    .top-nav-bento a {
-        padding: 10px 18px;
-        font-size: 13px;
-        font-weight: 600;
-        color: #555;
-        border-radius: 999px;
-        transition: 0.2s;
-    }
-
-    .dark .top-nav-bento a {
-        color: #aaa;
-    }
-
-    .top-nav-bento a:hover {
-        background: #f0f0f0;
-        color: #111;
-    }
-
-    .dark .top-nav-bento a:hover {
-        background: #222;
-        color: #fff;
-    }
-
-    .top-nav-bento a.active {
-        background: #e0f2fe;
-        color: #0369a1;
-    }
-
-    .dark .top-nav-bento a.active {
-        background: #0c4a6e;
-        color: #38bdf8;
-    }
-</style>
-
-<!-- Top Navigation Area -->
-<div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
-    <div class="top-nav-bento">
-        <a href="<?= raizUrl('/dashboard.php') ?>" class="<?= $is_dashboard ? 'active' : '' ?>">Dashboard</a>
-        <a href="<?= raizUrl('/financeiro/lancamentos.php') ?>" class="<?= $is_lancamentos ? 'active' : '' ?>">Lançamentos</a>
-        <a href="<?= raizUrl('/financeiro/configuracoes.php') ?>" class="<?= $is_custos ? 'active' : '' ?>">Custos</a>
-        <a href="<?= raizUrl('/precificacao/simulador.php') ?>" class="<?= $is_simulador ? 'active' : '' ?>">Simulador</a>
+<!-- TopAppBar Header -->
+<header class="flex items-center justify-between py-4 mb-8 border-b border-outline-variant/30 sticky top-0 bg-[#050505]/80 backdrop-blur-md z-40">
+    <div class="flex items-center gap-12">
+        <span class="text-title-sm font-headline-md font-bold text-on-surface whitespace-nowrap">FinOps Central</span>
+        <nav class="hidden md:flex items-center gap-8">
+            <a href="<?= raizUrl('/dashboard.php') ?>" 
+               class="<?= $is_dashboard ? 'text-primary font-bold border-b-2 border-primary pb-2' : 'text-on-surface-variant hover:text-on-surface' ?> text-sm transition-colors pb-2">
+                Dashboard
+            </a>
+            <a href="<?= raizUrl('/financeiro/lancamentos.php') ?>" 
+               class="<?= $is_lancamentos ? 'text-primary font-bold border-b-2 border-primary pb-2' : 'text-on-surface-variant hover:text-on-surface' ?> text-sm transition-colors pb-2">
+                Lançamentos
+            </a>
+            <a href="<?= raizUrl('/financeiro/configuracoes.php') ?>" 
+               class="<?= $is_custos ? 'text-primary font-bold border-b-2 border-primary pb-2' : 'text-on-surface-variant hover:text-on-surface' ?> text-sm transition-colors pb-2">
+                Custos
+            </a>
+            <a href="<?= raizUrl('/precificacao/simulador.php') ?>" 
+               class="<?= $is_simulador ? 'text-primary font-bold border-b-2 border-primary pb-2' : 'text-on-surface-variant hover:text-on-surface' ?> text-sm transition-colors pb-2">
+                Simulador
+            </a>
+        </nav>
     </div>
-    <div class="flex items-center gap-3">
-        <span
-            class="text-xs font-bold text-zinc-500 bg-white dark:bg-zinc-900 px-4 py-2 rounded-full shadow-sm">PT-BR</span>
-        <span
-            class="text-xs font-bold text-zinc-700 dark:text-zinc-300 bg-white dark:bg-zinc-900 px-4 py-2 rounded-full shadow-sm"><?= sanitizar(usuarioAtual()['email']) ?></span>
+    
+    <div class="flex items-center gap-4">
+        <!-- Notification Button -->
+        <button class="hover:bg-surface-container-highest/50 text-on-surface-variant hover:text-on-surface transition-colors p-2 rounded-full flex items-center justify-center relative group" title="Notificações">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-primary rounded-full border-2 border-[#050505] hidden group-hover:block"></span>
+        </button>
+        
+        <!-- Help Button -->
+        <button class="hover:bg-surface-container-highest/50 text-on-surface-variant hover:text-on-surface transition-colors p-2 rounded-full flex items-center justify-center" title="Ajuda">
+            <i data-lucide="help-circle" class="w-5 h-5"></i>
+        </button>
+        
+        <!-- New Entry Action -->
+        <a href="<?= raizUrl('/financeiro/lancamentos.php?novo=1') ?>"
+           class="bg-primary hover:bg-primary-container text-on-primary-container px-4 py-2 rounded-lg font-bold text-xs transition-all active:scale-95 duration-150 shadow-md whitespace-nowrap">
+            Novo Lançamento
+        </a>
+        
+        <!-- User Profile Avatar with Initials -->
+        <div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant bg-[#191916] flex items-center justify-center text-sm font-bold text-primary shrink-0 cursor-pointer hover:border-primary/50 transition-colors" title="<?= sanitizar($usuarioLogado['nome'] ?? '') ?> (<?= sanitizar($usuarioLogado['email'] ?? '') ?>)">
+            <span><?= $inicial ?></span>
+        </div>
     </div>
-</div>
+</header>
+
