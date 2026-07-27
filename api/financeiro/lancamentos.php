@@ -140,10 +140,15 @@ try {
         if (empty($ids)) responderJson(['erro' => 'ID obrigatório'], 422);
 
         $inQuery = implode(',', array_fill(0, count($ids), '?'));
-        // Excluir filhos
-        $db->prepare("DELETE FROM lancamentos WHERE lancamento_pai_id IN ($inQuery)")->execute($ids);
-        // Excluir pais/itens
-        $db->prepare("DELETE FROM lancamentos WHERE id IN ($inQuery)")->execute($ids);
+
+        // Lançamentos vinculados a custos fixos: cancelar em vez de deletar
+        // (o sincronizarLancamentosCustosFixos os recriaria se fossem deletados)
+        $db->prepare("UPDATE lancamentos SET status = 'cancelado', valor_pago = 0 WHERE id IN ($inQuery) AND (custo_fixo_id IS NOT NULL AND custo_fixo_id != '')")->execute($ids);
+
+        // Demais lançamentos: deletar fisicamente (filhos depois pais)
+        $db->prepare("DELETE FROM lancamentos WHERE lancamento_pai_id IN ($inQuery) AND (custo_fixo_id IS NULL OR custo_fixo_id = '')")->execute($ids);
+        $db->prepare("DELETE FROM lancamentos WHERE id IN ($inQuery) AND (custo_fixo_id IS NULL OR custo_fixo_id = '')")->execute($ids);
+
         responderJson(['ok' => true]);
 
         default:

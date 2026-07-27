@@ -1030,6 +1030,7 @@ function lancamentos() {
 
         get lancamentosFiltrados() {
             return this.lista.filter(l => {
+                if (l.status === 'cancelado') return false;
                 if (this.filtros.tipo   && l.tipo !== this.filtros.tipo) return false;
                 if (this.filtros.status && l.status !== this.filtros.status) return false;
                 if (this.filtros.categoria && l.categoria !== this.filtros.categoria) return false;
@@ -1415,7 +1416,9 @@ function lancamentos() {
         },
 
         async excluir(id) {
-            if (!confirm('Excluir este lançamento?')) return;
+            const item = this.lista.find(l => l.id === id);
+            const ehCustoFixo = item && item.custo_fixo_id;
+            if (!confirm(ehCustoFixo ? 'Cancelar este lançamento de custo fixo? Ele não será mais gerado automaticamente para este mês.' : 'Excluir este lançamento?')) return;
             try {
                 const r = await fetch('<?= raizUrl('/api/financeiro/lancamentos.php') ?>', { 
                     method: 'DELETE',
@@ -1423,7 +1426,7 @@ function lancamentos() {
                     body: JSON.stringify({ ids: [id] })
                 });
                 if (r.ok) {
-                    toast('Lançamento excluído', 'sucesso');
+                    toast(ehCustoFixo ? 'Lançamento cancelado. Para evitar novos lançamentos, desative o custo fixo.' : 'Lançamento excluído', 'sucesso');
                     this.selecionados = this.selecionados.filter(s => s !== id);
                     await this.carregarLancamentos();
                 } else {
@@ -1464,7 +1467,8 @@ function lancamentos() {
 
         async excluirSelecionados() {
             if (this.selecionados.length === 0) return;
-            if (!confirm(`Excluir ${this.selecionados.length} lançamento(s)?`)) return;
+            const temCustoFixo = this.selecionados.some(id => this.lista.find(l => l.id === id)?.custo_fixo_id);
+            if (!confirm(temCustoFixo ? `Processar ${this.selecionados.length} lançamento(s)? Itens de custos fixos serão cancelados.` : `Excluir ${this.selecionados.length} lançamento(s)?`)) return;
             try {
                 const r = await fetch('<?= raizUrl('/api/financeiro/lancamentos.php') ?>', { 
                     method: 'DELETE',
@@ -1472,7 +1476,7 @@ function lancamentos() {
                     body: JSON.stringify({ ids: this.selecionados })
                 });
                 if (r.ok) {
-                    toast(`${this.selecionados.length} lançamento(s) excluído(s)`, 'sucesso');
+                    toast(`${this.selecionados.length} lançamento(s) processado(s)`, 'sucesso');
                     this.selecionados = [];
                     await this.carregarLancamentos();
                 } else {
