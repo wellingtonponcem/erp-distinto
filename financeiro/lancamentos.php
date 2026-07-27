@@ -181,11 +181,60 @@ include __DIR__ . '/../includes/layout/head.php';
 
                 <div class="h-4 w-px bg-outline-variant/30 mx-1"></div>
 
-                <!-- Seletor de Período Moderno -->
+                <!-- Seletor de Período -->
                 <div class="flex items-center gap-1 p-1 bg-surface-container rounded-lg border border-outline-variant/30">
-                    <button @click="deslocarPeriodo(-1)" class="p-1.5 hover:bg-surface-variant rounded text-on-surface-variant transition-colors"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
-                    <span class="px-3 text-label-caps font-label-caps text-on-surface min-w-[120px] text-center" x-text="labelPeriodo()"></span>
-                    <button @click="deslocarPeriodo(1)" class="p-1.5 hover:bg-surface-variant rounded text-on-surface-variant transition-colors"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                    <!-- Dropdown tipo de período -->
+                    <div class="relative" @click.outside="periodoTiposAberto = false">
+                        <button @click="periodoTiposAberto = !periodoTiposAberto"
+                                class="flex items-center gap-0.5 p-1.5 hover:bg-surface-variant rounded text-on-surface-variant transition-colors">
+                            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                            <i data-lucide="chevron-down" class="w-3 h-3"></i>
+                        </button>
+                        <div x-show="periodoTiposAberto" x-transition
+                             class="absolute top-full left-0 mt-1 bg-surface-container border border-outline-variant/30 rounded-lg shadow-lg z-50 min-w-[150px] overflow-hidden">
+                            <button @click="periodoAtivo = 'dia'; periodoTiposAberto = false; mudarModoPeriodo()"
+                                    class="w-full text-left px-3 py-2 text-label-caps font-label-caps hover:bg-surface-variant transition-colors"
+                                    :class="periodoAtivo === 'dia' ? 'text-primary bg-primary/5' : 'text-on-surface-variant'">Dia</button>
+                            <button @click="periodoAtivo = 'semana'; periodoTiposAberto = false; mudarModoPeriodo()"
+                                    class="w-full text-left px-3 py-2 text-label-caps font-label-caps hover:bg-surface-variant transition-colors"
+                                    :class="periodoAtivo === 'semana' ? 'text-primary bg-primary/5' : 'text-on-surface-variant'">Semana</button>
+                            <button @click="periodoAtivo = 'mes'; periodoTiposAberto = false; mudarModoPeriodo()"
+                                    class="w-full text-left px-3 py-2 text-label-caps font-label-caps hover:bg-surface-variant transition-colors"
+                                    :class="periodoAtivo === 'mes' ? 'text-primary bg-primary/5' : 'text-on-surface-variant'">Mês</button>
+                            <button @click="periodoAtivo = 'ano'; periodoTiposAberto = false; mudarModoPeriodo()"
+                                    class="w-full text-left px-3 py-2 text-label-caps font-label-caps hover:bg-surface-variant transition-colors"
+                                    :class="periodoAtivo === 'ano' ? 'text-primary bg-primary/5' : 'text-on-surface-variant'">Ano</button>
+                            <button @click="periodoAtivo = 'personalizado'; periodoTiposAberto = false; mudarModoPeriodo()"
+                                    class="w-full text-left px-3 py-2 text-label-caps font-label-caps hover:bg-surface-variant transition-colors"
+                                    :class="periodoAtivo === 'personalizado' ? 'text-primary bg-primary/5' : 'text-on-surface-variant'">Personalizado</button>
+                            <div class="h-px bg-outline-variant/20 mx-2"></div>
+                            <button @click="periodoAtivo = 'tudo'; periodoTiposAberto = false; mudarModoPeriodo()"
+                                    class="w-full text-left px-3 py-2 text-label-caps font-label-caps hover:bg-surface-variant transition-colors"
+                                    :class="periodoAtivo === 'tudo' ? 'text-primary bg-primary/5' : 'text-on-surface-variant'">Tudo</button>
+                        </div>
+                    </div>
+
+                    <template x-if="periodoAtivo !== 'personalizado' && periodoAtivo !== 'tudo'">
+                        <div class="flex items-center gap-1">
+                            <button @click="deslocarPeriodo(-1)" class="p-1.5 hover:bg-surface-variant rounded text-on-surface-variant transition-colors"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+                            <span class="px-3 text-label-caps font-label-caps text-on-surface min-w-[120px] text-center" x-text="labelPeriodo()"></span>
+                            <button @click="deslocarPeriodo(1)" class="p-1.5 hover:bg-surface-variant rounded text-on-surface-variant transition-colors"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                        </div>
+                    </template>
+
+                    <template x-if="periodoAtivo === 'personalizado'">
+                        <div class="flex items-center gap-2 px-2">
+                            <input type="date" x-model="customDataInicio" @change="aplicarPeriodoPersonalizado()"
+                                   class="bg-transparent border border-outline-variant/30 rounded py-1 px-2 text-label-caps font-label-caps text-on-surface outline-none focus:border-primary/50 transition-all w-[130px]">
+                            <span class="text-on-surface-variant text-label-caps">até</span>
+                            <input type="date" x-model="customDataFim" @change="aplicarPeriodoPersonalizado()"
+                                   class="bg-transparent border border-outline-variant/30 rounded py-1 px-2 text-label-caps font-label-caps text-on-surface outline-none focus:border-primary/50 transition-all w-[130px]">
+                        </div>
+                    </template>
+
+                    <template x-if="periodoAtivo === 'tudo'">
+                        <span class="px-3 text-label-caps font-label-caps text-on-surface-variant">Tudo</span>
+                    </template>
                 </div>
             </div>
         </div>
@@ -928,6 +977,9 @@ function lancamentos() {
         filtros: { tipo: '', status: '', data_inicio: '', data_fim: '', busca: '', categoria: '', conta: '', conciliado: '' },
         periodoAtivo: 'mes',
         referenciaData: new Date().toISOString().split('T')[0],
+        periodoTiposAberto: false,
+        customDataInicio: '',
+        customDataFim: '',
         selecionados: [],
         form: {},
         categoriaCustom: '',
@@ -1189,18 +1241,42 @@ function lancamentos() {
         },
 
         mudarModoPeriodo() {
+            if (this.periodoAtivo === 'personalizado') {
+                if (!this.customDataInicio) {
+                    const hoje = new Date();
+                    this.customDataInicio = hoje.toISOString().split('T')[0];
+                    const fim = new Date(hoje);
+                    fim.setDate(fim.getDate() + 30);
+                    this.customDataFim = fim.toISOString().split('T')[0];
+                }
+                this.aplicarPeriodoPersonalizado();
+                this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
+                return;
+            }
+            if (this.periodoAtivo === 'tudo') {
+                this.aplicarPeriodo();
+                this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
+                return;
+            }
             this.referenciaData = new Date().toISOString().split('T')[0];
             this.aplicarPeriodo();
             this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
         },
 
+        aplicarPeriodoPersonalizado() {
+            this.filtros.data_inicio = this.customDataInicio || '';
+            this.filtros.data_fim = this.customDataFim || '';
+        },
+
         deslocarPeriodo(offset) {
+            if (this.periodoAtivo === 'personalizado' || this.periodoAtivo === 'tudo') return;
             let [y, m, d] = this.referenciaData.split('-').map(Number);
             let date = new Date(y, m - 1, d);
             if (this.periodoAtivo === 'dia') date.setDate(date.getDate() + offset);
+            else if (this.periodoAtivo === 'semana') date.setDate(date.getDate() + offset * 7);
             else if (this.periodoAtivo === 'mes') date.setMonth(date.getMonth() + offset);
             else if (this.periodoAtivo === 'ano') date.setFullYear(date.getFullYear() + offset);
-            
+
             const newY = date.getFullYear();
             const newM = String(date.getMonth() + 1).padStart(2, '0');
             const newD = String(date.getDate()).padStart(2, '0');
@@ -1214,15 +1290,23 @@ function lancamentos() {
                 this.filtros.data_fim = '';
                 return;
             }
+            if (this.periodoAtivo === 'personalizado') {
+                this.aplicarPeriodoPersonalizado();
+                return;
+            }
             if (this.periodoAtivo === 'semana') {
-                const h = new Date();
-                const dom = new Date(h.setDate(h.getDate() - h.getDay()));
-                const sab = new Date(h.setDate(h.getDate() - h.getDay() + 6));
+                let [y, m, d] = this.referenciaData.split('-').map(Number);
+                const ref = new Date(y, m - 1, d);
+                const diaSemana = ref.getDay();
+                const dom = new Date(ref);
+                dom.setDate(dom.getDate() - diaSemana);
+                const sab = new Date(dom);
+                sab.setDate(dom.getDate() + 6);
                 this.filtros.data_inicio = dom.getFullYear() + '-' + String(dom.getMonth()+1).padStart(2,'0') + '-' + String(dom.getDate()).padStart(2,'0');
                 this.filtros.data_fim = sab.getFullYear() + '-' + String(sab.getMonth()+1).padStart(2,'0') + '-' + String(sab.getDate()).padStart(2,'0');
                 return;
             }
-            
+
             let [y, m, d] = this.referenciaData.split('-').map(Number);
             if (this.periodoAtivo === 'dia') {
                 this.filtros.data_inicio = this.referenciaData;
@@ -1241,6 +1325,15 @@ function lancamentos() {
             let [y, m, d] = this.referenciaData.split('-').map(Number);
             if (this.periodoAtivo === 'dia') {
                 return `${String(d).padStart(2,'0')}/${String(m).padStart(2,'0')}/${y}`;
+            } else if (this.periodoAtivo === 'semana') {
+                const ref = new Date(y, m - 1, d);
+                const diaSemana = ref.getDay();
+                const dom = new Date(ref);
+                dom.setDate(dom.getDate() - diaSemana);
+                const sab = new Date(dom);
+                sab.setDate(dom.getDate() + 6);
+                const fmt = (dt) => `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}`;
+                return `${fmt(dom)} - ${fmt(sab)}`;
             } else if (this.periodoAtivo === 'mes') {
                 const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
                 return `${meses[m-1]} de ${y}`;
@@ -1763,6 +1856,8 @@ function lancamentos() {
             };
             this.periodoAtivo = 'mes';
             this.referenciaData = new Date().toISOString().split('T')[0];
+            this.customDataInicio = '';
+            this.customDataFim = '';
             this.aplicarPeriodo();
             toast('Filtros limpos', 'info');
         },
