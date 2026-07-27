@@ -17,7 +17,7 @@ try {
 include __DIR__ . '/../includes/layout/head.php';
 ?>
 
-<div id="app-wrapper" class="flex min-h-screen" x-data="lancamentos()" x-effect="lancamentosFiltrados; $nextTick(() => { if (window.lucide) lucide.createIcons(); })">
+<div id="app-wrapper" class="flex min-h-screen" x-data="lancamentos()" x-effect="lancamentosFiltrados; $nextTick(() => { if (window.lucide) lucide.createIcons(); })" @keyup.escape.window="periodoTiposAberto = false">
     <?php include __DIR__ . '/../includes/layout/sidebar.php'; ?>
 
     <main id="main-content" class="content-sheet !bg-background !p-6 flex flex-col flex-1">
@@ -128,7 +128,7 @@ include __DIR__ . '/../includes/layout/head.php';
         </div>
 
         <!-- Filters -->
-        <div class="glass-card p-4 rounded-xl mb-8 flex flex-col gap-4 relative z-30">
+        <div class="bg-[#131316] border border-outline-variant/30 p-4 rounded-xl mb-8 flex flex-col gap-4 relative z-30">
             <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
                 <!-- Segmented Control para Tipo -->
                 <div class="flex p-1 bg-surface-container-lowest/80 rounded-lg border border-outline-variant/30">
@@ -162,7 +162,7 @@ include __DIR__ . '/../includes/layout/head.php';
                 <select class="bg-surface-container border border-outline-variant/30 rounded-lg py-2 px-4 text-label-caps font-label-caps text-on-surface-variant outline-none focus:border-primary/50 transition-all appearance-none cursor-pointer" x-model="filtros.conta">
                     <option value="">Todas as contas</option>
                     <template x-for="c in contas" :key="c.id">
-                        <option :value="c.id" x-text="c.nome.toUpperCase()"></option>
+                        <option :value="c.nome" x-text="c.nome.toUpperCase()"></option>
                     </template>
                 </select>
 
@@ -182,35 +182,37 @@ include __DIR__ . '/../includes/layout/head.php';
                 <div class="h-4 w-px bg-outline-variant/30 mx-1"></div>
 
                 <!-- Seletor de Período -->
-                <div class="flex items-center gap-1 p-1 bg-surface-container rounded-lg border border-outline-variant/30 relative z-20">
-                    <!-- Dropdown tipo de período -->
+                <div class="flex items-center gap-1 p-1 bg-surface-container rounded-lg border border-outline-variant/30 relative">
+                    <!-- Dropdown Trigger -->
                     <div class="relative" @click.outside="periodoTiposAberto = false">
                         <button @click="periodoTiposAberto = !periodoTiposAberto"
                                 class="flex items-center gap-0.5 p-1.5 hover:bg-surface-variant rounded text-on-surface-variant transition-colors">
                             <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
                             <i data-lucide="chevron-down" class="w-3 h-3"></i>
                         </button>
+
+                        <!-- Menu Flutuante Absoluto -->
                         <div x-show="periodoTiposAberto" x-transition
-                             class="absolute top-full left-0 mt-1 bg-surface-container border border-outline-variant/30 rounded-lg shadow-lg z-50 min-w-[150px] overflow-hidden">
+                             class="absolute top-full left-0 mt-2 bg-[#1b1b1e] border border-outline-variant/40 rounded-xl shadow-2xl z-[999] min-w-[180px] overflow-hidden py-1">
                             <button @click="periodoAtivo = 'dia'; periodoTiposAberto = false; mudarModoPeriodo()"
                                     class="w-full text-left px-3 py-2 text-label-caps font-label-caps hover:bg-surface-variant transition-colors"
-                                    :class="periodoAtivo === 'dia' ? 'text-primary bg-primary/5' : 'text-on-surface-variant'">Dia</button>
+                                    :class="periodoAtivo === 'dia' ? 'text-primary bg-primary/10' : 'text-on-surface-variant'">Dia</button>
                             <button @click="periodoAtivo = 'semana'; periodoTiposAberto = false; mudarModoPeriodo()"
                                     class="w-full text-left px-3 py-2 text-label-caps font-label-caps hover:bg-surface-variant transition-colors"
-                                    :class="periodoAtivo === 'semana' ? 'text-primary bg-primary/5' : 'text-on-surface-variant'">Semana</button>
+                                    :class="periodoAtivo === 'semana' ? 'text-primary bg-primary/10' : 'text-on-surface-variant'">Semana</button>
                             <button @click="periodoAtivo = 'mes'; periodoTiposAberto = false; mudarModoPeriodo()"
                                     class="w-full text-left px-3 py-2 text-label-caps font-label-caps hover:bg-surface-variant transition-colors"
-                                    :class="periodoAtivo === 'mes' ? 'text-primary bg-primary/5' : 'text-on-surface-variant'">Mês</button>
+                                    :class="periodoAtivo === 'mes' ? 'text-primary bg-primary/10' : 'text-on-surface-variant'">Mês</button>
                             <button @click="periodoAtivo = 'ano'; periodoTiposAberto = false; mudarModoPeriodo()"
                                     class="w-full text-left px-3 py-2 text-label-caps font-label-caps hover:bg-surface-variant transition-colors"
-                                    :class="periodoAtivo === 'ano' ? 'text-primary bg-primary/5' : 'text-on-surface-variant'">Ano</button>
+                                    :class="periodoAtivo === 'ano' ? 'text-primary bg-primary/10' : 'text-on-surface-variant'">Ano</button>
                             <button @click="periodoAtivo = 'personalizado'; periodoTiposAberto = false; mudarModoPeriodo()"
                                     class="w-full text-left px-3 py-2 text-label-caps font-label-caps hover:bg-surface-variant transition-colors"
-                                    :class="periodoAtivo === 'personalizado' ? 'text-primary bg-primary/5' : 'text-on-surface-variant'">Personalizado</button>
-                            <div class="h-px bg-outline-variant/20 mx-2"></div>
+                                    :class="periodoAtivo === 'personalizado' ? 'text-primary bg-primary/10' : 'text-on-surface-variant'">Personalizado</button>
+                            <div class="h-px bg-outline-variant/20 mx-2 my-1"></div>
                             <button @click="periodoAtivo = 'tudo'; periodoTiposAberto = false; mudarModoPeriodo()"
                                     class="w-full text-left px-3 py-2 text-label-caps font-label-caps hover:bg-surface-variant transition-colors"
-                                    :class="periodoAtivo === 'tudo' ? 'text-primary bg-primary/5' : 'text-on-surface-variant'">Tudo</button>
+                                    :class="periodoAtivo === 'tudo' ? 'text-primary bg-primary/10' : 'text-on-surface-variant'">Tudo</button>
                         </div>
                     </div>
 
