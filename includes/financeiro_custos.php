@@ -244,7 +244,6 @@ function existeLancamentoCustoFixoNoMes(PDO $db, array $custo, DateTime $venc): 
             SELECT id FROM lancamentos
             WHERE custo_fixo_id = ?
               AND TO_CHAR(vencimento, 'YYYY-MM') = ?
-              AND status != 'cancelado'
             LIMIT 1
         ");
         $stmt->execute([$custo['id'], $venc->format('Y-m')]);
@@ -256,7 +255,6 @@ function existeLancamentoCustoFixoNoMes(PDO $db, array $custo, DateTime $venc): 
         WHERE tipo = 'pagar'
           AND descricao = ?
           AND TO_CHAR(vencimento, 'YYYY-MM') = ?
-          AND status != 'cancelado'
         LIMIT 1
     ");
     $stmt->execute([$custo['nome'], $venc->format('Y-m')]);
