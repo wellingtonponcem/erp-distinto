@@ -128,7 +128,7 @@ include __DIR__ . '/../includes/layout/head.php';
         </div>
 
         <!-- Filters -->
-        <div class="glass-card p-4 rounded-xl mb-8 flex flex-col gap-4">
+        <div class="glass-card p-4 rounded-xl mb-8 flex flex-col gap-4 relative z-30">
             <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
                 <!-- Segmented Control para Tipo -->
                 <div class="flex p-1 bg-surface-container-lowest/80 rounded-lg border border-outline-variant/30">
@@ -240,7 +240,7 @@ include __DIR__ . '/../includes/layout/head.php';
         </div>
 
         <!-- Tabela -->
-        <div class="glass-card rounded-xl overflow-hidden mb-6">
+        <div class="glass-card rounded-xl overflow-hidden mb-6 relative z-10">
             <div class="grid grid-cols-[40px_2.5fr_1fr_1fr_1fr_1fr_1fr_120px] items-center px-6 py-4 bg-surface-container-low border-b border-outline-variant/20">
                 <input type="checkbox" class="rounded border-outline-variant/30 bg-surface-container text-primary focus:ring-primary focus:ring-offset-background" :checked="todosSelecionados" @change="toggleTodos()">
                 <span class="text-label-caps font-label-caps text-on-surface-variant text-[10px]">Descrição / Cliente</span>
