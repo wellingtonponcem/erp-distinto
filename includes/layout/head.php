@@ -106,7 +106,7 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
             flex: 1;
             min-width: 0;
             min-height: calc(100vh - 32px);
-            margin: 0;
+            margin: 0 0 0 80px !important;
             padding: 30px 34px !important;
             overflow-y: auto;
             max-width: none !important;

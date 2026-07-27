@@ -23,6 +23,54 @@ include __DIR__ . '/../includes/layout/head.php';
     <main id="main-content" class="content-sheet !bg-background !p-6 flex flex-col flex-1">
         <?php include __DIR__ . '/../includes/layout/top_nav.php'; ?>
 
+        <!-- Header Actions -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-6">
+            <div>
+                <h1 class="font-display-lg text-on-surface mb-1" style="font-size: 2rem; font-weight: 800; line-height: 1.2;">Fluxo de Caixa</h1>
+                <p class="text-body-md text-on-surface-variant">Gestão completa de lançamentos e conciliação</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <input type="file" x-ref="ofxInput" @change="uploadOfx($event)" class="hidden" accept=".ofx,.OFX">
+                <input type="file" x-ref="iaInput" @change="lerComprovante($event)" class="hidden" accept="image/*">
+                
+                <div class="flex items-center gap-1.5 p-1 bg-surface-container border border-outline-variant/30 rounded-lg">
+                    <button @click="modalIaAberto = true" 
+                            class="flex items-center gap-2 px-4 py-2 rounded text-emerald-500 hover:bg-emerald-500/10 transition-all font-label-caps text-[10px] group"
+                            :disabled="processandoIA">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5 group-hover:rotate-12 transition-transform"></i>
+                        <span x-show="!processandoIA">Scanner IA</span>
+                        <span x-show="processandoIA">Analisando...</span>
+                    </button>
+                    <div class="w-px h-4 bg-outline-variant/30"></div>
+                    <button @click="abrirModalExtratoAsaas()" 
+                            class="flex items-center gap-2 px-4 py-2 rounded text-purple-500 hover:bg-purple-500/10 transition-all font-label-caps text-[10px]"
+                            :disabled="consultandoAsaas">
+                        <i data-lucide="landmark" class="w-3.5 h-3.5"></i>
+                        <span x-show="!consultandoAsaas">Extrato Asaas</span>
+                        <span x-show="consultandoAsaas">Consultando...</span>
+                    </button>
+                    <div class="w-px h-4 bg-outline-variant/30"></div>
+                    <button @click="$refs.ofxInput.click()" 
+                            class="flex items-center gap-2 px-4 py-2 rounded text-blue-500 hover:bg-blue-500/10 transition-all font-label-caps text-[10px]"
+                            :disabled="uploadingOfx">
+                        <i data-lucide="file-up" class="w-3.5 h-3.5"></i>
+                        <span x-show="!uploadingOfx">Importar OFX</span>
+                        <span x-show="uploadingOfx">Lendo...</span>
+                    </button>
+                </div>
+
+                <!-- Ações em Massa -->
+                <div x-show="selecionados.length > 0" class="flex items-center gap-1.5 p-1 bg-surface-container border border-outline-variant/30 rounded-lg" x-cloak x-transition>
+                    <button @click="alterarStatusSelecionados('pago')" class="px-3 py-1.5 text-emerald-500 hover:bg-emerald-500/10 rounded font-label-caps text-[10px]">Efetivar</button>
+                    <button @click="alterarStatusSelecionados('pendente')" class="px-3 py-1.5 text-amber-500 hover:bg-amber-500/10 rounded font-label-caps text-[10px]">Pendente</button>
+                    <div class="w-px h-4 bg-outline-variant/30"></div>
+                    <button @click="abrirEdicaoMassa()" class="px-3 py-1.5 text-blue-500 hover:bg-blue-500/10 rounded font-label-caps text-[10px]">Conta/Cat</button>
+                    <div class="w-px h-4 bg-outline-variant/30"></div>
+                    <button @click="excluirSelecionados()" class="px-3 py-1.5 text-red-500 hover:bg-red-500/10 rounded font-label-caps text-[10px]">Excluir</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Executive Summary Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-card-gap mb-8 items-stretch">
             <!-- Summary Card: Total a Receber -->
@@ -75,54 +123,6 @@ include __DIR__ . '/../includes/layout/head.php';
                 </div>
                 <div class="mt-4 flex items-center gap-2 text-on-surface-variant text-[11px] font-label-caps">
                     <span>Registrar entrada ou saída</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Header Actions -->
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8 mt-2">
-            <div>
-                <h1 class="font-display-lg text-on-surface mb-1">Fluxo de Caixa</h1>
-                <p class="text-body-md text-on-surface-variant">Gestão completa de lançamentos e conciliação</p>
-            </div>
-            <div class="flex items-center gap-3">
-                <input type="file" x-ref="ofxInput" @change="uploadOfx($event)" class="hidden" accept=".ofx,.OFX">
-                <input type="file" x-ref="iaInput" @change="lerComprovante($event)" class="hidden" accept="image/*">
-                
-                <div class="flex items-center gap-1.5 p-1 bg-surface-container border border-outline-variant/30 rounded-lg">
-                    <button @click="modalIaAberto = true" 
-                            class="flex items-center gap-2 px-4 py-2 rounded text-emerald-500 hover:bg-emerald-500/10 transition-all font-label-caps text-[10px] group"
-                            :disabled="processandoIA">
-                        <i data-lucide="sparkles" class="w-3.5 h-3.5 group-hover:rotate-12 transition-transform"></i>
-                        <span x-show="!processandoIA">Scanner IA</span>
-                        <span x-show="processandoIA">Analisando...</span>
-                    </button>
-                    <div class="w-px h-4 bg-outline-variant/30"></div>
-                    <button @click="abrirModalExtratoAsaas()" 
-                            class="flex items-center gap-2 px-4 py-2 rounded text-purple-500 hover:bg-purple-500/10 transition-all font-label-caps text-[10px]"
-                            :disabled="consultandoAsaas">
-                        <i data-lucide="landmark" class="w-3.5 h-3.5"></i>
-                        <span x-show="!consultandoAsaas">Extrato Asaas</span>
-                        <span x-show="consultandoAsaas">Consultando...</span>
-                    </button>
-                    <div class="w-px h-4 bg-outline-variant/30"></div>
-                    <button @click="$refs.ofxInput.click()" 
-                            class="flex items-center gap-2 px-4 py-2 rounded text-blue-500 hover:bg-blue-500/10 transition-all font-label-caps text-[10px]"
-                            :disabled="uploadingOfx">
-                        <i data-lucide="file-up" class="w-3.5 h-3.5"></i>
-                        <span x-show="!uploadingOfx">Importar OFX</span>
-                        <span x-show="uploadingOfx">Lendo...</span>
-                    </button>
-                </div>
-
-                <!-- Ações em Massa -->
-                <div x-show="selecionados.length > 0" class="flex items-center gap-1.5 p-1 bg-surface-container border border-outline-variant/30 rounded-lg" x-cloak x-transition>
-                    <button @click="alterarStatusSelecionados('pago')" class="px-3 py-1.5 text-emerald-500 hover:bg-emerald-500/10 rounded font-label-caps text-[10px]">Efetivar</button>
-                    <button @click="alterarStatusSelecionados('pendente')" class="px-3 py-1.5 text-amber-500 hover:bg-amber-500/10 rounded font-label-caps text-[10px]">Pendente</button>
-                    <div class="w-px h-4 bg-outline-variant/30"></div>
-                    <button @click="abrirEdicaoMassa()" class="px-3 py-1.5 text-blue-500 hover:bg-blue-500/10 rounded font-label-caps text-[10px]">Conta/Cat</button>
-                    <div class="w-px h-4 bg-outline-variant/30"></div>
-                    <button @click="excluirSelecionados()" class="px-3 py-1.5 text-red-500 hover:bg-red-500/10 rounded font-label-caps text-[10px]">Excluir</button>
                 </div>
             </div>
         </div>
