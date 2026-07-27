@@ -20,16 +20,6 @@ ERP Distinto: gestão de propostas comerciais, clientes e exportação PDF. Foco
   - Removidas larguras máximas fixas (`max-w-[calc(100vw-240px)]`) dos contêineres principais de todas as 9 páginas para permitir dimensionamento fluido.
   - Corrigida a duplicidade oculta da lógica de carregamento do banco de dados no `dashboard.php` que realizava requisições redundantes.
 
-- **Importação de Telas e Design System (Stitch)** *(jul/2026)*:
-  - Obtido o código e imagens do projeto Stitch para a pasta `/design/`.
-  - Baixados os códigos e screenshots das telas *Dashboard Otimizado* e *Configurações Organizas*.
-  - Salva a especificação técnica do *Design System* (`design_system.md`) e gerado o seu respectivo arquivo HTML (`design_system.html`) e captura de tela em alta fidelidade (`design_system.png`).
-
-- **Forçar Modo Escuro e Branding Distinto** *(jul/2026)*:
-  - Definida a classe `dark` de forma estática no elemento `<html>` em [head.php](file:///c:/xampp/htdocs/erp-distinto/includes/layout/head.php).
-  - Removido o botão de alternar modo e lógica JS associada em [sidebar.php](file:///c:/xampp/htdocs/erp-distinto/includes/layout/sidebar.php) e [footer.php](file:///c:/xampp/htdocs/erp-distinto/includes/layout/footer.php), consolidando o sistema de forma permanente no modo escuro.
-  - Substituída a marca provisória "FinOps Central" pelo nome dinâmico da aplicação (`APP_NAME`) em [top_nav.php](file:///c:/xampp/htdocs/erp-distinto/includes/layout/top_nav.php).
-
 ## Diretrizes para Futuras IDEs / Agentes
 1. **Idioma**: Sempre responda em Português do Brasil.
 2. **Commit**: Sugira título de commit em português ao finalizar uma ação.

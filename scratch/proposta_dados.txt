@@ -1,0 +1,79 @@
+{
+    "secoes": {
+        "visao": "Erro na API da IA (Código 401)."
+    },
+    "servicos": [],
+    "fases_cronograma": [],
+    "briefing": "",
+    "objetivo_original": "",
+    "data_inicio": "2026-05-27",
+    "meses_contrato": "12",
+    "forma_pagamento": "boleto_pix",
+    "adicional": {
+        "titulo": "",
+        "valor": "",
+        "descricao": "",
+        "fornecedor_id": ""
+    },
+    "responsavel": "Jeane Nunes",
+    "whatsapp": "27988586935",
+    "is_plural": true,
+    "etapas_ativas": [],
+    "etapas_dias": [],
+    "nome_noivo": "Wellington Poncem",
+    "nome_noiva": "Jeane Nunes",
+    "data_casamento": "2026-12-24",
+    "data_limite_desconto": "05\/06\/2026",
+    "condicao_especial": "",
+    "valor_heritage": "8900",
+    "itens_heritage": "Cobertura Documental, Álbum Heritage, Réplicas, Filme 4K, Drone, Ecossistema Digital",
+    "valor_cinematic": "320",
+    "itens_cinematic": "Fotografia 8h, Sessão Engagement, Short Film, Social Content, Making Of, Bônus",
+    "valor_essencial": "2800",
+    "itens_essencial": "Cobertura Fotográfica Essencial",
+    "valor_boudoir": "",
+    "valor_prewedding": "",
+    "atualizacoes_versao": "Inclusao de 1 album para os clientes.\r\nInclusao de captacao por drone.\r\nConsolidacao do investimento em um valor unico.",
+    "andamento_proposta": "",
+    "mostrar_andamento_cliente": false,
+    "versao_proposta": "v2",
+    "itens_personalizados": {
+        "heritage": [
+            {
+                "incluido": "1",
+                "nome": "Captação area com drone",
+                "descricao": "Captação aérea com até 10 min.",
+                "valor": "1000"
+            }
+        ]
+    },
+    "mensagem_pessoal": "Na Distinto, entendemos que o nosso papel vai muito além de apertar um botão.",
+    "prazo_previas": "48 horas",
+    "prazo_final": "60 dias úteis",
+    "validade_proposta": "7",
+    "instagram_handle": "@distintowedding",
+    "email_contato": "contato@wedistinto.com",
+    "whatsapp_numero": "+55 27 9 8858-6935",
+    "show_heritage": false,
+    "show_cinematic": false,
+    "show_essencial": false,
+    "include_boudoir": false,
+    "include_prewedding": false,
+    "include_boudoir_heritage": false,
+    "include_prewedding_heritage": false,
+    "include_boudoir_cinematic": false,
+    "include_prewedding_cinematic": false,
+    "include_boudoir_essencial": false,
+    "include_prewedding_essencial": false,
+    "condicoes_reserva": "A reserva da data é oficializada mediante a assinatura do contrato e o pagamento do sinal (entrada), que pode ser de 20% ou 25% do valor do pacote escolhido.\r\nOpções de Parcelamento: Oferecemos flexibilidade para que o saldo seja quitado de forma equilibrada até a data do evento:",
+    "condicoes_heritage_cinematic": "Entrada de 20% + Saldo parcelado em até 6x (dependendo do pacote selecionado)",
+    "condicoes_essencial": "Entrada de 25% + Saldo parcelado em até 5x (dependendo do pacote selecionado)",
+    "contato_tipo": "noiva",
+    "upgrades": {
+        "heritage": [],
+        "cinematic": [],
+        "essencial": []
+    },
+    "pacote_dado_andamento": "",
+    "cliente_escolha": null
+}
