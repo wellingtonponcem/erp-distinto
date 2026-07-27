@@ -66,7 +66,7 @@ function menuAtivo(string $path): string {
             <span class="nav-label ml-3 text-sm font-semibold whitespace-nowrap">Propostas Web</span>
         </a>
         <a href="<?= raizUrl('/gerenciamento/contratos.php') ?>" class="nav-link flex items-center px-3 py-2.5 rounded-lg transition-all <?= menuAtivo('/gerenciamento/contratos') ?>">
-            <span class="material-symbols-outlined shrink-0" style="font-size:20px;">scroll</span>
+            <span class="material-symbols-outlined shrink-0" style="font-size:20px;">history_edu</span>
             <span class="nav-label ml-3 text-sm font-semibold whitespace-nowrap">Contratos</span>
         </a>
         <a href="<?= raizUrl('/gerenciamento/pdf_templates.php') ?>" class="nav-link flex items-center px-3 py-2.5 rounded-lg transition-all <?= menuAtivo('/gerenciamento/pdf_templates') ?>">

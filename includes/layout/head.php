@@ -377,9 +377,16 @@ $tituloPagina = $tituloPagina ?? APP_NAME;
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.18); border-radius: 999px; }
 
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(148, 125, 255, 0.25) transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #484555; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 10px; }
+        .custom-scrollbar:hover::-webkit-scrollbar-thumb { background: rgba(148, 125, 255, 0.4); }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 125, 255, 0.2); }
+        .dark .custom-scrollbar:hover::-webkit-scrollbar-thumb { background: rgba(148, 125, 255, 0.5); }
 
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
