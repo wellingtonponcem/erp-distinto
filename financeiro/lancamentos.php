@@ -182,7 +182,7 @@ include __DIR__ . '/../includes/layout/head.php';
                 <div class="h-4 w-px bg-outline-variant/30 mx-1"></div>
 
                 <!-- Seletor de Período -->
-                <div class="flex items-center gap-1 p-1 bg-surface-container rounded-lg border border-outline-variant/30">
+                <div class="flex items-center gap-1 p-1 bg-surface-container rounded-lg border border-outline-variant/30 relative z-20">
                     <!-- Dropdown tipo de período -->
                     <div class="relative" @click.outside="periodoTiposAberto = false">
                         <button @click="periodoTiposAberto = !periodoTiposAberto"
