@@ -10,7 +10,7 @@ function menuAtivo(string $path): string {
 ?>
 <aside class="sidebar fixed left-0 top-0 h-full z-50 flex flex-col shadow-md transition-all duration-300 group">
     <!-- Brand -->
-    <div class="flex items-center px-6 mb-8 pt-gutter space-x-4">
+    <div class="flex items-center px-6 mb-8 space-x-4" style="padding-top: 10px;">
         <div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center shrink-0">
             <span class="material-symbols-outlined text-on-primary-container">dashboard</span>
         </div>
