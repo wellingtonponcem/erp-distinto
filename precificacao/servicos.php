@@ -248,9 +248,11 @@ include __DIR__ . '/../includes/layout/head.php';
                                         <span x-text="parseEstojo(s.estojo_json, 'tipo') || 'Estojo Personalizado'"></span>
                                     </div>
                                     <template x-if="parseEstojo(s.estojo_json, 'imagem_referencia')">
-                                        <div class="w-full h-28 rounded-xl overflow-hidden bg-zinc-950 relative border border-white/10 my-1">
-                                            <img :src="parseEstojo(s.estojo_json, 'imagem_referencia')" class="absolute inset-0 w-full h-full object-cover blur-xl opacity-45 scale-125 pointer-events-none">
-                                            <img :src="parseEstojo(s.estojo_json, 'imagem_referencia')" class="w-full h-full object-contain relative z-10 p-1" onerror="this.parentElement.style.display='none'">
+                                        <div class="w-full rounded-xl overflow-hidden bg-zinc-950 relative border border-white/10 my-2 shadow-inner">
+                                            <img :src="parseEstojo(s.estojo_json, 'imagem_referencia')" 
+                                                 :alt="parseEstojo(s.estojo_json, 'tipo') || 'Estojo'"
+                                                 class="w-full h-auto block relative z-10 opacity-95 group-hover:opacity-100 transition-opacity" 
+                                                 onerror="this.parentElement.style.display='none'">
                                         </div>
                                     </template>
                                     <p class="text-[11px] text-zinc-400 leading-tight" x-text="parseEstojo(s.estojo_json, 'descricao') || ''"></p>

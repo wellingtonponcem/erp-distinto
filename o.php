@@ -504,11 +504,10 @@ if (empty($whatsappEmpresa)) {
                                 <span><?= htmlspecialchars($colecao['estojo']['tipo'] ?? 'Estojo Nobre') ?></span>
                             </div>
                             <?php if (!empty($colecao['estojo']['imagem_referencia'])): ?>
-                            <div class="w-full h-28 rounded-xl overflow-hidden bg-zinc-950 relative border border-white/10 my-1">
-                                <img src="<?= htmlspecialchars($colecao['estojo']['imagem_referencia']) ?>" class="absolute inset-0 w-full h-full object-cover blur-xl opacity-45 scale-125 pointer-events-none">
+                            <div class="w-full rounded-xl overflow-hidden bg-zinc-950 relative border border-white/10 my-2 shadow-inner">
                                 <img src="<?= htmlspecialchars($colecao['estojo']['imagem_referencia']) ?>" 
                                      alt="<?= htmlspecialchars($colecao['estojo']['tipo'] ?? 'Estojo') ?>"
-                                     class="w-full h-full object-contain relative z-10 p-1"
+                                     class="w-full h-auto block relative z-10 opacity-95 group-hover:opacity-100 transition-opacity"
                                      onerror="this.parentElement.style.display='none'">
                             </div>
                             <?php endif; ?>
