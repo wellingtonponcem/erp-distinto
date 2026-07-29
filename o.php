@@ -397,14 +397,35 @@ if (empty($whatsappEmpresa)) {
                             </p>
                         </div>
 
-                        <!-- Technical Finishes Checklist -->
-                        <?php if (!empty($colecao['acabamento_detalhado'])): ?>
+                        <!-- Technical Finishes Checklist with Photo Thumbnails -->
+                        <?php if (!empty($colecao['acabamentos_lista_fotos'])): ?>
+                        <div class="space-y-2 pt-2 border-t border-white/5 text-xs">
+                            <span class="text-[10px] font-bold uppercase text-zinc-400 block tracking-wider">Ficha de Acabamentos Fotografados:</span>
+                            <?php foreach ($colecao['acabamentos_lista_fotos'] as $acab): ?>
+                                <div class="flex items-center space-x-2.5 text-zinc-300 bg-zinc-900/60 p-2 rounded-xl border border-white/5">
+                                    <?php if (!empty($acab['imagem'])): ?>
+                                        <img src="<?= htmlspecialchars($acab['imagem']) ?>" 
+                                             alt="<?= htmlspecialchars($acab['item'] ?? '') ?>"
+                                             onclick="event.stopPropagation(); abrirModalFotoDetalhe('<?= htmlspecialchars($acab['imagem']) ?>', '<?= htmlspecialchars($acab['item'] ?? '') ?> - <?= htmlspecialchars($acab['texto'] ?? '') ?>')" 
+                                             class="w-8 h-8 rounded-lg object-cover border border-purple-500/40 shrink-0 cursor-pointer hover:scale-105 transition-transform"
+                                             title="Clique para ampliar a foto do detalhe">
+                                    <?php else: ?>
+                                        <i data-lucide="check-circle" class="w-4 h-4 text-purple-400 shrink-0"></i>
+                                    <?php endif; ?>
+                                    <span class="text-[11px] leading-snug">
+                                        <strong class="text-zinc-100"><?= htmlspecialchars($acab['item'] ?? '') ?>:</strong> 
+                                        <?= htmlspecialchars($acab['texto'] ?? '') ?>
+                                    </span>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php elseif (!empty($colecao['acabamento_detalhado'])): ?>
                         <div class="space-y-2 pt-2 border-t border-white/5 text-xs">
                             <span class="text-[10px] font-bold uppercase text-zinc-400 block tracking-wider">Acabamento do Álbum:</span>
                             <?php foreach ($colecao['acabamento_detalhado'] as $itemKey => $itemVal): ?>
                                 <div class="flex items-start space-x-2 text-zinc-300">
                                     <i data-lucide="check-circle" class="w-3.5 h-3.5 text-purple-400 mt-0.5 shrink-0"></i>
-                                    <span><strong class="capitalize text-zinc-200"><?= $itemKey ?>:</strong> <?= htmlspecialchars($itemVal) ?></span>
+                                    <span><strong class="capitalize text-zinc-200"><?= str_replace('_', ' ', $itemKey) ?>:</strong> <?= htmlspecialchars($itemVal) ?></span>
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -684,17 +705,32 @@ if (empty($whatsappEmpresa)) {
                 const data = await resp.json();
 
                 if (data.success) {
-                    alert('Orçamento aprovado com sucesso! Redirecionando para contato no WhatsApp...');
-                    window.location.href = data.whatsapp_url || document.getElementById('btn-whatsapp-direto').href;
+                    if (data.whatsapp_url) {
+                        window.location.href = data.whatsapp_url;
+                    } else {
+                        alert('Orçamento Aprovado com sucesso! Entraremos em contato em breve.');
+                        fecharModalAprovacao();
+                    }
                 } else {
-                    alert(data.erro || 'Falha ao registrar aprovação.');
+                    alert(data.erro || 'Falha ao processar aprovação.');
                     btn.disabled = false;
-                    btn.textContent = 'Confirmar & Enviar Aprovação';
+                    btn.textContent = 'Confirmar & Enviar no WhatsApp';
                 }
             } catch (err) {
-                alert('Erro ao conectar ao servidor. Você será direcionado ao WhatsApp da agência.');
-                window.location.href = document.getElementById('btn-whatsapp-direto').href;
+                alert('Erro de conexão.');
+                btn.disabled = false;
+                btn.textContent = 'Confirmar & Enviar no WhatsApp';
             }
+        }
+
+        function abrirModalFotoDetalhe(src, titulo) {
+            document.getElementById('modal-foto-img').src = src;
+            document.getElementById('modal-foto-titulo').textContent = titulo;
+            document.getElementById('modal-foto-lightbox').classList.remove('hidden');
+        }
+
+        function fecharModalFotoDetalhe() {
+            document.getElementById('modal-foto-lightbox').classList.add('hidden');
         }
 
         // Inicializar com a primeira coleção
@@ -702,5 +738,20 @@ if (empty($whatsappEmpresa)) {
             selecionarColecao(colecoesDados[0].id, colecoesDados[0].nome_comercial, colecoesDados[0].investimento_cliente, colecoesDados[0].valor_lamina_extra);
         }
     </script>
+
+    <!-- Modal Lightbox de Foto do Acabamento -->
+    <div id="modal-foto-lightbox" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4" onclick="fecharModalFotoDetalhe()">
+        <div class="relative max-w-3xl w-full bg-zinc-900 border border-white/10 rounded-3xl overflow-hidden shadow-2xl space-y-4 p-4 sm:p-6" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between pb-2 border-b border-white/10">
+                <h3 id="modal-foto-titulo" class="text-sm font-bold text-white tracking-wide truncate">Detalhamento do Acabamento</h3>
+                <button onclick="fecharModalFotoDetalhe()" class="p-1 rounded-full text-zinc-400 hover:text-white bg-zinc-800">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="max-h-[75vh] overflow-hidden rounded-2xl bg-zinc-950 flex items-center justify-center p-2">
+                <img id="modal-foto-img" src="" class="max-h-[70vh] w-auto object-contain rounded-xl shadow-lg">
+            </div>
+        </div>
+    </div>
 </body>
 </html>

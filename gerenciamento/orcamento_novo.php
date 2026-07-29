@@ -1,6 +1,6 @@
 <?php
 /**
- * Painel Administrativo — Criar Novo Orçamento (Construtor Visual sem JSON)
+ * Painel Administrativo — Criar Novo Orçamento (Produtos & Álbuns Fotográficos)
  */
 require_once __DIR__ . '/../config/env.php';
 require_once __DIR__ . '/../config/auth.php';
@@ -12,18 +12,18 @@ $tituloPagina = 'Novo Orçamento';
 
 $db = Database::get();
 
-// Auto-seed de serviços caso a tabela esteja vazia
+// Auto-seed de produtos de álbuns caso a tabela esteja vazia
 try {
-    $checkSeed = $db->query("SELECT COUNT(*) FROM servicos WHERE categoria = '15anos'")->fetchColumn();
-    if ($checkSeed == 0 && file_exists(__DIR__ . '/../setup/seed_servicos_albuns.php')) {
-        include_once __DIR__ . '/../setup/seed_servicos_albuns.php';
+    $checkSeed = $db->query("SELECT COUNT(*) FROM produtos_albuns")->fetchColumn();
+    if ($checkSeed == 0 && file_exists(__DIR__ . '/../setup/seed_produtos_albuns.php')) {
+        include_once __DIR__ . '/../setup/seed_produtos_albuns.php';
     }
 } catch (Exception $e) {}
 
-// Buscar itens cadastrados na Tabela de Preços
-$servicosTabela = [];
+// Buscar Produtos de Álbuns Cadastrados
+$produtosTabela = [];
 try {
-    $servicosTabela = $db->query("SELECT * FROM servicos WHERE ativo=1 ORDER BY categoria ASC, nome ASC")->fetchAll();
+    $produtosTabela = $db->query("SELECT * FROM produtos_albuns WHERE ativo=1 ORDER BY categoria ASC, investimento_cliente ASC")->fetchAll();
 } catch (Exception $e) {}
 
 include __DIR__ . '/../includes/layout/head.php';
@@ -40,8 +40,8 @@ include __DIR__ . '/../includes/layout/head.php';
             <!-- Top bar -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 class="text-display-lg font-display-lg text-on-surface mb-1">Construtor de Orçamento</h1>
-                    <p class="text-body-md font-body-md text-on-surface-variant">Selecione as coleções e acabamentos da Tabela de Preços com apenas alguns cliques</p>
+                    <h1 class="text-display-lg font-display-lg text-on-surface mb-1">Construtor de Orçamento de Álbuns</h1>
+                    <p class="text-body-md font-body-md text-on-surface-variant">Selecione os produtos de álbuns e acabamentos fotografados cadastrados no catálogo</p>
                 </div>
 
                 <div class="flex items-center space-x-3">
@@ -84,12 +84,11 @@ include __DIR__ . '/../includes/layout/head.php';
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Categoria da Tabela de Preços</label>
-                            <select id="categoria_filtro" onchange="filtrarColecoesPorCategoria()" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-primary font-bold">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Categoria de Produtos</label>
+                            <select id="categoria_filtro" onchange="renderizarProdutosPorCategoria()" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-primary font-bold">
                                 <option value="15anos" selected>Álbuns 15 Anos</option>
                                 <option value="wedding">Álbuns Casamento</option>
-                                <option value="marketing">Marketing & Design</option>
-                                <option value="todos">Todas as Categorias</option>
+                                <option value="todos">Todos os Produtos</option>
                             </select>
                         </div>
 
@@ -99,21 +98,21 @@ include __DIR__ . '/../includes/layout/head.php';
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Valor Total do Orçamento (R$)</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Valor Base do Orçamento (R$)</label>
                             <input type="number" step="0.01" id="valor_total" value="1250.00" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-primary font-bold">
                         </div>
                     </div>
                 </div>
 
-                <!-- 2. Especificações Técnicas da Linha -->
+                <!-- 2. Especificações Técnicas Gerais -->
                 <div class="glass-card p-6 sm:p-8 rounded-3xl space-y-6">
                     <div class="flex items-center space-x-3 border-b border-outline-variant/20 pb-4">
                         <div class="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold">
                             <span class="material-symbols-outlined text-lg">layers</span>
                         </div>
                         <div>
-                            <h2 class="text-lg font-bold text-on-surface">2. Especificações Técnicas da Linha</h2>
-                            <p class="text-xs text-on-surface-variant">Configuração geral de formato, gramatura e serviços inclusos</p>
+                            <h2 class="text-lg font-bold text-on-surface">2. Especificações Técnicas Gerais da Linha</h2>
+                            <p class="text-xs text-on-surface-variant">Formatos, encadernação e serviços inclusos no projeto</p>
                         </div>
                     </div>
 
@@ -131,7 +130,7 @@ include __DIR__ . '/../includes/layout/head.php';
                             <input type="text" id="spec_abertura" value="Panorâmica 180° (Lâminas Rígidas de 800g)" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-on-surface-variant mb-1">Páginas Base / Retirada</label>
+                            <label class="block text-xs font-bold text-on-surface-variant mb-1">Retirada / Entrega</label>
                             <input type="text" id="spec_retirada" value="Presencial (Vitória/ES)" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-3 py-2 text-xs text-on-surface focus:outline-none focus:border-primary">
                         </div>
                     </div>
@@ -142,45 +141,22 @@ include __DIR__ . '/../includes/layout/head.php';
                     </div>
                 </div>
 
-                <!-- 3. Seleção de Coleções da Tabela de Preços -->
+                <!-- 3. Seleção dos Produtos de Álbuns Fotográficos -->
                 <div class="glass-card p-6 sm:p-8 rounded-3xl space-y-6">
                     <div class="flex items-center justify-between border-b border-outline-variant/20 pb-4">
                         <div class="flex items-center space-x-3">
                             <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
-                                <span class="material-symbols-outlined text-lg">crown</span>
+                                <span class="material-symbols-outlined text-lg">book</span>
                             </div>
                             <div>
-                                <h2 class="text-lg font-bold text-on-surface">3. Coleções do Orçamento (Tabela de Preços)</h2>
-                                <p class="text-xs text-on-surface-variant">Marque as coleções que estarão disponíveis para o cliente escolher na página pública</p>
+                                <h2 class="text-lg font-bold text-on-surface">3. Produtos & Coleções de Álbuns</h2>
+                                <p class="text-xs text-on-surface-variant">Selecione quais produtos de álbuns estarão disponíveis para escolha no orçamento</p>
                             </div>
                         </div>
-
-                        <a href="<?= raizUrl('/precificacao/servicos.php') ?>" target="_blank" class="text-xs text-primary font-bold hover:underline flex items-center gap-1">
-                            <span class="material-symbols-outlined text-sm">open_in_new</span>
-                            <span>Gerenciar Tabela de Preços</span>
-                        </a>
                     </div>
 
-                    <!-- Cards de Coleções Selecionáveis -->
-                    <div id="container-colecoes" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Preenchido via JavaScript dinamicamente -->
-                    </div>
-                </div>
-
-                <!-- 4. Galeria de Acabamentos em Destaque -->
-                <div class="glass-card p-6 sm:p-8 rounded-3xl space-y-6">
-                    <div class="flex items-center space-x-3 border-b border-outline-variant/20 pb-4">
-                        <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
-                            <span class="material-symbols-outlined text-lg">photo_library</span>
-                        </div>
-                        <div>
-                            <h2 class="text-lg font-bold text-on-surface">4. Galeria de Acabamentos em Destaque</h2>
-                            <p class="text-xs text-on-surface-variant">Selecione quais acabamentos com foto serão exibidos na apresentação</p>
-                        </div>
-                    </div>
-
-                    <div id="container-acabamentos" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Preenchido via JavaScript dinamicamente -->
+                    <div id="container-produtos" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Preenchido via JS com os produtos de álbuns -->
                     </div>
                 </div>
 
@@ -211,118 +187,84 @@ include __DIR__ . '/../includes/layout/head.php';
 </div>
 
 <script>
-// Dados de serviços vindos do banco de dados
-const todosServicosTabela = <?= json_encode($servicosTabela) ?>;
+const produtosTabela = <?= json_encode($produtosTabela) ?>;
 
-// Estado das seleções
-let colecoesSelecionadas = [];
-let acabamentosSelecionados = [];
-
-function inicializarSeletores() {
-    filtrarColecoesPorCategoria();
-}
-
-function filtrarColecoesPorCategoria() {
+function renderizarProdutosPorCategoria() {
     const cat = document.getElementById('categoria_filtro').value;
-    const containerCol = document.getElementById('container-colecoes');
-    const containerAcab = document.getElementById('container-acabamentos');
+    const container = document.getElementById('container-produtos');
+    container.innerHTML = '';
 
-    containerCol.innerHTML = '';
-    containerAcab.innerHTML = '';
+    const filtrados = produtosTabela.filter(p => cat === 'todos' || p.categoria === cat);
 
-    const filtrados = todosServicosTabela.filter(s => cat === 'todos' || s.categoria === cat || s.categoria === '15anos');
-
-    // Separar por coleções e acabamentos
-    const colecoes = filtrados.filter(s => (s.tipo || 'colecao') === 'colecao' || s.tipo === 'plano');
-    const acabamentos = filtrados.filter(s => (s.tipo || '') === 'acabamento' || s.tipo === 'servico');
-
-    // Renderizar Coleções
-    if (colecoes.length === 0) {
-        containerCol.innerHTML = '<div class="col-span-3 p-6 text-center text-xs text-on-surface-variant">Nenhuma coleção cadastrada para esta categoria na Tabela de Preços.</div>';
-    } else {
-        colecoes.forEach((c, idx) => {
-            const jaSel = true; // Selecionado por padrão
-            const acabObj = parseJsonSeguro(c.acabamento_json) || { capa: 'Foto Total Nobre', fechamento: 'Ímã Invisível', papel: 'Fotográfico Silk', laminação: 'UV Proteção' };
-            const estojoObj = parseJsonSeguro(c.estojo_json) || { tipo: 'Estojo Slim', descricao: 'Proteção Aveludada', imagem_referencia: '' };
-            const imgObj = parseJsonSeguro(c.imagens_json) || {};
-
-            const html = `
-                <div class="glass-card p-5 rounded-2xl border-2 border-primary/30 relative flex flex-col justify-between space-y-4">
-                    <div class="flex items-start justify-between">
-                        <label class="flex items-center space-x-2.5 cursor-pointer">
-                            <input type="checkbox" class="chk-colecao w-4 h-4 rounded text-primary" value="${c.id}" checked onchange="compilarJsonPreview()">
-                            <span class="font-bold text-sm text-on-surface">${c.nome}</span>
-                        </label>
-                        <span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold text-[10px] uppercase">${c.categoria_original || 'Coleção'}</span>
-                    </div>
-
-                    <p class="text-xs text-on-surface-variant leading-relaxed">${c.descricao || ''}</p>
-
-                    <div class="space-y-1 text-xs bg-surface-container-low p-3 rounded-xl border border-outline-variant/10">
-                        <div class="flex justify-between font-bold text-on-surface">
-                            <span>Investimento:</span>
-                            <span class="text-primary">R$ ${parseFloat(c.preco_venda || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
-                        </div>
-                        <div class="flex justify-between text-[11px] text-on-surface-variant">
-                            <span>Lâmina Extra:</span>
-                            <span>R$ ${parseFloat(c.valor_lamina_extra || 35).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-            containerCol.innerHTML += html;
-        });
+    if (filtrados.length === 0) {
+        container.innerHTML = '<div class="col-span-3 p-6 text-center text-xs text-on-surface-variant">Nenhum produto cadastrado nesta categoria.</div>';
+        return;
     }
 
-    // Renderizar Acabamentos
-    if (acabamentos.length === 0) {
-        // FallbackAcabamentos de 15 Anos
-        const acabamentosDefault = [
-            { id: 'acab_1', nome: 'Papel Linho Silk', descricao: 'Textura que imita o toque do linho, anti-digital.', imagem: 'https://m.media-amazon.com/images/I/71YvE9-9VFL._AC_SL1500_.jpg' },
-            { id: 'acab_2', nome: 'Abertura Panorâmica 180°', descricao: 'Fotos de página dupla sem cortes.', imagem: 'https://www.ipsispro.com.br/fotolivro-panoramico-180' },
-            { id: 'acab_3', nome: 'Corte Lateral Ouro', descricao: 'Acabamento metálico dourado nas bordas.', imagem: 'https://www.instagram.com/p/DZiX91-sEon/' }
-        ];
-        acabamentosDefault.forEach(a => {
-            containerAcab.innerHTML += `
-                <div class="glass-card p-4 rounded-2xl border border-outline-variant/20 flex items-start space-x-3">
-                    <input type="checkbox" class="chk-acabamento w-4 h-4 rounded text-primary mt-1" value="${a.nome}" data-desc="${a.descricao}" data-img="${a.imagem}" checked onchange="compilarJsonPreview()">
-                    <div class="text-xs">
-                        <strong class="text-on-surface block mb-0.5">${a.nome}</strong>
-                        <p class="text-on-surface-variant text-[11px]">${a.descricao}</p>
-                    </div>
-                </div>
-            `;
-        });
-    } else {
+    filtrados.forEach(p => {
+        const estojo = parseJsonSeguro(p.estojo_json) || {};
+        const imagens = parseJsonSeguro(p.imagens_galeria_json) || {};
+        const acabamentos = parseJsonSeguro(p.acabamentos_detalhados_json) || [];
+
+        const fotoCapa = imagens.capa || estojo.imagem_referencia || 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80';
+
+        let acabamentosHtml = '';
         acabamentos.forEach(a => {
-            const imgObj = parseJsonSeguro(a.imagens_json) || {};
-            const img = imgObj.imagem_exemplo || imgObj.capa || '';
-            containerAcab.innerHTML += `
-                <div class="glass-card p-4 rounded-2xl border border-outline-variant/20 flex items-start space-x-3">
-                    <input type="checkbox" class="chk-acabamento w-4 h-4 rounded text-primary mt-1" value="${a.nome}" data-desc="${a.descricao}" data-img="${img}" checked onchange="compilarJsonPreview()">
-                    <div class="text-xs">
-                        <strong class="text-on-surface block mb-0.5">${a.nome}</strong>
-                        <p class="text-on-surface-variant text-[11px]">${a.descricao || ''}</p>
-                    </div>
+            acabamentosHtml += `
+                <div class="flex items-center space-x-2 text-[11px] text-zinc-300">
+                    ${a.imagem ? `<img src="${a.imagem}" class="w-5 h-5 rounded object-cover border border-white/20">` : `<span class="material-symbols-outlined text-xs text-primary">check_circle</span>`}
+                    <span class="truncate"><strong>${a.item || ''}:</strong> ${a.texto || ''}</span>
                 </div>
             `;
         });
-    }
+
+        const html = `
+            <div class="glass-card p-5 rounded-2xl border-2 border-primary/40 relative flex flex-col justify-between space-y-4">
+                <div class="flex items-start justify-between">
+                    <label class="flex items-center space-x-2.5 cursor-pointer">
+                        <input type="checkbox" class="chk-produto w-4 h-4 rounded text-primary" value="${p.id}" checked onchange="compilarJsonPreview()">
+                        <span class="font-bold text-sm text-on-surface">${p.nome}</span>
+                    </label>
+                    <span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold text-[10px] uppercase">${p.categoria_original || 'Produto'}</span>
+                </div>
+
+                <div class="w-full h-36 rounded-xl overflow-hidden bg-zinc-900 relative">
+                    <img src="${fotoCapa}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80'">
+                </div>
+
+                <p class="text-xs text-on-surface-variant leading-relaxed line-clamp-2">${p.descricao || ''}</p>
+
+                <div class="space-y-1.5 bg-surface-container-low p-3 rounded-xl border border-outline-variant/10">
+                    <span class="text-[10px] font-bold uppercase text-zinc-400 block mb-1">Acabamentos com Foto:</span>
+                    ${acabamentosHtml || '<span class="text-xs text-zinc-500">Ficha técnica inclusa</span>'}
+                </div>
+
+                <div class="space-y-1 text-xs bg-surface-container-low p-3 rounded-xl border border-outline-variant/10">
+                    <div class="flex justify-between font-bold text-on-surface">
+                        <span>Investimento:</span>
+                        <span class="text-primary">R$ ${parseFloat(p.investimento_cliente || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                    </div>
+                    <div class="flex justify-between text-[11px] text-on-surface-variant">
+                        <span>Lâmina Extra:</span>
+                        <span>R$ ${parseFloat(p.valor_lamina_extra || 35).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.innerHTML += html;
+    });
 
     compilarJsonPreview();
 }
 
 function parseJsonSeguro(str) {
     if (!str) return null;
-    try {
-        return typeof str === 'object' ? str : JSON.parse(str);
-    } catch(e) { return null; }
+    try { return typeof str === 'object' ? str : JSON.parse(str); } catch(e) { return null; }
 }
 
 function compilarJsonPreview() {
     const titulo = document.getElementById('titulo').value;
     const subtitulo = document.getElementById('subtitulo').value;
-    const cliente = document.getElementById('cliente_nome').value;
 
     const specTamanhoFechado = document.getElementById('spec_tamanho_fechado').value;
     const specTamanhoAberto = document.getElementById('spec_tamanho_aberto').value;
@@ -332,68 +274,33 @@ function compilarJsonPreview() {
 
     const servicosInclusosArr = servicosInclusosStr.split(',').map(s => s.trim()).filter(s => s !== '');
 
-    // Coletar coleções selecionadas
-    const chksColecao = document.querySelectorAll('.chk-colecao:checked');
+    const chks = document.querySelectorAll('.chk-produto:checked');
     const colecoesCompiladas = [];
 
-    chksColecao.forEach(chk => {
-        const itemSrv = todosServicosTabela.find(s => s.id === chk.value);
-        if (itemSrv) {
-            const acabObj = parseJsonSeguro(itemSrv.acabamento_json) || {
-                capa: "Foto Total com Revestimento em Courvin Nobre",
-                fechamento: "Sistema de Ímã Invisível",
-                papel: "Fotográfico Fosco Silk (Anti-Digital e Antirreflexo)",
-                laminação: "UV Proteção contra Luz e Umidade"
-            };
-            const estojoObj = parseJsonSeguro(itemSrv.estojo_json) || {
-                tipo: "Case Slim Personalizado",
-                descricao: "Estojo tipo luva em courvin aveludado.",
-                imagem_referencia: ""
-            };
-            const imgObj = parseJsonSeguro(itemSrv.imagens_json) || {};
+    chks.forEach(chk => {
+        const prod = produtosTabela.find(p => p.id === chk.value);
+        if (prod) {
+            const acabArray = parseJsonSeguro(prod.acabamentos_detalhados_json) || [];
+            const acabObj = {};
+            acabArray.forEach(a => {
+                const chave = a.chave || (a.item ? a.item.toLowerCase().replace(/\s+/g, '_') : 'detalhe');
+                acabObj[chave] = a.texto;
+            });
 
             colecoesCompiladas.push({
-                id: itemSrv.id.replace('srv_', ''),
-                nome_comercial: itemSrv.nome,
-                categoria_original: itemSrv.categoria_original || "Coleção Premium",
-                descricao: itemSrv.descricao || "",
+                id: prod.id,
+                nome_comercial: prod.nome,
+                categoria_original: prod.categoria_original || 'Coleção Premium',
+                descricao: prod.descricao || '',
                 acabamento_detalhado: acabObj,
-                estojo: estojoObj,
-                custo_base_fullcolor: parseFloat(itemSrv.custo_producao || 445),
-                investimento_cliente: parseFloat(itemSrv.preco_venda || 1250),
-                valor_lamina_extra: parseFloat(itemSrv.valor_lamina_extra || 35),
-                imagens: imgObj
+                acabamentos_lista_fotos: acabArray,
+                estojo: parseJsonSeguro(prod.estojo_json) || {},
+                custo_base_fullcolor: parseFloat(prod.custo_base || 445),
+                investimento_cliente: parseFloat(prod.investimento_cliente || 1250),
+                valor_lamina_extra: parseFloat(prod.valor_lamina_extra || 35),
+                imagens: parseJsonSeguro(prod.imagens_galeria_json) || {}
             });
         }
-    });
-
-    // Se nenhuma coleção foi marcada no DOM, adiciona fallback
-    if (colecoesCompiladas.length === 0) {
-        todosServicosTabela.slice(0, 3).forEach(s => {
-            colecoesCompiladas.push({
-                id: s.id.replace('srv_', ''),
-                nome_comercial: s.nome,
-                categoria_original: s.categoria_original || 'Coleção',
-                descricao: s.descricao || '',
-                acabamento_detalhado: parseJsonSeguro(s.acabamento_json) || {},
-                estojo: parseJsonSeguro(s.estojo_json) || {},
-                custo_base_fullcolor: parseFloat(s.custo_producao || 445),
-                investimento_cliente: parseFloat(s.preco_venda || 1250),
-                valor_lamina_extra: parseFloat(s.valor_lamina_extra || 35),
-                imagens: parseJsonSeguro(s.imagens_json) || {}
-            });
-        });
-    }
-
-    // Coletar acabamentos selecionados
-    const chksAcab = document.querySelectorAll('.chk-acabamento:checked');
-    const acabamentosCompilados = [];
-    chksAcab.forEach(chk => {
-        acabamentosCompilados.push({
-            item: chk.value,
-            descricao: chk.getAttribute('data-desc') || '',
-            imagem_exemplo: chk.getAttribute('data-img') || ''
-        });
     });
 
     const jsonFinal = {
@@ -409,12 +316,15 @@ function compilarJsonPreview() {
             servicos_inclusos: servicosInclusosArr
         },
         colecao_albuns: colecoesCompiladas,
-        galeria_acabamentos: acabamentosCompilados
+        galeria_acabamentos: [
+            { item: 'Papel Linho Silk', descricao: 'Textura acetinada anti-digital.', imagem_exemplo: 'https://m.media-amazon.com/images/I/71YvE9-9VFL._AC_SL1500_.jpg' },
+            { item: 'Abertura Panorâmica 180°', descricao: 'Abertura total 180° sem vinco central.', imagem_exemplo: 'https://www.ipsispro.com.br/fotolivro-panoramico-180' },
+            { item: 'Corte Lateral Ouro', descricao: 'Bordas douradas metálicas reluzentes.', imagem_exemplo: 'https://www.instagram.com/p/DZiX91-sEon/' }
+        ]
     };
 
     document.getElementById('dados_json_preview').value = JSON.stringify(jsonFinal, null, 2);
 
-    // Ajustar valor total do orçamento para o valor da primeira coleção
     if (colecoesCompiladas.length > 0) {
         document.getElementById('valor_total').value = colecoesCompiladas[0].investimento_cliente;
     }
@@ -448,7 +358,7 @@ async function salvarOrcamentoVisual(e) {
         const data = await resp.json();
 
         if (data.success) {
-            alert('Orçamento gerado e salvo com sucesso!');
+            alert('Orçamento de Álbuns gerado com sucesso!');
             window.location.href = '<?= raizUrl('/gerenciamento/orcamentos.php') ?>';
         } else {
             alert(data.erro || 'Falha ao salvar orçamento.');
@@ -462,7 +372,7 @@ async function salvarOrcamentoVisual(e) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', inicializarSeletores);
+document.addEventListener('DOMContentLoaded', renderizarProdutosPorCategoria);
 </script>
 
 <?php include __DIR__ . '/../includes/layout/footer.php'; ?>
