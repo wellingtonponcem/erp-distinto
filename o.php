@@ -350,11 +350,11 @@ if (!str_starts_with($whatsappEmpresa, '55') && strlen($whatsappEmpresa) >= 10) 
                      class="glass-card rounded-3xl p-6 flex flex-col justify-between cursor-pointer relative overflow-hidden group border-2 <?= $index === 0 ? 'selected' : '' ?>">
 
                     <?php if ($isTop): ?>
-                    <div class="absolute top-4 right-4 bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">
+                    <div class="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-xl">
                         TOP MASTER LUX
                     </div>
                     <?php elseif ($isMid): ?>
-                    <div class="absolute top-4 right-4 bg-purple-500/20 text-purple-300 border border-purple-500/40 font-bold text-[10px] uppercase tracking-widest px-3 py-1 rounded-full">
+                    <div class="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 bg-purple-950/90 text-purple-300 border border-purple-500/50 font-bold text-[10px] uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-md shadow-lg">
                         MAIS PROCURADO
                     </div>
                     <?php endif; ?>
