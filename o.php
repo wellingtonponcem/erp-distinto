@@ -412,13 +412,12 @@ if (empty($whatsappEmpresa)) {
                         $imgCapa = $colecao['imagens']['capa'] ?? $colecao['estojo']['imagem_referencia'] ?? '';
                         if (!empty($imgCapa)): 
                         ?>
-                        <div class="w-full h-48 rounded-2xl overflow-hidden bg-zinc-950 relative group-hover:scale-[1.02] transition-transform border border-white/10 shadow-inner">
-                            <img src="<?= htmlspecialchars($imgCapa) ?>" class="absolute inset-0 w-full h-full object-cover blur-xl opacity-45 scale-125 pointer-events-none">
+                        <div class="w-full rounded-2xl overflow-hidden bg-zinc-950 relative group-hover:scale-[1.02] transition-transform border border-white/10 shadow-inner">
                             <img src="<?= htmlspecialchars($imgCapa) ?>" 
                                  alt="<?= htmlspecialchars($colecao['nome_comercial']) ?>" 
-                                 class="w-full h-full object-contain relative z-10 p-1 opacity-95 group-hover:opacity-100 transition-opacity"
+                                 class="w-full h-auto block relative z-10 opacity-95 group-hover:opacity-100 transition-opacity"
                                  onerror="this.src='https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80'">
-                            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-transparent to-transparent z-20 pointer-events-none"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/60 via-transparent to-transparent z-20 pointer-events-none"></div>
 
                             <?php if ($isTop): ?>
                             <div class="absolute top-3 right-3 z-30 bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-2xl border border-yellow-300/40">
