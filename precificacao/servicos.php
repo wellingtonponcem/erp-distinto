@@ -183,57 +183,58 @@ include __DIR__ . '/../includes/layout/head.php';
                     </div>
                 </template>
 
-                <!-- Grid de Cards de Álbuns Premium Idêntico a o.php -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" x-show="!carregando">
+                <!-- Grid de Cards de Álbuns Premium -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" x-show="!carregando">
                     <template x-for="(s, idx) in albumsFiltrados" :key="s.id">
-                        <div class="glass-card rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden group border-2 border-primary/30 hover:border-primary transition-all shadow-xl">
+                        <div class="glass-card rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden group border-2 border-primary/30 hover:border-primary transition-all shadow-xl">
                             
                             <!-- Product Preview Image with Top Badge inside -->
-                            <div class="w-full rounded-2xl overflow-hidden bg-zinc-950 relative group-hover:scale-[1.02] transition-transform mb-5 border border-white/10 shadow-inner">
+                            <div class="w-full h-44 rounded-2xl overflow-hidden bg-zinc-950 relative group-hover:scale-[1.02] transition-transform mb-4 border border-white/10 shadow-inner">
+                                <img :src="parseImg(s.imagens_json, 'capa')" class="absolute inset-0 w-full h-full object-cover blur-xl opacity-40 scale-125 pointer-events-none">
                                 <img :src="parseImg(s.imagens_json, 'capa')" 
                                      :alt="s.nome"
-                                     class="w-full h-auto block relative z-10 opacity-95 group-hover:opacity-100 transition-opacity"
+                                     class="w-full h-full object-contain relative z-10 p-1 opacity-95 group-hover:opacity-100 transition-opacity"
                                      onerror="this.src='https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80'">
-                                <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/60 via-transparent to-transparent z-20 pointer-events-none"></div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-transparent to-transparent z-20 pointer-events-none"></div>
 
                                 <template x-if="s.categoria_original === 'Top Master'">
-                                    <div class="absolute top-3 right-3 z-30 bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-2xl border border-yellow-300/40">
+                                    <div class="absolute top-2.5 right-2.5 z-30 bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black text-[9px] uppercase tracking-widest px-2.5 py-0.5 rounded-full shadow-2xl border border-yellow-300/40">
                                         TOP MASTER LUX
                                     </div>
                                 </template>
                                 <template x-if="s.categoria_original === 'Intermediário'">
-                                    <div class="absolute top-3 right-3 z-30 bg-purple-950/90 text-purple-200 border border-purple-400/60 font-bold text-[10px] uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-md shadow-lg">
+                                    <div class="absolute top-2.5 right-2.5 z-30 bg-purple-950/90 text-purple-200 border border-purple-400/60 font-bold text-[9px] uppercase tracking-widest px-2.5 py-0.5 rounded-full backdrop-blur-md shadow-lg">
                                         MAIS PROCURADO
                                     </div>
                                 </template>
                                 <template x-if="s.categoria_original === 'Simples'">
-                                    <div class="absolute top-3 right-3 z-30 bg-zinc-900/90 text-zinc-300 border border-zinc-700 font-bold text-[10px] uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-md shadow-lg">
+                                    <div class="absolute top-2.5 right-2.5 z-30 bg-zinc-900/90 text-zinc-300 border border-zinc-700 font-bold text-[9px] uppercase tracking-widest px-2.5 py-0.5 rounded-full backdrop-blur-md shadow-lg">
                                         COLEÇÃO ESSENCIAL
                                     </div>
                                 </template>
                             </div>
 
                             <!-- Title & Description -->
-                            <div class="space-y-4 flex-1">
+                            <div class="space-y-3 flex-1">
                                 <div>
-                                    <span class="text-[10px] font-bold uppercase tracking-widest text-purple-400 block mb-1" 
+                                    <span class="text-[9px] font-bold uppercase tracking-widest text-purple-400 block mb-0.5" 
                                           x-text="s.categoria === 'casamento' ? 'Álbum de Casamento' : (s.categoria === '15anos' ? 'Álbum 15 Anos' : 'Álbum Fotográfico')"></span>
-                                    <h4 class="text-2xl font-heading font-extrabold text-white tracking-tight" x-text="s.nome"></h4>
-                                    <p class="text-xs text-zinc-400 mt-2 leading-relaxed" x-text="s.descricao || ''"></p>
+                                    <h4 class="text-xl font-heading font-extrabold text-white tracking-tight" x-text="s.nome"></h4>
+                                    <p class="text-xs text-zinc-400 mt-1 line-clamp-2 leading-snug" x-text="s.descricao || ''"></p>
                                 </div>
 
                                 <!-- Technical Finishes Checklist -->
-                                <div class="space-y-2 pt-3 border-t border-white/10 text-xs">
-                                    <span class="text-[10px] font-bold uppercase text-zinc-400 block tracking-wider mb-2">Acabamento do Álbum:</span>
+                                <div class="space-y-1.5 pt-2.5 border-t border-white/10 text-xs">
+                                    <span class="text-[9px] font-bold uppercase text-zinc-400 block tracking-wider mb-1">Acabamentos:</span>
                                     <template x-for="acab in parseAcabamentos(s.acabamento_json)" :key="acab.chave">
-                                        <div class="flex items-center space-x-2.5 text-zinc-300 bg-zinc-900/60 p-2 rounded-xl border border-white/5">
+                                        <div class="flex items-center space-x-2 text-zinc-300 bg-zinc-900/60 p-1.5 rounded-lg border border-white/5">
                                             <template x-if="acab.imagem">
-                                                <img :src="acab.imagem" class="w-8 h-8 rounded-lg object-cover border border-purple-500/40 shrink-0">
+                                                <img :src="acab.imagem" class="w-6 h-6 rounded-md object-cover border border-purple-500/40 shrink-0">
                                             </template>
                                             <template x-if="!acab.imagem">
-                                                <i data-lucide="check-circle" class="w-4 h-4 text-purple-400 shrink-0"></i>
+                                                <i data-lucide="check-circle" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i>
                                             </template>
-                                            <span class="text-[11px] leading-snug">
+                                            <span class="text-[10px] leading-tight truncate">
                                                 <strong class="text-zinc-100 capitalize" x-text="(acab.item || acab.chave || '').replace('_', ' ') + ':'"></strong> 
                                                 <span x-text="acab.texto || acab"></span>
                                             </span>
@@ -242,40 +243,38 @@ include __DIR__ . '/../includes/layout/head.php';
                                 </div>
 
                                 <!-- Estojo / Case -->
-                                <div class="bg-zinc-900/80 p-3.5 rounded-2xl border border-white/10 space-y-2 mt-3">
-                                    <div class="flex items-center space-x-2 text-xs font-bold text-amber-300">
-                                        <i data-lucide="box" class="w-4 h-4 text-amber-300"></i>
+                                <div class="bg-zinc-900/80 p-2.5 rounded-xl border border-white/10 space-y-1.5 mt-2">
+                                    <div class="flex items-center space-x-1.5 text-[11px] font-bold text-amber-300">
+                                        <i data-lucide="box" class="w-3.5 h-3.5 text-amber-300"></i>
                                         <span x-text="parseEstojo(s.estojo_json, 'tipo') || 'Estojo Personalizado'"></span>
                                     </div>
                                     <template x-if="parseEstojo(s.estojo_json, 'imagem_referencia')">
-                                        <div class="w-full rounded-xl overflow-hidden bg-zinc-950 relative border border-white/10 my-2 shadow-inner">
-                                            <img :src="parseEstojo(s.estojo_json, 'imagem_referencia')" 
-                                                 :alt="parseEstojo(s.estojo_json, 'tipo') || 'Estojo'"
-                                                 class="w-full h-auto block relative z-10 opacity-95 group-hover:opacity-100 transition-opacity" 
-                                                 onerror="this.parentElement.style.display='none'">
+                                        <div class="w-full h-24 rounded-lg overflow-hidden bg-zinc-950 relative border border-white/10 my-1">
+                                            <img :src="parseEstojo(s.estojo_json, 'imagem_referencia')" class="absolute inset-0 w-full h-full object-cover blur-xl opacity-40 scale-125 pointer-events-none">
+                                            <img :src="parseEstojo(s.estojo_json, 'imagem_referencia')" class="w-full h-full object-contain relative z-10 p-1" onerror="this.parentElement.style.display='none'">
                                         </div>
                                     </template>
-                                    <p class="text-[11px] text-zinc-400 leading-tight" x-text="parseEstojo(s.estojo_json, 'descricao') || ''"></p>
+                                    <p class="text-[10px] text-zinc-400 leading-tight line-clamp-2" x-text="parseEstojo(s.estojo_json, 'descricao') || ''"></p>
                                 </div>
                             </div>
 
                             <!-- Price & Action Buttons -->
-                            <div class="pt-6 mt-6 border-t border-white/10 flex flex-col space-y-3">
+                            <div class="pt-4 mt-4 border-t border-white/10 flex flex-col space-y-2.5">
                                 <div class="flex items-baseline justify-between">
-                                    <span class="text-xs text-zinc-400 font-medium">Investimento:</span>
+                                    <span class="text-[11px] text-zinc-400 font-medium">Investimento:</span>
                                     <div class="text-right">
-                                        <div class="text-2xl font-heading font-extrabold text-white tracking-tight" x-text="formatarMoeda(s.preco_venda || 0)"></div>
-                                        <span class="text-[10px] text-purple-300 font-semibold block" x-text="'+ ' + formatarMoeda(s.valor_lamina_extra || 0) + ' / lâmina extra'"></span>
+                                        <div class="text-xl font-heading font-extrabold text-white tracking-tight" x-text="formatarMoeda(s.preco_venda || 0)"></div>
+                                        <span class="text-[9px] text-purple-300 font-semibold block" x-text="'+ ' + formatarMoeda(s.valor_lamina_extra || 0) + ' / lâmina extra'"></span>
                                     </div>
                                 </div>
 
-                                <div class="flex gap-2 pt-2">
-                                    <button type="button" @click="abrirModal(s)" class="flex-1 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center space-x-2 shadow-lg cursor-pointer">
-                                        <i data-lucide="pencil" class="w-4 h-4"></i>
-                                        <span>Editar Coleção</span>
+                                <div class="flex gap-1.5 pt-1">
+                                    <button type="button" @click="abrirModal(s)" class="flex-1 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-[11px] uppercase tracking-wider transition-colors flex items-center justify-center space-x-1.5 shadow cursor-pointer">
+                                        <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                                        <span>Editar</span>
                                     </button>
-                                    <button type="button" @click="excluir(s.id)" class="py-3 px-4 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 font-bold text-xs transition-colors flex items-center justify-center cursor-pointer" title="Excluir">
-                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    <button type="button" @click="excluir(s.id)" class="py-2.5 px-3 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 font-bold text-xs transition-colors flex items-center justify-center cursor-pointer" title="Excluir">
+                                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                     </button>
                                 </div>
                             </div>
@@ -292,7 +291,7 @@ include __DIR__ . '/../includes/layout/head.php';
                             <i data-lucide="image" class="w-5 h-5 text-purple-400"></i>
                             Galeria de Detalhes & Acabamentos
                         </h3>
-                        <p class="text-xs text-on-surface-variant">Itens em destaque exibidos na seção "Galeria de Detalhes & Acabamentos" das propostas/orçamentos</p>
+                        <p class="text-xs text-on-surface-variant">Catálogo de materiais exibidos em destaque nos orçamentos públicos</p>
                     </div>
                     <button type="button" @click="abrirModalAcabamento()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow cursor-pointer">
                         <i data-lucide="plus" class="w-4 h-4"></i>
@@ -300,24 +299,25 @@ include __DIR__ . '/../includes/layout/head.php';
                     </button>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" x-show="!carregando">
+                <!-- Showcase Grid Multi-colunas (5 a 6 colunas) -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4" x-show="!carregando">
                     <template x-for="acab in acabamentosGaleria" :key="acab.id">
-                        <div class="glass-card rounded-2xl border border-white/10 overflow-hidden flex flex-col justify-between hover:border-purple-500/50 transition-all shadow-md">
-                            <div class="h-44 bg-zinc-900 relative overflow-hidden">
-                                <img :src="parseImg(acab.imagens_json, 'capa')" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80'">
-                                <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-80"></div>
+                        <div class="glass-card rounded-2xl border border-white/10 overflow-hidden flex flex-col justify-between hover:border-purple-500/50 transition-all shadow-md group">
+                            <div class="h-32 bg-zinc-950 relative overflow-hidden">
+                                <img :src="parseImg(acab.imagens_json, 'capa')" class="w-full h-full object-cover group-hover:scale-105 transition-transform" onerror="this.src='https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80'">
+                                <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-70"></div>
                             </div>
-                            <div class="p-5 space-y-1.5 flex-1">
-                                <h4 class="font-bold text-base text-white" x-text="acab.nome"></h4>
-                                <p class="text-xs text-zinc-400 leading-relaxed" x-text="acab.descricao || ''"></p>
+                            <div class="p-3 space-y-1 flex-1">
+                                <h4 class="font-bold text-xs text-white truncate" x-text="acab.nome"></h4>
+                                <p class="text-[10px] text-zinc-400 leading-tight line-clamp-2" x-text="acab.descricao || ''"></p>
                             </div>
-                            <div class="p-4 pt-0 flex gap-2 justify-end border-t border-white/5 mt-2">
-                                <button type="button" @click="abrirModal(acab)" class="px-3 py-1.5 rounded-lg bg-purple-600/20 hover:bg-purple-600/40 text-purple-300 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer">
-                                    <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                            <div class="p-2.5 pt-0 flex gap-1.5 justify-end border-t border-white/5 mt-1">
+                                <button type="button" @click="abrirModal(acab)" class="px-2.5 py-1 rounded-lg bg-purple-600/20 hover:bg-purple-600/40 text-purple-300 font-bold text-[10px] flex items-center gap-1 transition-colors cursor-pointer" title="Editar">
+                                    <i data-lucide="pencil" class="w-3 h-3"></i>
                                     <span>Editar</span>
                                 </button>
-                                <button type="button" @click="excluir(acab.id)" class="px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/40 text-red-300 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer">
-                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                <button type="button" @click="excluir(acab.id)" class="px-2.5 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/40 text-red-300 font-bold text-[10px] flex items-center gap-1 transition-colors cursor-pointer" title="Excluir">
+                                    <i data-lucide="trash-2" class="w-3 h-3"></i>
                                     <span>Excluir</span>
                                 </button>
                             </div>
