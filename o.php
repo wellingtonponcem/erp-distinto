@@ -391,8 +391,16 @@ if (empty($whatsappEmpresa)) {
             <!-- Collections Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <?php foreach ($colecoes as $index => $colecao): 
-                    $isTop = ($colecao['categoria_original'] ?? '') === 'Top Master' || ($index === 2);
-                    $isMid = ($colecao['categoria_original'] ?? '') === 'Intermediário' || ($index === 1);
+                    $catOrig = $colecao['categoria_original'] ?? '';
+                    $isTop = ($catOrig === 'Top Master' || $catOrig === 'Prestige');
+                    $isMid = ($catOrig === 'Intermediário' || $catOrig === 'Classic');
+                    $isSimple = ($catOrig === 'Simples' || $catOrig === 'Essencial');
+
+                    if (!$isTop && !$isMid && !$isSimple) {
+                        $isTop = ($index === 2);
+                        $isMid = ($index === 1);
+                        $isSimple = ($index === 0);
+                    }
                 ?>
                 <div id="card-colecao-<?= $colecao['id'] ?>" 
                      onclick="selecionarColecao('<?= $colecao['id'] ?>', '<?= htmlspecialchars($colecao['nome_comercial']) ?>', <?= $colecao['investimento_cliente'] ?>, <?= $colecao['valor_lamina_extra'] ?>)"
@@ -400,9 +408,12 @@ if (empty($whatsappEmpresa)) {
 
                     <div class="space-y-5">
                         <!-- Product Preview Image if available -->
-                        <?php if (!empty($colecao['estojo']['imagem_referencia'])): ?>
+                        <?php 
+                        $imgCapa = $colecao['imagens']['capa'] ?? $colecao['estojo']['imagem_referencia'] ?? '';
+                        if (!empty($imgCapa)): 
+                        ?>
                         <div class="w-full h-48 rounded-2xl overflow-hidden bg-zinc-900 relative group-hover:scale-[1.02] transition-transform">
-                            <img src="<?= htmlspecialchars($colecao['estojo']['imagem_referencia']) ?>" 
+                            <img src="<?= htmlspecialchars($imgCapa) ?>" 
                                  alt="<?= htmlspecialchars($colecao['nome_comercial']) ?>" 
                                  class="w-full h-full object-cover object-center opacity-90 group-hover:opacity-100 transition-opacity"
                                  onerror="this.src='https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80'">
@@ -416,6 +427,10 @@ if (empty($whatsappEmpresa)) {
                             <div class="absolute top-3 right-3 z-30 bg-purple-950/90 text-purple-200 border border-purple-400/60 font-bold text-[10px] uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-md shadow-lg">
                                 MAIS PROCURADO
                             </div>
+                            <?php elseif ($isSimple): ?>
+                            <div class="absolute top-3 right-3 z-30 bg-zinc-900/90 text-zinc-300 border border-zinc-700 font-bold text-[10px] uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-md shadow-lg">
+                                COLEÇÃO ESSENCIAL
+                            </div>
                             <?php endif; ?>
                         </div>
                         <?php else: ?>
@@ -426,6 +441,10 @@ if (empty($whatsappEmpresa)) {
                             <?php elseif ($isMid): ?>
                             <div class="inline-flex self-start bg-purple-950/90 text-purple-200 border border-purple-400/60 font-bold text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-md mb-2">
                                 MAIS PROCURADO
+                            </div>
+                            <?php elseif ($isSimple): ?>
+                            <div class="inline-flex self-start bg-zinc-900/90 text-zinc-300 border border-zinc-700 font-bold text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-md mb-2">
+                                COLEÇÃO ESSENCIAL
                             </div>
                             <?php endif; ?>
                         <?php endif; ?>
@@ -479,11 +498,17 @@ if (empty($whatsappEmpresa)) {
 
                         <!-- Estojo / Case -->
                         <?php if (!empty($colecao['estojo'])): ?>
-                        <div class="bg-zinc-900/80 p-3.5 rounded-2xl border border-white/5 space-y-1">
+                        <div class="bg-zinc-900/80 p-3.5 rounded-2xl border border-white/5 space-y-2">
                             <div class="flex items-center space-x-2 text-xs font-bold text-amber-300">
                                 <i data-lucide="box" class="w-4 h-4"></i>
                                 <span><?= htmlspecialchars($colecao['estojo']['tipo'] ?? 'Estojo Nobre') ?></span>
                             </div>
+                            <?php if (!empty($colecao['estojo']['imagem_referencia'])): ?>
+                            <img src="<?= htmlspecialchars($colecao['estojo']['imagem_referencia']) ?>" 
+                                 alt="<?= htmlspecialchars($colecao['estojo']['tipo'] ?? 'Estojo') ?>"
+                                 class="w-full h-28 rounded-xl object-cover object-center border border-white/10"
+                                 onerror="this.style.display='none'">
+                            <?php endif; ?>
                             <p class="text-[11px] text-zinc-400 leading-tight">
                                 <?= htmlspecialchars($colecao['estojo']['descricao'] ?? '') ?>
                             </p>
