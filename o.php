@@ -552,18 +552,18 @@ if (empty($whatsappEmpresa)) {
                 <h3 class="text-2xl font-heading font-extrabold text-white tracking-wide">Galeria de Detalhes & Acabamentos</h3>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 scrollbar-thin scrollbar-thumb-purple-500/30 md:grid md:grid-cols-3 md:overflow-visible md:pb-0">
                 <?php foreach ($galeriaAcabamentos as $galeriaItem): ?>
-                <div class="glass-card rounded-2xl overflow-hidden group">
-                    <div class="h-48 bg-zinc-900 relative overflow-hidden">
+                <div class="glass-card rounded-2xl overflow-hidden group shrink-0 w-[260px] sm:w-[280px] md:w-auto snap-start flex flex-col justify-between">
+                    <div class="h-44 bg-zinc-900 relative overflow-hidden">
                         <img src="<?= htmlspecialchars($galeriaItem['imagem_exemplo']) ?>" 
                              alt="<?= htmlspecialchars($galeriaItem['item']) ?>" 
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                              onerror="this.src='https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80'">
                         <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-80"></div>
                     </div>
-                    <div class="p-5 space-y-1">
-                        <h4 class="font-heading font-bold text-base text-white"><?= htmlspecialchars($galeriaItem['item']) ?></h4>
+                    <div class="p-4 space-y-1 flex-1">
+                        <h4 class="font-heading font-bold text-sm text-white"><?= htmlspecialchars($galeriaItem['item']) ?></h4>
                         <p class="text-xs text-zinc-400 leading-relaxed"><?= htmlspecialchars($galeriaItem['descricao']) ?></p>
                     </div>
                 </div>

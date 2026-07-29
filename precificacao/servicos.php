@@ -299,10 +299,10 @@ include __DIR__ . '/../includes/layout/head.php';
                     </button>
                 </div>
 
-                <!-- Showcase Grid Multi-colunas (5 a 6 colunas) -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4" x-show="!carregando">
+                <!-- Showcase Grid Multi-colunas (Scroll horizontal no mobile, Grid 6 colunas no desktop) -->
+                <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 scrollbar-thin scrollbar-thumb-purple-500/30 md:grid md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 md:overflow-visible md:pb-0" x-show="!carregando">
                     <template x-for="acab in acabamentosGaleria" :key="acab.id">
-                        <div class="glass-card rounded-2xl border border-white/10 overflow-hidden flex flex-col justify-between hover:border-purple-500/50 transition-all shadow-md group">
+                        <div class="glass-card rounded-2xl border border-white/10 overflow-hidden flex flex-col justify-between hover:border-purple-500/50 transition-all shadow-md group shrink-0 w-[200px] sm:w-[220px] md:w-auto snap-start">
                             <div class="h-32 bg-zinc-950 relative overflow-hidden">
                                 <img :src="parseImg(acab.imagens_json, 'capa')" class="w-full h-full object-cover group-hover:scale-105 transition-transform" onerror="this.src='https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80'">
                                 <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-70"></div>
