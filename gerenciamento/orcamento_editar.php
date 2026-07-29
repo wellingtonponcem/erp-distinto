@@ -64,6 +64,10 @@ include __DIR__ . '/../includes/layout/head.php';
                 </div>
 
                 <div class="flex items-center space-x-3">
+                    <button type="button" onclick="sincronizarComTabela()" class="px-4 py-2.5 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30 font-bold text-xs flex items-center space-x-2 cursor-pointer" title="Recarregar coleções com preços, acabamentos e fotos mais recentes da Tabela de Preços">
+                        <span class="material-symbols-outlined text-base">sync</span>
+                        <span>Sincronizar da Tabela</span>
+                    </button>
                     <a href="<?= raizUrl('/o/' . $orcamento['slug']) ?>" target="_blank" class="px-4 py-2.5 rounded-xl bg-purple-600/20 text-purple-300 border border-purple-500/30 hover:bg-purple-600/30 font-bold text-xs flex items-center space-x-2">
                         <span class="material-symbols-outlined text-base">visibility</span>
                         <span>Ver Link Público</span>
@@ -254,6 +258,13 @@ const acabamentosSalvos = <?= json_encode($acabamentosSalvos) ?>;
 
 function inicializarSeletores() {
     filtrarColecoesPorCategoria();
+}
+
+function sincronizarComTabela() {
+    colecoesSalvas = [];
+    filtrarColecoesPorCategoria();
+    compilarJsonPreview();
+    alert('Orçamento sincronizado com os dados atualizados da Tabela de Preços! Clique em "Salvar Alterações" para gravar.');
 }
 
 function parseJsonSeguro(str) {

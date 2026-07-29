@@ -100,6 +100,7 @@ switch ($metodo) {
                 $d['valor_lamina_extra'] ?? 0,
                 $d['categoria_original'] ?? null
             ]);
+            sincronizarComProdutosAlbuns($db, array_merge($d, ['id' => $id]));
             responderJson(['ok' => true, 'id' => $id], 201);
         } catch (Exception $e) {
             responderJson(['erro' => 'Erro ao salvar serviço: ' . $e->getMessage()], 500);
@@ -137,11 +138,57 @@ switch ($metodo) {
                 $d['categoria_original'] ?? null,
                 $d['id']
             ]);
+            sincronizarComProdutosAlbuns($db, $d);
             responderJson(['ok' => true]);
         } catch (Exception $e) {
             responderJson(['erro' => 'Erro ao atualizar serviço: ' . $e->getMessage()], 500);
         }
         break;
+
+function sincronizarComProdutosAlbuns($db, $d) {
+    if (($d['tipo'] ?? '') !== 'colecao' && empty($d['acabamento_json'])) return;
+    try {
+        $db->exec("CREATE TABLE IF NOT EXISTS produtos_albuns (
+            id VARCHAR(50) PRIMARY KEY,
+            nome VARCHAR(255) NOT NULL,
+            categoria VARCHAR(50) DEFAULT '15anos',
+            categoria_original VARCHAR(100),
+            tipo VARCHAR(50) DEFAULT 'colecao',
+            descricao TEXT,
+            custo_base DECIMAL(10,2) DEFAULT 0,
+            investimento_cliente DECIMAL(10,2) DEFAULT 0,
+            valor_lamina_extra DECIMAL(10,2) DEFAULT 35,
+            estojo_json TEXT,
+            imagens_galeria_json TEXT,
+            acabamentos_detalhados_json TEXT,
+            ativo TINYINT DEFAULT 1
+        )");
+
+        $idClean = str_replace('srv_', '', $d['id']);
+        $acab = is_array($d['acabamento_json'] ?? null) ? json_encode($d['acabamento_json']) : ($d['acabamento_json'] ?? null);
+        $est = is_array($d['estojo_json'] ?? null) ? json_encode($d['estojo_json']) : ($d['estojo_json'] ?? null);
+        $img = is_array($d['imagens_json'] ?? null) ? json_encode($d['imagens_json']) : ($d['imagens_json'] ?? null);
+
+        $stmt = $db->prepare("INSERT INTO produtos_albuns (id, nome, categoria, categoria_original, tipo, descricao, custo_base, investimento_cliente, valor_lamina_extra, estojo_json, imagens_galeria_json, acabamentos_detalhados_json) 
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?) 
+            ON DUPLICATE KEY UPDATE 
+            nome=VALUES(nome), categoria=VALUES(categoria), categoria_original=VALUES(categoria_original), descricao=VALUES(descricao), custo_base=VALUES(custo_base), investimento_cliente=VALUES(investimento_cliente), valor_lamina_extra=VALUES(valor_lamina_extra), estojo_json=VALUES(estojo_json), imagens_galeria_json=VALUES(imagens_galeria_json), acabamentos_detalhados_json=VALUES(acabamentos_detalhados_json)");
+        $stmt->execute([
+            $idClean,
+            $d['nome'],
+            $d['categoria'] ?? '15anos',
+            $d['categoria_original'] ?? 'Coleção Premium',
+            $d['tipo'] ?? 'colecao',
+            $d['descricao'] ?? '',
+            $d['custo_producao'] ?? 0,
+            $d['preco_venda'] ?? 0,
+            $d['valor_lamina_extra'] ?? 35,
+            $est,
+            $img,
+            $acab
+        ]);
+    } catch(Exception $e) {}
+}
 
     case 'DELETE':
         $id = $_GET['id'] ?? '';

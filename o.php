@@ -48,6 +48,52 @@ $configGeral = $dados['configuracao_geral'] ?? [];
 $colecoes = $dados['colecao_albuns'] ?? [];
 $galeriaAcabamentos = $dados['galeria_acabamentos'] ?? [];
 
+// Sincronização & Enriquecimento em Tempo Real com a Tabela de Preços (servicos)
+try {
+    $servicosLive = $db->query("SELECT * FROM servicos WHERE ativo=1")->fetchAll();
+    $liveMap = [];
+    foreach ($servicosLive as $sl) {
+        $liveMap[$sl['id']] = $sl;
+        $liveMap['srv_' . $sl['id']] = $sl;
+        $cleanName = mb_strtolower(trim($sl['nome']));
+        $liveMap[$cleanName] = $sl;
+    }
+
+    foreach ($colecoes as &$col) {
+        $colId = $col['id'] ?? '';
+        $colNomeKey = mb_strtolower(trim($col['nome_comercial'] ?? ($col['nome'] ?? '')));
+        $sl = $liveMap[$colId] ?? ($liveMap['srv_' . $colId] ?? ($liveMap[$colNomeKey] ?? null));
+        
+        if ($sl) {
+            $col['nome_comercial'] = $sl['nome'];
+            if (!empty($sl['descricao'])) $col['descricao'] = $sl['descricao'];
+            if (!empty($sl['preco_venda']) && floatval($sl['preco_venda']) > 0) {
+                $col['investimento_cliente'] = floatval($sl['preco_venda']);
+            }
+            if (isset($sl['valor_lamina_extra']) && $sl['valor_lamina_extra'] !== '') {
+                $col['valor_lamina_extra'] = floatval($sl['valor_lamina_extra']);
+            }
+            if (!empty($sl['acabamento_json'])) {
+                $col['acabamento_json'] = $sl['acabamento_json'];
+                $col['acabamento_detalhado'] = json_decode($sl['acabamento_json'], true);
+                $col['acabamentos_lista_fotos'] = json_decode($sl['acabamento_json'], true);
+            }
+            if (!empty($sl['estojo_json'])) {
+                $col['estojo_json'] = $sl['estojo_json'];
+                $col['estojo'] = json_decode($sl['estojo_json'], true);
+            }
+            if (!empty($sl['imagens_json'])) {
+                $col['imagens_json'] = $sl['imagens_json'];
+                $col['imagens'] = json_decode($sl['imagens_json'], true);
+            }
+            if (!empty($sl['categoria_original'])) {
+                $col['categoria_original'] = $sl['categoria_original'];
+            }
+        }
+    }
+    unset($col);
+} catch (Exception $e) {}
+
 // Configurações da Empresa para Rodapé
 $configEmpresa = [];
 try {
