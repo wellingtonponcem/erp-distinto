@@ -12,18 +12,26 @@ $tituloPagina = 'Novo Orçamento';
 
 $db = Database::get();
 
-// Auto-seed de produtos de álbuns caso a tabela esteja vazia
-try {
-    $checkSeed = $db->query("SELECT COUNT(*) FROM produtos_albuns")->fetchColumn();
-    if ($checkSeed == 0 && file_exists(__DIR__ . '/../setup/seed_produtos_albuns.php')) {
-        include_once __DIR__ . '/../setup/seed_produtos_albuns.php';
-    }
-} catch (Exception $e) {}
-
-// Buscar Produtos de Álbuns Cadastrados
+// Buscar Coleções de Álbuns da Tabela de Preços (servicos)
 $produtosTabela = [];
 try {
-    $produtosTabela = $db->query("SELECT * FROM produtos_albuns WHERE ativo=1 ORDER BY categoria ASC, investimento_cliente ASC")->fetchAll();
+    $rows = $db->query("SELECT * FROM servicos WHERE tipo='colecao' AND ativo=1 ORDER BY categoria ASC, preco_venda ASC")->fetchAll();
+    // Mapear campos do schema servicos para o schema esperado pelo JS
+    foreach ($rows as $r) {
+        $produtosTabela[] = [
+            'id' => $r['id'],
+            'nome' => $r['nome'],
+            'categoria' => $r['categoria'] ?? '15anos',
+            'categoria_original' => $r['categoria_original'] ?? 'Coleção Premium',
+            'descricao' => $r['descricao'] ?? '',
+            'custo_base' => $r['custo_producao'] ?? 0,
+            'investimento_cliente' => $r['preco_venda'] ?? 0,
+            'valor_lamina_extra' => $r['valor_lamina_extra'] ?? 0,
+            'estojo_json' => $r['estojo_json'] ?? null,
+            'imagens_galeria_json' => $r['imagens_json'] ?? null,
+            'acabamentos_detalhados_json' => $r['acabamento_json'] ?? null,
+        ];
+    }
 } catch (Exception $e) {}
 
 include __DIR__ . '/../includes/layout/head.php';
@@ -86,9 +94,12 @@ include __DIR__ . '/../includes/layout/head.php';
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-2">Categoria de Produtos</label>
                             <select id="categoria_filtro" onchange="renderizarProdutosPorCategoria()" class="w-full bg-surface-container-low border border-outline-variant/30 rounded-xl px-4 py-3 text-sm text-on-surface focus:outline-none focus:border-primary font-bold">
-                                <option value="15anos" selected>Álbuns 15 Anos</option>
-                                <option value="wedding">Álbuns Casamento</option>
-                                <option value="todos">Todos os Produtos</option>
+                                <option value="todos">Todas as Categorias</option>
+                                <option value="casamento">Casamento</option>
+                                <option value="15anos" selected>15 Anos</option>
+                                <option value="familia">Família</option>
+                                <option value="book">Book Fotográfico</option>
+                                <option value="wedding">Wedding</option>
                             </select>
                         </div>
 

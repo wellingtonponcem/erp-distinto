@@ -196,43 +196,6 @@ class Database {
                 self::$instance->exec($createOrcamentosSql);
             } catch (Exception $e) {}
 
-            // 9. Verifica tabela de produtos de álbuns fotográficos
-            try {
-                $createProdutosSql = $isMysql
-                    ? "CREATE TABLE IF NOT EXISTS produtos_albuns (
-                        id VARCHAR(64) PRIMARY KEY,
-                        nome VARCHAR(255) NOT NULL,
-                        categoria VARCHAR(50) DEFAULT '15anos',
-                        categoria_original VARCHAR(50) NULL,
-                        tipo VARCHAR(20) DEFAULT 'produto',
-                        descricao TEXT NULL,
-                        custo_base DECIMAL(10,2) DEFAULT 0.00,
-                        investimento_cliente DECIMAL(10,2) DEFAULT 0.00,
-                        valor_lamina_extra DECIMAL(10,2) DEFAULT 0.00,
-                        estojo_json TEXT NULL,
-                        imagens_galeria_json TEXT NULL,
-                        acabamentos_detalhados_json TEXT NULL,
-                        ativo INT DEFAULT 1,
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                      )"
-                    : "CREATE TABLE IF NOT EXISTS produtos_albuns (
-                        id TEXT PRIMARY KEY,
-                        nome TEXT NOT NULL,
-                        categoria TEXT DEFAULT '15anos',
-                        categoria_original TEXT NULL,
-                        tipo TEXT DEFAULT 'produto',
-                        descricao TEXT NULL,
-                        custo_base NUMERIC(10,2) DEFAULT 0.00,
-                        investimento_cliente NUMERIC(10,2) DEFAULT 0.00,
-                        valor_lamina_extra NUMERIC(10,2) DEFAULT 0.00,
-                        estojo_json TEXT NULL,
-                        imagens_galeria_json TEXT NULL,
-                        acabamentos_detalhados_json TEXT NULL,
-                        ativo INTEGER DEFAULT 1,
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                      )";
-                self::$instance->exec($createProdutosSql);
-            } catch (Exception $e) {}
         } catch (Exception $e) {
             // Ignorar erros de migração geral
         }
