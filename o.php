@@ -151,28 +151,28 @@ if (!str_starts_with($whatsappEmpresa, '55') && strlen($whatsappEmpresa) >= 10) 
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased pb-32">
+<body class="min-h-screen flex flex-col antialiased pb-48 sm:pb-36">
 
     <!-- Top Brand Nav -->
     <header class="w-full glass-panel sticky top-0 z-40 border-b border-white/10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-purple to-purple-900 flex items-center justify-center font-bold text-white shadow-lg shadow-purple-900/40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-2.5 sm:space-x-3">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-brand-purple to-purple-900 flex items-center justify-center font-bold text-white shadow-lg shadow-purple-900/40 text-sm sm:text-base">
                     D
                 </div>
                 <div>
-                    <h1 class="font-heading font-extrabold tracking-wider text-lg text-white">DISTINTO</h1>
-                    <p class="text-[10px] tracking-widest uppercase text-zinc-400 font-semibold">Propostas & Orçamentos Premium</p>
+                    <h1 class="font-heading font-extrabold tracking-wider text-base sm:text-lg text-white">DISTINTO</h1>
+                    <p class="text-[9px] sm:text-[10px] tracking-widest uppercase text-zinc-400 font-semibold hidden sm:block">Propostas & Orçamentos Premium</p>
                 </div>
             </div>
 
-            <div class="flex items-center space-x-3 no-print">
+            <div class="flex items-center space-x-2 sm:space-x-3 no-print">
                 <button onclick="window.print()" class="hidden sm:inline-flex items-center space-x-2 px-3 py-2 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-xs font-semibold text-zinc-300 transition-colors">
                     <i data-lucide="printer" class="w-4 h-4"></i>
                     <span>Imprimir / PDF</span>
                 </button>
-                <button onclick="copiarLink()" class="inline-flex items-center space-x-2 px-3 py-2 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-xs font-semibold text-zinc-300 transition-colors">
-                    <i data-lucide="share-2" class="w-4 h-4"></i>
+                <button onclick="copiarLink()" class="inline-flex items-center space-x-1.5 px-3 py-2 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-xs font-semibold text-zinc-300 transition-colors">
+                    <i data-lucide="share-2" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
                     <span id="txt-share">Compartilhar</span>
                 </button>
             </div>
@@ -180,54 +180,54 @@ if (!str_starts_with($whatsappEmpresa, '55') && strlen($whatsappEmpresa) >= 10) 
     </header>
 
     <!-- Main Content Container -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex-1 w-full space-y-10">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-8 flex-1 w-full space-y-6 sm:space-y-10">
 
         <!-- Hero Section -->
-        <section class="glass-panel p-8 sm:p-12 rounded-3xl relative overflow-hidden">
+        <section class="glass-panel p-5 sm:p-12 rounded-2xl sm:rounded-3xl relative overflow-hidden">
             <div class="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-brand-purple/20 rounded-full blur-3xl pointer-events-none"></div>
             
-            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div class="space-y-3 max-w-3xl">
-                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-bold uppercase tracking-wider">
-                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6">
+                <div class="space-y-2.5 sm:space-y-3 max-w-3xl">
+                    <div class="inline-flex items-center space-x-2 px-2.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+                        <i data-lucide="sparkles" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>
                         <span>Orçamento Comercial</span>
                     </div>
 
-                    <h2 class="text-3xl sm:text-5xl font-heading font-extrabold text-white tracking-tight leading-tight">
+                    <h2 class="text-2xl sm:text-5xl font-heading font-extrabold text-white tracking-tight leading-tight">
                         <?= htmlspecialchars($titulo) ?>
                     </h2>
 
-                    <p class="text-lg text-purple-200/80 font-medium">
+                    <p class="text-sm sm:text-lg text-purple-200/80 font-medium">
                         <?= htmlspecialchars($subtitulo) ?>
                     </p>
 
-                    <div class="flex flex-wrap items-center gap-4 pt-2 text-xs text-zinc-400">
-                        <span class="flex items-center space-x-1.5 bg-zinc-900/60 px-3 py-1.5 rounded-lg border border-white/5">
-                            <i data-lucide="user" class="w-4 h-4 text-purple-400"></i>
-                            <span class="text-zinc-200 font-semibold"><?= htmlspecialchars($cliente) ?></span>
+                    <div class="flex flex-wrap items-center gap-2 sm:gap-4 pt-1 sm:pt-2 text-xs text-zinc-400">
+                        <span class="flex items-center space-x-1.5 bg-zinc-900/60 px-2.5 py-1.5 rounded-lg border border-white/5">
+                            <i data-lucide="user" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-400"></i>
+                            <span class="text-zinc-200 font-semibold text-xs"><?= htmlspecialchars($cliente) ?></span>
                         </span>
                         
                         <?php if ($validadeFormatada): ?>
-                        <span class="flex items-center space-x-1.5 bg-zinc-900/60 px-3 py-1.5 rounded-lg border border-white/5">
-                            <i data-lucide="calendar" class="w-4 h-4 <?= $vencido ? 'text-rose-400' : 'text-emerald-400' ?>"></i>
-                            <span>Validade: <strong class="<?= $vencido ? 'text-rose-300' : 'text-zinc-200' ?>"><?= $validadeFormatada ?></strong></span>
+                        <span class="flex items-center space-x-1.5 bg-zinc-900/60 px-2.5 py-1.5 rounded-lg border border-white/5">
+                            <i data-lucide="calendar" class="w-3.5 h-3.5 sm:w-4 sm:h-4 <?= $vencido ? 'text-rose-400' : 'text-emerald-400' ?>"></i>
+                            <span class="text-xs">Validade: <strong class="<?= $vencido ? 'text-rose-300' : 'text-zinc-200' ?>"><?= $validadeFormatada ?></strong></span>
                         </span>
                         <?php endif; ?>
 
-                        <span class="flex items-center space-x-1.5 bg-zinc-900/60 px-3 py-1.5 rounded-lg border border-white/5">
-                            <i data-lucide="check-circle-2" class="w-4 h-4 text-amber-400"></i>
-                            <span>Status: <strong class="uppercase text-amber-300"><?= htmlspecialchars($status) ?></strong></span>
+                        <span class="flex items-center space-x-1.5 bg-zinc-900/60 px-2.5 py-1.5 rounded-lg border border-white/5">
+                            <i data-lucide="check-circle-2" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400"></i>
+                            <span class="text-xs">Status: <strong class="uppercase text-amber-300"><?= htmlspecialchars($status) ?></strong></span>
                         </span>
                     </div>
                 </div>
 
                 <!-- Quick Action Card -->
-                <div class="glass-card p-6 rounded-2xl flex flex-col items-center justify-center text-center space-y-3 min-w-[240px] border-purple-500/20">
-                    <span class="text-xs uppercase font-bold tracking-widest text-zinc-400">Investimento A Partir De</span>
-                    <div class="text-3xl sm:text-4xl font-heading font-extrabold text-white tracking-tight">
+                <div class="glass-card p-4 sm:p-6 rounded-2xl flex flex-col items-center justify-center text-center space-y-2.5 sm:space-y-3 min-w-full sm:min-w-[240px] border-purple-500/20">
+                    <span class="text-[10px] sm:text-xs uppercase font-bold tracking-widest text-zinc-400">Investimento A Partir De</span>
+                    <div class="text-2xl sm:text-4xl font-heading font-extrabold text-white tracking-tight">
                         R$ <?= number_format($orcamento['valor_total'] ?? 1250, 2, ',', '.') ?>
                     </div>
-                    <p class="text-[11px] text-zinc-400">Em até 6x sem juros ou desconto à vista</p>
+                    <p class="text-[10px] sm:text-[11px] text-zinc-400">Em até 6x sem juros ou desconto à vista</p>
                     <a href="#colecoes-section" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-brand-purple to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-purple-900/30 text-center">
                         Ver Coleções
                     </a>
@@ -242,64 +242,64 @@ if (!str_starts_with($whatsappEmpresa, '55') && strlen($whatsappEmpresa) >= 10) 
                 <div class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400">
                     <i data-lucide="layers" class="w-4 h-4"></i>
                 </div>
-                <h3 class="text-xl font-heading font-bold text-white tracking-wide">Especificações Técnicas da Linha</h3>
+                <h3 class="text-lg sm:text-xl font-heading font-bold text-white tracking-wide">Especificações Técnicas da Linha</h3>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                 <!-- Spec 1: Tamanhos -->
-                <div class="glass-panel p-5 rounded-2xl flex items-start space-x-4">
-                    <div class="p-3 rounded-xl bg-purple-500/10 text-purple-400 shrink-0">
-                        <i data-lucide="maximize-2" class="w-5 h-5"></i>
+                <div class="glass-panel p-4 sm:p-5 rounded-2xl flex items-start space-x-3.5 sm:space-x-4">
+                    <div class="p-2.5 sm:p-3 rounded-xl bg-purple-500/10 text-purple-400 shrink-0">
+                        <i data-lucide="maximize-2" class="w-4.5 h-4.5 sm:w-5 sm:h-5"></i>
                     </div>
                     <div>
-                        <span class="text-[11px] uppercase font-bold tracking-wider text-zinc-400 block">Dimensões</span>
-                        <h4 class="font-bold text-zinc-100 text-sm mt-0.5"><?= htmlspecialchars($configGeral['tamanho_fechado'] ?? '30x30 cm') ?> (Fechado)</h4>
-                        <p class="text-xs text-zinc-400"><?= htmlspecialchars($configGeral['tamanho_aberto'] ?? '30x60 cm') ?> em extensão panorama</p>
+                        <span class="text-[10px] sm:text-[11px] uppercase font-bold tracking-wider text-zinc-400 block">Dimensões</span>
+                        <h4 class="font-bold text-zinc-100 text-xs sm:text-sm mt-0.5"><?= htmlspecialchars($configGeral['tamanho_fechado'] ?? '30x30 cm') ?> (Fechado)</h4>
+                        <p class="text-[11px] sm:text-xs text-zinc-400"><?= htmlspecialchars($configGeral['tamanho_aberto'] ?? '30x60 cm') ?> panorâmico</p>
                     </div>
                 </div>
 
                 <!-- Spec 2: Abertura e Papel -->
-                <div class="glass-panel p-5 rounded-2xl flex items-start space-x-4">
-                    <div class="p-3 rounded-xl bg-amber-500/10 text-amber-400 shrink-0">
-                        <i data-lucide="book-open" class="w-5 h-5"></i>
+                <div class="glass-panel p-4 sm:p-5 rounded-2xl flex items-start space-x-3.5 sm:space-x-4">
+                    <div class="p-2.5 sm:p-3 rounded-xl bg-amber-500/10 text-amber-400 shrink-0">
+                        <i data-lucide="book-open" class="w-4.5 h-4.5 sm:w-5 sm:h-5"></i>
                     </div>
                     <div>
-                        <span class="text-[11px] uppercase font-bold tracking-wider text-zinc-400 block">Encadernação</span>
-                        <h4 class="font-bold text-zinc-100 text-sm mt-0.5">Panorâmica 180°</h4>
-                        <p class="text-xs text-zinc-400">Lâminas rígidas de 800g (não dobram)</p>
+                        <span class="text-[10px] sm:text-[11px] uppercase font-bold tracking-wider text-zinc-400 block">Encadernação</span>
+                        <h4 class="font-bold text-zinc-100 text-xs sm:text-sm mt-0.5">Panorâmica 180°</h4>
+                        <p class="text-[11px] sm:text-xs text-zinc-400">Lâminas rígidas de 800g</p>
                     </div>
                 </div>
 
                 <!-- Spec 3: Páginas Base -->
-                <div class="glass-panel p-5 rounded-2xl flex items-start space-x-4">
-                    <div class="p-3 rounded-xl bg-emerald-500/10 text-emerald-400 shrink-0">
-                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                <div class="glass-panel p-4 sm:p-5 rounded-2xl flex items-start space-x-3.5 sm:space-x-4">
+                    <div class="p-2.5 sm:p-3 rounded-xl bg-emerald-500/10 text-emerald-400 shrink-0">
+                        <i data-lucide="file-text" class="w-4.5 h-4.5 sm:w-5 sm:h-5"></i>
                     </div>
                     <div>
-                        <span class="text-[11px] uppercase font-bold tracking-wider text-zinc-400 block">Capacidade Base</span>
-                        <h4 class="font-bold text-zinc-100 text-sm mt-0.5"><?= htmlspecialchars($configGeral['paginas_base'] ?? 20) ?> Páginas (10 Lâminas)</h4>
-                        <p class="text-xs text-zinc-400">Expansível com lâminas extras</p>
+                        <span class="text-[10px] sm:text-[11px] uppercase font-bold tracking-wider text-zinc-400 block">Capacidade Base</span>
+                        <h4 class="font-bold text-zinc-100 text-xs sm:text-sm mt-0.5"><?= htmlspecialchars($configGeral['paginas_base'] ?? 20) ?> Páginas (10 Lâminas)</h4>
+                        <p class="text-[11px] sm:text-xs text-zinc-400">Expansível com extras</p>
                     </div>
                 </div>
 
                 <!-- Spec 4: Retirada / Entrega -->
-                <div class="glass-panel p-5 rounded-2xl flex items-start space-x-4">
-                    <div class="p-3 rounded-xl bg-blue-500/10 text-blue-400 shrink-0">
-                        <i data-lucide="package-check" class="w-5 h-5"></i>
+                <div class="glass-panel p-4 sm:p-5 rounded-2xl flex items-start space-x-3.5 sm:space-x-4">
+                    <div class="p-2.5 sm:p-3 rounded-xl bg-blue-500/10 text-blue-400 shrink-0">
+                        <i data-lucide="package-check" class="w-4.5 h-4.5 sm:w-5 sm:h-5"></i>
                     </div>
                     <div>
-                        <span class="text-[11px] uppercase font-bold tracking-wider text-zinc-400 block">Entrega</span>
-                        <h4 class="font-bold text-zinc-100 text-sm mt-0.5"><?= htmlspecialchars($configGeral['retirada'] ?? 'Presencial') ?></h4>
-                        <p class="text-xs text-zinc-400">Com embalagem especial e garantia</p>
+                        <span class="text-[10px] sm:text-[11px] uppercase font-bold tracking-wider text-zinc-400 block">Entrega</span>
+                        <h4 class="font-bold text-zinc-100 text-xs sm:text-sm mt-0.5"><?= htmlspecialchars($configGeral['retirada'] ?? 'Presencial') ?></h4>
+                        <p class="text-[11px] sm:text-xs text-zinc-400">Com embalagem especial</p>
                     </div>
                 </div>
             </div>
 
             <!-- Servicos Inclusos -->
             <?php if (!empty($configGeral['servicos_inclusos'])): ?>
-            <div class="glass-panel p-6 rounded-2xl border border-white/5 mt-4">
-                <span class="text-xs uppercase font-bold tracking-widest text-purple-400 block mb-3">Serviços Premium Inclusos no Orçamento</span>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div class="glass-panel p-4 sm:p-6 rounded-2xl border border-white/5 mt-3 sm:mt-4">
+                <span class="text-[10px] sm:text-xs uppercase font-bold tracking-widest text-purple-400 block mb-2.5">Serviços Premium Inclusos no Orçamento</span>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
                     <?php foreach ($configGeral['servicos_inclusos'] as $servico): ?>
                         <div class="flex items-center space-x-2 text-xs font-semibold text-zinc-200 bg-zinc-900/50 p-2.5 rounded-xl border border-white/5">
                             <i data-lucide="check" class="w-4 h-4 text-emerald-400 shrink-0"></i>
@@ -313,22 +313,22 @@ if (!str_starts_with($whatsappEmpresa, '55') && strlen($whatsappEmpresa) >= 10) 
         <?php endif; ?>
 
         <!-- Collections Showcase (`colecao_albuns`) -->
-        <section id="colecoes-section" class="space-y-6">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <section id="colecoes-section" class="space-y-4 sm:space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                 <div>
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400">
+                    <div class="flex items-center space-x-2.5 sm:space-x-3">
+                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400">
                             <i data-lucide="crown" class="w-4 h-4"></i>
                         </div>
-                        <h3 class="text-2xl font-heading font-extrabold text-white tracking-wide">Opções de Coleção & Acabamentos</h3>
+                        <h3 class="text-xl sm:text-2xl font-heading font-extrabold text-white tracking-wide">Opções de Coleção & Acabamentos</h3>
                     </div>
                     <p class="text-xs text-zinc-400 mt-1">Selecione a coleção ideal para visualizar os detalhes completos e simular o investimento.</p>
                 </div>
 
                 <!-- Interactive Extra Sheet Selector -->
-                <div class="glass-panel p-3 rounded-2xl flex items-center space-x-3 self-start border border-purple-500/30">
-                    <span class="text-xs font-bold text-zinc-300 pl-2">Lâminas Extras:</span>
-                    <select id="select-laminas-extras" onchange="recalcularTotais()" class="bg-zinc-900 text-purple-300 font-bold text-xs rounded-xl px-3 py-1.5 border border-purple-500/30 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <div class="glass-panel p-2.5 sm:p-3 rounded-2xl flex items-center justify-between sm:justify-start space-x-2 sm:space-x-3 w-full sm:w-auto border border-purple-500/30">
+                    <span class="text-xs font-bold text-zinc-300 pl-1">Lâminas Extras:</span>
+                    <select id="select-laminas-extras" onchange="recalcularTotais()" class="bg-zinc-900 text-purple-300 font-bold text-xs rounded-xl px-2.5 py-1.5 border border-purple-500/30 focus:outline-none focus:ring-2 focus:ring-purple-500">
                         <option value="0">+0 Lâminas (20 Páginas padrão)</option>
                         <option value="2">+2 Lâminas (24 Páginas)</option>
                         <option value="4">+4 Lâminas (28 Páginas)</option>
@@ -468,40 +468,43 @@ if (!str_starts_with($whatsappEmpresa, '55') && strlen($whatsappEmpresa) >= 10) 
     </main>
 
     <!-- Floating Footer Action Bar -->
-    <div class="fixed bottom-0 left-0 right-0 z-50 glass-panel border-t border-purple-500/30 p-4 sm:p-5 no-print">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="fixed bottom-0 left-0 right-0 z-50 glass-panel border-t border-purple-500/30 px-3 py-2.5 sm:p-5 no-print shadow-2xl backdrop-blur-2xl" style="padding-bottom: max(0.6rem, env(safe-area-inset-bottom));">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-1.5 sm:gap-4">
             
-            <div class="flex items-center space-x-4">
+            <!-- Header do rodapé no mobile: Coleção Selecionada -->
+            <div class="flex items-center justify-between sm:justify-start space-x-3">
                 <div class="hidden sm:flex w-12 h-12 rounded-2xl bg-purple-600/20 border border-purple-500/40 items-center justify-center text-purple-400 shrink-0">
                     <i data-lucide="shopping-bag" class="w-6 h-6"></i>
                 </div>
-                <div>
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 block">Coleção Selecionada:</span>
-                    <h5 id="footer-colecao-nome" class="font-heading font-extrabold text-white text-base">
+                <div class="flex items-center space-x-1.5 sm:block">
+                    <span class="text-[9px] font-bold uppercase tracking-wider text-purple-400 sm:text-zinc-400">Coleção Selecionada:</span>
+                    <h5 id="footer-colecao-nome" class="font-heading font-extrabold text-white text-xs sm:text-base truncate max-w-[200px] sm:max-w-none">
                         <?= !empty($colecoes[0]['nome_comercial']) ? htmlspecialchars($colecoes[0]['nome_comercial']) : 'Coleção Essencial' ?>
                     </h5>
                 </div>
             </div>
 
-            <div class="flex items-center space-x-4 w-full sm:w-auto justify-between sm:justify-end">
-                <div class="text-right">
-                    <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block">Investimento Total</span>
-                    <div id="footer-preco-total" class="text-2xl sm:text-3xl font-heading font-black text-white tracking-tight">
+            <!-- Linha principal com preço e botões no mobile -->
+            <div class="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto justify-between sm:justify-end">
+                <div class="text-left sm:text-right">
+                    <span class="text-[8px] sm:text-[10px] uppercase font-bold tracking-wider text-zinc-400 block">Investimento Total</span>
+                    <div id="footer-preco-total" class="text-lg sm:text-3xl font-heading font-black text-white tracking-tight leading-tight">
                         R$ <?= number_format($colecoes[0]['investimento_cliente'] ?? 1250, 2, ',', '.') ?>
                     </div>
                 </div>
 
-                <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
                     <a id="btn-whatsapp-direto" 
                        href="https://wa.me/<?= $whatsappEmpresa ?>?text=<?= urlencode("Olá! Gostaria de conversar sobre o Orçamento: " . $titulo . " (" . $cliente . ")") ?>" 
                        target="_blank" 
-                       class="px-4 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center space-x-2 shadow-lg shadow-emerald-900/30">
+                       title="Falar no WhatsApp"
+                       class="p-2.5 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center space-x-1.5 shadow-lg shadow-emerald-900/30">
                         <i data-lucide="message-circle" class="w-4 h-4"></i>
                         <span class="hidden md:inline">WhatsApp</span>
                     </a>
 
-                    <button onclick="abrirModalAprovacao()" class="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-brand-purple to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-xl shadow-purple-900/50 flex items-center space-x-2">
-                        <i data-lucide="check-circle-2" class="w-4.5 h-4.5"></i>
+                    <button onclick="abrirModalAprovacao()" class="px-3.5 py-2.5 sm:px-6 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-brand-purple to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-xl shadow-purple-900/50 flex items-center space-x-1.5">
+                        <i data-lucide="check-circle-2" class="w-4 h-4 sm:w-4.5 sm:h-4.5"></i>
                         <span>Aprovar Orçamento</span>
                     </button>
                 </div>
