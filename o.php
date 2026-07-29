@@ -406,18 +406,19 @@ if (empty($whatsappEmpresa)) {
                      onclick="selecionarColecao('<?= $colecao['id'] ?>', '<?= htmlspecialchars($colecao['nome_comercial']) ?>', <?= $colecao['investimento_cliente'] ?>, <?= $colecao['valor_lamina_extra'] ?>)"
                      class="glass-card rounded-3xl p-6 flex flex-col justify-between cursor-pointer relative overflow-hidden group border-2 <?= $index === 0 ? 'selected' : '' ?>">
 
-                    <div class="space-y-5">
+                     <div class="space-y-5">
                         <!-- Product Preview Image if available -->
                         <?php 
                         $imgCapa = $colecao['imagens']['capa'] ?? $colecao['estojo']['imagem_referencia'] ?? '';
                         if (!empty($imgCapa)): 
                         ?>
-                        <div class="w-full h-48 rounded-2xl overflow-hidden bg-zinc-900 relative group-hover:scale-[1.02] transition-transform">
+                        <div class="w-full h-56 sm:h-64 rounded-2xl overflow-hidden bg-zinc-950 relative group-hover:scale-[1.02] transition-transform border border-white/10 shadow-inner">
+                            <img src="<?= htmlspecialchars($imgCapa) ?>" class="absolute inset-0 w-full h-full object-cover blur-xl opacity-45 scale-125 pointer-events-none">
                             <img src="<?= htmlspecialchars($imgCapa) ?>" 
                                  alt="<?= htmlspecialchars($colecao['nome_comercial']) ?>" 
-                                 class="w-full h-full object-cover object-center opacity-90 group-hover:opacity-100 transition-opacity"
+                                 class="w-full h-full object-contain relative z-10 p-1.5 opacity-95 group-hover:opacity-100 transition-opacity"
                                  onerror="this.src='https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80'">
-                            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-80"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-transparent to-transparent z-20 pointer-events-none"></div>
 
                             <?php if ($isTop): ?>
                             <div class="absolute top-3 right-3 z-30 bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-2xl border border-yellow-300/40">
@@ -504,15 +505,19 @@ if (empty($whatsappEmpresa)) {
                                 <span><?= htmlspecialchars($colecao['estojo']['tipo'] ?? 'Estojo Nobre') ?></span>
                             </div>
                             <?php if (!empty($colecao['estojo']['imagem_referencia'])): ?>
-                            <img src="<?= htmlspecialchars($colecao['estojo']['imagem_referencia']) ?>" 
-                                 alt="<?= htmlspecialchars($colecao['estojo']['tipo'] ?? 'Estojo') ?>"
-                                 class="w-full h-28 rounded-xl object-cover object-center border border-white/10"
-                                 onerror="this.style.display='none'">
+                            <div class="w-full h-44 rounded-xl overflow-hidden bg-zinc-950 relative border border-white/10 my-1">
+                                <img src="<?= htmlspecialchars($colecao['estojo']['imagem_referencia']) ?>" class="absolute inset-0 w-full h-full object-cover blur-xl opacity-45 scale-125 pointer-events-none">
+                                <img src="<?= htmlspecialchars($colecao['estojo']['imagem_referencia']) ?>" 
+                                     alt="<?= htmlspecialchars($colecao['estojo']['tipo'] ?? 'Estojo') ?>"
+                                     class="w-full h-full object-contain relative z-10 p-1.5"
+                                     onerror="this.parentElement.style.display='none'">
+                            </div>
                             <?php endif; ?>
                             <p class="text-[11px] text-zinc-400 leading-tight">
                                 <?= htmlspecialchars($colecao['estojo']['descricao'] ?? '') ?>
                             </p>
                         </div>
+                        <?php endif; ?>                     </div>
                         <?php endif; ?>
                     </div>
 
