@@ -349,16 +349,6 @@ if (!str_starts_with($whatsappEmpresa, '55') && strlen($whatsappEmpresa) >= 10) 
                      onclick="selecionarColecao('<?= $colecao['id'] ?>', '<?= htmlspecialchars($colecao['nome_comercial']) ?>', <?= $colecao['investimento_cliente'] ?>, <?= $colecao['valor_lamina_extra'] ?>)"
                      class="glass-card rounded-3xl p-6 flex flex-col justify-between cursor-pointer relative overflow-hidden group border-2 <?= $index === 0 ? 'selected' : '' ?>">
 
-                    <?php if ($isTop): ?>
-                    <div class="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-xl">
-                        TOP MASTER LUX
-                    </div>
-                    <?php elseif ($isMid): ?>
-                    <div class="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 bg-purple-950/90 text-purple-300 border border-purple-500/50 font-bold text-[10px] uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-md shadow-lg">
-                        MAIS PROCURADO
-                    </div>
-                    <?php endif; ?>
-
                     <div class="space-y-5">
                         <!-- Product Preview Image if available -->
                         <?php if (!empty($colecao['estojo']['imagem_referencia'])): ?>
@@ -368,7 +358,27 @@ if (!str_starts_with($whatsappEmpresa, '55') && strlen($whatsappEmpresa) >= 10) 
                                  class="w-full h-full object-cover object-center opacity-90 group-hover:opacity-100 transition-opacity"
                                  onerror="this.src='https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80'">
                             <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-80"></div>
+
+                            <?php if ($isTop): ?>
+                            <div class="absolute top-3 right-3 z-30 bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-2xl border border-yellow-300/40">
+                                TOP MASTER LUX
+                            </div>
+                            <?php elseif ($isMid): ?>
+                            <div class="absolute top-3 right-3 z-30 bg-purple-950/90 text-purple-200 border border-purple-400/60 font-bold text-[10px] uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-md shadow-lg">
+                                MAIS PROCURADO
+                            </div>
+                            <?php endif; ?>
                         </div>
+                        <?php else: ?>
+                            <?php if ($isTop): ?>
+                            <div class="inline-flex self-start bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-md mb-2">
+                                TOP MASTER LUX
+                            </div>
+                            <?php elseif ($isMid): ?>
+                            <div class="inline-flex self-start bg-purple-950/90 text-purple-200 border border-purple-400/60 font-bold text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-md mb-2">
+                                MAIS PROCURADO
+                            </div>
+                            <?php endif; ?>
                         <?php endif; ?>
 
                         <!-- Title & Description -->
