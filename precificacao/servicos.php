@@ -33,7 +33,7 @@ include __DIR__ . '/../includes/layout/head.php';
         <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-8 mt-2">
             <div>
                 <h1 class="font-display-lg text-on-surface mb-1">Tabela de Preços</h1>
-                <p class="text-body-md text-on-surface-variant" x-text="categoriaAtiva === 'albuns' ? 'Catálogo completo de álbuns fotográficos — compare coleções, acabamentos e preços' : 'Catálogo com preço mínimo calculado automaticamente'"></p>
+                <p class="text-body-md text-on-surface-variant" x-text="categoriaAtiva === 'albuns' ? 'Catálogo completo de álbuns fotográficos — compare coleções, acabamentos e preços' : 'Catálogo com preço mínimo calculated automaticamente'"></p>
             </div>
             <button class="bg-primary hover:bg-primary-container text-on-primary-container font-bold px-6 py-2.5 rounded-lg text-body-md transition-all active:scale-95 duration-150 shadow-lg flex items-center gap-2" @click="abrirModal()">
                 <i data-lucide="plus" class="w-4 h-4"></i> <span x-text="categoriaAtiva === 'albuns' ? 'Nova Coleção de Álbum' : 'Novo Serviço'"></span>
@@ -149,129 +149,173 @@ include __DIR__ . '/../includes/layout/head.php';
         </div>
 
         <!-- Cards de Álbuns (Visual Premium idêntico a o.php) -->
-        <div x-show="categoriaAtiva === 'albuns'" class="space-y-6">
-            <!-- Filtro interno de categoria de álbuns -->
-            <div class="flex flex-wrap items-center gap-2 mb-6">
-                <span class="text-xs font-bold text-on-surface-variant mr-1">Filtrar Categoria:</span>
-                <button @click="filtroAlbum = 'todos'" 
-                        :class="filtroAlbum === 'todos' ? 'bg-primary text-on-primary shadow-lg' : 'bg-surface-container-high/40 text-on-surface-variant hover:bg-surface-container-high'" 
-                        class="px-3.5 py-1.5 rounded-lg font-bold text-xs transition-all duration-200">
-                    Todas as Categorias
-                </button>
-                <button @click="filtroAlbum = '15anos'" 
-                        :class="filtroAlbum === '15anos' ? 'bg-primary text-on-primary shadow-lg' : 'bg-surface-container-high/40 text-on-surface-variant hover:bg-surface-container-high'" 
-                        class="px-3.5 py-1.5 rounded-lg font-bold text-xs transition-all duration-200">
-                    15 Anos
-                </button>
-                <button @click="filtroAlbum = 'wedding'" 
-                        :class="filtroAlbum === 'wedding' || filtroAlbum === 'casamento' ? 'bg-primary text-on-primary shadow-lg' : 'bg-surface-container-high/40 text-on-surface-variant hover:bg-surface-container-high'" 
-                        class="px-3.5 py-1.5 rounded-lg font-bold text-xs transition-all duration-200">
-                    Casamento
-                </button>
-            </div>
-
-            <template x-if="carregando">
-                <div class="p-10 text-center text-on-surface-variant">Carregando catálogo de álbuns...</div>
-            </template>
-
-            <template x-if="!carregando && albumsFiltrados.length === 0">
-                <div class="p-10 text-center text-on-surface-variant">
-                    <i data-lucide="book" class="w-10 h-10 mx-auto mb-3 opacity-40"></i>
-                    <p class="text-sm font-bold mb-1">Nenhum álbum encontrado nesta categoria</p>
-                    <p class="text-xs">Cadastre um novo álbum clicando no botão "Nova Coleção de Álbum"</p>
+        <div x-show="categoriaAtiva === 'albuns'" class="space-y-10">
+            <div>
+                <!-- Filtro interno de categoria de álbuns -->
+                <div class="flex flex-wrap items-center gap-2 mb-6">
+                    <span class="text-xs font-bold text-on-surface-variant mr-1">Filtrar Categoria:</span>
+                    <button @click="filtroAlbum = 'todos'" 
+                            :class="filtroAlbum === 'todos' ? 'bg-primary text-on-primary shadow-lg' : 'bg-surface-container-high/40 text-on-surface-variant hover:bg-surface-container-high'" 
+                            class="px-3.5 py-1.5 rounded-lg font-bold text-xs transition-all duration-200">
+                        Todas as Categorias
+                    </button>
+                    <button @click="filtroAlbum = '15anos'" 
+                            :class="filtroAlbum === '15anos' ? 'bg-primary text-on-primary shadow-lg' : 'bg-surface-container-high/40 text-on-surface-variant hover:bg-surface-container-high'" 
+                            class="px-3.5 py-1.5 rounded-lg font-bold text-xs transition-all duration-200">
+                        15 Anos
+                    </button>
+                    <button @click="filtroAlbum = 'wedding'" 
+                            :class="filtroAlbum === 'wedding' || filtroAlbum === 'casamento' ? 'bg-primary text-on-primary shadow-lg' : 'bg-surface-container-high/40 text-on-surface-variant hover:bg-surface-container-high'" 
+                            class="px-3.5 py-1.5 rounded-lg font-bold text-xs transition-all duration-200">
+                        Casamento
+                    </button>
                 </div>
-            </template>
 
-            <!-- Grid de Cards de Álbuns Premium Idêntico a o.php -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" x-show="!carregando">
-                <template x-for="(s, idx) in albumsFiltrados" :key="s.id">
-                    <div class="glass-card rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden group border-2 border-primary/30 hover:border-primary transition-all shadow-xl">
-                        
-                        <!-- Product Preview Image with Top Badge inside -->
-                        <div class="w-full h-48 rounded-2xl overflow-hidden bg-zinc-900 relative group-hover:scale-[1.02] transition-transform mb-5">
-                            <img :src="parseImg(s.imagens_json, 'capa')" 
-                                 :alt="s.nome"
-                                 class="w-full h-full object-cover object-center opacity-90 group-hover:opacity-100 transition-opacity"
-                                 onerror="this.src='https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80'">
-                            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-80"></div>
+                <template x-if="carregando">
+                    <div class="p-10 text-center text-on-surface-variant">Carregando catálogo de álbuns...</div>
+                </template>
 
-                            <template x-if="s.categoria_original === 'Top Master'">
-                                <div class="absolute top-3 right-3 z-30 bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-2xl border border-yellow-300/40">
-                                    TOP MASTER LUX
-                                </div>
-                            </template>
-                            <template x-if="s.categoria_original === 'Intermediário'">
-                                <div class="absolute top-3 right-3 z-30 bg-purple-950/90 text-purple-200 border border-purple-400/60 font-bold text-[10px] uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-md shadow-lg">
-                                    MAIS PROCURADO
-                                </div>
-                            </template>
-                            <template x-if="s.categoria_original === 'Simples'">
-                                <div class="absolute top-3 right-3 z-30 bg-zinc-900/90 text-zinc-300 border border-zinc-700 font-bold text-[10px] uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-md shadow-lg">
-                                    COLEÇÃO ESSENCIAL
-                                </div>
-                            </template>
-                        </div>
+                <template x-if="!carregando && albumsFiltrados.length === 0">
+                    <div class="p-10 text-center text-on-surface-variant">
+                        <i data-lucide="book" class="w-10 h-10 mx-auto mb-3 opacity-40"></i>
+                        <p class="text-sm font-bold mb-1">Nenhum álbum encontrado nesta categoria</p>
+                        <p class="text-xs">Cadastre um novo álbum clicando no botão "Nova Coleção de Álbum"</p>
+                    </div>
+                </template>
 
-                        <!-- Title & Description -->
-                        <div class="space-y-4 flex-1">
-                            <div>
-                                <span class="text-[10px] font-bold uppercase tracking-widest text-purple-400 block mb-1" 
-                                      x-text="s.categoria === 'casamento' ? 'Álbum de Casamento' : (s.categoria === '15anos' ? 'Álbum 15 Anos' : 'Álbum Fotográfico')"></span>
-                                <h4 class="text-2xl font-heading font-extrabold text-white tracking-tight" x-text="s.nome"></h4>
-                                <p class="text-xs text-zinc-400 mt-2 leading-relaxed" x-text="s.descricao || ''"></p>
-                            </div>
+                <!-- Grid de Cards de Álbuns Premium Idêntico a o.php -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" x-show="!carregando">
+                    <template x-for="(s, idx) in albumsFiltrados" :key="s.id">
+                        <div class="glass-card rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden group border-2 border-primary/30 hover:border-primary transition-all shadow-xl">
+                            
+                            <!-- Product Preview Image with Top Badge inside -->
+                            <div class="w-full h-48 rounded-2xl overflow-hidden bg-zinc-900 relative group-hover:scale-[1.02] transition-transform mb-5">
+                                <img :src="parseImg(s.imagens_json, 'capa')" 
+                                     :alt="s.nome"
+                                     class="w-full h-full object-cover object-center opacity-90 group-hover:opacity-100 transition-opacity"
+                                     onerror="this.src='https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80'">
+                                <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-80"></div>
 
-                            <!-- Technical Finishes Checklist -->
-                            <div class="space-y-2 pt-3 border-t border-white/10 text-xs">
-                                <span class="text-[10px] font-bold uppercase text-zinc-400 block tracking-wider mb-2">Acabamento do Álbum:</span>
-                                <template x-for="acab in parseAcabamentos(s.acabamento_json)" :key="acab.chave">
-                                    <div class="flex items-center space-x-2.5 text-zinc-300 bg-zinc-900/60 p-2 rounded-xl border border-white/5">
-                                        <template x-if="acab.imagem">
-                                            <img :src="acab.imagem" class="w-8 h-8 rounded-lg object-cover border border-purple-500/40 shrink-0">
-                                        </template>
-                                        <template x-if="!acab.imagem">
-                                            <i data-lucide="check-circle" class="w-4 h-4 text-purple-400 shrink-0"></i>
-                                        </template>
-                                        <span class="text-[11px] leading-snug">
-                                            <strong class="text-zinc-100 capitalize" x-text="(acab.item || acab.chave || '').replace('_', ' ') + ':'"></strong> 
-                                            <span x-text="acab.texto || acab"></span>
-                                        </span>
+                                <template x-if="s.categoria_original === 'Top Master'">
+                                    <div class="absolute top-3 right-3 z-30 bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-2xl border border-yellow-300/40">
+                                        TOP MASTER LUX
+                                    </div>
+                                </template>
+                                <template x-if="s.categoria_original === 'Intermediário'">
+                                    <div class="absolute top-3 right-3 z-30 bg-purple-950/90 text-purple-200 border border-purple-400/60 font-bold text-[10px] uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-md shadow-lg">
+                                        MAIS PROCURADO
+                                    </div>
+                                </template>
+                                <template x-if="s.categoria_original === 'Simples'">
+                                    <div class="absolute top-3 right-3 z-30 bg-zinc-900/90 text-zinc-300 border border-zinc-700 font-bold text-[10px] uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-md shadow-lg">
+                                        COLEÇÃO ESSENCIAL
                                     </div>
                                 </template>
                             </div>
 
-                            <!-- Estojo / Case -->
-                            <div class="bg-zinc-900/80 p-3.5 rounded-2xl border border-white/10 space-y-1 mt-3">
-                                <div class="flex items-center space-x-2 text-xs font-bold text-amber-300">
-                                    <i data-lucide="box" class="w-4 h-4 text-amber-300"></i>
-                                    <span x-text="parseEstojo(s.estojo_json, 'tipo') || 'Estojo Personalizado'"></span>
+                            <!-- Title & Description -->
+                            <div class="space-y-4 flex-1">
+                                <div>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-purple-400 block mb-1" 
+                                          x-text="s.categoria === 'casamento' ? 'Álbum de Casamento' : (s.categoria === '15anos' ? 'Álbum 15 Anos' : 'Álbum Fotográfico')"></span>
+                                    <h4 class="text-2xl font-heading font-extrabold text-white tracking-tight" x-text="s.nome"></h4>
+                                    <p class="text-xs text-zinc-400 mt-2 leading-relaxed" x-text="s.descricao || ''"></p>
                                 </div>
-                                <p class="text-[11px] text-zinc-400 leading-tight" x-text="parseEstojo(s.estojo_json, 'descricao') || ''"></p>
+
+                                <!-- Technical Finishes Checklist -->
+                                <div class="space-y-2 pt-3 border-t border-white/10 text-xs">
+                                    <span class="text-[10px] font-bold uppercase text-zinc-400 block tracking-wider mb-2">Acabamento do Álbum:</span>
+                                    <template x-for="acab in parseAcabamentos(s.acabamento_json)" :key="acab.chave">
+                                        <div class="flex items-center space-x-2.5 text-zinc-300 bg-zinc-900/60 p-2 rounded-xl border border-white/5">
+                                            <template x-if="acab.imagem">
+                                                <img :src="acab.imagem" class="w-8 h-8 rounded-lg object-cover border border-purple-500/40 shrink-0">
+                                            </template>
+                                            <template x-if="!acab.imagem">
+                                                <i data-lucide="check-circle" class="w-4 h-4 text-purple-400 shrink-0"></i>
+                                            </template>
+                                            <span class="text-[11px] leading-snug">
+                                                <strong class="text-zinc-100 capitalize" x-text="(acab.item || acab.chave || '').replace('_', ' ') + ':'"></strong> 
+                                                <span x-text="acab.texto || acab"></span>
+                                            </span>
+                                        </div>
+                                    </template>
+                                </div>
+
+                                <!-- Estojo / Case -->
+                                <div class="bg-zinc-900/80 p-3.5 rounded-2xl border border-white/10 space-y-1 mt-3">
+                                    <div class="flex items-center space-x-2 text-xs font-bold text-amber-300">
+                                        <i data-lucide="box" class="w-4 h-4 text-amber-300"></i>
+                                        <span x-text="parseEstojo(s.estojo_json, 'tipo') || 'Estojo Personalizado'"></span>
+                                    </div>
+                                    <p class="text-[11px] text-zinc-400 leading-tight" x-text="parseEstojo(s.estojo_json, 'descricao') || ''"></p>
+                                </div>
+                            </div>
+
+                            <!-- Price & Action Buttons -->
+                            <div class="pt-6 mt-6 border-t border-white/10 flex flex-col space-y-3">
+                                <div class="flex items-baseline justify-between">
+                                    <span class="text-xs text-zinc-400 font-medium">Investimento:</span>
+                                    <div class="text-right">
+                                        <div class="text-2xl font-heading font-extrabold text-white tracking-tight" x-text="formatarMoeda(s.preco_venda || 0)"></div>
+                                        <span class="text-[10px] text-purple-300 font-semibold block" x-text="'+ ' + formatarMoeda(s.valor_lamina_extra || 0) + ' / lâmina extra'"></span>
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-2 pt-2">
+                                    <button type="button" @click="abrirModal(s)" class="flex-1 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center space-x-2 shadow-lg cursor-pointer">
+                                        <i data-lucide="pencil" class="w-4 h-4"></i>
+                                        <span>Editar Coleção</span>
+                                    </button>
+                                    <button type="button" @click="excluir(s.id)" class="py-3 px-4 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 font-bold text-xs transition-colors flex items-center justify-center cursor-pointer" title="Excluir">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
+                    </template>
+                </div>
+            </div>
 
-                        <!-- Price & Action Buttons -->
-                        <div class="pt-6 mt-6 border-t border-white/10 flex flex-col space-y-3">
-                            <div class="flex items-baseline justify-between">
-                                <span class="text-xs text-zinc-400 font-medium">Investimento:</span>
-                                <div class="text-right">
-                                    <div class="text-2xl font-heading font-extrabold text-white tracking-tight" x-text="formatarMoeda(s.preco_venda || 0)"></div>
-                                    <span class="text-[10px] text-purple-300 font-semibold block" x-text="'+ ' + formatarMoeda(s.valor_lamina_extra || 0) + ' / lâmina extra'"></span>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-2 pt-2">
-                                <button type="button" @click="abrirModal(s)" class="flex-1 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center space-x-2 shadow-lg cursor-pointer">
-                                    <i data-lucide="pencil" class="w-4 h-4"></i>
-                                    <span>Editar Coleção</span>
-                                </button>
-                                <button type="button" @click="excluir(s.id)" class="py-3 px-4 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 font-bold text-xs transition-colors flex items-center justify-center cursor-pointer" title="Excluir">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        </div>
+            <!-- Seção dedicada para Editar / Gerenciar a "Galeria de Detalhes & Acabamentos" -->
+            <div class="pt-8 border-t border-outline-variant/20">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h3 class="text-xl font-extrabold text-on-surface flex items-center gap-2">
+                            <i data-lucide="image" class="w-5 h-5 text-purple-400"></i>
+                            Galeria de Detalhes & Acabamentos
+                        </h3>
+                        <p class="text-xs text-on-surface-variant">Itens em destaque exibidos na seção "Galeria de Detalhes & Acabamentos" das propostas/orçamentos</p>
                     </div>
-                </template>
+                    <button type="button" @click="abrirModalAcabamento()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow cursor-pointer">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Novo Acabamento da Galeria</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" x-show="!carregando">
+                    <template x-for="acab in acabamentosGaleria" :key="acab.id">
+                        <div class="glass-card rounded-2xl border border-white/10 overflow-hidden flex flex-col justify-between hover:border-purple-500/50 transition-all shadow-md">
+                            <div class="h-44 bg-zinc-900 relative overflow-hidden">
+                                <img :src="parseImg(acab.imagens_json, 'capa')" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80'">
+                                <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-80"></div>
+                            </div>
+                            <div class="p-5 space-y-1.5 flex-1">
+                                <h4 class="font-bold text-base text-white" x-text="acab.nome"></h4>
+                                <p class="text-xs text-zinc-400 leading-relaxed" x-text="acab.descricao || ''"></p>
+                            </div>
+                            <div class="p-4 pt-0 flex gap-2 justify-end border-t border-white/5 mt-2">
+                                <button type="button" @click="abrirModal(acab)" class="px-3 py-1.5 rounded-lg bg-purple-600/20 hover:bg-purple-600/40 text-purple-300 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer">
+                                    <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                                    <span>Editar</span>
+                                </button>
+                                <button type="button" @click="excluir(acab.id)" class="px-3 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-500/40 text-red-300 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer">
+                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                    <span>Excluir</span>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
             </div>
         </div>
     </main>
@@ -285,7 +329,7 @@ include __DIR__ . '/../includes/layout/head.php';
             
             <div class="flex items-center gap-3 mb-6 pr-8">
                 <h2 class="text-title-sm font-headline-md font-bold text-on-surface" 
-                    x-text="form.id ? (form.tipo === 'colecao' ? 'Editar Coleção de Álbum' : 'Editar Serviço') : (form.tipo === 'colecao' ? 'Nova Coleção de Álbum' : 'Novo Serviço')"></h2>
+                    x-text="form.id ? (form.tipo === 'colecao' ? 'Editar Coleção de Álbum' : (form.tipo === 'acabamento' ? 'Editar Acabamento da Galeria' : 'Editar Serviço')) : (form.tipo === 'colecao' ? 'Nova Coleção de Álbum' : (form.tipo === 'acabamento' ? 'Novo Acabamento da Galeria' : 'Novo Serviço'))"></h2>
             </div>
 
             <form @submit.prevent="salvar()">
@@ -301,11 +345,38 @@ include __DIR__ . '/../includes/layout/head.php';
                     </div>
                     <div>
                         <label class="label">Tipo de Item</label>
-                        <select class="select w-full" x-model="form.tipo" @change="ajustarTipo()">
+                        <select class="select w-full font-bold text-primary" x-model="form.tipo" @change="ajustarTipo()">
                             <option value="colecao">Coleção de Álbum</option>
+                            <option value="acabamento">Acabamento da Galeria (Foto & Descrição)</option>
                             <option value="servico">Serviço / Upgrade</option>
-                            <option value="plano">Plano Base (Pacote)</option>
                         </select>
+                    </div>
+                </div>
+
+                <!-- ========== FORMULÁRIO DE ACABAMENTO DA GALERIA ========== -->
+                <div x-show="form.tipo === 'acabamento'" class="space-y-4">
+                    <div>
+                        <label class="label">Nome do Acabamento *</label>
+                        <input class="input w-full font-bold text-base" x-model="form.nome" required placeholder="Ex: Papel Linho Silk, Corte Lateral Ouro">
+                    </div>
+
+                    <div>
+                        <label class="label">Descrição Comercial do Acabamento</label>
+                        <textarea class="textarea w-full" x-model="form.descricao" rows="3" placeholder="Descreva os detalhes e características desse acabamento..."></textarea>
+                    </div>
+
+                    <!-- Imagem Ilustrativa -->
+                    <div class="bg-purple-500/5 p-4 rounded-xl border border-purple-500/10">
+                        <label class="label text-purple-300 font-bold mb-2">Foto Ilustrativa do Acabamento</label>
+                        <div class="flex items-center gap-3">
+                            <div class="w-16 h-16 rounded-xl overflow-hidden bg-zinc-900 shrink-0 border border-white/20">
+                                <img :src="form.img_capa || ''" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80'">
+                            </div>
+                            <input class="input flex-1 text-xs" x-model="form.img_capa" placeholder="Insira a URL da imagem ou faça upload...">
+                            <button type="button" @click="uploadImagem('galeria', 'capa')" class="bg-primary hover:bg-primary-container text-on-primary-container px-3 py-2 rounded-lg text-xs font-bold transition-all shadow">
+                                Upload
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -314,7 +385,7 @@ include __DIR__ . '/../includes/layout/head.php';
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="md:col-span-2">
                             <label class="label">Nome da Coleção *</label>
-                            <input class="input w-full font-bold text-base" x-model="form.nome" required placeholder="Ex: Classic Wood & Gold">
+                            <input class="input w-full font-bold text-base" x-model="form.nome" placeholder="Ex: Classic Wood & Gold">
                         </div>
                         <div>
                             <label class="label">Nível em Destaque</label>
@@ -339,8 +410,8 @@ include __DIR__ . '/../includes/layout/head.php';
                                 <input class="input w-full" type="number" step="0.01" min="0" x-model="form.custo_producao" placeholder="0,00">
                             </div>
                             <div>
-                                <label class="label">Investimento Cliente R$ *</label>
-                                <input class="input w-full !font-extrabold text-primary text-base" type="number" step="0.01" min="0" x-model="form.preco_venda" required placeholder="0,00">
+                                <label class="label">Investimento Cliente R$</label>
+                                <input class="input w-full !font-extrabold text-primary text-base" type="number" step="0.01" min="0" x-model="form.preco_venda" placeholder="0,00">
                             </div>
                             <div>
                                 <label class="label">Valor Lâmina Extra R$</label>
@@ -439,7 +510,7 @@ include __DIR__ . '/../includes/layout/head.php';
                 </div>
 
                 <!-- ========== FORMULÁRIO DE SERVIÇO / PLANO (PADRÃO) ========== -->
-                <div x-show="form.tipo !== 'colecao'" class="space-y-4">
+                <div x-show="form.tipo !== 'colecao' && form.tipo !== 'acabamento'" class="space-y-4">
                     <div>
                         <label class="label">Nome do Serviço *</label>
                         <input class="input w-full" x-model="form.nome" placeholder="Ex: Consultoria em Marketing">
@@ -489,23 +560,27 @@ function servicos() {
         filtroAlbum: 'todos',
 
         get listaFiltrada() {
-            return this.lista.filter(s => (s.categoria || 'marketing') === this.categoriaAtiva && s.tipo !== 'colecao');
+            return this.lista.filter(s => (s.categoria || 'marketing') === this.categoriaAtiva && s.tipo !== 'colecao' && s.tipo !== 'acabamento');
         },
 
         get albumsFiltrados() {
             return this.lista.filter(s => {
-                const isColecao = (s.tipo === 'colecao' || s.tipo === 'plano' || s.acabamento_json);
+                const isColecao = (s.tipo === 'colecao' || s.tipo === 'plano' || (s.acabamento_json && s.tipo !== 'acabamento'));
                 if (!isColecao) return false;
                 if (this.filtroAlbum === 'todos') return true;
                 return (s.categoria || '') === this.filtroAlbum;
             }).sort((a, b) => (parseFloat(a.preco_venda) || 0) - (parseFloat(b.preco_venda) || 0));
         },
 
+        get acabamentosGaleria() {
+            return this.lista.filter(s => s.tipo === 'acabamento');
+        },
+
         parseImg(imagensJson, chave) {
             if (!imagensJson) return 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80';
             try {
                 const obj = typeof imagensJson === 'object' ? imagensJson : JSON.parse(imagensJson);
-                return obj[chave] || obj.capa || 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80';
+                return obj[chave] || obj.imagem_exemplo || obj.capa || 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80';
             } catch(e) { return 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80'; }
         },
 
@@ -583,13 +658,28 @@ function servicos() {
                 this.parseColecaoForm(null);
             } else if (item) {
                 this.form = JSON.parse(JSON.stringify(item));
-                if (this.form.tipo === 'colecao' || this.categoriaAtiva === 'albuns') {
-                    this.form.tipo = 'colecao';
+                if (this.form.tipo === 'colecao') {
                     this.parseColecaoForm(item);
+                } else if (this.form.tipo === 'acabamento') {
+                    this.parseAcabamentoForm(item);
                 }
             } else {
                 this.form = this.formVazio();
+                this.form.tipo = 'servico';
             }
+            this.modalAberto = true;
+            this.$nextTick(() => lucide.createIcons());
+        },
+
+        abrirModalAcabamento() {
+            this.form = {
+                id: '',
+                nome: '',
+                categoria: '15anos',
+                tipo: 'acabamento',
+                descricao: '',
+                img_capa: ''
+            };
             this.modalAberto = true;
             this.$nextTick(() => lucide.createIcons());
         },
@@ -662,6 +752,14 @@ function servicos() {
             } catch(e) {}
         },
 
+        parseAcabamentoForm(item) {
+            if (!item) return;
+            try {
+                const img = typeof item.imagens_json === 'object' ? item.imagens_json : JSON.parse(item.imagens_json || '{}');
+                this.form.img_capa = img.imagem_exemplo || img.capa || '';
+            } catch(e) {}
+        },
+
         ajustarTipo() {
             if (this.form.tipo === 'colecao' && (!this.form.acabamentos_lista || this.form.acabamentos_lista.length === 0)) {
                 this.parseColecaoForm(null);
@@ -694,6 +792,10 @@ function servicos() {
                         capa: payload.img_capa || '',
                         aberto: payload.img_aberto || '',
                         detalhe: payload.img_detalhe || ''
+                    });
+                } else if (payload.tipo === 'acabamento') {
+                    payload.imagens_json = JSON.stringify({
+                        imagem_exemplo: payload.img_capa || ''
                     });
                 }
                 
