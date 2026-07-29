@@ -15,6 +15,10 @@ ServerSignature Off
     # Rota para propostas: /p/slug-da-proposta
     RewriteRule ^p/([a-zA-Z0-9_-]+)/?$ p.php?slug=$1 [QSA,L]
 
+    # Rota para orçamentos: /o/slug-do-orcamento ou /orcamento/slug-do-orcamento
+    RewriteRule ^o/([a-zA-Z0-9_-]+)/?$ o.php?slug=$1 [QSA,L]
+    RewriteRule ^orcamento/([a-zA-Z0-9_-]+)/?$ o.php?slug=$1 [QSA,L]
+
     # Se for um arquivo ou diretorio real, serve direto
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d

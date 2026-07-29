@@ -162,6 +162,39 @@ class Database {
                     }
                 }
             } catch (Exception $e) {}
+            // 8. Verifica tabela de orçamentos
+            try {
+                $createOrcamentosSql = $isMysql
+                    ? "CREATE TABLE IF NOT EXISTS orcamentos (
+                        id VARCHAR(32) PRIMARY KEY,
+                        cliente_id VARCHAR(32) NULL,
+                        cliente_nome VARCHAR(255) NOT NULL,
+                        tipo VARCHAR(100) DEFAULT 'albuns_15anos',
+                        slug VARCHAR(255) UNIQUE NOT NULL,
+                        titulo VARCHAR(255) NOT NULL,
+                        subtitulo VARCHAR(255) NULL,
+                        validade DATE NULL,
+                        dados_json TEXT NOT NULL,
+                        valor_total DECIMAL(10,2) NULL,
+                        status VARCHAR(50) DEFAULT 'pendente',
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                      )"
+                    : "CREATE TABLE IF NOT EXISTS orcamentos (
+                        id TEXT PRIMARY KEY,
+                        cliente_id TEXT NULL,
+                        cliente_nome TEXT NOT NULL,
+                        tipo TEXT DEFAULT 'albuns_15anos',
+                        slug TEXT UNIQUE NOT NULL,
+                        titulo TEXT NOT NULL,
+                        subtitulo TEXT NULL,
+                        validade DATE NULL,
+                        dados_json TEXT NOT NULL,
+                        valor_total NUMERIC(10,2) NULL,
+                        status TEXT DEFAULT 'pendente',
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                      )";
+                self::$instance->exec($createOrcamentosSql);
+            } catch (Exception $e) {}
         } catch (Exception $e) {
             // Ignorar erros de migração geral
         }

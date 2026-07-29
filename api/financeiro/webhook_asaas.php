@@ -8,6 +8,7 @@ require_once __DIR__ . '/../../config/env.php';
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../includes/helpers.php';
 require_once __DIR__ . '/../../includes/financeiro_custos.php';
+require_once __DIR__ . '/../../includes/contratos.php';
 
 // Definir cabeçalho de resposta rápida
 header('Content-Type: application/json');
@@ -76,9 +77,46 @@ try {
     }
 
     if (!$lancamento) {
-        // Retorna 200 para que o Asaas não tente reenviar o webhook indefinidamente
-        echo json_encode(['success' => true, 'mensagem' => 'Cobrança não rastreada pelo ERP local. Log salvo.']);
-        exit;
+        // Cobrança não existe localmente — importa via webhook
+        // Tenta identificar o cliente pelo customer (asaas_customer_id)
+        $clienteNome = $payment['customerName'] ?? 'Cliente Asaas';
+        $clienteId = null;
+
+        if (!empty($payment['customer'])) {
+            $stmtCli = $db->prepare("SELECT id, nome FROM clientes WHERE asaas_customer_id = ? LIMIT 1");
+            $stmtCli->execute([$payment['customer']]);
+            $clienteData = $stmtCli->fetch(PDO::FETCH_ASSOC);
+            if ($clienteData) {
+                $clienteId = $clienteData['id'];
+                $clienteNome = $clienteData['nome'];
+            }
+        }
+
+        $descricao = $payment['description'] ?? 'Cobrança Asaas (importada via webhook)';
+
+        $contratoMock = [
+            'cliente_nome' => $clienteNome,
+            'cliente_id' => $clienteId,
+            'titulo' => $descricao,
+            'id' => null
+        ];
+
+        gravarLancamentoAsaas(
+            $db, $contratoMock, $payment,
+            $descricao,
+            (float)($payment['value'] ?? 0),
+            (string)($payment['dueDate'] ?? date('Y-m-d'))
+        );
+
+        // Busca o lançamento recém-criado para continuar o fluxo
+        $stmtL3 = $db->prepare("SELECT * FROM lancamentos WHERE asaas_id = ? LIMIT 1");
+        $stmtL3->execute([$asaasId]);
+        $lancamento = $stmtL3->fetch();
+
+        if (!$lancamento) {
+            echo json_encode(['success' => true, 'mensagem' => 'Cobrança não rastreada pelo ERP local. Log salvo.']);
+            exit;
+        }
     }
 
     $statusAsaas = strtolower($payment['status'] ?? '');

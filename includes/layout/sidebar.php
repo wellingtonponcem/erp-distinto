@@ -65,6 +65,10 @@ function menuAtivo(string $path): string {
             <span class="material-symbols-outlined shrink-0" style="font-size:20px;">description</span>
             <span class="nav-label ml-3 text-sm font-semibold whitespace-nowrap">Propostas Web</span>
         </a>
+        <a href="<?= raizUrl('/gerenciamento/orcamentos.php') ?>" class="nav-link flex items-center px-3 py-2.5 rounded-lg transition-all <?= menuAtivo('/gerenciamento/orcamento') ?>">
+            <span class="material-symbols-outlined shrink-0" style="font-size:20px;">calculate</span>
+            <span class="nav-label ml-3 text-sm font-semibold whitespace-nowrap">Orçamentos</span>
+        </a>
         <a href="<?= raizUrl('/gerenciamento/contratos.php') ?>" class="nav-link flex items-center px-3 py-2.5 rounded-lg transition-all <?= menuAtivo('/gerenciamento/contratos') ?>">
             <span class="material-symbols-outlined shrink-0" style="font-size:20px;">history_edu</span>
             <span class="nav-label ml-3 text-sm font-semibold whitespace-nowrap">Contratos</span>

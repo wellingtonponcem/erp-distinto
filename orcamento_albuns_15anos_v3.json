@@ -1,0 +1,111 @@
+{
+  "evento": "15 Anos - Debutante Premium",
+  "localidade": "Vitória/ES",
+  "data_geracao": "2026-07-24",
+  "configuracao_geral": {
+    "tamanho_fechado": "30x30 cm",
+    "tamanho_aberto": "30x60 cm",
+    "abertura": "Panorâmica 180° (Lâminas Rígidas de 800g)",
+    "paginas_base": 20,
+    "retirada": "Presencial (Vitória/ES)",
+    "servicos_inclusos": [
+      "Diagramação Profissional Personalizada",
+      "Curadoria de Acabamentos Temáticos (Lilás, Rosa e Ouro)",
+      "Tratamento de Imagem para Impressão Premium",
+      "Garantia de Fidelidade de Cor e Durabilidade"
+    ]
+  },
+  "colecao_albuns": [
+    {
+      "id": "essencial_magnetic",
+      "nome_comercial": "Coleção Essencial Magnetic",
+      "categoria_original": "Simples",
+      "descricao": "Elegância e praticidade com fechamento magnético e capa fotográfica personalizada.",
+      "acabamento_detalhado": {
+        "capa": "Foto Total com Revestimento em Courvin Nobre",
+        "fechamento": "Sistema de Ímã Invisível",
+        "papel": "Fotográfico Fosco Silk (Anti-Digital e Antirreflexo)",
+        "laminação": "UV Proteção contra Luz e Umidade"
+      },
+      "estojo": {
+        "tipo": "Case Slim Personalizado",
+        "descricao": "Estojo tipo luva em courvin com interior aveludado, projetado para proteção e transporte seguro.",
+        "imagem_referencia": "https://www.proalbuns.com.br/image/cache/catalog/produtos/albuns/magnetico/album-magnetico-01-800x800.jpg"
+      },
+      "custo_base_fullcolor": 445.00,
+      "investimento_cliente": 1250.00,
+      "valor_lamina_extra": 35.00,
+      "imagens": {
+        "capa": "https://loja.tornare.com.br/album-personalizado/album-de-15-anos/album-de-15-anos-capa-dura-fotografica-formato-quadrado",
+        "aberto": "https://www.fotoregistro.com.br/fotolivro-180-slim"
+      }
+    },
+    {
+      "id": "classic_wood",
+      "nome_comercial": "Coleção Classic Wood & Gold",
+      "categoria_original": "Intermediário",
+      "descricao": "O toque orgânico da madeira combinado com a sofisticação do corte lateral em ouro.",
+      "acabamento_detalhado": {
+        "capa": "Madeira Natural com Aplicação de Foto e Verso em Courvin Nobre",
+        "corte_lateral": "Ouro Metálico (Gold Edge)",
+        "papel": "Fotográfico Fosco Silk (Textura de Tecido)",
+        "laminação": "UV Proteção Extra"
+      },
+      "estojo": {
+        "tipo": "Maleta Classic Box Luxo",
+        "descricao": "Maleta estruturada com alça e fecho metálico, revestida em material coordenado com o álbum.",
+        "imagem_referencia": "https://http2.mlstatic.com/D_NQ_NP_976215-MLB25164214534_112016-F.webp"
+      },
+      "custo_base_fullcolor": 730.00,
+      "investimento_cliente": 1850.00,
+      "valor_lamina_extra": 40.00,
+      "imagens": {
+        "capa": "https://fullcolor.pro/fotolivros/5286/madeira-e-foto",
+        "detalhe_madeira": "https://www.instagram.com/p/DUEUSPLDHY6/"
+      }
+    },
+    {
+      "id": "prestige_crystal",
+      "nome_comercial": "Coleção Prestige Crystal Lux",
+      "categoria_original": "Top Master",
+      "descricao": "A joia da coroa. Capa em acrílico que confere profundidade e brilho eterno às suas memórias.",
+      "acabamento_detalhado": {
+        "capa": "Acrílico Cristal com Foto Impressa em Alta Definição",
+        "corte_lateral": "Ouro Metálico (Gold Edge)",
+        "papel": "Linho Silk Premium (Textura de Tecido de Alta Gramatura)",
+        "laminação": "UV Proteção Extra",
+        "guarda": "Preta Nobre em Papel Especial"
+      },
+      "estojo": {
+        "tipo": "Crystal Box Premium",
+        "descricao": "Caixa com base sólida e tampa em acrílico cristal, transformando o álbum em uma peça de exposição.",
+        "imagem_referencia": "https://www.abcbazar.com.br/media/catalog/product/cache/1/image/630x454/9df78eab33525d08d6e5fb8d27136e95/e/n/encadernacao_e_montagem_album_fotografico_luvas_acrilico_luvas_vidro.jpg"
+      },
+      "custo_base_fullcolor": 772.00,
+      "investimento_cliente": 2450.00,
+      "valor_lamina_extra": 45.00,
+      "imagens": {
+        "capa": "https://fullcolor.pro/fotolivros/6824/crystal-book",
+        "detalhe_acrilico": "https://www.abcbazar.com.br/encadernacao-e-montagem-album-fotografico",
+        "aberto_panoramico": "https://gianfernandes.com/5-motivos-para-voce-fazer-um-album-fotografico/"
+      }
+    }
+  ],
+  "galeria_acabamentos": [
+    {
+      "item": "Papel Linho Silk",
+      "descricao": "Textura que imita o toque do linho, extremamente resistente a marcas de dedos e reflexos.",
+      "imagem_exemplo": "https://m.media-amazon.com/images/I/71YvE9-9VFL._AC_SL1500_.jpg"
+    },
+    {
+      "item": "Abertura Panorâmica 180°",
+      "descricao": "Permite que fotos de página dupla sejam visualizadas sem interrupções no centro, com lâminas rígidas que não dobram.",
+      "imagem_exemplo": "https://www.ipsispro.com.br/fotolivro-panoramico-180"
+    },
+    {
+      "item": "Corte Lateral Ouro",
+      "descricao": "Acabamento metálico nas bordas das páginas que confere um aspecto de livro de luxo.",
+      "imagem_exemplo": "https://www.instagram.com/p/DZiX91-sEon/"
+    }
+  ]
+}

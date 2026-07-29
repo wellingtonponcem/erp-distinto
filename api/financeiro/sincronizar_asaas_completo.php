@@ -129,6 +129,17 @@ try {
                     }
                 }
 
+                // Se não achou pelo externalReference, tenta pelo customer (asaas_customer_id)
+                if (!$clienteId && !empty($payment['customer'])) {
+                    $stmtCli = $db->prepare("SELECT id, nome FROM clientes WHERE asaas_customer_id = ? LIMIT 1");
+                    $stmtCli->execute([$payment['customer']]);
+                    $clienteData = $stmtCli->fetch(PDO::FETCH_ASSOC);
+                    if ($clienteData) {
+                        $clienteId = $clienteData['id'];
+                        $clienteNome = $clienteData['nome'];
+                    }
+                }
+
                 $descricaoAsaas = $payment['description'] ?? 'Cobrança Asaas';
 
                 $contratoMock = [
