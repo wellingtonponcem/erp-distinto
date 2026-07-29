@@ -54,9 +54,12 @@ try {
     $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch() ?: [];
 } catch (Exception $e) {}
 
-$whatsappEmpresa = preg_replace('/\D/', '', $configEmpresa['telefone'] ?? '5527999999999');
+$whatsappEmpresa = preg_replace('/\D/', '', !empty($configEmpresa['telefone']) ? $configEmpresa['telefone'] : '5527988586935');
 if (!str_starts_with($whatsappEmpresa, '55') && strlen($whatsappEmpresa) >= 10) {
     $whatsappEmpresa = '55' . $whatsappEmpresa;
+}
+if (empty($whatsappEmpresa)) {
+    $whatsappEmpresa = '5527988586935';
 }
 ?>
 <!DOCTYPE html>

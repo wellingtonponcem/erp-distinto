@@ -4,6 +4,14 @@ require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/helpers.php';
 exigirAutenticacao();
+$db = Database::get();
+try {
+    $checkCount = $db->query("SELECT COUNT(*) FROM servicos WHERE categoria = '15anos'")->fetchColumn();
+    if ($checkCount == 0 && file_exists(__DIR__ . '/../setup/seed_servicos_albuns.php')) {
+        include_once __DIR__ . '/../setup/seed_servicos_albuns.php';
+    }
+} catch (Exception $e) {}
+
 $tituloPagina = 'Serviços';
 include __DIR__ . '/../includes/layout/head.php';
 ?>

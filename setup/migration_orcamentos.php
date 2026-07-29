@@ -43,6 +43,11 @@ try {
           )";
     $db->exec($createTableSql);
 
+    // Garantir telefone da empresa configurado para WhatsApp
+    try {
+        $db->exec("UPDATE configuracao_empresa SET telefone = '5527988586935' WHERE id = 'principal'");
+    } catch (Exception $e) {}
+
     // 2. Carregar o arquivo JSON do orçamento de 15 Anos
     $jsonPath = __DIR__ . '/../orcamento_albuns_15anos_v3.json';
     if (!file_exists($jsonPath)) {

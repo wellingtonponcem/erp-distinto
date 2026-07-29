@@ -55,9 +55,12 @@ try {
         $configEmpresa = $db->query("SELECT * FROM configuracao_empresa WHERE id='principal' LIMIT 1")->fetch() ?: [];
     } catch (Exception $e) {}
 
-    $telEmpresa = preg_replace('/\D/', '', $configEmpresa['telefone'] ?? '5527999999999');
+    $telEmpresa = preg_replace('/\D/', '', !empty($configEmpresa['telefone']) ? $configEmpresa['telefone'] : '5527988586935');
     if (!str_starts_with($telEmpresa, '55') && strlen($telEmpresa) >= 10) {
         $telEmpresa = '55' . $telEmpresa;
+    }
+    if (empty($telEmpresa)) {
+        $telEmpresa = '5527988586935';
     }
 
     $msgWhats = "🎉 *Aprovação de Orçamento!*\n\n"
