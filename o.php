@@ -404,7 +404,7 @@ if (empty($whatsappEmpresa)) {
                 ?>
                 <div id="card-colecao-<?= $colecao['id'] ?>" 
                      onclick="selecionarColecao('<?= $colecao['id'] ?>', '<?= htmlspecialchars($colecao['nome_comercial']) ?>', <?= $colecao['investimento_cliente'] ?>, <?= $colecao['valor_lamina_extra'] ?>)"
-                     class="glass-card rounded-3xl p-6 flex flex-col justify-between cursor-pointer relative overflow-hidden group border-2 <?= $index === 0 ? 'selected' : '' ?>">
+                     class="glass-card rounded-3xl p-6 flex flex-col justify-between cursor-pointer relative overflow-hidden group border-2">
 
                      <div class="space-y-5">
                         <!-- Product Preview Image if available -->
@@ -575,45 +575,61 @@ if (empty($whatsappEmpresa)) {
     </main>
 
     <!-- Floating Footer Action Bar -->
-    <div class="fixed bottom-0 left-0 right-0 z-50 glass-panel border-t border-purple-500/30 px-3 py-2.5 sm:p-5 no-print shadow-2xl backdrop-blur-2xl" style="padding-bottom: max(0.6rem, env(safe-area-inset-bottom));">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-1.5 sm:gap-4">
+    <div id="footer-action-bar" class="fixed bottom-0 left-0 right-0 z-50 glass-panel border-t border-purple-500/30 px-3 py-2.5 sm:p-5 no-print shadow-2xl backdrop-blur-2xl" style="padding-bottom: max(0.6rem, env(safe-area-inset-bottom));">
+        <div class="max-w-7xl mx-auto">
             
-            <!-- Header do rodapé no mobile: Coleção Selecionada -->
-            <div class="flex items-center justify-between sm:justify-start space-x-3">
-                <div class="hidden sm:flex w-12 h-12 rounded-2xl bg-purple-600/20 border border-purple-500/40 items-center justify-center text-purple-400 shrink-0">
-                    <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+            <!-- ESTADO 1: Não Selecionado (Pede para selecionar um dos álbuns) -->
+            <div id="footer-unselected-state" class="flex items-center justify-between gap-3 py-1">
+                <div class="flex items-center space-x-2.5 text-amber-300">
+                    <div class="w-8.5 h-8.5 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0">
+                        <i data-lucide="hand-pointer" class="w-4 h-4 text-amber-400 animate-bounce"></i>
+                    </div>
+                    <div>
+                        <span class="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-amber-400 block">Escolha uma coleção:</span>
+                        <p class="text-xs sm:text-sm font-semibold text-zinc-100">Selecione um dos álbuns acima para ver os botões de confirmação</p>
+                    </div>
                 </div>
-                <div class="flex items-center space-x-1.5 sm:block">
-                    <span class="text-[9px] font-bold uppercase tracking-wider text-purple-400 sm:text-zinc-400">Coleção Selecionada:</span>
-                    <h5 id="footer-colecao-nome" class="font-heading font-extrabold text-white text-xs sm:text-base truncate max-w-[200px] sm:max-w-none">
-                        <?= !empty($colecoes[0]['nome_comercial']) ? htmlspecialchars($colecoes[0]['nome_comercial']) : 'Coleção Essencial' ?>
-                    </h5>
-                </div>
+                <a href="#colecoes-section" class="px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg transition-all shrink-0 flex items-center space-x-1.5">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                    <span>Escolher Álbum</span>
+                </a>
             </div>
 
-            <!-- Linha principal com preço e botões no mobile -->
-            <div class="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto justify-between sm:justify-end">
-                <div class="text-left sm:text-right">
-                    <span class="text-[8px] sm:text-[10px] uppercase font-bold tracking-wider text-zinc-400 block">Investimento Total</span>
-                    <div id="footer-preco-total" class="text-lg sm:text-3xl font-heading font-black text-white tracking-tight leading-tight">
-                        R$ <?= number_format($colecoes[0]['investimento_cliente'] ?? 1250, 2, ',', '.') ?>
+            <!-- ESTADO 2: Selecionado (Aparece somente após clicar em uma coleção) -->
+            <div id="footer-selected-state" class="hidden flex-col sm:flex-row items-stretch sm:items-center justify-between gap-1.5 sm:gap-4">
+                <!-- Header do rodapé: Coleção Selecionada -->
+                <div class="flex items-center justify-between sm:justify-start space-x-3">
+                    <div class="hidden sm:flex w-12 h-12 rounded-2xl bg-purple-600/20 border border-purple-500/40 items-center justify-center text-purple-400 shrink-0">
+                        <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+                    </div>
+                    <div class="flex items-center space-x-1.5 sm:block">
+                        <span class="text-[9px] font-bold uppercase tracking-wider text-purple-400 sm:text-zinc-400">Coleção Selecionada:</span>
+                        <h5 id="footer-colecao-nome" class="font-heading font-extrabold text-white text-xs sm:text-base truncate max-w-[200px] sm:max-w-none"></h5>
                     </div>
                 </div>
 
-                <div class="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
-                    <a id="btn-whatsapp-direto" 
-                       href="https://wa.me/<?= $whatsappEmpresa ?>?text=<?= urlencode("Olá! Gostaria de conversar sobre o Orçamento: " . $titulo . " (" . $cliente . ")") ?>" 
-                       target="_blank" 
-                       title="Falar no WhatsApp"
-                       class="p-2.5 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center space-x-1.5 shadow-lg shadow-emerald-900/30">
-                        <i data-lucide="message-circle" class="w-4 h-4"></i>
-                        <span class="hidden md:inline">WhatsApp</span>
-                    </a>
+                <!-- Linha principal com preço e botões -->
+                <div class="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto justify-between sm:justify-end">
+                    <div class="text-left sm:text-right">
+                        <span class="text-[8px] sm:text-[10px] uppercase font-bold tracking-wider text-zinc-400 block">Investimento Total</span>
+                        <div id="footer-preco-total" class="text-lg sm:text-3xl font-heading font-black text-white tracking-tight leading-tight"></div>
+                    </div>
 
-                    <button onclick="abrirModalAprovacao()" class="px-3.5 py-2.5 sm:px-6 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-brand-purple to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-xl shadow-purple-900/50 flex items-center space-x-1.5">
-                        <i data-lucide="check-circle-2" class="w-4 h-4 sm:w-4.5 sm:h-4.5"></i>
-                        <span>Aprovar Orçamento</span>
-                    </button>
+                    <div class="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
+                        <a id="btn-whatsapp-direto" 
+                           href="https://wa.me/<?= $whatsappEmpresa ?>?text=<?= urlencode("Olá! Gostaria de conversar sobre o Orçamento: " . $titulo . " (" . $cliente . ")") ?>" 
+                           target="_blank" 
+                           title="Falar no WhatsApp"
+                           class="p-2.5 sm:px-4 sm:py-3.5 rounded-xl sm:rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center space-x-1.5 shadow-lg shadow-emerald-900/30">
+                            <i data-lucide="message-circle" class="w-4 h-4"></i>
+                            <span class="hidden md:inline">WhatsApp</span>
+                        </a>
+
+                        <button onclick="abrirModalAprovacao()" class="px-3.5 py-2.5 sm:px-6 sm:py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-brand-purple to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-extrabold text-xs uppercase tracking-wider transition-all shadow-xl shadow-purple-900/50 flex items-center space-x-1.5">
+                            <i data-lucide="check-circle-2" class="w-4 h-4 sm:w-4.5 sm:h-4.5"></i>
+                            <span>Aprovar Orçamento</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -671,16 +687,9 @@ if (empty($whatsappEmpresa)) {
                     Confirmar & Enviar Aprovação
                 </button>
             </form>
-        </div>
-    </div>
-
-    <!-- JavaScript para Interatividade -->
-    <script>
-        lucide.createIcons();
-
-        // Dados JS das coleções
+          // Dados JS das coleções
         const colecoesDados = <?= json_encode($colecoes) ?>;
-        let colecaoSelecionada = colecoesDados[0] || { id: 'default', nome_comercial: 'Coleção Base', investimento_cliente: 1250, valor_lamina_extra: 35 };
+        let colecaoSelecionada = null;
 
         function selecionarColecao(id, nome, basePrice, extraPrice) {
             const achou = colecoesDados.find(c => c.id === id);
@@ -697,6 +706,15 @@ if (empty($whatsappEmpresa)) {
             const elCard = document.getElementById('card-colecao-' + id);
             if (elCard) elCard.classList.add('selected');
 
+            // Revela rodapé de confirmação (WhatsApp & Aprovar)
+            const elUnselected = document.getElementById('footer-unselected-state');
+            const elSelected = document.getElementById('footer-selected-state');
+            if (elUnselected) elUnselected.classList.add('hidden');
+            if (elSelected) {
+                elSelected.classList.remove('hidden');
+                elSelected.classList.add('flex');
+            }
+
             recalcularTotais();
         }
 
@@ -711,6 +729,8 @@ if (empty($whatsappEmpresa)) {
                     elPreco.textContent = 'R$ ' + totalColecao.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 }
             });
+
+            if (!colecaoSelecionada) return;
 
             // Preço total da coleção selecionada
             const basePrice = parseFloat(colecaoSelecionada.investimento_cliente);
