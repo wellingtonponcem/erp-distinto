@@ -775,6 +775,47 @@ function servicos() {
             this.form.acabamentos_lista.splice(index, 1);
         },
 
+        uploadImagem(tipoTarget, indexOuChave = null) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/png, image/jpeg, image/webp';
+            input.onchange = async () => {
+                if (!input.files || input.files.length === 0) return;
+                const file = input.files[0];
+                const formData = new FormData();
+                formData.append('imagem', file);
+
+                try {
+                    if (typeof toast === 'function') toast('Enviando imagem...', 'info');
+                    const r = await fetch('<?= raizUrl('/api/precificacao/upload-imagem.php') ?>', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const res = await r.json();
+                    if (r.ok && res.url) {
+                        toast('Imagem enviada com sucesso!', 'sucesso');
+                        if (tipoTarget === 'galeria') {
+                            if (indexOuChave === 'capa') this.form.img_capa = res.url;
+                            else if (indexOuChave === 'aberto') this.form.img_aberto = res.url;
+                            else if (indexOuChave === 'detalhe') this.form.img_detalhe = res.url;
+                            else this.form.img_capa = res.url;
+                        } else if (tipoTarget === 'estojo') {
+                            this.form.estojo_imagem = res.url;
+                        } else if (tipoTarget === 'acabamento' && typeof indexOuChave === 'number') {
+                            if (this.form.acabamentos_lista && this.form.acabamentos_lista[indexOuChave]) {
+                                this.form.acabamentos_lista[indexOuChave].imagem = res.url;
+                            }
+                        }
+                    } else {
+                        toast(res.erro || 'Falha no upload da imagem', 'erro');
+                    }
+                } catch(e) {
+                    toast('Erro ao enviar imagem: ' + e.message, 'erro');
+                }
+            };
+            input.click();
+        },
+
         async salvar() {
             this.salvando = true;
             try {
@@ -812,15 +853,21 @@ function servicos() {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                if (r.ok) {
+                const textRes = await r.text();
+                let res = {};
+                try { res = JSON.parse(textRes); } catch(err) { res = { erro: textRes }; }
+                
+                if (r.ok && (res.ok || res.id)) {
                     toast('Salvo com sucesso!', 'sucesso');
                     this.modalAberto = false;
                     await this.carregar();
                 } else {
-                    const res = await r.json();
                     toast(res.erro || 'Erro ao salvar', 'erro');
                 }
-            } catch(e) { toast('Erro de conexão', 'erro'); }
+            } catch(e) {
+                console.error(e);
+                toast('Erro ao salvar: ' + e.message, 'erro');
+            }
             this.salvando = false;
         },
 
