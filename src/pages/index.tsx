@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Sidebar } from '@/components/Sidebar';
 import { TopNav } from '@/components/TopNav';
 import { DashboardView } from '@/components/DashboardView';
+import { LancamentosView } from '@/components/LancamentosView';
 import { ContasBancariasView } from '@/components/ContasBancariasView';
 import { CustosFixosView } from '@/components/CustosFixosView';
 import { ClientesView } from '@/components/ClientesView';
@@ -117,8 +118,9 @@ export default function Home() {
   const renderActiveView = () => {
     switch (activeTab) {
       case 'dashboard':
-      case 'lancamentos':
         return <DashboardView />;
+      case 'lancamentos':
+        return <LancamentosView />;
       case 'bancos':
         return <ContasBancariasView />;
       case 'custos_fixos':
@@ -132,7 +134,7 @@ export default function Home() {
           <div className="bg-white p-8 rounded-2xl border border-gray-200/80 shadow-2xs space-y-4">
             <h2 className="text-base font-bold text-gray-900 capitalize">{activeTab.replace('_', ' ')}</h2>
             <p className="text-xs text-gray-400">Módulo ativo no ERP Distinto Serverless</p>
-            <DashboardView />
+            <LancamentosView />
           </div>
         );
     }
