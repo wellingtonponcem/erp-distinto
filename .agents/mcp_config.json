@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "stitch": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@google/stitch-mcp"
+      ],
+      "env": {
+        "STITCH_API_KEY": "AQ.Ab8RN6KTKhh5NlxwxQ4IsPT6Emuir5TnwJPhm7uigCc9dt_S9A",
+        "GOOGLE_STITCH_API_KEY": "AQ.Ab8RN6KTKhh5NlxwxQ4IsPT6Emuir5TnwJPhm7uigCc9dt_S9A"
+      }
+    }
+  }
+}
