@@ -12,7 +12,7 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse) => 
     const configurado = await asaasService.isConfiguredAsync();
 
     if (configurado) {
-      // 1. Busca cobranças (Payments) diretamente na API oficial do Asaas
+      // 1. Busca cobranças (Payments) diretamente na API do Asaas
       const cobrancasRes = await asaasService.listarCobrancas({ limit: 50 });
       const cobrancasData = cobrancasRes.data || [];
 
@@ -25,32 +25,41 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse) => 
         console.warn('Extrato estendido requer escopo, exibindo cobranças:', err.message);
       }
 
-      // Combina e formata os dados para exibição completa
+      // Combina e formata os dados classificando saídas exclusivamente como SAÍDA
       const listaCombinada = [
-        ...cobrancasData.map((c: any) => ({
-          id: c.id,
-          type: 'cobranca',
-          customerName: c.customerName || c.description || 'Cliente Asaas',
-          billingType: c.billingType || 'PIX',
-          dueDate: c.dueDate,
-          paymentDate: c.paymentDate || c.clientPaymentDate,
-          value: parseFloat(c.value || 0),
-          netValue: parseFloat(c.netValue || c.value || 0),
-          status: c.status || 'PENDING',
-          invoiceUrl: c.invoiceUrl || c.bankSlipUrl,
-        })),
-        ...extratoData.map((e: any) => ({
-          id: e.id,
-          type: 'extrato',
-          customerName: e.description || e.type || 'Movimentação Asaas',
-          billingType: e.type || 'TRANSFER',
-          dueDate: e.date,
-          paymentDate: e.date,
-          value: parseFloat(e.value || 0),
-          netValue: parseFloat(e.value || 0),
-          status: e.value >= 0 ? 'RECEIVED' : 'REFUNDED',
-          invoiceUrl: null,
-        })),
+        ...cobrancasData.map((c: any) => {
+          const isSaida = c.status === 'REFUNDED' || c.status === 'REFUND_REQUESTED' || c.value < 0;
+          return {
+            id: c.id,
+            type: 'cobranca',
+            tipoMovimento: isSaida ? 'saida' : 'entrada',
+            customerName: c.customerName || c.description || 'Cliente Asaas',
+            billingType: c.billingType || 'PIX',
+            dueDate: c.dueDate,
+            paymentDate: c.paymentDate || c.clientPaymentDate,
+            value: Math.abs(parseFloat(c.value || 0)),
+            netValue: Math.abs(parseFloat(c.netValue || c.value || 0)),
+            status: isSaida ? 'SAIDA' : (c.status || 'PENDING'),
+            invoiceUrl: c.invoiceUrl || c.bankSlipUrl,
+          };
+        }),
+        ...extratoData.map((e: any) => {
+          const val = parseFloat(e.value || 0);
+          const isSaida = val < 0 || e.type?.includes('DEBIT') || e.type?.includes('TRANSFER') || e.type?.includes('FEE');
+          return {
+            id: e.id,
+            type: 'extrato',
+            tipoMovimento: isSaida ? 'saida' : 'entrada',
+            customerName: e.description || e.type || 'Movimentação Asaas',
+            billingType: e.type || 'TRANSFER',
+            dueDate: e.date,
+            paymentDate: e.date,
+            value: Math.abs(val),
+            netValue: Math.abs(val),
+            status: isSaida ? 'SAIDA' : 'RECEIVED',
+            invoiceUrl: null,
+          };
+        }),
       ];
 
       return res.status(200).json({ ok: true, origem: 'asaas_api', dados: listaCombinada });

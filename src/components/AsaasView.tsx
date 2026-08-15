@@ -93,14 +93,34 @@ export const AsaasView: React.FC = () => {
     }
   };
 
+  // Mapeamento Amigável de Status para Português
+  const traduzirStatus = (statusRaw: string, isSaida: boolean): { texto: string; classe: string } => {
+    const s = (statusRaw || '').toUpperCase();
+
+    if (isSaida || s === 'SAIDA' || s === 'REFUNDED' || s === 'REFUND_REQUESTED' || s === 'DELETED') {
+      return { texto: 'SAÍDA', classe: 'bg-red-100 text-red-800' };
+    }
+    if (s === 'RECEIVED' || s === 'CONFIRMED' || s === 'PAGO') {
+      return { texto: 'RECEBIDO', classe: 'bg-emerald-100 text-emerald-800' };
+    }
+    if (s === 'PENDING' || s === 'PENDENTE') {
+      return { texto: 'PENDENTE', classe: 'bg-amber-100 text-amber-800' };
+    }
+    if (s === 'OVERDUE' || s === 'ATRASADO') {
+      return { texto: 'ATRASADO', classe: 'bg-rose-100 text-rose-800' };
+    }
+    return { texto: s || 'PENDENTE', classe: 'bg-gray-100 text-gray-700' };
+  };
+
   // Filtragem de Transações
   const cobrancasFiltradas = cobrancas.filter((item) => {
     const statusStr = (item.status || '').toUpperCase();
+    const isSaida = item.tipoMovimento === 'saida' || ['SAIDA', 'REFUNDED', 'REFUND_REQUESTED', 'DELETED'].includes(statusStr);
     const formaStr = (item.billingType || item.forma_pagamento || '').toUpperCase();
     const clienteStr = (item.customerName || item.cliente_fornecedor || item.descricao || '').toLowerCase();
     const idStr = (item.id || '').toLowerCase();
 
-    // Filtro de Busca por Texto
+    // Busca por Texto
     if (busca.trim()) {
       const termo = busca.toLowerCase();
       if (!clienteStr.includes(termo) && !idStr.includes(termo)) {
@@ -108,17 +128,17 @@ export const AsaasView: React.FC = () => {
       }
     }
 
-    // Filtro por Status
+    // Filtro por Status em Português
     if (filtroStatus === 'RECEBIDO' && !['RECEIVED', 'CONFIRMED', 'PAGO'].includes(statusStr)) {
+      return false;
+    }
+    if (filtroStatus === 'SAIDA' && !isSaida) {
       return false;
     }
     if (filtroStatus === 'PENDENTE' && !['PENDING', 'PENDENTE'].includes(statusStr)) {
       return false;
     }
-    if (filtroStatus === 'VENCIDO' && !['OVERDUE', 'ATRASADO'].includes(statusStr)) {
-      return false;
-    }
-    if (filtroStatus === 'CANCELADO' && !['REFUNDED', 'DELETED', 'CANCELADO'].includes(statusStr)) {
+    if (filtroStatus === 'ATRASADO' && !['OVERDUE', 'ATRASADO'].includes(statusStr)) {
       return false;
     }
 
@@ -132,8 +152,13 @@ export const AsaasView: React.FC = () => {
     return true;
   });
 
-  const totalRecebido = cobrancas
-    .filter((c) => ['RECEIVED', 'CONFIRMED', 'PAGO', 'pago'].includes((c.status || '').toUpperCase()))
+  // Cálculos em Português
+  const totalEntradas = cobrancas
+    .filter((c) => ['RECEIVED', 'CONFIRMED', 'PAGO', 'pago'].includes((c.status || '').toUpperCase()) && c.tipoMovimento !== 'saida')
+    .reduce((acc, c) => acc + parseFloat(c.value || c.valor || 0), 0);
+
+  const totalSaidas = cobrancas
+    .filter((c) => ['SAIDA', 'REFUNDED', 'REFUND_REQUESTED', 'DELETED', 'CANCELADO'].includes((c.status || '').toUpperCase()) || c.tipoMovimento === 'saida')
     .reduce((acc, c) => acc + parseFloat(c.value || c.valor || 0), 0);
 
   const totalPendente = cobrancas
@@ -147,7 +172,7 @@ export const AsaasView: React.FC = () => {
         <div>
           <h2 className="text-xl font-bold text-gray-900 tracking-tight">Gestão de Pagamentos Asaas</h2>
           <p className="text-xs text-gray-500 mt-1">
-            Sincronização automática de saldo, cobranças PIX, boleto e cartão de crédito via Asaas
+            Painel de entradas, saídas e extrato consolidado da conta Asaas
           </p>
         </div>
 
@@ -175,11 +200,11 @@ export const AsaasView: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center space-x-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Saldo Atual Oficial no Asaas</span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Saldo Líquido Atual no Asaas</span>
               {configurada ? (
                 <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded text-[10px] font-bold flex items-center space-x-1">
                   <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
-                  <span>Sincronização Automática Ativa</span>
+                  <span>Conectado via API Asaas</span>
                 </span>
               ) : (
                 <button
@@ -204,16 +229,22 @@ export const AsaasView: React.FC = () => {
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-300 block">Total Recebido no Asaas</span>
-              <span className="text-lg font-bold font-mono text-emerald-400 mt-1 block">
-                + R$ {totalRecebido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-white/10 backdrop-blur-md p-3.5 rounded-xl border border-white/10">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-gray-300 block">Total Recebido (Entradas)</span>
+              <span className="text-base font-bold font-mono text-emerald-400 mt-1 block">
+                + R$ {totalEntradas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </span>
             </div>
-            <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-300 block">Total A Receber</span>
-              <span className="text-lg font-bold font-mono text-amber-300 mt-1 block">
+            <div className="bg-white/10 backdrop-blur-md p-3.5 rounded-xl border border-white/10">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-gray-300 block">Total Saídas</span>
+              <span className="text-base font-bold font-mono text-red-400 mt-1 block">
+                - R$ {totalSaidas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              </span>
+            </div>
+            <div className="bg-white/10 backdrop-blur-md p-3.5 rounded-xl border border-white/10">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-gray-300 block">Pendente de Recebimento</span>
+              <span className="text-base font-bold font-mono text-amber-300 mt-1 block">
                 R$ {totalPendente.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </span>
             </div>
@@ -221,7 +252,7 @@ export const AsaasView: React.FC = () => {
         </div>
       </div>
 
-      {/* Barra de Filtros */}
+      {/* Barra de Filtros em Português */}
       <div className="bg-white border border-gray-200/80 p-4 rounded-2xl shadow-2xs space-y-3">
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
           {/* Campo de Busca */}
@@ -238,14 +269,14 @@ export const AsaasView: React.FC = () => {
             />
           </div>
 
-          {/* Filtros de Status */}
+          {/* Filtros de Status em Português */}
           <div className="flex items-center space-x-1 overflow-x-auto pb-1 md:pb-0">
             {[
               { id: 'TODOS', label: 'Todos' },
-              { id: 'RECEBIDO', label: 'Recebidos / Pagos' },
+              { id: 'RECEBIDO', label: 'Recebidos' },
+              { id: 'SAIDA', label: 'Saídas' },
               { id: 'PENDENTE', label: 'Pendentes' },
-              { id: 'VENCIDO', label: 'Vencidos' },
-              { id: 'CANCELADO', label: 'Cancelados' },
+              { id: 'ATRASADO', label: 'Atrasados' },
             ].map((f) => (
               <button
                 key={f.id}
@@ -275,12 +306,12 @@ export const AsaasView: React.FC = () => {
         </div>
       </div>
 
-      {/* Tabela Exclusiva de Transações do Asaas */}
+      {/* Tabela Exclusiva de Transações do Asaas em Português */}
       <div className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-2xs">
         <div className="p-5 border-b border-gray-100 flex items-center justify-between">
           <div>
             <h3 className="font-bold text-gray-900 text-sm">Extrato de Movimentações Asaas</h3>
-            <p className="text-xs text-gray-400">Exibindo movimentações com sincronização automática e filtros aplicados</p>
+            <p className="text-xs text-gray-400">Classificação de entradas, saídas e movimentações pendentes</p>
           </div>
           <span className="text-xs font-bold bg-gray-100 text-gray-600 px-3 py-1 rounded-full font-mono">
             {cobrancasFiltradas.length} de {cobrancas.length} movimentações
@@ -309,31 +340,34 @@ export const AsaasView: React.FC = () => {
             <table className="w-full text-left text-xs font-sans">
               <thead className="bg-gray-50 text-gray-500 uppercase tracking-wider font-bold text-[10px] border-b border-gray-100">
                 <tr>
+                  <th className="py-3 px-4">Tipo Movimento</th>
                   <th className="py-3 px-4">ID Cobrança</th>
                   <th className="py-3 px-4">Cliente / Pagador</th>
                   <th className="py-3 px-4">Forma Pagamento</th>
                   <th className="py-3 px-4">Vencimento</th>
                   <th className="py-3 px-4">Valor</th>
-                  <th className="py-3 px-4">Status Asaas</th>
+                  <th className="py-3 px-4">Status</th>
                   <th className="py-3 px-4 text-right">Fatura / Ação</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {cobrancasFiltradas.map((item) => {
                   const valorNum = parseFloat(item.value || item.valor || 0);
-                  const statusStr = (item.status || 'PENDING').toUpperCase();
-
-                  const statusBadge =
-                    statusStr === 'RECEIVED' || statusStr === 'CONFIRMED' || statusStr === 'PAGO'
-                      ? 'bg-emerald-100 text-emerald-800'
-                      : statusStr === 'OVERDUE' || statusStr === 'ATRASADO'
-                      ? 'bg-red-100 text-red-800'
-                      : statusStr === 'REFUNDED' || statusStr === 'CANCELADO'
-                      ? 'bg-gray-100 text-gray-600'
-                      : 'bg-amber-100 text-amber-800';
+                  const statusRaw = item.status || 'PENDING';
+                  const isSaida = item.tipoMovimento === 'saida' || ['SAIDA', 'REFUNDED', 'REFUND_REQUESTED', 'DELETED'].includes((statusRaw).toUpperCase());
+                  const statusTraduzido = traduzirStatus(statusRaw, isSaida);
 
                   return (
                     <tr key={item.id} className="hover:bg-gray-50/80 transition">
+                      <td className="py-3 px-4">
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
+                            isSaida ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-700'
+                          }`}
+                        >
+                          {isSaida ? 'SAÍDA' : 'ENTRADA'}
+                        </span>
+                      </td>
                       <td className="py-3 px-4 font-mono text-gray-500">{item.id}</td>
                       <td className="py-3 px-4 font-bold text-gray-900">
                         {item.customerName || item.cliente_fornecedor || item.descricao || 'Cliente Asaas'}
@@ -344,12 +378,14 @@ export const AsaasView: React.FC = () => {
                       <td className="py-3 px-4 text-gray-600 font-mono">
                         {item.dueDate || item.vencimento ? new Date(item.dueDate || item.vencimento).toLocaleDateString('pt-BR') : '—'}
                       </td>
-                      <td className="py-3 px-4 font-mono font-bold text-gray-900">
-                        R$ {valorNum.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      <td className="py-3 px-4 font-mono font-bold">
+                        <span className={isSaida ? 'text-red-600' : 'text-emerald-700'}>
+                          {isSaida ? '-' : '+'} R$ {valorNum.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </span>
                       </td>
                       <td className="py-3 px-4">
-                        <span className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-bold ${statusBadge}`}>
-                          {statusStr}
+                        <span className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-bold ${statusTraduzido.classe}`}>
+                          {statusTraduzido.texto}
                         </span>
                       </td>
                       <td className="py-3 px-4 text-right">
@@ -364,7 +400,7 @@ export const AsaasView: React.FC = () => {
                             <span className="material-symbols-outlined text-xs leading-none">open_in_new</span>
                           </a>
                         ) : (
-                          <span className="text-gray-400 text-[10px]">Sem Link</span>
+                          <span className="text-gray-400 text-[10px]">—</span>
                         )}
                       </td>
                     </tr>
