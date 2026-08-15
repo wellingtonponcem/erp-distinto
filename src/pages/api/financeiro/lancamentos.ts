@@ -1,11 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { requireAuth, generateId } from '@/lib/helpers';
 import { query, queryOne } from '@/lib/db';
+import { asaasService } from '@/lib/asaas';
 
 export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, user) => {
   const method = req.method;
 
   if (method === 'GET') {
+    // 1. Busca lançamentos do banco local (Neon PostgreSQL)
     const rows = await query(`
       SELECT *,
         CASE
@@ -17,7 +19,50 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, use
       FROM lancamentos
       ORDER BY COALESCE(data_pagamento, vencimento) DESC, id DESC
     `);
-    return res.status(200).json(rows);
+
+    // 2. Tenta mesclar transações em tempo real da API do Asaas se estiver configurada
+    let asaasRows: any[] = [];
+    try {
+      if (await asaasService.isConfiguredAsync()) {
+        const asaasRes = await asaasService.listarCobrancas({ limit: 50 });
+        const cobrancasAsaas = asaasRes.data || [];
+
+        // Filtra para incluir apenas cobranças que ainda não foram salvas manualmente no banco local
+        const asaasIdsLocais = new Set(rows.map((r: any) => r.asaas_payment_id || r.asaas_id).filter(Boolean));
+
+        asaasRows = cobrancasAsaas
+          .filter((c: any) => !asaasIdsLocais.has(c.id))
+          .map((c: any) => {
+            const isSaida = c.status === 'REFUNDED' || c.status === 'REFUND_REQUESTED' || c.value < 0;
+            return {
+              id: `asaas_${c.id}`,
+              tipo: isSaida ? 'pagar' : 'receber',
+              descricao: c.description || `Cobrança Asaas ${c.billingType || 'PIX'}`,
+              valor: Math.abs(parseFloat(c.value || 0)),
+              valor_pago: (c.status === 'RECEIVED' || c.status === 'CONFIRMED' || c.status === 'pago') ? Math.abs(parseFloat(c.netValue || c.value || 0)) : 0,
+              categoria: 'Asaas',
+              cliente_fornecedor: c.customerName || 'Cliente Asaas',
+              vencimento: c.dueDate,
+              data_pagamento: c.paymentDate || c.clientPaymentDate || null,
+              status: isSaida ? 'saida' : (c.status === 'RECEIVED' || c.status === 'CONFIRMED' ? 'pago' : c.status === 'OVERDUE' ? 'atrasado' : 'pendente'),
+              conciliado: 1,
+              asaas_payment_id: c.id,
+              conta_id: 'asaas',
+              forma_pagamento: (c.billingType || 'PIX').toLowerCase(),
+            };
+          });
+      }
+    } catch (e: any) {
+      console.warn('Falha ao mesclar Asaas no extrato geral:', e.message);
+    }
+
+    const extratoConsolidado = [...rows, ...asaasRows].sort((a, b) => {
+      const dataA = new Date(a.data_pagamento || a.vencimento || 0).getTime();
+      const dataB = new Date(b.data_pagamento || b.vencimento || 0).getTime();
+      return dataB - dataA;
+    });
+
+    return res.status(200).json(extratoConsolidado);
   }
 
   if (method === 'POST') {
