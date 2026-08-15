@@ -2,6 +2,7 @@
 module.exports = {
   darkMode: 'class',
   content: [
+    "./src/**/*.{js,ts,jsx,tsx}",
     "*.php",
     "api/**/*.php",
     "financeiro/**/*.php",
