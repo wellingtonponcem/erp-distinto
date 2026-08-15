@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
+import { Sidebar } from '@/components/Sidebar';
+import { TopNav } from '@/components/TopNav';
+import { DashboardView } from '@/components/DashboardView';
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
@@ -54,31 +58,22 @@ export default function Home() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 font-sans">
-      <div className="max-w-md w-full bg-white rounded-xl shadow-md p-8 border border-gray-100">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">ERP Distinto</h1>
-          <p className="text-sm text-gray-500 mt-1">Gestão inteligente de propostas, contratos e financeiro</p>
-        </div>
-
-        {user ? (
-          <div className="space-y-4 text-center">
-            <div className="p-4 bg-emerald-50 text-emerald-800 rounded-lg text-sm">
-              <p className="font-semibold">Bem-vindo(a), {user.nome}!</p>
-              <p className="text-xs text-emerald-600 mt-1">{user.email}</p>
+  // Se o usuário não estiver autenticado, exibe a tela de login
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 font-sans">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+          <div className="text-center mb-8">
+            <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center font-bold text-xl mx-auto mb-3 shadow-md">
+              D
             </div>
-            <button
-              onClick={handleLogout}
-              className="w-full py-2.5 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium text-sm shadow-sm"
-            >
-              Sair da Conta
-            </button>
+            <h1 className="text-2xl font-bold text-gray-900">ERP Distinto</h1>
+            <p className="text-xs text-gray-400 mt-1">Gestão de propostas, contratos e financeiro</p>
           </div>
-        ) : (
+
           <form onSubmit={handleLogin} className="space-y-4">
             {erro && (
-              <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg">
+              <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl font-semibold">
                 {erro}
               </div>
             )}
@@ -89,7 +84,7 @@ export default function Home() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-transparent outline-none transition"
+                className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-black focus:border-transparent outline-none transition"
                 placeholder="seu@email.com"
               />
             </div>
@@ -100,18 +95,38 @@ export default function Home() {
                 required
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
-                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-transparent outline-none transition"
+                className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-black focus:border-transparent outline-none transition"
                 placeholder="••••••••"
               />
             </div>
             <button
               type="submit"
-              className="w-full py-2.5 px-4 bg-black text-white rounded-lg hover:bg-gray-800 transition font-medium text-sm shadow-sm"
+              className="w-full py-3 px-4 bg-black text-white rounded-xl hover:bg-gray-800 transition font-bold text-sm shadow-md"
             >
-              Entrar no Sistema
+              Entrar no ERP
             </button>
           </form>
-        )}
+        </div>
+      </div>
+    );
+  }
+
+  // Se estiver autenticado, exibe o sistema ERP completo com Sidebar e TopNav!
+  return (
+    <div className="min-h-screen bg-gray-50 flex font-sans text-gray-900">
+      <Sidebar user={user} activeTab={activeTab} setActiveTab={setActiveTab} onLogout={handleLogout} />
+      <div className="flex-1 flex flex-col min-w-0">
+        <TopNav user={user} title={activeTab.toUpperCase()} />
+        <main className="p-6 flex-1 overflow-y-auto">
+          {activeTab === 'dashboard' && <DashboardView />}
+          {activeTab !== 'dashboard' && (
+            <div className="bg-white p-8 rounded-2xl border border-gray-100 text-center">
+              <h2 className="text-lg font-bold text-gray-900 capitalize mb-2">{activeTab.replace('_', ' ')}</h2>
+              <p className="text-xs text-gray-400 mb-6">Módulo em exibição no ambiente React Next.js</p>
+              <DashboardView />
+            </div>
+          )}
+        </main>
       </div>
     </div>
   );
