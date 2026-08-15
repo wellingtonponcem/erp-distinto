@@ -9,16 +9,55 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse) => 
   }
 
   try {
-    // Tenta buscar cobranças em tempo real na API v3 do Asaas
     if (asaasService.isConfigured()) {
-      const cobrançasAsaas = await asaasService.listarCobrancas({ limit: 50 });
-      return res.status(200).json({ ok: true, origem: 'asaas_api', dados: cobrançasAsaas.data || [] });
+      // 1. Busca cobranças (Payments)
+      const cobrancasRes = await asaasService.listarCobrancas({ limit: 50 });
+      const cobrancasData = cobrancasRes.data || [];
+
+      // 2. Busca movimentações do extrato financeiro (Financial Transactions)
+      let extratoData: any[] = [];
+      try {
+        const extratoRes = await asaasService.listarExtratoFinanceiro({ limit: 50 });
+        extratoData = extratoRes.data || [];
+      } catch (err: any) {
+        console.warn('Extrato estendido requer escopo, exibindo cobranças...');
+      }
+
+      // Combina e formata os dados para exibição completa
+      const listaCombinada = [
+        ...cobrancasData.map((c: any) => ({
+          id: c.id,
+          type: 'cobranca',
+          customerName: c.customerName || c.description || 'Cliente Asaas',
+          billingType: c.billingType || 'PIX',
+          dueDate: c.dueDate,
+          paymentDate: c.paymentDate || c.clientPaymentDate,
+          value: parseFloat(c.value || 0),
+          netValue: parseFloat(c.netValue || c.value || 0),
+          status: c.status || 'PENDING',
+          invoiceUrl: c.invoiceUrl || c.bankSlipUrl,
+        })),
+        ...extratoData.map((e: any) => ({
+          id: e.id,
+          type: 'extrato',
+          customerName: e.description || e.type || 'Movimentação Asaas',
+          billingType: e.type || 'TRANSFER',
+          dueDate: e.date,
+          paymentDate: e.date,
+          value: parseFloat(e.value || 0),
+          netValue: parseFloat(e.value || 0),
+          status: e.value >= 0 ? 'RECEIVED' : 'REFUNDED',
+          invoiceUrl: null,
+        })),
+      ];
+
+      return res.status(200).json({ ok: true, origem: 'asaas_api', dados: listaCombinada });
     }
   } catch (err: any) {
-    console.warn('Falha na API oficial do Asaas, buscando lançamentos com tag Asaas local:', err.message);
+    console.warn('Falha ao conectar à API do Asaas:', err.message);
   }
 
-  // Fallback: Busca lançamentos no banco local marcados como Asaas
+  // Fallback para lançamentos armazenados localmente
   try {
     const locais = await query(`
       SELECT * FROM lancamentos 

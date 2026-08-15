@@ -68,6 +68,30 @@ export class AsaasService {
     return this.request(`payments?limit=${limit}&order=desc`);
   }
 
+  public async listarExtratoFinanceiro(options: { limit?: number } = {}) {
+    const limit = options.limit || 50;
+    return this.request(`financialTransactions?limit=${limit}&order=desc`);
+  }
+
+  public async getBalanceAndExtract(limite = 50) {
+    const saldo = await this.request('finance/balance');
+    const cobrancas = await this.request(`payments?limit=${limite}&order=desc`);
+    
+    let extrato: any[] = [];
+    try {
+      const trans = await this.request(`financialTransactions?limit=${limite}&order=desc`);
+      extrato = trans.data || [];
+    } catch (e) {
+      // Fallback para extrato simples se financialTransactions requerer escopo adicional
+    }
+
+    return {
+      saldo: parseFloat(saldo.balance || 0),
+      cobrancas: cobrancas.data || [],
+      extrato
+    };
+  }
+
   public async getOrCreateCustomer(clienteId: string, dados: { nome: string; cpf_cnpj?: string; email?: string; telefone?: string }) {
     const cliente = await queryOne('SELECT asaas_customer_id, nome, cpf_cnpj, contato FROM clientes WHERE id = $1', [clienteId]);
     if (cliente && cliente.asaas_customer_id) {
@@ -105,16 +129,6 @@ export class AsaasService {
 
     await query('UPDATE clientes SET asaas_customer_id = $1 WHERE id = $2', [res.id, clienteId]);
     return res.id;
-  }
-
-  public async getBalanceAndExtract(limite = 15) {
-    const saldo = await this.request('finance/balance');
-    const cobrancas = await this.request(`payments?limit=${limite}&order=desc`);
-
-    return {
-      saldo: parseFloat(saldo.balance || 0),
-      cobrancas: cobrancas.data || []
-    };
   }
 }
 
