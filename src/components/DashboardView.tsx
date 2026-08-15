@@ -4,7 +4,19 @@ export const DashboardView: React.FC = () => {
   const [lancamentos, setLancamentos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  // Estado do Modal de Novo Lançamento
+  const [modalAberta, setModalAberta] = useState(false);
+  const [tipo, setTipo] = useState<'receber' | 'pagar'>('receber');
+  const [descricao, setDescricao] = useState('');
+  const [valor, setValor] = useState('');
+  const [vencimento, setVencimento] = useState(new Date().toISOString().split('T')[0]);
+  const [categoria, setCategoria] = useState('Serviços');
+  const [clienteFornecedor, setClienteFornecedor] = useState('');
+  const [status, setStatus] = useState<'pendente' | 'pago'>('pago');
+  const [salvando, setSalvando] = useState(false);
+
+  const carregarLancamentos = () => {
+    setLoading(true);
     fetch('/api/financeiro/lancamentos')
       .then((res) => res.json())
       .then((data) => {
@@ -14,7 +26,61 @@ export const DashboardView: React.FC = () => {
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    carregarLancamentos();
   }, []);
+
+  const handleSeed = async () => {
+    setLoading(true);
+    try {
+      await fetch('/api/financeiro/seed', { method: 'POST' });
+      carregarLancamentos();
+    } catch (e) {
+      console.error(e);
+      setLoading(false);
+    }
+  };
+
+  const handleCriarLancamento = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!descricao || !valor || !vencimento) return;
+
+    setSalvando(true);
+    try {
+      const valorNum = parseFloat(valor);
+      const valorPago = status === 'pago' ? valorNum : 0;
+
+      const res = await fetch('/api/financeiro/lancamentos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tipo,
+          descricao,
+          valor: valorNum,
+          valor_pago: valorPago,
+          categoria,
+          cliente_fornecedor: clienteFornecedor,
+          vencimento,
+          status,
+          data_pagamento: status === 'pago' ? vencimento : null,
+        }),
+      });
+
+      if (res.ok) {
+        setModalAberta(false);
+        setDescricao('');
+        setValor('');
+        setClienteFornecedor('');
+        carregarLancamentos();
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSalvando(false);
+    }
+  };
 
   // Cálculos dos KPIs
   const totalReceber = lancamentos
@@ -37,6 +103,34 @@ export const DashboardView: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">Visão Geral Financeira</h2>
+          <p className="text-xs text-gray-400">Acompanhamento do fluxo de caixa e lançamentos</p>
+        </div>
+
+        <div className="flex items-center space-x-3">
+          {lancamentos.length === 0 && (
+            <button
+              onClick={handleSeed}
+              className="px-4 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-xs font-bold transition flex items-center space-x-2"
+            >
+              <span className="material-symbols-outlined text-sm">auto_fix_high</span>
+              <span>Popular Dados Iniciais</span>
+            </button>
+          )}
+
+          <button
+            onClick={() => setModalAberta(true)}
+            className="px-4 py-2 bg-black text-white hover:bg-gray-800 rounded-xl text-xs font-bold transition flex items-center space-x-2 shadow-sm"
+          >
+            <span className="material-symbols-outlined text-sm">add</span>
+            <span>Novo Lançamento</span>
+          </button>
+        </div>
+      </div>
+
       {/* Bento Grid Metrics Header */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Saldo Atual */}
@@ -51,7 +145,7 @@ export const DashboardView: React.FC = () => {
             <h3 className="text-2xl font-bold text-gray-900">
               R$ {saldoAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </h3>
-            <p className="text-xs text-gray-400 mt-1">Saldo em caixa e bancos</p>
+            <p className="text-xs text-gray-400 mt-1">Saldo acumulado em caixa</p>
           </div>
         </div>
 
@@ -119,7 +213,25 @@ export const DashboardView: React.FC = () => {
         {loading ? (
           <div className="p-8 text-center text-sm text-gray-400">Carregando dados financeiros...</div>
         ) : lancamentos.length === 0 ? (
-          <div className="p-8 text-center text-sm text-gray-400">Nenhum lançamento cadastrado ainda.</div>
+          <div className="p-12 text-center">
+            <span className="material-symbols-outlined text-4xl text-gray-300 mb-2">receipt_long</span>
+            <p className="text-sm font-semibold text-gray-700">Seu novo banco de dados está pronto e sem registros!</p>
+            <p className="text-xs text-gray-400 mt-1 mb-4">Você pode adicionar lançamentos manualmente ou carregar os dados de demonstração.</p>
+            <div className="flex justify-center space-x-3">
+              <button
+                onClick={handleSeed}
+                className="px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 transition"
+              >
+                Carregar Dados Iniciais
+              </button>
+              <button
+                onClick={() => setModalAberta(true)}
+                className="px-4 py-2 bg-black text-white rounded-xl text-xs font-bold hover:bg-gray-800 transition"
+              >
+                + Adicionar Lançamento
+              </button>
+            </div>
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs font-sans">
@@ -135,7 +247,7 @@ export const DashboardView: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {lancamentos.slice(0, 15).map((item) => {
+                {lancamentos.map((item) => {
                   const isReceber = item.tipo === 'receber';
                   const valorNum = parseFloat(item.valor || 0);
 
@@ -182,6 +294,137 @@ export const DashboardView: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Modal de Novo Lançamento */}
+      {modalAberta && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+              <h3 className="font-bold text-gray-900 text-base">Novo Lançamento Financeiro</h3>
+              <button onClick={() => setModalAberta(false)} className="text-gray-400 hover:text-gray-600">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <form onSubmit={handleCriarLancamento} className="space-y-3">
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setTipo('receber')}
+                  className={`flex-1 py-2 rounded-xl text-xs font-bold transition ${
+                    tipo === 'receber' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-600'
+                  }`}
+                >
+                  Receita (Entrada)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTipo('pagar')}
+                  className={`flex-1 py-2 rounded-xl text-xs font-bold transition ${
+                    tipo === 'pagar' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-600'
+                  }`}
+                >
+                  Despesa (Saída)
+                </button>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase text-gray-500 mb-1">Descrição</label>
+                <input
+                  type="text"
+                  required
+                  value={descricao}
+                  onChange={(e) => setDescricao(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-black outline-none"
+                  placeholder="Ex: Contrato Fotografia Casamento"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase text-gray-500 mb-1">Valor (R$)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    required
+                    value={valor}
+                    onChange={(e) => setValor(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-black outline-none"
+                    placeholder="0.00"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase text-gray-500 mb-1">Vencimento</label>
+                  <input
+                    type="date"
+                    required
+                    value={vencimento}
+                    onChange={(e) => setVencimento(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-black outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase text-gray-500 mb-1">Cliente / Fornecedor</label>
+                <input
+                  type="text"
+                  value={clienteFornecedor}
+                  onChange={(e) => setClienteFornecedor(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-black outline-none"
+                  placeholder="Nome do cliente ou fornecedor"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase text-gray-500 mb-1">Categoria</label>
+                  <select
+                    value={categoria}
+                    onChange={(e) => setCategoria(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-black outline-none"
+                  >
+                    <option value="Serviços">Serviços</option>
+                    <option value="Propostas">Propostas</option>
+                    <option value="Álbuns">Álbuns</option>
+                    <option value="Custos Fixos">Custos Fixos</option>
+                    <option value="Outros">Outros</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold uppercase text-gray-500 mb-1">Status</label>
+                  <select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value as any)}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs focus:ring-2 focus:ring-black outline-none"
+                  >
+                    <option value="pago">Pago / Baixado</option>
+                    <option value="pendente">Pendente</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="pt-3 flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setModalAberta(false)}
+                  className="px-4 py-2 text-xs font-bold text-gray-600 hover:bg-gray-100 rounded-xl"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={salvando}
+                  className="px-4 py-2 bg-black text-white text-xs font-bold rounded-xl hover:bg-gray-800 transition"
+                >
+                  {salvando ? 'Salvando...' : 'Salvar Lançamento'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
