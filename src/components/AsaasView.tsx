@@ -7,6 +7,11 @@ export const AsaasView: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [maskedKey, setMaskedKey] = useState<string>('');
 
+  // Filtros
+  const [busca, setBusca] = useState<string>('');
+  const [filtroStatus, setFiltroStatus] = useState<string>('TODOS');
+  const [filtroForma, setFiltroForma] = useState<string>('TODAS');
+
   // Modal de Configuração da Chave
   const [modalConfigAberta, setModalConfigAberta] = useState<boolean>(false);
   const [novaApiKey, setNovaApiKey] = useState<string>('');
@@ -42,7 +47,7 @@ export const AsaasView: React.FC = () => {
       })
       .catch(() => {});
 
-    // 3. Carregar Transações do Asaas
+    // 3. Carregar Transações e Movimentações do Asaas
     fetch('/api/financeiro/asaas-payments')
       .then((res) => res.json())
       .then((data) => {
@@ -88,13 +93,52 @@ export const AsaasView: React.FC = () => {
     }
   };
 
+  // Filtragem de Transações
+  const cobrancasFiltradas = cobrancas.filter((item) => {
+    const statusStr = (item.status || '').toUpperCase();
+    const formaStr = (item.billingType || item.forma_pagamento || '').toUpperCase();
+    const clienteStr = (item.customerName || item.cliente_fornecedor || item.descricao || '').toLowerCase();
+    const idStr = (item.id || '').toLowerCase();
+
+    // Filtro de Busca por Texto
+    if (busca.trim()) {
+      const termo = busca.toLowerCase();
+      if (!clienteStr.includes(termo) && !idStr.includes(termo)) {
+        return false;
+      }
+    }
+
+    // Filtro por Status
+    if (filtroStatus === 'RECEBIDO' && !['RECEIVED', 'CONFIRMED', 'PAGO'].includes(statusStr)) {
+      return false;
+    }
+    if (filtroStatus === 'PENDENTE' && !['PENDING', 'PENDENTE'].includes(statusStr)) {
+      return false;
+    }
+    if (filtroStatus === 'VENCIDO' && !['OVERDUE', 'ATRASADO'].includes(statusStr)) {
+      return false;
+    }
+    if (filtroStatus === 'CANCELADO' && !['REFUNDED', 'DELETED', 'CANCELADO'].includes(statusStr)) {
+      return false;
+    }
+
+    // Filtro por Forma de Pagamento
+    if (filtroForma !== 'TODAS') {
+      if (filtroForma === 'PIX' && !formaStr.includes('PIX')) return false;
+      if (filtroForma === 'BOLETO' && !formaStr.includes('BOLETO')) return false;
+      if (filtroForma === 'CARTAO' && !formaStr.includes('CREDIT') && !formaStr.includes('CARTAO')) return false;
+    }
+
+    return true;
+  });
+
   const totalRecebido = cobrancas
-    .filter((c) => c.status === 'RECEIVED' || c.status === 'CONFIRMED' || c.status === 'pago')
-    .reduce((acc, c) => acc + (parseFloat(c.value || c.valor || 0)), 0);
+    .filter((c) => ['RECEIVED', 'CONFIRMED', 'PAGO', 'pago'].includes((c.status || '').toUpperCase()))
+    .reduce((acc, c) => acc + parseFloat(c.value || c.valor || 0), 0);
 
   const totalPendente = cobrancas
-    .filter((c) => c.status === 'PENDING' || c.status === 'OVERDUE' || c.status === 'pendente')
-    .reduce((acc, c) => acc + (parseFloat(c.value || c.valor || 0)), 0);
+    .filter((c) => ['PENDING', 'OVERDUE', 'PENDENTE', 'atrasado'].includes((c.status || '').toUpperCase()))
+    .reduce((acc, c) => acc + parseFloat(c.value || c.valor || 0), 0);
 
   return (
     <div className="space-y-6 font-sans text-gray-900">
@@ -103,7 +147,7 @@ export const AsaasView: React.FC = () => {
         <div>
           <h2 className="text-xl font-bold text-gray-900 tracking-tight">Gestão de Pagamentos Asaas</h2>
           <p className="text-xs text-gray-500 mt-1">
-            Painel exclusivo de saldo, cobranças PIX, boleto e cartão de crédito processados via Asaas
+            Sincronização automática de saldo, cobranças PIX, boleto e cartão de crédito via Asaas
           </p>
         </div>
 
@@ -120,8 +164,8 @@ export const AsaasView: React.FC = () => {
             onClick={carregarDadosAsaas}
             className="px-4 py-2 bg-black text-white hover:bg-gray-800 rounded-xl text-xs font-bold transition flex items-center space-x-2 shadow-sm"
           >
-            <span className="material-symbols-outlined text-sm leading-none">refresh</span>
-            <span>Atualizar Saldo</span>
+            <span className="material-symbols-outlined text-sm leading-none">sync</span>
+            <span>Sincronizar Agora</span>
           </button>
         </div>
       </div>
@@ -131,18 +175,18 @@ export const AsaasView: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center space-x-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Saldo Atual da Conta Asaas</span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Saldo Atual Oficial no Asaas</span>
               {configurada ? (
                 <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded text-[10px] font-bold flex items-center space-x-1">
                   <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
-                  <span>Conectado via API Asaas</span>
+                  <span>Sincronização Automática Ativa</span>
                 </span>
               ) : (
                 <button
                   onClick={() => setModalConfigAberta(true)}
                   className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded text-[10px] font-bold transition"
                 >
-                  ⚡ Clique para cadastrar a chave API
+                  ⚡ Cadastrar Chave de API para Sincronizar
                 </button>
               )}
             </div>
@@ -155,20 +199,20 @@ export const AsaasView: React.FC = () => {
 
             {configurada && maskedKey && (
               <p className="text-[11px] text-gray-400 mt-2 font-mono">
-                Chave ativa: <span className="text-gray-300">{maskedKey}</span> ({novoModo === 'prod' ? 'Produção' : 'Sandbox'})
+                Chave: <span className="text-gray-300">{maskedKey}</span> ({novoModo === 'prod' ? 'Produção' : 'Sandbox'})
               </p>
             )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-300 block">Cobranças Recebidas</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-300 block">Total Recebido no Asaas</span>
               <span className="text-lg font-bold font-mono text-emerald-400 mt-1 block">
                 + R$ {totalRecebido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </span>
             </div>
             <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-300 block">A Receber no Asaas</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-300 block">Total A Receber</span>
               <span className="text-lg font-bold font-mono text-amber-300 mt-1 block">
                 R$ {totalPendente.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </span>
@@ -177,25 +221,88 @@ export const AsaasView: React.FC = () => {
         </div>
       </div>
 
+      {/* Barra de Filtros */}
+      <div className="bg-white border border-gray-200/80 p-4 rounded-2xl shadow-2xs space-y-3">
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+          {/* Campo de Busca */}
+          <div className="relative flex-1">
+            <span className="material-symbols-outlined absolute left-3 top-2.5 text-gray-400 text-sm leading-none">
+              search
+            </span>
+            <input
+              type="text"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar por cliente ou ID da cobrança..."
+              className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-black transition font-sans"
+            />
+          </div>
+
+          {/* Filtros de Status */}
+          <div className="flex items-center space-x-1 overflow-x-auto pb-1 md:pb-0">
+            {[
+              { id: 'TODOS', label: 'Todos' },
+              { id: 'RECEBIDO', label: 'Recebidos / Pagos' },
+              { id: 'PENDENTE', label: 'Pendentes' },
+              { id: 'VENCIDO', label: 'Vencidos' },
+              { id: 'CANCELADO', label: 'Cancelados' },
+            ].map((f) => (
+              <button
+                key={f.id}
+                onClick={() => setFiltroStatus(f.id)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
+                  filtroStatus === f.id
+                    ? 'bg-black text-white shadow-xs'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Filtro por Forma de Pagamento */}
+          <select
+            value={filtroForma}
+            onChange={(e) => setFiltroForma(e.target.value)}
+            className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-black"
+          >
+            <option value="TODAS">Todas as Formas</option>
+            <option value="PIX">Somente PIX</option>
+            <option value="BOLETO">Somente Boleto</option>
+            <option value="CARTAO">Somente Cartão de Crédito</option>
+          </select>
+        </div>
+      </div>
+
       {/* Tabela Exclusiva de Transações do Asaas */}
       <div className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-2xs">
         <div className="p-5 border-b border-gray-100 flex items-center justify-between">
           <div>
-            <h3 className="font-bold text-gray-900 text-sm">Transações Exclusivas do Asaas</h3>
-            <p className="text-xs text-gray-400">Listagem de cobranças, boletos e PIX gerados via plataforma Asaas</p>
+            <h3 className="font-bold text-gray-900 text-sm">Extrato de Movimentações Asaas</h3>
+            <p className="text-xs text-gray-400">Exibindo movimentações com sincronização automática e filtros aplicados</p>
           </div>
           <span className="text-xs font-bold bg-gray-100 text-gray-600 px-3 py-1 rounded-full font-mono">
-            {cobrancas.length} transações
+            {cobrancasFiltradas.length} de {cobrancas.length} movimentações
           </span>
         </div>
 
         {loading ? (
-          <div className="p-8 text-center text-xs text-gray-400">Carregando cobranças do Asaas...</div>
-        ) : cobrancas.length === 0 ? (
+          <div className="p-8 text-center text-xs text-gray-400">Carregando movimentações do Asaas...</div>
+        ) : cobrancasFiltradas.length === 0 ? (
           <div className="p-12 text-center">
-            <span className="material-symbols-outlined text-4xl text-gray-300 mb-2 leading-none">payments</span>
-            <p className="text-sm font-bold text-gray-800">Nenhuma cobrança registrada no Asaas.</p>
-            <p className="text-xs text-gray-400 mt-1">Configure a chave de API do Asaas acima para sincronizar seu saldo e cobranças.</p>
+            <span className="material-symbols-outlined text-4xl text-gray-300 mb-2 leading-none">filter_alt_off</span>
+            <p className="text-sm font-bold text-gray-800">Nenhuma movimentação encontrada com os filtros selecionados.</p>
+            <button
+              onClick={() => {
+                setBusca('');
+                setFiltroStatus('TODOS');
+                setFiltroForma('TODAS');
+              }}
+              className="mt-4 px-4 py-2 bg-gray-100 text-gray-800 rounded-xl text-xs font-bold hover:bg-gray-200 transition"
+            >
+              Limpar Filtros
+            </button>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -208,11 +315,11 @@ export const AsaasView: React.FC = () => {
                   <th className="py-3 px-4">Vencimento</th>
                   <th className="py-3 px-4">Valor</th>
                   <th className="py-3 px-4">Status Asaas</th>
-                  <th className="py-3 px-4 text-right">Link / Fatura</th>
+                  <th className="py-3 px-4 text-right">Fatura / Ação</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {cobrancas.map((item) => {
+                {cobrancasFiltradas.map((item) => {
                   const valorNum = parseFloat(item.value || item.valor || 0);
                   const statusStr = (item.status || 'PENDING').toUpperCase();
 
@@ -221,6 +328,8 @@ export const AsaasView: React.FC = () => {
                       ? 'bg-emerald-100 text-emerald-800'
                       : statusStr === 'OVERDUE' || statusStr === 'ATRASADO'
                       ? 'bg-red-100 text-red-800'
+                      : statusStr === 'REFUNDED' || statusStr === 'CANCELADO'
+                      ? 'bg-gray-100 text-gray-600'
                       : 'bg-amber-100 text-amber-800';
 
                   return (
@@ -283,7 +392,7 @@ export const AsaasView: React.FC = () => {
 
             <form onSubmit={handleSalvarChaveAsaas} className="space-y-4">
               <p className="text-xs text-gray-500 leading-relaxed">
-                A chave de API é criptografada e salva diretamente no banco de dados seguro do Neon. Somente os endpoints do servidor utilizam essa chave.
+                A chave de API é salva com criptografia no banco de dados Neon. Assim que salva, a sincronização das movimentações funcionará de forma automática.
               </p>
 
               <div>
@@ -329,7 +438,7 @@ export const AsaasView: React.FC = () => {
                   disabled={salvandoConfig}
                   className="px-4 py-2 bg-black text-white text-xs font-bold rounded-xl hover:bg-gray-800 transition font-mono"
                 >
-                  {salvandoConfig ? 'Salvando...' : 'Salvar Chave com Segurança'}
+                  {salvandoConfig ? 'Salvando...' : 'Salvar e Sincronizar'}
                 </button>
               </div>
             </form>
