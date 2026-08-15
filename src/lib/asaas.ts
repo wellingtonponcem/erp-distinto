@@ -28,9 +28,14 @@ export class AsaasService {
       if (config && config.asaas_api_key) {
         this.apiKey = config.asaas_api_key;
         this.mode = config.asaas_mode || 'test';
-        this.baseUrl = this.mode === 'prod' ? 'https://api.asaas.com/v3' : 'https://sandbox.asaas.com/api/v3';
       }
     }
+    this.baseUrl = this.mode === 'prod' ? 'https://api.asaas.com/v3' : 'https://sandbox.asaas.com/api/v3';
+  }
+
+  public async isConfiguredAsync(): Promise<boolean> {
+    await this.initFromDb();
+    return Boolean(this.apiKey);
   }
 
   public isConfigured(): boolean {
@@ -82,7 +87,7 @@ export class AsaasService {
       const trans = await this.request(`financialTransactions?limit=${limite}&order=desc`);
       extrato = trans.data || [];
     } catch (e) {
-      // Fallback para extrato simples se financialTransactions requerer escopo adicional
+      // Fallback para extrato simples
     }
 
     return {
@@ -113,7 +118,7 @@ export class AsaasService {
           return customerId;
         }
       } catch (e) {
-        // Prosseguir para criação se busca falhar
+        // Prosseguir se busca falhar
       }
     }
 

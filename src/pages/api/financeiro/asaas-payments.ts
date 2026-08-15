@@ -9,18 +9,20 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse) => 
   }
 
   try {
-    if (asaasService.isConfigured()) {
-      // 1. Busca cobranças (Payments)
+    const configurado = await asaasService.isConfiguredAsync();
+
+    if (configurado) {
+      // 1. Busca cobranças (Payments) diretamente na API oficial do Asaas
       const cobrancasRes = await asaasService.listarCobrancas({ limit: 50 });
       const cobrancasData = cobrancasRes.data || [];
 
-      // 2. Busca movimentações do extrato financeiro (Financial Transactions)
+      // 2. Busca movimentações do extrato financeiro (Financial Transactions) na API do Asaas
       let extratoData: any[] = [];
       try {
         const extratoRes = await asaasService.listarExtratoFinanceiro({ limit: 50 });
         extratoData = extratoRes.data || [];
       } catch (err: any) {
-        console.warn('Extrato estendido requer escopo, exibindo cobranças...');
+        console.warn('Extrato estendido requer escopo, exibindo cobranças:', err.message);
       }
 
       // Combina e formata os dados para exibição completa
