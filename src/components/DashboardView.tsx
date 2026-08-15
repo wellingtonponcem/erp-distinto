@@ -4,6 +4,10 @@ export const DashboardView: React.FC = () => {
   const [lancamentos, setLancamentos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Estado do Saldo Real do Asaas
+  const [saldoAsaas, setSaldoAsaas] = useState<number | null>(null);
+  const [asaasConfigurado, setAsaasConfigurado] = useState<boolean>(false);
+
   // Estado do Modal de Novo Lançamento
   const [modalAberta, setModalAberta] = useState(false);
   const [tipo, setTipo] = useState<'receber' | 'pagar'>('receber');
@@ -15,7 +19,7 @@ export const DashboardView: React.FC = () => {
   const [status, setStatus] = useState<'pendente' | 'pago'>('pago');
   const [salvando, setSalvando] = useState(false);
 
-  const carregarLancamentos = () => {
+  const carregarDados = () => {
     setLoading(true);
     fetch('/api/financeiro/lancamentos')
       .then((res) => res.json())
@@ -26,17 +30,30 @@ export const DashboardView: React.FC = () => {
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
+
+    // Buscar Saldo Real do Asaas
+    fetch('/api/financeiro/asaas-balance')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ok) {
+          setSaldoAsaas(data.saldo);
+          setAsaasConfigurado(true);
+        } else {
+          setAsaasConfigurado(false);
+        }
+      })
+      .catch(() => {});
   };
 
   useEffect(() => {
-    carregarLancamentos();
+    carregarDados();
   }, []);
 
   const handleSeed = async () => {
     setLoading(true);
     try {
       await fetch('/api/financeiro/seed', { method: 'POST' });
-      carregarLancamentos();
+      carregarDados();
     } catch (e) {
       console.error(e);
       setLoading(false);
@@ -73,7 +90,7 @@ export const DashboardView: React.FC = () => {
         setDescricao('');
         setValor('');
         setClienteFornecedor('');
-        carregarLancamentos();
+        carregarDados();
       }
     } catch (err) {
       console.error(err);
@@ -82,7 +99,7 @@ export const DashboardView: React.FC = () => {
     }
   };
 
-  // Cálculos dos KPIs
+  // Cálculos dos KPIs Locais
   const totalReceber = lancamentos
     .filter((l) => l.tipo === 'receber' && l.status !== 'cancelado')
     .reduce((acc, l) => acc + (parseFloat(l.valor) - parseFloat(l.valor_pago || 0)), 0);
@@ -99,7 +116,8 @@ export const DashboardView: React.FC = () => {
     .filter((l) => l.tipo === 'pagar')
     .reduce((acc, l) => acc + parseFloat(l.valor_pago || 0), 0);
 
-  const saldoAtual = totalRecebido - totalPago;
+  const saldoLocal = totalRecebido - totalPago;
+  const exibeSaldo = saldoAsaas !== null ? saldoAsaas : saldoLocal;
 
   return (
     <div className="space-y-6">
@@ -107,7 +125,11 @@ export const DashboardView: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
         <div>
           <h2 className="text-xl font-bold text-gray-900">Visão Geral Financeira</h2>
-          <p className="text-xs text-gray-400">Acompanhamento do fluxo de caixa e lançamentos</p>
+          <p className="text-xs text-gray-400">
+            {asaasConfigurado
+              ? 'Conectado à API do Asaas • Saldo atualizado em tempo real'
+              : 'Acompanhamento do fluxo de caixa local'}
+          </p>
         </div>
 
         <div className="flex items-center space-x-3">
@@ -133,19 +155,23 @@ export const DashboardView: React.FC = () => {
 
       {/* Bento Grid Metrics Header */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Saldo Atual */}
+        {/* Saldo Atual (Asaas / Caixa) */}
         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-gray-500">
-            <span className="text-xs font-semibold uppercase tracking-wider">Saldo Atual</span>
+            <span className="text-xs font-semibold uppercase tracking-wider">
+              {asaasConfigurado ? 'Saldo Asaas Real' : 'Saldo Atual'}
+            </span>
             <span className="material-symbols-outlined text-emerald-600 bg-emerald-50 p-2 rounded-xl text-lg">
               account_balance_wallet
             </span>
           </div>
           <div className="mt-4">
             <h3 className="text-2xl font-bold text-gray-900">
-              R$ {saldoAtual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              R$ {exibeSaldo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </h3>
-            <p className="text-xs text-gray-400 mt-1">Saldo acumulado em caixa</p>
+            <p className="text-xs text-emerald-600 font-semibold mt-1">
+              {asaasConfigurado ? '✓ Sincronizado via Asaas API' : 'Calculado a partir das liquidações'}
+            </p>
           </div>
         </div>
 
