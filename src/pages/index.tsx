@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { Sidebar } from '@/components/Sidebar';
 import { TopNav } from '@/components/TopNav';
 import { DashboardView } from '@/components/DashboardView';
+import { ContasBancariasView } from '@/components/ContasBancariasView';
+import { CustosFixosView } from '@/components/CustosFixosView';
+import { ClientesView } from '@/components/ClientesView';
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
@@ -58,7 +61,6 @@ export default function Home() {
     );
   }
 
-  // Se o usuário não estiver autenticado, exibe a tela de login
   if (!user) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 font-sans">
@@ -111,22 +113,34 @@ export default function Home() {
     );
   }
 
-  // Se estiver autenticado, exibe o sistema ERP completo com Sidebar e TopNav!
+  const renderActiveView = () => {
+    switch (activeTab) {
+      case 'dashboard':
+      case 'lancamentos':
+        return <DashboardView />;
+      case 'bancos':
+        return <ContasBancariasView />;
+      case 'custos_fixos':
+        return <CustosFixosView />;
+      case 'clientes':
+        return <ClientesView />;
+      default:
+        return (
+          <div className="bg-white p-8 rounded-2xl border border-gray-200/80 shadow-2xs space-y-4">
+            <h2 className="text-base font-bold text-gray-900 capitalize">{activeTab.replace('_', ' ')}</h2>
+            <p className="text-xs text-gray-400">Módulo ativo no ERP Distinto Serverless</p>
+            <DashboardView />
+          </div>
+        );
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex font-sans text-gray-900">
       <Sidebar user={user} activeTab={activeTab} setActiveTab={setActiveTab} onLogout={handleLogout} />
       <div className="flex-1 flex flex-col min-w-0">
-        <TopNav user={user} title={activeTab.toUpperCase()} />
-        <main className="p-6 flex-1 overflow-y-auto">
-          {activeTab === 'dashboard' && <DashboardView />}
-          {activeTab !== 'dashboard' && (
-            <div className="bg-white p-8 rounded-2xl border border-gray-100 text-center">
-              <h2 className="text-lg font-bold text-gray-900 capitalize mb-2">{activeTab.replace('_', ' ')}</h2>
-              <p className="text-xs text-gray-400 mb-6">Módulo em exibição no ambiente React Next.js</p>
-              <DashboardView />
-            </div>
-          )}
-        </main>
+        <TopNav user={user} title={activeTab.toUpperCase().replace('_', ' ')} />
+        <main className="p-6 flex-1 overflow-y-auto">{renderActiveView()}</main>
       </div>
     </div>
   );
