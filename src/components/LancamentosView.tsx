@@ -5,11 +5,19 @@ export const LancamentosView: React.FC = () => {
   const [contas, setContas] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Filtros
+  // Filtros de Busca e Status
   const [busca, setBusca] = useState('');
   const [filtroTipo, setFiltroTipo] = useState('TODOS');
   const [filtroStatus, setFiltroStatus] = useState('TODOS');
   const [filtroConta, setFiltroConta] = useState('TODAS');
+
+  // Filtros Temporais (Mês Atual por padrão)
+  const hoje = new Date();
+  const [filtroPeriodo, setFiltroPeriodo] = useState<'MES_ATUAL' | 'SEMANA' | 'ANO' | 'TODOS' | 'CUSTOM'>('MES_ATUAL');
+  const [anoSel, setAnoSel] = useState<number>(hoje.getFullYear());
+  const [mesSel, setMesSel] = useState<number>(hoje.getMonth()); // 0 a 11
+  const [dataInicioCustom, setDataInicioCustom] = useState<string>('');
+  const [dataFimCustom, setDataFimCustom] = useState<string>('');
 
   // Modal Novo Lançamento
   const [modalAberta, setModalAberta] = useState(false);
@@ -153,34 +161,84 @@ export const LancamentosView: React.FC = () => {
     }
   };
 
-  // Filtragem dos Lançamentos Consolidados de Todas as Contas
+  // Navegação de Mês
+  const avancarMes = () => {
+    if (mesSel === 11) {
+      setMesSel(0);
+      setAnoSel(anoSel + 1);
+    } else {
+      setMesSel(mesSel + 1);
+    }
+  };
+
+  const voltarMes = () => {
+    if (mesSel === 0) {
+      setMesSel(11);
+      setAnoSel(anoSel - 1);
+    } else {
+      setMesSel(mesSel - 1);
+    }
+  };
+
+  const nomesMeses = [
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+  ];
+
+  // Filtragem dos Lançamentos Consolidados por Período, Conta, Tipo e Busca
   const lancamentosFiltrados = lancamentos.filter((l) => {
     const desc = (l.descricao || '').toLowerCase();
     const cli = (l.cliente_fornecedor || '').toLowerCase();
 
+    // 1. Busca por Texto
     if (busca.trim()) {
       const termo = busca.toLowerCase();
       if (!desc.includes(termo) && !cli.includes(termo)) return false;
     }
 
+    // 2. Filtro de Tipo
     if (filtroTipo === 'RECEBER' && l.tipo !== 'receber') return false;
     if (filtroTipo === 'PAGAR' && l.tipo !== 'pagar') return false;
 
+    // 3. Filtro de Status
     if (filtroStatus === 'PAGO' && l.status !== 'pago') return false;
     if (filtroStatus === 'PENDENTE' && l.status !== 'pendente') return false;
     if (filtroStatus === 'ATRASADO' && l.status !== 'atrasado') return false;
 
+    // 4. Filtro por Conta Bancária
     if (filtroConta !== 'TODAS' && l.conta_id !== filtroConta) return false;
+
+    // 5. Filtro de Data / Período
+    const dtStr = l.data_pagamento || l.vencimento;
+    if (!dtStr) return true;
+
+    const dt = new Date(dtStr);
+
+    if (filtroPeriodo === 'MES_ATUAL') {
+      if (dt.getFullYear() !== anoSel || dt.getMonth() !== mesSel) {
+        return false;
+      }
+    } else if (filtroPeriodo === 'SEMANA') {
+      const agora = new Date();
+      const seteDiasAtras = new Date(agora.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const seteDiasFrente = new Date(agora.getTime() + 7 * 24 * 60 * 60 * 1000);
+      if (dt < seteDiasAtras || dt > seteDiasFrente) return false;
+    } else if (filtroPeriodo === 'ANO') {
+      if (dt.getFullYear() !== anoSel) return false;
+    } else if (filtroPeriodo === 'CUSTOM') {
+      if (dataInicioCustom && dt < new Date(dataInicioCustom)) return false;
+      if (dataFimCustom && dt > new Date(`${dataFimCustom}T23:59:59`)) return false;
+    }
 
     return true;
   });
 
   const totalEntradas = lancamentosFiltrados
-    .filter((l) => l.tipo === 'receber' && l.status === 'pago')
+    .filter((l) => l.tipo === 'receber' && (l.status === 'pago' || l.status === 'RECEIVED'))
     .reduce((acc, l) => acc + parseFloat(l.valor_pago || l.valor || 0), 0);
 
   const totalSaidas = lancamentosFiltrados
-    .filter((l) => l.tipo === 'pagar' && l.status === 'pago')
+    .filter((l) => l.tipo === 'pagar' || l.status === 'saida' || l.status === 'SAIDA')
     .reduce((acc, l) => acc + parseFloat(l.valor_pago || l.valor || 0), 0);
 
   return (
@@ -199,7 +257,7 @@ export const LancamentosView: React.FC = () => {
         <div>
           <h2 className="text-xl font-bold text-gray-900 tracking-tight">Lançamentos Financeiros & Extrato Consolidado</h2>
           <p className="text-xs text-gray-500 mt-1">
-            Extrato completo de todas as contas bancárias, caixa físico e cartões com conciliação OFX
+            Extrato por período de todas as contas bancárias, caixa físico e cartões com conciliação OFX
           </p>
         </div>
 
@@ -223,22 +281,136 @@ export const LancamentosView: React.FC = () => {
         </div>
       </div>
 
-      {/* Cards de Resumo */}
+      {/* Navegador Temporal & Barra de Seleção de Período */}
+      <div className="bg-white border border-gray-200/80 p-4 rounded-2xl shadow-2xs space-y-3">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          {/* Seletor Rápido de Período */}
+          <div className="flex items-center space-x-1 overflow-x-auto pb-1 lg:pb-0">
+            <button
+              onClick={() => setFiltroPeriodo('MES_ATUAL')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center space-x-1 ${
+                filtroPeriodo === 'MES_ATUAL'
+                  ? 'bg-black text-white shadow-xs'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              <span className="material-symbols-outlined text-xs leading-none">calendar_month</span>
+              <span>Mês Atual</span>
+            </button>
+
+            <button
+              onClick={() => setFiltroPeriodo('SEMANA')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
+                filtroPeriodo === 'SEMANA'
+                  ? 'bg-black text-white shadow-xs'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Esta Semana
+            </button>
+
+            <button
+              onClick={() => setFiltroPeriodo('ANO')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
+                filtroPeriodo === 'ANO'
+                  ? 'bg-black text-white shadow-xs'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Este Ano ({anoSel})
+            </button>
+
+            <button
+              onClick={() => setFiltroPeriodo('TODOS')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
+                filtroPeriodo === 'TODOS'
+                  ? 'bg-black text-white shadow-xs'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Todos os Períodos
+            </button>
+
+            <button
+              onClick={() => setFiltroPeriodo('CUSTOM')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
+                filtroPeriodo === 'CUSTOM'
+                  ? 'bg-black text-white shadow-xs'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Personalizado
+            </button>
+          </div>
+
+          {/* Navegador Mensal quando Mês ou Ano Ativo */}
+          {(filtroPeriodo === 'MES_ATUAL' || filtroPeriodo === 'ANO') && (
+            <div className="flex items-center justify-between sm:justify-end space-x-2 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-xl">
+              <button
+                onClick={voltarMes}
+                className="p-1 hover:bg-gray-200 rounded-lg text-gray-600 transition"
+                title="Mês Anterior"
+              >
+                <span className="material-symbols-outlined text-sm leading-none">chevron_left</span>
+              </button>
+              <span className="text-xs font-bold font-mono text-gray-900 min-w-[120px] text-center">
+                {nomesMeses[mesSel]} / {anoSel}
+              </span>
+              <button
+                onClick={avancarMes}
+                className="p-1 hover:bg-gray-200 rounded-lg text-gray-600 transition"
+                title="Próximo Mês"
+              >
+                <span className="material-symbols-outlined text-sm leading-none">chevron_right</span>
+              </button>
+            </div>
+          )}
+
+          {/* Seleção de Datas Personalizadas */}
+          {filtroPeriodo === 'CUSTOM' && (
+            <div className="flex items-center space-x-2">
+              <input
+                type="date"
+                value={dataInicioCustom}
+                onChange={(e) => setDataInicioCustom(e.target.value)}
+                className="px-2 py-1 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono"
+              />
+              <span className="text-xs text-gray-400">até</span>
+              <input
+                type="date"
+                value={dataFimCustom}
+                onChange={(e) => setDataFimCustom(e.target.value)}
+                className="px-2 py-1 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Cards de Resumo do Período Selecionado */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white border border-gray-200/80 p-4 rounded-2xl shadow-2xs">
-          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Total Entradas Baixadas</span>
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">
+            Entradas Baixadas ({filtroPeriodo === 'MES_ATUAL' ? nomesMeses[mesSel] : 'Período'})
+          </span>
           <span className="text-xl font-extrabold text-emerald-600 font-mono mt-1 block">
             + R$ {totalEntradas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
           </span>
         </div>
+
         <div className="bg-white border border-gray-200/80 p-4 rounded-2xl shadow-2xs">
-          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Total Saídas Liquidadas</span>
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">
+            Saídas Liquidadas ({filtroPeriodo === 'MES_ATUAL' ? nomesMeses[mesSel] : 'Período'})
+          </span>
           <span className="text-xl font-extrabold text-red-600 font-mono mt-1 block">
             - R$ {totalSaidas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
           </span>
         </div>
+
         <div className="bg-white border border-gray-200/80 p-4 rounded-2xl shadow-2xs">
-          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Resultado do Período</span>
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">
+            Resultado do Período
+          </span>
           <span
             className={`text-xl font-extrabold font-mono mt-1 block ${
               totalEntradas - totalSaidas >= 0 ? 'text-gray-900' : 'text-red-600'
@@ -249,7 +421,7 @@ export const LancamentosView: React.FC = () => {
         </div>
       </div>
 
-      {/* Barra de Filtros */}
+      {/* Segunda Barra de Filtros (Tipo, Conta e Busca) */}
       <div className="bg-white border border-gray-200/80 p-4 rounded-2xl shadow-2xs space-y-3">
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
           {/* Busca por Texto */}
@@ -301,11 +473,13 @@ export const LancamentosView: React.FC = () => {
         </div>
       </div>
 
-      {/* Tabela Consolidada de Lançamentos */}
+      {/* Tabela Consolidada de Lançamentos do Período */}
       <div className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-2xs">
         <div className="p-5 border-b border-gray-100 flex items-center justify-between">
           <div>
-            <h3 className="font-bold text-gray-900 text-sm">Extrato Consolidado</h3>
+            <h3 className="font-bold text-gray-900 text-sm">
+              Extrato Consolidado ({filtroPeriodo === 'MES_ATUAL' ? `${nomesMeses[mesSel]} ${anoSel}` : 'Período Selecionado'})
+            </h3>
             <p className="text-xs text-gray-400">Ordenados por data de pagamento e vencimento</p>
           </div>
           <span className="text-xs font-bold bg-gray-100 text-gray-600 px-3 py-1 rounded-full font-mono">
@@ -317,8 +491,19 @@ export const LancamentosView: React.FC = () => {
           <div className="p-8 text-center text-xs text-gray-400">Carregando lançamentos...</div>
         ) : lancamentosFiltrados.length === 0 ? (
           <div className="p-12 text-center">
-            <span className="material-symbols-outlined text-4xl text-gray-300 mb-2 leading-none">receipt_long</span>
-            <p className="text-sm font-bold text-gray-800">Nenhum lançamento encontrado.</p>
+            <span className="material-symbols-outlined text-4xl text-gray-300 mb-2 leading-none">calendar_today</span>
+            <p className="text-sm font-bold text-gray-800">Nenhum lançamento encontrado para o período selecionado.</p>
+            <button
+              onClick={() => {
+                setFiltroPeriodo('TODOS');
+                setBusca('');
+                setFiltroTipo('TODOS');
+                setFiltroConta('TODAS');
+              }}
+              className="mt-3 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-xs font-bold transition"
+            >
+              Exibir Todos os Períodos
+            </button>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -337,7 +522,7 @@ export const LancamentosView: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {lancamentosFiltrados.map((item) => {
-                  const isReceber = item.tipo === 'receber';
+                  const isReceber = item.tipo === 'receber' && item.status !== 'saida' && item.status !== 'SAIDA';
                   const valorNum = parseFloat(item.valor || 0);
 
                   return (
@@ -376,14 +561,20 @@ export const LancamentosView: React.FC = () => {
                       <td className="py-3 px-4">
                         <span
                           className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${
-                            item.status === 'pago'
+                            item.status === 'pago' || item.status === 'RECEIVED'
                               ? 'bg-emerald-100 text-emerald-800'
-                              : item.status === 'atrasado'
+                              : item.status === 'saida' || item.status === 'SAIDA'
                               ? 'bg-red-100 text-red-800'
+                              : item.status === 'atrasado'
+                              ? 'bg-rose-100 text-rose-800'
                               : 'bg-amber-100 text-amber-800'
                           }`}
                         >
-                          {item.status === 'pago' ? 'RECEBIDO / PAGO' : item.status}
+                          {item.status === 'pago' || item.status === 'RECEIVED'
+                            ? 'RECEBIDO / PAGO'
+                            : item.status === 'saida' || item.status === 'SAIDA'
+                            ? 'SAÍDA'
+                            : item.status}
                         </span>
                       </td>
                     </tr>
