@@ -63,6 +63,11 @@ export class AsaasService {
     }
   }
 
+  public async listarCobrancas(options: { limit?: number } = {}) {
+    const limit = options.limit || 50;
+    return this.request(`payments?limit=${limit}&order=desc`);
+  }
+
   public async getOrCreateCustomer(clienteId: string, dados: { nome: string; cpf_cnpj?: string; email?: string; telefone?: string }) {
     const cliente = await queryOne('SELECT asaas_customer_id, nome, cpf_cnpj, contato FROM clientes WHERE id = $1', [clienteId]);
     if (cliente && cliente.asaas_customer_id) {
@@ -112,3 +117,5 @@ export class AsaasService {
     };
   }
 }
+
+export const asaasService = new AsaasService();

@@ -5,6 +5,7 @@ import { DashboardView } from '@/components/DashboardView';
 import { ContasBancariasView } from '@/components/ContasBancariasView';
 import { CustosFixosView } from '@/components/CustosFixosView';
 import { ClientesView } from '@/components/ClientesView';
+import { AsaasView } from '@/components/AsaasView';
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
@@ -124,6 +125,8 @@ export default function Home() {
         return <CustosFixosView />;
       case 'clientes':
         return <ClientesView />;
+      case 'asaas':
+        return <AsaasView />;
       default:
         return (
           <div className="bg-white p-8 rounded-2xl border border-gray-200/80 shadow-2xs space-y-4">
