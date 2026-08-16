@@ -7,6 +7,8 @@ import { ContasBancariasView } from '@/components/ContasBancariasView';
 import { CustosFixosView } from '@/components/CustosFixosView';
 import { ClientesView } from '@/components/ClientesView';
 import { AsaasView } from '@/components/AsaasView';
+import { PropostasView } from '@/components/PropostasView';
+import { OrcamentosView } from '@/components/OrcamentosView';
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
@@ -129,6 +131,12 @@ export default function Home() {
         return <ClientesView />;
       case 'asaas':
         return <AsaasView />;
+      case 'propostas':
+      case 'propostas_web':
+      case 'orcamentos':
+        return <PropostasView />;
+      case 'solicitacoes':
+        return <OrcamentosView />;
       default:
         return (
           <div className="bg-white p-8 rounded-2xl border border-gray-200/80 shadow-2xs space-y-4">

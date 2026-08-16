@@ -28,7 +28,7 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, use
         const cobrancasAsaas = asaasRes.data || [];
 
         // Filtra para incluir apenas cobranças que ainda não foram salvas manualmente no banco local
-        const asaasIdsLocais = new Set(rows.map((r: any) => r.asaas_payment_id || r.asaas_id).filter(Boolean));
+        const asaasIdsLocais = new Set(rows.map((r: any) => r.asaas_id || r.asaas_payment_id).filter(Boolean));
 
         asaasRows = cobrancasAsaas
           .filter((c: any) => !asaasIdsLocais.has(c.id))
@@ -46,7 +46,7 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, use
               data_pagamento: c.paymentDate || c.clientPaymentDate || null,
               status: isSaida ? 'saida' : (c.status === 'RECEIVED' || c.status === 'CONFIRMED' ? 'pago' : c.status === 'OVERDUE' ? 'atrasado' : 'pendente'),
               conciliado: 1,
-              asaas_payment_id: c.id,
+              asaas_id: c.id,
               conta_id: 'asaas',
               forma_pagamento: (c.billingType || 'PIX').toLowerCase(),
             };
@@ -120,25 +120,50 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, use
     const d = req.body || {};
     if (!d.id) return res.status(422).json({ erro: 'ID obrigatório' });
 
+    // Lançamento virtual em tempo real do Asaas
+    if (d.id.startsWith('asaas_')) {
+      const realAsaasId = d.id.replace('asaas_', '');
+      const idNovo = generateId();
+      await query(
+        `INSERT INTO lancamentos (
+          id, tipo, descricao, valor, valor_pago, categoria, cliente_fornecedor,
+          vencimento, data_pagamento, status, conciliado, asaas_id, conta_id
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 1, $11, 'asaas')`,
+        [
+          idNovo,
+          d.tipo || 'receber',
+          d.descricao,
+          parseFloat(d.valor || 0),
+          parseFloat(d.valor_pago || d.valor || 0),
+          d.categoria || 'Asaas',
+          d.cliente_fornecedor || 'Cliente Asaas',
+          d.vencimento,
+          d.data_pagamento || d.vencimento,
+          d.status || 'pago',
+          realAsaasId,
+        ]
+      );
+      return res.status(200).json({ ok: true });
+    }
+
     const old = await queryOne('SELECT * FROM lancamentos WHERE id = $1 LIMIT 1', [d.id]);
-    if (old && Number(old.conciliado) === 1) {
-      if (
-        old.conta_id !== d.conta_id ||
-        Math.round(parseFloat(old.valor || 0) * 100) !== Math.round(parseFloat(d.valor || 0) * 100) ||
-        old.vencimento !== d.vencimento ||
-        old.tipo !== d.tipo ||
-        old.descricao !== d.descricao
-      ) {
-        return res.status(422).json({ erro: 'Lançamentos conciliados não permitem alteração de dados sensíveis de pagamento.' });
-      }
+    if (!old) return res.status(404).json({ erro: 'Lançamento não encontrado' });
+
+    // Regra de Segurança: Se for conciliado (OFX ou Asaas), permite editar apenas Descrição e Categoria
+    if (Number(old.conciliado) === 1 || old.ofx_fitid || old.asaas_id) {
+      await query(
+        `UPDATE lancamentos SET descricao = $1, categoria = $2 WHERE id = $3`,
+        [d.descricao, d.categoria || old.categoria || 'Outros', d.id]
+      );
+      return res.status(200).json({ ok: true, mensagem: 'Lançamento conciliado: alterado apenas descrição e categoria.' });
     }
 
     const valorTotal = parseFloat(d.valor);
-    const valorPago = d.valor_pago !== undefined ? parseFloat(d.valor_pago) : (old ? parseFloat(old.valor_pago || 0) : 0);
-    let dataPagamento = old?.data_pagamento || null;
+    const valorPago = d.valor_pago !== undefined ? parseFloat(d.valor_pago) : parseFloat(old.valor_pago || 0);
+    let dataPagamento = old.data_pagamento || null;
 
     if (valorPago >= valorTotal) {
-      dataPagamento = old?.data_pagamento || new Date().toISOString().split('T')[0];
+      dataPagamento = old.data_pagamento || new Date().toISOString().split('T')[0];
     } else if (valorPago === 0) {
       dataPagamento = null;
     }
@@ -147,14 +172,23 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, use
       `UPDATE lancamentos SET 
         tipo = $1, descricao = $2, valor = $3, categoria = $4, cliente_fornecedor = $5,
         vencimento = $6, modalidade = $7, forma_pagamento = $8, observacao = $9,
-        status = $10, valor_pago = $11, data_pagamento = $12
-       WHERE id = $13`,
+        status = $10, valor_pago = $11, data_pagamento = $12, conta_id = $13
+       WHERE id = $14`,
       [
-        d.tipo, d.descricao, valorTotal, d.categoria || 'outros',
-        d.cliente_fornecedor || null, d.vencimento, d.modalidade || 'avista',
-        d.forma_pagamento || null, d.observacao || null,
+        d.tipo || old.tipo,
+        d.descricao,
+        valorTotal,
+        d.categoria || 'Outros',
+        d.cliente_fornecedor || null,
+        d.vencimento,
+        d.modalidade || 'avista',
+        d.forma_pagamento || null,
+        d.observacao || null,
         d.status || (valorPago >= valorTotal ? 'pago' : 'pendente'),
-        valorPago, dataPagamento, d.id
+        valorPago,
+        dataPagamento,
+        d.conta_id || null,
+        d.id
       ]
     );
 
@@ -165,6 +199,20 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, use
     const body = req.body || {};
     const ids = Array.isArray(body.ids) ? body.ids : (req.query.id ? [req.query.id] : []);
     if (ids.length === 0) return res.status(422).json({ erro: 'ID obrigatório' });
+
+    // Bloquear exclusão de itens virtuais do Asaas
+    if (ids.some((id: string) => id.startsWith('asaas_'))) {
+      return res.status(422).json({ erro: 'Cobranças sincronizadas em tempo real do Asaas não podem ser excluídas.' });
+    }
+
+    // Bloquear exclusão de itens conciliados gravados no banco
+    const conciliados = await query(
+      `SELECT id FROM lancamentos WHERE id = ANY($1::text[]) AND (conciliado = 1 OR ofx_fitid IS NOT NULL OR asaas_id IS NOT NULL)`,
+      [ids]
+    );
+    if (conciliados.length > 0) {
+      return res.status(422).json({ erro: 'Lançamentos conciliados (OFX / Asaas) não podem ser excluídos.' });
+    }
 
     await query('DELETE FROM lancamentos WHERE id = ANY($1::text[])', [ids]);
     return res.status(200).json({ ok: true });

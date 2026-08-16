@@ -9,8 +9,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     // 1. Cadastrar Clientes de Exemplo se não existirem
-    const countCli = await queryOne('SELECT COUNT(*) FROM clientes');
-    if (parseInt(countCli.count) === 0) {
+    const countCli = await queryOne('SELECT COUNT(*) as cnt FROM clientes');
+    const countCliVal = parseInt(countCli?.cnt || '0');
+
+    if (countCliVal === 0) {
       const clientes = [
         { id: generateId(), nome: 'Estúdio Casamentos Premium', email: 'contato@estudiocasamentos.com.br', cpf_cnpj: '12.345.678/0001-90' },
         { id: generateId(), nome: 'Agência Eventos 15 Anos', email: 'financeiro@eventos15anos.com.br', cpf_cnpj: '98.765.432/0001-10' },
@@ -26,8 +28,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // 2. Cadastrar Lançamentos de Exemplo se não existirem
-    const countLanc = await queryOne('SELECT COUNT(*) FROM lancamentos');
-    if (parseInt(countLanc.count) === 0) {
+    const countLanc = await queryOne('SELECT COUNT(*) as cnt FROM lancamentos');
+    const countLancVal = parseInt(countLanc?.cnt || '0');
+
+    if (countLancVal === 0) {
       const hoje = new Date().toISOString().split('T')[0];
       const mesPassado = new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0];
       const proximoMes = new Date(Date.now() + 15 * 86400000).toISOString().split('T')[0];
@@ -84,7 +88,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         {
           id: generateId(),
           tipo: 'pagar',
-          descricao: 'Assinatura Vercel & Servidores Neon',
+          descricao: 'Assinatura Vercel & Servidores',
           valor: 350.00,
           valor_pago: 0.00,
           categoria: 'Servidores',

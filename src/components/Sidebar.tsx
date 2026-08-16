@@ -34,6 +34,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ user, activeTab, setActiveTab,
       items: [
         { id: 'propostas', label: 'Propostas Web', icon: 'description' },
         { id: 'orcamentos', label: 'Orçamentos', icon: 'calculate' },
+        { id: 'solicitacoes', label: 'Solicitações', icon: 'mail' },
         { id: 'contratos', label: 'Contratos', icon: 'history_edu' },
         { id: 'clientes', label: 'Clientes', icon: 'group' },
         { id: 'fornecedores', label: 'Fornecedores', icon: 'local_shipping' },

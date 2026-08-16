@@ -9,6 +9,9 @@ export function requireAuth(
   handler: (req: NextApiRequest, res: NextApiResponse, user: UserPayload) => Promise<void> | void
 ) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
+    // Set JSON headers by default
+    res.setHeader('Content-Type', 'application/json');
+
     // Tratar requisição prévia de CORS OPTIONS
     if (req.method === 'OPTIONS') {
       res.setHeader('Access-Control-Allow-Origin', '*');
@@ -17,16 +20,16 @@ export function requireAuth(
       return res.status(200).end();
     }
 
-    const user = getUserFromRequest(req);
-    if (!user) {
-      return res.status(401).json({ erro: 'Sessão expirada ou não autenticado. Faça login novamente.' });
-    }
-
     try {
+      const user = getUserFromRequest(req);
+      if (!user) {
+        return res.status(401).json({ erro: 'Sessão expirada ou não autenticado. Faça login novamente.' });
+      }
+
       await handler(req, res, user);
     } catch (err: any) {
       console.error('API Error:', err);
-      return res.status(500).json({ erro: err.message || 'Erro interno do servidor' });
+      return res.status(500).json({ erro: err.message || 'Erro interno do servidor ao processar requisição.' });
     }
   };
 }
