@@ -9,6 +9,8 @@ import { ClientesView } from '@/components/ClientesView';
 import { AsaasView } from '@/components/AsaasView';
 import { PropostasView } from '@/components/PropostasView';
 import { OrcamentosView } from '@/components/OrcamentosView';
+import { ContratosView } from '@/components/ContratosView';
+import { ModelosContratoView } from '@/components/ModelosContratoView';
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
@@ -137,6 +139,10 @@ export default function Home() {
         return <PropostasView />;
       case 'solicitacoes':
         return <OrcamentosView />;
+      case 'contratos':
+        return <ContratosView />;
+      case 'modelos_contrato':
+        return <ModelosContratoView />;
       default:
         return (
           <div className="bg-white p-8 rounded-2xl border border-gray-200/80 shadow-2xs space-y-4">

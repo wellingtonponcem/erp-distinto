@@ -28,7 +28,6 @@ export function getDbPool(): mysql.Pool {
   return poolInstance;
 }
 
-// Inicializar e alinhar tabelas existentes na Hostinger
 export async function initTables() {
   const p = getDbPool();
   try {
@@ -166,6 +165,7 @@ export async function initTables() {
         cliente_nome VARCHAR(255),
         pasta_id VARCHAR(64),
         valor DECIMAL(15,2) DEFAULT 0.00,
+        valor_total DECIMAL(15,2) DEFAULT 0.00,
         status VARCHAR(32) DEFAULT 'rascunho',
         dados_json LONGTEXT,
         criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -179,8 +179,64 @@ export async function initTables() {
     try { await p.query(`ALTER TABLE propostas ADD COLUMN pasta_id VARCHAR(64);`); } catch (e) {}
     try { await p.query(`ALTER TABLE propostas ADD COLUMN dados_json LONGTEXT;`); } catch (e) {}
     try { await p.query(`ALTER TABLE propostas ADD COLUMN criado_em DATETIME DEFAULT CURRENT_TIMESTAMP;`); } catch (e) {}
+    try { await p.query(`ALTER TABLE propostas ADD COLUMN valor_total DECIMAL(15,2) DEFAULT 0.00;`); } catch (e) {}
 
-    // 9. Servicos / Tabela de Precos
+    // 9. Contratos Comerciais
+    await p.query(`
+      CREATE TABLE IF NOT EXISTS contratos (
+        id VARCHAR(64) PRIMARY KEY,
+        proposta_id VARCHAR(64),
+        cliente_id VARCHAR(64),
+        titulo VARCHAR(255),
+        descricao VARCHAR(500),
+        cliente_nome VARCHAR(255),
+        cliente_cpf_cnpj VARCHAR(32),
+        cliente_email VARCHAR(255),
+        cliente_telefone VARCHAR(32),
+        valor DECIMAL(15,2) DEFAULT 0.00,
+        valor_total DECIMAL(15,2) DEFAULT 0.00,
+        status VARCHAR(32) DEFAULT 'rascunho',
+        dados_json LONGTEXT,
+        assinafy_document_id VARCHAR(100),
+        assinafy_status VARCHAR(50),
+        link_assinatura VARCHAR(255),
+        asaas_cobranca_gerada INT DEFAULT 0,
+        criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    try { await p.query(`ALTER TABLE contratos ADD COLUMN proposta_id VARCHAR(64);`); } catch (e) {}
+    try { await p.query(`ALTER TABLE contratos ADD COLUMN cliente_id VARCHAR(64);`); } catch (e) {}
+    try { await p.query(`ALTER TABLE contratos ADD COLUMN titulo VARCHAR(255);`); } catch (e) {}
+    try { await p.query(`ALTER TABLE contratos ADD COLUMN descricao VARCHAR(500);`); } catch (e) {}
+    try { await p.query(`ALTER TABLE contratos ADD COLUMN cliente_nome VARCHAR(255);`); } catch (e) {}
+    try { await p.query(`ALTER TABLE contratos ADD COLUMN cliente_cpf_cnpj VARCHAR(32);`); } catch (e) {}
+    try { await p.query(`ALTER TABLE contratos ADD COLUMN cliente_email VARCHAR(255);`); } catch (e) {}
+    try { await p.query(`ALTER TABLE contratos ADD COLUMN cliente_telefone VARCHAR(32);`); } catch (e) {}
+    try { await p.query(`ALTER TABLE contratos ADD COLUMN valor_total DECIMAL(15,2) DEFAULT 0.00;`); } catch (e) {}
+    try { await p.query(`ALTER TABLE contratos ADD COLUMN status VARCHAR(32) DEFAULT 'rascunho';`); } catch (e) {}
+    try { await p.query(`ALTER TABLE contratos ADD COLUMN dados_json LONGTEXT;`); } catch (e) {}
+    try { await p.query(`ALTER TABLE contratos ADD COLUMN assinafy_document_id VARCHAR(100);`); } catch (e) {}
+    try { await p.query(`ALTER TABLE contratos ADD COLUMN assinafy_status VARCHAR(50);`); } catch (e) {}
+    try { await p.query(`ALTER TABLE contratos ADD COLUMN link_assinatura VARCHAR(255);`); } catch (e) {}
+    try { await p.query(`ALTER TABLE contratos ADD COLUMN asaas_cobranca_gerada INT DEFAULT 0;`); } catch (e) {}
+    try { await p.query(`ALTER TABLE contratos ADD COLUMN criado_em DATETIME DEFAULT CURRENT_TIMESTAMP;`); } catch (e) {}
+    try { await p.query(`ALTER TABLE contratos ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP;`); } catch (e) {}
+
+    // 10. Modelos de Contrato (Templates de Documentos com Variaveis)
+    await p.query(`
+      CREATE TABLE IF NOT EXISTS modelos_contrato (
+        id VARCHAR(64) PRIMARY KEY,
+        nome VARCHAR(255) NOT NULL,
+        tipo VARCHAR(50) DEFAULT 'casamento',
+        conteudo_html LONGTEXT NOT NULL,
+        padrao INT DEFAULT 0,
+        criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    // 11. Servicos / Tabela de Precos
     await p.query(`
       CREATE TABLE IF NOT EXISTS servicos (
         id VARCHAR(64) PRIMARY KEY,
@@ -199,25 +255,17 @@ export async function initTables() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 10. Solicitacoes de Orcamento (formulario publico)
+    // 12. Briefings Respostas (Respostas do Formulario Publico de Briefing Logistico)
     await p.query(`
-      CREATE TABLE IF NOT EXISTS solicitacoes_orcamento (
+      CREATE TABLE IF NOT EXISTS briefings_resposta (
         id VARCHAR(64) PRIMARY KEY,
-        nome_contato VARCHAR(255),
-        email VARCHAR(255),
-        telefone VARCHAR(32),
-        data_casamento VARCHAR(32),
-        dados_json LONGTEXT,
-        status VARCHAR(20) DEFAULT 'novo',
+        cliente_nome VARCHAR(255) NOT NULL,
+        data_casamento DATE,
+        dados_json LONGTEXT NOT NULL,
+        status VARCHAR(32) DEFAULT 'novo',
         criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
-
-    try { await p.query(`ALTER TABLE solicitacoes_orcamento ADD COLUMN nome_contato VARCHAR(255);`); } catch (e) {}
-    try { await p.query(`ALTER TABLE solicitacoes_orcamento ADD COLUMN email VARCHAR(255);`); } catch (e) {}
-    try { await p.query(`ALTER TABLE solicitacoes_orcamento ADD COLUMN telefone VARCHAR(32);`); } catch (e) {}
-    try { await p.query(`ALTER TABLE solicitacoes_orcamento ADD COLUMN data_casamento VARCHAR(32);`); } catch (e) {}
-    try { await p.query(`ALTER TABLE solicitacoes_orcamento ADD COLUMN status VARCHAR(20) DEFAULT 'novo';`); } catch (e) {}
 
   } catch (err: any) {
     console.error('Erro ao inicializar tabelas MySQL:', err.message);
@@ -230,7 +278,6 @@ function convertPgToMysql(sql: string, params: any[]): { mysqlSql: string; mysql
   let mysqlSql = sql;
   let mysqlParams = [...params];
 
-  // Redirecionar nomes de tabelas para a estrutura existente no MySQL da Hostinger
   mysqlSql = mysqlSql.replace(/\bFROM contas\b/gi, 'FROM contas_bancarias');
   mysqlSql = mysqlSql.replace(/\bJOIN contas\b/gi, 'JOIN contas_bancarias');
   mysqlSql = mysqlSql.replace(/\bINTO contas\b/gi, 'INTO contas_bancarias');
@@ -265,7 +312,7 @@ function convertPgToMysql(sql: string, params: any[]): { mysqlSql: string; mysql
     }
   }
 
-  mysqlSql = mysqlSql.replace(/ORDER BY created_at/gi, 'ORDER BY criado_em');
+  mysqlSql = mysqlSql.replace(/\bcreated_at\b/gi, 'criado_em');
   mysqlSql = mysqlSql.replace(/::text/gi, '');
   mysqlSql = mysqlSql.replace(/::numeric/gi, '');
   mysqlSql = mysqlSql.replace(/\$\d+/g, '?');

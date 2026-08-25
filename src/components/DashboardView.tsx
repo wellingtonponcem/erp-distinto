@@ -6,6 +6,9 @@ export const DashboardView: React.FC = () => {
   const [saldoAsaas, setSaldoAsaas] = useState<number | null>(null);
   const [asaasConfigurado, setAsaasConfigurado] = useState<boolean>(false);
 
+  // Filtro de período da tabela do Dashboard (Padrão: 'semana')
+  const [filtroPeriodo, setFiltroPeriodo] = useState<'semana' | 'mes' | 'todos'>('semana');
+
   // Modal State
   const [modalAberta, setModalAberta] = useState(false);
   const [tipo, setTipo] = useState<'receber' | 'pagar'>('receber');
@@ -96,7 +99,48 @@ export const DashboardView: React.FC = () => {
     }
   };
 
-  // Calculations
+  // Cálculo das datas da Semana Atual (Domingo 00:00 a Sábado 23:59)
+  const hoje = new Date();
+  const diaDaSemana = hoje.getDay();
+  const inicioSemana = new Date(hoje);
+  inicioSemana.setDate(hoje.getDate() - diaDaSemana);
+  inicioSemana.setHours(0, 0, 0, 0);
+
+  const fimSemana = new Date(inicioSemana);
+  fimSemana.setDate(inicioSemana.getDate() + 6);
+  fimSemana.setHours(23, 59, 59, 999);
+
+  const inicioSemanaStr = inicioSemana.toLocaleDateString('pt-BR');
+  const fimSemanaStr = fimSemana.toLocaleDateString('pt-BR');
+
+  // Filtragem dos Lançamentos da Semana Atual
+  const lancamentosExibidos = lancamentos.filter((item) => {
+    if (filtroPeriodo === 'todos') return true;
+
+    const dtRefStr = item.vencimento || item.data_pagamento || item.criado_em || item.created_at;
+    if (!dtRefStr) return true;
+
+    // Tratar datas em string YYYY-MM-DD
+    const partes = String(dtRefStr).split('T')[0].split('-');
+    let dtRef: Date;
+    if (partes.length === 3) {
+      dtRef = new Date(parseInt(partes[0]), parseInt(partes[1]) - 1, parseInt(partes[2]));
+    } else {
+      dtRef = new Date(dtRefStr);
+    }
+
+    if (filtroPeriodo === 'semana') {
+      return dtRef >= inicioSemana && dtRef <= fimSemana;
+    }
+
+    if (filtroPeriodo === 'mes') {
+      return dtRef.getMonth() === hoje.getMonth() && dtRef.getFullYear() === hoje.getFullYear();
+    }
+
+    return true;
+  });
+
+  // Calculations Gerais
   const totalReceber = lancamentos
     .filter((l) => l.tipo === 'receber' && l.status !== 'cancelado')
     .reduce((acc, l) => acc + (parseFloat(l.valor) - parseFloat(l.valor_pago || 0)), 0);
@@ -119,12 +163,14 @@ export const DashboardView: React.FC = () => {
   const pendentes = lancamentos.filter((l) => l.status === 'pendente' || l.status === 'atrasado');
 
   return (
-    <div className="space-y-6 font-sans text-gray-900">
+    <div className="space-y-6 font-sans text-gray-900 bg-gray-50 min-h-screen">
       {/* Header Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
-          <p className="text-xs text-gray-500 mt-1 font-medium">Resumo financeiro e operacional da sua agência</p>
+          <h1 className="text-2xl font-black text-gray-900 tracking-tight">Dashboard Principal</h1>
+          <p className="text-xs text-gray-500 mt-0.5 font-medium">
+            Resumo financeiro e acompanhamento de lançamentos da semana corrente ({inicioSemanaStr} a {fimSemanaStr})
+          </p>
         </div>
 
         <div className="flex items-center space-x-3">
@@ -204,7 +250,7 @@ export const DashboardView: React.FC = () => {
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-gray-100 pb-4">
               <div>
                 <div className="flex items-center space-x-2">
-                  <h3 className="text-base font-bold text-gray-900">Fluxo de Caixa Mensal</h3>
+                  <h3 className="text-base font-bold text-gray-900">Fluxo de Caixa Consolidado</h3>
                   <span className="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase border border-emerald-200/60">
                     {asaasConfigurado ? 'ASAAS LIVE' : 'CAIXA LOCAL'}
                   </span>
@@ -243,30 +289,77 @@ export const DashboardView: React.FC = () => {
             </div>
           </div>
 
-          {/* Transactions Table */}
+          {/* Transactions Table - FILTRADO POR PADRÃO APENAS PARA A SEMANA ATUAL */}
           <div className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-2xs">
-            <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+            <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
-                <h3 className="font-bold text-gray-900 text-sm">Lançamentos Financeiros</h3>
-                <p className="text-xs text-gray-400">Ordenados por data de pagamento real e vencimento</p>
+                <h3 className="font-bold text-gray-900 text-sm flex items-center space-x-2">
+                  <span className="material-symbols-outlined text-purple-600 text-base">date_range</span>
+                  <span>Lançamentos Financeiros da Semana</span>
+                </h3>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  {filtroPeriodo === 'semana'
+                    ? `Exibindo apenas vencimentos da semana corrente (${inicioSemanaStr} a ${fimSemanaStr})`
+                    : filtroPeriodo === 'mes'
+                    ? `Exibindo lançamentos do mês atual`
+                    : 'Exibindo todos os lançamentos cadastrados'}
+                </p>
               </div>
-              <span className="text-xs font-bold bg-gray-100 text-gray-600 px-3 py-1 rounded-full font-mono">
-                {lancamentos.length} registros
-              </span>
+
+              {/* Botões de Filtro de Período */}
+              <div className="flex items-center space-x-1.5 bg-gray-100 p-1 rounded-xl">
+                <button
+                  onClick={() => setFiltroPeriodo('semana')}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
+                    filtroPeriodo === 'semana' ? 'bg-black text-white shadow-xs' : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Semana Atual
+                </button>
+                <button
+                  onClick={() => setFiltroPeriodo('mes')}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
+                    filtroPeriodo === 'mes' ? 'bg-black text-white shadow-xs' : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Mês Atual
+                </button>
+                <button
+                  onClick={() => setFiltroPeriodo('todos')}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition ${
+                    filtroPeriodo === 'todos' ? 'bg-black text-white shadow-xs' : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Todos
+                </button>
+              </div>
             </div>
 
             {loading ? (
               <div className="p-8 text-center text-xs text-gray-400">Carregando lançamentos...</div>
-            ) : lancamentos.length === 0 ? (
+            ) : lancamentosExibidos.length === 0 ? (
               <div className="p-12 text-center">
-                <span className="material-symbols-outlined text-4xl text-gray-300 mb-2 leading-none">receipt_long</span>
-                <p className="text-sm font-bold text-gray-800">Nenhum lançamento cadastrado ainda.</p>
-                <button
-                  onClick={handleSeed}
-                  className="mt-4 px-4 py-2 bg-black text-white rounded-xl text-xs font-bold hover:bg-gray-800 transition"
-                >
-                  Carregar Dados Iniciais
-                </button>
+                <span className="material-symbols-outlined text-4xl text-gray-300 mb-2 leading-none">calendar_today</span>
+                <p className="text-sm font-bold text-gray-800">
+                  Nenhum lançamento financeiro para a semana atual ({inicioSemanaStr} a {fimSemanaStr}).
+                </p>
+                <p className="text-xs text-gray-400 mt-1 max-w-sm mx-auto">
+                  Você pode alternar o filtro para <strong>Mês Atual</strong> ou <strong>Todos</strong> para visualizar os lançamentos de outras datas!
+                </p>
+                <div className="mt-4 flex justify-center space-x-2">
+                  <button
+                    onClick={() => setFiltroPeriodo('todos')}
+                    className="px-3.5 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-xs font-bold transition"
+                  >
+                    Ver Todos os Lançamentos
+                  </button>
+                  <button
+                    onClick={() => setModalAberta(true)}
+                    className="px-3.5 py-1.5 bg-black text-white rounded-xl text-xs font-bold hover:bg-gray-800 transition"
+                  >
+                    + Novo Lançamento na Semana
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -283,7 +376,7 @@ export const DashboardView: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
-                    {lancamentos.map((item) => {
+                    {lancamentosExibidos.map((item) => {
                       const isReceber = item.tipo === 'receber';
                       const valorNum = parseFloat(item.valor || 0);
 
