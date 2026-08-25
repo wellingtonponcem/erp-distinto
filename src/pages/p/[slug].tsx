@@ -14,6 +14,7 @@ import { render as renderCasamento } from '@/lib/propostas/templates/casamento';
 import { render as renderMarketing } from '@/lib/propostas/templates/marketing';
 import { render as renderFilmmaker } from '@/lib/propostas/templates/filmmaker';
 import { render as renderQuinze } from '@/lib/propostas/templates/quinze';
+import { LgpdConsent } from '@/components/LgpdConsent';
 
 const MESES_PT: Record<string, string> = {
   '1': 'JANEIRO', '2': 'FEVEREIRO', '3': 'MARÇO', '4': 'ABRIL', '5': 'MAIO', '6': 'JUNHO',
@@ -116,6 +117,7 @@ interface PageProps {
   ano: string;
   frameCliente: string;
   telefone: string;
+  dados: Record<string, any>;
   casamento?: CasamentoProps;
 }
 
@@ -151,30 +153,32 @@ function planModalHtml(c: CasamentoProps): string {
   const upgradesHtml = upgrades
     .map(
       (u) => `
-                    <div style="padding:12px 18px; border-radius:8px; border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.02); display:flex; align-items:center; gap:12px;">
-                        <div style="flex:1;">
-                            <p style="font-family:'Montserrat',sans-serif; font-size:0.8rem; font-weight:500; color:rgba(255,255,255,0.8); margin:0 0 2px;">${esc(u.label)}</p>
-                            <p style="font-family:'Montserrat',sans-serif; font-size:0.75rem; font-weight:300; color:rgba(255,255,255,0.4); margin:0;">R$ ${number_format(u.valor, 0)}</p>
+                    <div class="m-up-card" data-up="${u.key}" data-value="${u.valor}"
+                        onclick="window.mToggleUp('${u.key}')"
+                        style="padding:12px 18px; border-radius:8px; border:1.5px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.02); cursor:pointer; display:flex; align-items:center; gap:14px; transition:border-color 0.2s, background 0.2s;">
+                        <div class="m-check" style="width:17px; height:17px; border-radius:4px; border:2px solid rgba(255,255,255,0.25); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:border-color 0.2s;">
+                            <svg class="m-check-icon" width="10" height="8" viewBox="0 0 10 8" fill="none" style="opacity:0; transition:opacity 0.2s;">
+                                <path d="M1 4L3.5 6.5L9 1" stroke="#c5a880" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
                         </div>
-                        <div id="m-toggle-${u.key}" onclick="window.mToggle('${u.key}', ${u.valor})"
-                            style="width:38px; height:22px; border-radius:20px; background:rgba(255,255,255,0.12); cursor:pointer; position:relative; flex-shrink:0; transition:background 0.2s;">
-                            <div style="width:16px; height:16px; border-radius:50%; background:#fff; position:absolute; top:3px; left:3px; transition:left 0.2s;" class="m-thumb"></div>
-                        </div>
+                        <p style="font-family:'Montserrat',sans-serif; font-size:0.82rem; font-weight:400; color:rgba(255,255,255,0.75); margin:0; flex:1;">${esc(u.label)}</p>
+                        <p style="font-family:'Montserrat',sans-serif; font-size:0.85rem; font-weight:300; color:rgba(255,255,255,0.65); margin:0; flex-shrink:0; white-space:nowrap;">
+                            + R$ ${number_format(u.valor, 0)}
+                        </p>
                     </div>`
     )
     .join('');
 
-  return `<div id="plan-modal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.88); backdrop-filter:blur(6px); overflow-y:auto; padding:40px 20px;" onclick="if(event.target===this)window.closePlanModal()">
-        <div style="max-width:680px; margin:0 auto; background:#1a1a1a; border-radius:12px; border:1px solid rgba(255,255,255,0.08); overflow:hidden;">
-
-            <div style="padding:28px 32px 20px; border-bottom:1px solid rgba(255,255,255,0.07); display:flex; align-items:center; justify-content:space-between;">
+  return `
+    <div id="modal-planos" style="position:fixed; inset:0; z-index:999; background:rgba(0,0,0,0.85); backdrop-filter:blur(12px); display:none; align-items:center; justify-content:center; padding:20px;">
+        <div style="background:#111; border:1px solid rgba(255,255,255,0.12); border-radius:16px; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; box-shadow:0 32px 64px rgba(0,0,0,0.8);">
+            
+            <div style="padding:24px 32px 20px; border-bottom:1px solid rgba(255,255,255,0.07); display:flex; align-items:center; justify-content:space-between;">
                 <div>
-                    <p style="font-family:'Montserrat',sans-serif; font-size:0.6rem; font-weight:700; letter-spacing:0.28em; text-transform:uppercase; color:#c5a880; margin:0 0 4px;">DISTINTO WEDDING</p>
-                    <h2 style="font-family:'Montserrat',sans-serif; font-size:1.25rem; font-weight:300; letter-spacing:0.06em; text-transform:uppercase; color:#fff; margin:0;">Escolha seu pacote</h2>
+                    <h3 style="font-family:'Playfair Display',serif; font-size:1.15rem; font-weight:400; color:#fff; margin:0 0 4px;">Escolha seu Pacote</h3>
+                    <p style="font-family:'Montserrat',sans-serif; font-size:0.75rem; font-weight:300; color:rgba(255,255,255,0.45); margin:0;">${esc(c.mNomeCasal)}</p>
                 </div>
-                <button onclick="window.closePlanModal()" style="background:none; border:none; cursor:pointer; color:rgba(255,255,255,0.4); padding:4px; line-height:1;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                </button>
+                <button onclick="window.mFecharModal()" style="background:none; border:none; color:rgba(255,255,255,0.4); cursor:pointer; padding:4px; font-size:1.2rem; line-height:1; transition:color 0.2s;">✕</button>
             </div>
 
             <div style="padding:24px 32px;">
@@ -230,7 +234,7 @@ function Injected({ html }: { html: string }) {
 }
 
 export default function PublicProposalPage(props: PageProps) {
-  const { slug, tipo, titulo, cliente, slides, categoriaProjeto, mesNome, ano, frameCliente, telefone, casamento } = props;
+  const { slug, tipo, titulo, cliente, slides, categoriaProjeto, mesNome, ano, frameCliente, telefone, dados, casamento } = props;
   const isCasamento = tipo === 'casamento';
 
   useEffect(() => {
@@ -239,264 +243,147 @@ export default function PublicProposalPage(props: PageProps) {
     if (isCasamento && casamento) {
       const scriptCode = investimentoScript({
         slug,
-        dados: { valor_boudoir: casamento.valorBoudoir, valor_prewedding: casamento.valorPrewedding },
+        dados: dados || {},
         servicosWedding: casamento.servicosWedding,
         planosWedding: casamento.planosWedding,
         condHC: casamento.condHC,
         condE: casamento.condE,
       });
 
-      const s = document.createElement('script');
-      s.textContent = scriptCode;
-      document.body.appendChild(s);
+      const planParams = {
+        slug,
+        nomeCasal: casamento.mNomeCasal,
+        pHeritage: casamento.mPHeritage,
+        pCinematic: casamento.mPCinematic,
+        pEssencial: casamento.mPEssencial,
+        pBoudoir: casamento.mPBoudoir,
+        pPrewedding: casamento.mPPrewedding,
+        condHC: casamento.condHC,
+        condE: casamento.condE,
+      };
+
+      const executeDynamicScript = (code: string) => {
+        try {
+          const fn = new Function(code);
+          fn();
+        } catch (e) {}
+      };
+
+      executeDynamicScript(scriptCode);
+      executeDynamicScript(casamentoClosingScript());
+      executeDynamicScript(planModalScript(planParams));
+
+      const timer = setTimeout(() => {
+        executeDynamicScript(scriptCode);
+        executeDynamicScript(casamentoClosingScript());
+        executeDynamicScript(planModalScript(planParams));
+      }, 300);
+
+      return () => clearTimeout(timer);
     }
+  }, [isCasamento, casamento, tipo, telefone, slug, dados]);
 
-    const lucide = (window as any).lucide;
-    if (lucide && lucide.createIcons) lucide.createIcons();
-
-    return () => {
-      document.body.classList.remove('type-' + tipo);
-    };
-  }, [tipo, isCasamento, casamento, slug]);
-
-  const waNum = String(telefone || '').replace(/\D/g, '');
-  const waText = encodeURIComponent(`Olá! Gostaria de aprovar a proposta: ${titulo} (Ref: ${slug})`);
-  const waLink = `https://wa.me/${waNum}?text=${waText}`;
-
-  const casamentoMobileCss = `
-    @media (max-width: 768px) {
-      #btn-approve {
-        display: flex !important;
-        position: fixed !important;
-        bottom: 30px !important;
-        left: 50% !important;
-        transform: translateX(-50%) translateY(20px) !important;
-        width: auto !important;
-        min-width: 250px !important;
-        justify-content: center !important;
-        z-index: 10001 !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-        transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        background: #a8a8a8 !important;
-        color: #fff !important;
-        border: none !important;
-        padding: 14px 30px !important;
-        border-radius: 50px !important;
-        font-family: 'Montserrat', sans-serif !important;
-        font-size: 0.8rem !important;
-        font-weight: 700 !important;
-        letter-spacing: 0.1em !important;
-        text-transform: uppercase !important;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
-        white-space: nowrap !important;
-      }
-      #btn-approve.visible {
-        opacity: 1 !important;
-        pointer-events: auto !important;
-        transform: translateX(-50%) translateY(0) !important;
-      }
-      .mobile-action-bar {
-        display: none !important;
-      }
-    }
-  `;
+  const htmlFinal = slides + (isCasamento && casamento ? planModalHtml(casamento) : '');
 
   return (
     <>
       <Head>
-        <meta charSet="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>{titulo} — {cliente}</title>
-
-        <link rel="stylesheet" href="/propostas/css/propostas.css" />
-        <link rel="stylesheet" href="/propostas/css/propostas-mobile.css" />
-        <link rel="icon" type="image/svg+xml" href={raizUrl('/favicon.svg')} />
-        <link rel="apple-touch-icon" sizes="180x180" href={raizUrl('/favicon_io/apple-touch-icon.png')} />
-        <link rel="icon" type="image/png" sizes="32x32" href={raizUrl('/favicon_io/favicon-32x32.png')} />
-        <link rel="icon" type="image/png" sizes="16x16" href={raizUrl('/favicon_io/favicon-16x16.png')} />
-        <link rel="manifest" href={raizUrl('/favicon_io/site.webmanifest')} />
-
-        {isCasamento && <style dangerouslySetInnerHTML={{ __html: casamentoMobileCss }} />}
-
-        <script src="https://unpkg.com/lucide@latest" async></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" async></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" async></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" async></script>
+        <title>{titulo}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Playfair Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Montserrat:wght@200;300;400;500;600;700&family=Dancing+Script:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        <script dangerouslySetInnerHTML={{ __html: publicInlineScript(slug, isCasamento) }} />
       </Head>
 
-      <header className="mobile-header no-print" style={{ display: 'none' }}>
-        <span className="mobile-header-logo">DISTINTO</span>
-        <span className="mobile-header-title">{titulo} — {cliente}</span>
-      </header>
+      <Injected html={htmlFinal} />
 
-      <div className="proposal-hud-lines" />
-      <div className="proposal-frame">
-        <div className="frame-item">
-          <div className="frame-top">{categoriaProjeto}</div>
-          <div className="frame-bottom logo-container" id="dynamic-logo">
-            <img src={raizUrl('/assets/distinto_logo.svg')} alt="Distinto" id="logo-svg" />
-            <span className="logo-text">PONCEM STUDIO | DISTINTO</span>
-          </div>
-        </div>
-        <div className="frame-item">
-          <div className="frame-top">{mesNome}</div>
-          <div className="frame-bottom">{frameCliente}</div>
-        </div>
-        <div className="frame-item">
-          <div className="frame-top">{ano}</div>
-          <div className="frame-bottom">PROPOSTA</div>
-        </div>
-      </div>
-
-      <div className="proposal-wrapper">{[
-          !isCasamento && <div className="fixed-section-title" key="title"><h2>ETAPAS DO<br />PROJETO</h2></div>,
-          <Injected html={slides} key="slides" />,
-        ]}</div>
-
-      <button className="btn-export-top no-print" onClick={() => (window as any).showExportModal?.()}>
-        <i data-lucide="file-down" suppressHydrationWarning></i>
-        <span>PDF</span>
-      </button>
-
-      {isCasamento ? (
-        <button onClick={() => (window as any).openInteractiveModal?.()} id="btn-approve" className="btn-floating no-print">
-          <span>✿ Escolher Nosso Plano</span>
-        </button>
-      ) : (
-        <a href={waLink} id="btn-approve" className="btn-floating no-print">
-          <span>Aprovar Proposta</span>
-          <i data-lucide="check-circle" suppressHydrationWarning></i>
-        </a>
-      )}
-
-      {!isCasamento && (
-        <div className="mobile-action-bar no-print">
-          <a href={waLink} className="mobile-btn-approve">
-            <i data-lucide="check-circle" suppressHydrationWarning></i>
-            <span>Aprovar</span>
-          </a>
-          <button onClick={() => (window as any).showExportModal?.()} className="mobile-btn-pdf">
-            <i data-lucide="file-down" suppressHydrationWarning></i>
-            <span>PDF</span>
-          </button>
-        </div>
-      )}
-
-      <div id="export-modal" className="export-modal no-print" style={{ display: 'none' }}>
-        <div className="export-modal-content">
-          <h3>Exportar Proposta</h3>
-          <p>Cada seção da proposta será exportada como uma página A4 em paisagem.</p>
-          <div className="export-options">
-            <button onClick={() => (window as any).exportPDF?.()} className="export-option">
-              <div className="option-preview horizontal">
-                <div className="mac-screen"></div>
-              </div>
-              <span>Exportar em paisagem</span>
-            </button>
-          </div>
-          <button onClick={() => (window as any).hideExportModal?.()} className="btn-cancel-export">Cancelar</button>
-        </div>
-      </div>
-
-      {isCasamento && casamento && (
-        <>
-          <div dangerouslySetInnerHTML={{ __html: planModalHtml(casamento) }} />
-
-          <script
-            dangerouslySetInnerHTML={{
-              __html: planModalScript({
-                slug,
-                nomeCasal: casamento.mNomeCasal,
-                pHeritage: casamento.mPHeritage,
-                pCinematic: casamento.mPCinematic,
-                pEssencial: casamento.mPEssencial,
-                pBoudoir: casamento.mPBoudoir,
-                pPrewedding: casamento.mPPrewedding,
-                condHC: casamento.condHC,
-                condE: casamento.condE,
-              }),
-            }}
-          />
-        </>
-      )}
-
-      <script dangerouslySetInnerHTML={{ __html: publicInlineScript(slug, isCasamento) }} />
-      <script src="/propostas/js/propostas.js?v=pdf-canvas-3" />
-
-      {isCasamento && (
-        <script dangerouslySetInnerHTML={{ __html: casamentoClosingScript() }} />
-      )}
+      {/* LGPD COOKIE & PRIVACY BANNER */}
+      <LgpdConsent showCheckboxField={false} />
     </>
   );
 }
 
-export const getServerSideProps: GetServerSideProps<PageProps> = async (context) => {
-  const slug = String(context.params?.slug || '');
-  if (!slug) return { notFound: true };
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { slug } = context.params || {};
+  if (!slug || typeof slug !== 'string') return { notFound: true };
 
-  const proposta = await queryOne(`SELECT * FROM propostas WHERE slug = $1 LIMIT 1`, [slug]);
+  const proposta = await queryOne('SELECT * FROM propostas WHERE slug = $1 LIMIT 1', [slug]);
   if (!proposta) return { notFound: true };
-
-  const config = await queryOne(`SELECT * FROM configuracao_empresa WHERE id = 'principal' LIMIT 1`);
-  const empresa = config || {};
 
   let dados: any = {};
   try {
-    dados = typeof proposta.dados_json === 'string' ? JSON.parse(proposta.dados_json) : (proposta.dados_json || {});
-  } catch (e) {}
+    dados = typeof proposta.dados_json === 'string' ? JSON.parse(proposta.dados_json || '{}') : (proposta.dados_json || {});
+  } catch (e) {
+    dados = {};
+  }
+
+  const cfg = await queryOne('SELECT * FROM configuracao_empresa LIMIT 1');
+  const empresa = {
+    nome_empresa: cfg?.nome_empresa || 'ERP Distinto',
+    telefone: '27999998888',
+    gemini_api_key: process.env.GEMINI_API_KEY || '',
+  };
 
   const tipo = proposta.tipo || 'casamento';
-  const cliente = proposta.cliente_nome || '';
-  const titulo = proposta.titulo || 'Proposta';
+  const titulo = proposta.titulo || 'Proposta Comercial';
+  const cliente = proposta.cliente_nome || dados.cliente_nome || 'Cliente';
 
-  const dataCriacao = new Date(proposta.created_at || proposta.criado_em || Date.now());
-  const mesNome = MESES_PT[String(dataCriacao.getMonth() + 1)] || 'JUNHO';
-  const ano = String(dataCriacao.getFullYear());
-  const categoriaProjeto = dados.categoria_projeto ?? 'PROJETO DE ESTRATÉGIA';
+  const criadoEm = proposta.criado_em ? new Date(proposta.criado_em) : new Date();
+  const mesNum = String(criadoEm.getMonth() + 1);
+  const mesNome = MESES_PT[mesNum] || 'JANEIRO';
+  const ano = String(criadoEm.getFullYear());
 
-  const resp = textoResponsavel(dados);
-  const frameCliente = mbUpper(cliente) + (resp ? ` | ${mbUpper(resp)}` : '');
+  const categoriaProjeto = (dados.categoria_projeto || 'Wedding').toUpperCase();
+  const frameCliente = mbUpper(cliente);
 
-  let casamento: CasamentoProps | undefined;
-  let mensagemWA: string | undefined;
+  let casamento: CasamentoProps | undefined = undefined;
 
   if (tipo === 'casamento') {
-    const servRows = await query(`SELECT id, nome, preco_venda AS valor, tipo FROM servicos WHERE categoria = 'wedding' AND ativo = 1`);
-    const planRows = await query(`SELECT * FROM servicos WHERE categoria = 'wedding' AND tipo = 'plano' AND ativo = 1 ORDER BY preco_venda DESC`);
-    const servicosWedding = buildServicosWedding(servRows);
-    const planosWedding = buildPlanosWedding(planRows, dados);
-    const conds = buildCondicoesCasamento(dados);
+    const nomeNoivo = String(dados.nome_noivo || '');
+    const nomeNoiva = String(dados.nome_noiva || '');
+    const mNomeCasal = (nomeNoiva && nomeNoivo) ? `${nomeNoiva} & ${nomeNoivo}` : cliente;
 
-    const nomeNoivo = dados.nome_noivo ?? '';
-    const nomeNoiva = dados.nome_noiva ?? '';
-    const nomeCasal = (nomeNoivo && nomeNoiva) ? `${nomeNoivo} & ${nomeNoiva}` : cliente;
+    const servicosRows = await query(`SELECT id, nome, preco_venda, tipo FROM servicos WHERE categoria='wedding' AND ativo=1`);
+    const servicosWedding = buildServicosWedding(servicosRows);
 
-    let mNomeCasal = '';
-    if (String(nomeNoivo).trim() && String(nomeNoiva).trim()) {
-      mNomeCasal = String(nomeNoivo).trim().split(' ')[0] + ' & ' + String(nomeNoiva).trim().split(' ')[0];
-    } else {
-      mNomeCasal = cliente;
-    }
+    const planosRows = await query(`SELECT * FROM servicos WHERE categoria='wedding' AND tipo='plano' AND ativo=1 ORDER BY preco_venda DESC`);
+    const planosWedding = buildPlanosWedding(planosRows, dados);
+    const cond = buildCondicoesCasamento(dados);
 
-    const apiKey = empresa.gemini_api_key || process.env.GEMINI_API_KEY || '';
-    mensagemWA = await gerarMensagemWhatsApp(nomeNoivo, nomeNoiva, nomeCasal, apiKey);
+    // Valores padrão dos planos
+    const pHeritage = planosWedding.find((p) => p.id === 'heritage')?.preco_venda || 12000;
+    const pCinematic = planosWedding.find((p) => p.id === 'cinematic')?.preco_venda || 8500;
+    const pEssencial = planosWedding.find((p) => p.id === 'essencial')?.preco_venda || 5500;
 
     casamento = {
-      mPHeritage: isNumericLike(dados.valor_heritage) ? Number(dados.valor_heritage) : 7900,
-      mPCinematic: isNumericLike(dados.valor_cinematic) ? Number(dados.valor_cinematic) : 4500,
-      mPEssencial: isNumericLike(dados.valor_essencial) ? Number(dados.valor_essencial) : 2800,
-      mPBoudoir: isNumericLike(dados.valor_boudoir) ? Number(dados.valor_boudoir) : 800,
-      mPPrewedding: isNumericLike(dados.valor_prewedding) ? Number(dados.valor_prewedding) : 1200,
-      condHC: conds.condHC,
-      condE: conds.condE,
+      mPHeritage: pHeritage,
+      mPCinematic: pCinematic,
+      mPEssencial: pEssencial,
+      mPBoudoir: Number(dados.valor_boudoir || 500),
+      mPPrewedding: Number(dados.valor_prewedding || 1100),
+      valorBoudoir: Number(dados.valor_boudoir || 500),
+      valorPrewedding: Number(dados.valor_prewedding || 1100),
+      condHC: cond.condHC,
+      condE: cond.condE,
       mNomeCasal,
       servicosWedding,
       planosWedding,
-      valorBoudoir: isNumericLike(dados.valor_boudoir) ? Number(dados.valor_boudoir) : 500,
-      valorPrewedding: isNumericLike(dados.valor_prewedding) ? Number(dados.valor_prewedding) : 1100,
     };
-  } else if (tipo === 'marketing') {
+  }
+
+  const mensagemWA = await gerarMensagemWhatsApp(
+    String(dados.nome_noivo || ''),
+    String(dados.nome_noiva || ''),
+    cliente,
+    empresa.gemini_api_key
+  );
+
+  if (dados.servicos && Array.isArray(dados.servicos)) {
     const ids = (dados.servicos || []).map((s: any) => s && s.id).filter(Boolean);
     if (ids.length > 0) {
       const placeholders = ids.map(() => '?').join(',');
@@ -549,6 +436,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (context)
       ano,
       frameCliente,
       telefone: String(empresa.telefone || ''),
+      dados,
       casamento: casamento || null,
     } as any,
   };

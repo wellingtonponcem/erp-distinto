@@ -7,6 +7,7 @@ import {
   FormSection,
   FormField,
 } from '@/lib/propostas/form-orcamento';
+import { LgpdConsent } from '@/components/LgpdConsent';
 
 const HERO_IMG = '/imagens-proposta-casamento/bg-section-01.jpg';
 const LOGO = '/assets/distinto_logo.svg';
@@ -14,6 +15,8 @@ const LOGO = '/assets/distinto_logo.svg';
 export default function OrcamentoPage() {
   const [values, setValues] = useState<Record<string, string | string[]>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [lgpdAceito, setLgpdAceito] = useState(false);
+  const [erroLgpd, setErroLgpd] = useState('');
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
   const [erroEnvio, setErroEnvio] = useState('');
@@ -62,6 +65,7 @@ export default function OrcamentoPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErroEnvio('');
+    setErroLgpd('');
 
     const validationErrors = validateQuoteForm(values);
     if (validationErrors.length > 0) {
@@ -75,12 +79,21 @@ export default function OrcamentoPage() {
       return;
     }
 
+    if (!lgpdAceito) {
+      setErroLgpd('É necessário concordar com os Termos de Privacidade (LGPD) para enviar a solicitação.');
+      return;
+    }
+
     setEnviando(true);
     try {
       const res = await fetch('/api/orcamentos/solicitar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(normalizeValues(values)),
+        body: JSON.stringify({
+          ...normalizeValues(values),
+          lgpd_aceito: true,
+          lgpd_data_aceite: new Date().toISOString(),
+        }),
       });
       const data = await res.json();
       if (res.ok && data.ok) {
@@ -262,6 +275,16 @@ export default function OrcamentoPage() {
               </section>
             ))}
 
+            {/* LGPD CONSENT CHECKBOX & BANNER */}
+            <LgpdConsent
+              checkboxChecked={lgpdAceito}
+              onCheckboxChange={(checked) => {
+                setLgpdAceito(checked);
+                if (checked) setErroLgpd('');
+              }}
+              requiredError={erroLgpd}
+            />
+
             {erroEnvio && <div className="orc-submit-error">{erroEnvio}</div>}
 
             <div className="orc-submit-wrap">
@@ -269,7 +292,7 @@ export default function OrcamentoPage() {
                 {enviando ? 'Enviando...' : 'Enviar Solicitação'}
               </button>
               <p className="orc-privacy">
-                Seus dados estão seguros e serão usados apenas para elaborar sua proposta.
+                Seus dados estão protegidos em conformidade com a LGPD (Lei nº 13.709/2018).
               </p>
             </div>
           </form>
@@ -277,7 +300,7 @@ export default function OrcamentoPage() {
 
         <footer className="orc-footer">
           <span>WE DISTINTO</span>
-          <span>© {new Date().getFullYear()} — Fotografia de Casamento</span>
+          <span>© {new Date().getFullYear()} — Fotografia de Casamento • Proteção de Dados LGPD</span>
         </footer>
       </div>
 

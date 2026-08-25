@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { briefingLogisticoConfig, BriefingSection, BriefingField } from '@/lib/propostas/form-briefing';
+import { LgpdConsent } from '@/components/LgpdConsent';
 
 const HERO_IMG = '/imagens-proposta-casamento/bg-section-01.jpg';
 const LOGO = '/assets/distinto_logo.svg';
@@ -10,6 +11,8 @@ export default function BriefingPage() {
   const router = useRouter();
   const [values, setValues] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [lgpdAceito, setLgpdAceito] = useState(false);
+  const [erroLgpd, setErroLgpd] = useState('');
   const [enviando, setEnviando] = useState(false);
   const [enviado, setEnviado] = useState(false);
   const [erroEnvio, setErroEnvio] = useState('');
@@ -40,6 +43,7 @@ export default function BriefingPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErroEnvio('');
+    setErroLgpd('');
 
     // Validação de campos obrigatórios
     const errMap: Record<string, string> = {};
@@ -58,12 +62,21 @@ export default function BriefingPage() {
       return;
     }
 
+    if (!lgpdAceito) {
+      setErroLgpd('É necessário concordar com os Termos de Privacidade (LGPD) para enviar o briefing.');
+      return;
+    }
+
     setEnviando(true);
     try {
       const res = await fetch('/api/briefings/enviar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          ...values,
+          lgpd_aceito: true,
+          lgpd_data_aceite: new Date().toISOString(),
+        }),
       });
       const data = await res.json();
       if (res.ok && data.ok) {
@@ -223,6 +236,16 @@ export default function BriefingPage() {
               </section>
             ))}
 
+            {/* LGPD CONSENT CHECKBOX & BANNER */}
+            <LgpdConsent
+              checkboxChecked={lgpdAceito}
+              onCheckboxChange={(checked) => {
+                setLgpdAceito(checked);
+                if (checked) setErroLgpd('');
+              }}
+              requiredError={erroLgpd}
+            />
+
             {erroEnvio && <div className="orc-submit-error">{erroEnvio}</div>}
 
             <div className="orc-submit-wrap">
@@ -230,7 +253,7 @@ export default function BriefingPage() {
                 {enviando ? 'Enviando Briefing...' : 'Enviar Briefing Logístico'}
               </button>
               <p className="orc-privacy">
-                Suas respostas serão salvas com segurança para a organização da equipe de fotografia e vídeo do dia.
+                Suas respostas são armazenadas com segurança conforme a LGPD (Lei nº 13.709/2018).
               </p>
             </div>
           </form>
@@ -238,7 +261,7 @@ export default function BriefingPage() {
 
         <footer className="orc-footer">
           <span>DISTINTO | PONCEM STUDIO</span>
-          <span>© {new Date().getFullYear()} — Fotografia & Cinema de Casamento</span>
+          <span>© {new Date().getFullYear()} — Fotografia & Cinema de Casamento • Proteção de Dados LGPD</span>
         </footer>
       </div>
 
