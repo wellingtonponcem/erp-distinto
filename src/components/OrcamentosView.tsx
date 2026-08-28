@@ -133,7 +133,7 @@ export const OrcamentosView: React.FC = () => {
   const novosOrcamentos = items.filter((i) => i.status === 'novo').length;
 
   return (
-    <div className="bg-[#050505] text-white flex flex-col min-h-screen rounded-2xl overflow-hidden p-6 font-sans">
+    <div className="bg-[#050505] text-white flex flex-col min-h-screen p-6 font-sans">
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 8px; }

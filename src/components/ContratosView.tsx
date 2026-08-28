@@ -360,15 +360,15 @@ const [titulo, setTitulo] = useState('');
   }).length;
 
   return (
-    <div className="space-y-6 font-sans text-gray-900 bg-gray-50 min-h-screen">
+    <div className="space-y-6 font-sans text-white bg-[#050505] min-h-screen">
       {/* Header Superior com Título e Ações */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-gray-900 tracking-tight flex items-center space-x-2">
-            <span className="material-symbols-outlined text-gray-400">scroll</span>
+          <h1 className="text-2xl font-black text-white tracking-tight flex items-center space-x-2">
+            <span className="material-symbols-outlined text-zinc-500">scroll</span>
             <span>Contratos Comerciais</span>
           </h1>
-          <p className="text-xs text-gray-500 mt-0.5">Gerencie, envie para assinatura eletrônica e acompanhe a formalização das propostas</p>
+          <p className="text-xs text-zinc-400 mt-0.5">Gerencie, envie para assinatura eletrônica e acompanhe a formalização das propostas</p>
         </div>
 
         <div className="flex items-center space-x-2">
@@ -377,7 +377,7 @@ const [titulo, setTitulo] = useState('');
               resetForm();
               setModalAberta(true);
             }}
-            className="px-4 py-2 bg-black hover:bg-gray-800 text-white font-bold rounded-xl text-xs transition flex items-center space-x-1.5 shadow-sm"
+            className="px-4 py-2 bg-white hover:bg-zinc-200 text-black font-bold rounded-xl text-xs transition flex items-center space-x-1.5 shadow-sm"
           >
             <span className="material-symbols-outlined text-sm leading-none">add</span>
             <span>Novo Contrato</span>
@@ -387,46 +387,46 @@ const [titulo, setTitulo] = useState('');
 
       {/* Cards de Métricas Superiores */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs flex items-center justify-between">
+        <div className="bg-[#0c0c0c] border border-white/10 p-5 rounded-2xl shadow-2xs flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-bold tracking-wider text-gray-400 uppercase block">TOTAL DE CONTRATOS</span>
-            <div className="text-2xl font-black font-mono text-gray-900 mt-1">{contratosFiltrados.length}</div>
-            <span className="text-[10px] font-bold text-gray-500 block uppercase mt-0.5">REGISTRADOS NO BANCO</span>
+            <span className="text-[10px] font-bold tracking-wider text-zinc-400 uppercase block">TOTAL DE CONTRATOS</span>
+            <div className="text-2xl font-black font-mono text-white mt-1">{contratosFiltrados.length}</div>
+            <span className="text-[10px] font-bold text-zinc-500 block uppercase mt-0.5">REGISTRADOS NO BANCO</span>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-blue-950/60 text-blue-400 border border-blue-500/30 flex items-center justify-center">
             <span className="material-symbols-outlined text-lg leading-none">history_edu</span>
           </div>
         </div>
 
-        <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs flex items-center justify-between">
+        <div className="bg-[#0c0c0c] border border-white/10 p-5 rounded-2xl shadow-2xs flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-bold tracking-wider text-gray-400 uppercase block">CONTRATOS ASSINADOS</span>
-            <div className="text-2xl font-black font-mono text-emerald-600 mt-1">{totalAssinados}</div>
-            <span className="text-[10px] font-bold text-emerald-600 block uppercase mt-0.5">FORMALIZADOS & ATIVOS</span>
+            <span className="text-[10px] font-bold tracking-wider text-zinc-400 uppercase block">CONTRATOS ASSINADOS</span>
+            <div className="text-2xl font-black font-mono text-emerald-400 mt-1">{totalAssinados}</div>
+            <span className="text-[10px] font-bold text-emerald-400 block uppercase mt-0.5">FORMALIZADOS & ATIVOS</span>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-emerald-950/60 text-emerald-400 border border-emerald-500/30 flex items-center justify-center">
             <span className="material-symbols-outlined text-lg leading-none">verified</span>
           </div>
         </div>
 
-        <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs flex items-center justify-between">
+        <div className="bg-[#0c0c0c] border border-white/10 p-5 rounded-2xl shadow-2xs flex items-center justify-between">
           <div>
-            <span className="text-[10px] font-bold tracking-wider text-gray-400 uppercase block">VALOR EM CONTRATOS</span>
-            <div className="text-2xl font-black font-mono text-purple-600 mt-1">
+            <span className="text-[10px] font-bold tracking-wider text-zinc-400 uppercase block">VALOR EM CONTRATOS</span>
+            <div className="text-2xl font-black font-mono text-purple-400 mt-1">
               R$ {totalValor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </div>
-            <span className="text-[10px] font-bold text-purple-600 block uppercase mt-0.5">VALOR TOTAL CONTRATADO</span>
+            <span className="text-[10px] font-bold text-purple-400 block uppercase mt-0.5">VALOR TOTAL CONTRATADO</span>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 border border-purple-100 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-purple-950/60 text-purple-400 border border-purple-500/30 flex items-center justify-center">
             <span className="material-symbols-outlined text-lg leading-none">payments</span>
           </div>
         </div>
       </div>
 
       {/* Barra de Busca e Filtros */}
-      <div className="bg-white border border-gray-200/80 p-4 rounded-2xl shadow-2xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      <div className="bg-[#0c0c0c] border border-white/10 p-4 rounded-2xl shadow-2xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         <div className="relative flex-1">
-          <span className="material-symbols-outlined absolute left-3.5 top-2.5 text-gray-400 text-sm leading-none">
+          <span className="material-symbols-outlined absolute left-3.5 top-2.5 text-zinc-400 text-sm leading-none">
             search
           </span>
           <input
@@ -434,7 +434,7 @@ const [titulo, setTitulo] = useState('');
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             placeholder="Buscar por título, contratante ou CPF/CNPJ..."
-            className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black transition font-sans"
+            className="w-full pl-9 pr-4 py-2 bg-zinc-900 border border-zinc-700 rounded-xl text-xs text-white placeholder-zinc-500 focus:border-white outline-none transition font-sans"
           />
         </div>
 
@@ -442,7 +442,7 @@ const [titulo, setTitulo] = useState('');
           <select
             value={filtroStatus}
             onChange={(e) => setFiltroStatus(e.target.value)}
-            className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-black uppercase"
+            className="px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-xl text-xs font-bold text-white outline-none uppercase"
           >
             <option value="TODOS">TODOS OS STATUS</option>
             <option value="ASSINADO">ASSINADO / ATIVO</option>
@@ -453,22 +453,22 @@ const [titulo, setTitulo] = useState('');
         </div>
       </div>
 
-      {/* Tabela de Contratos em Tema Claro */}
-      <div className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-2xs">
+      {/* Tabela de Contratos em Tema Escuro */}
+      <div className="bg-[#0c0c0c] border border-white/10 rounded-2xl overflow-hidden shadow-2xs">
         {loading ? (
-          <div className="p-12 text-center text-xs text-gray-400">Carregando contratos comerciais...</div>
+          <div className="p-12 text-center text-xs text-zinc-500">Carregando contratos comerciais...</div>
         ) : contratosFiltrados.length === 0 ? (
           <div className="p-16 text-center">
-            <span className="material-symbols-outlined text-5xl text-gray-300 mb-2 leading-none">scroll</span>
-            <p className="text-sm font-bold text-gray-700 mb-1">Nenhum contrato encontrado no banco de dados.</p>
-            <p className="text-xs text-gray-400 max-w-md mx-auto">
+            <span className="material-symbols-outlined text-5xl text-zinc-600 mb-2 leading-none">scroll</span>
+            <p className="text-sm font-bold text-white mb-1">Nenhum contrato encontrado no banco de dados.</p>
+            <p className="text-xs text-zinc-400 max-w-md mx-auto">
               Clique em <strong>Novo Contrato</strong> no canto superior direito para criar um contrato do zero ou selecione uma proposta web existente para gerar um contrato automaticamente!
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs font-sans">
-              <thead className="bg-gray-50 text-gray-500 uppercase tracking-wider font-bold text-[10px] border-b border-gray-100">
+              <thead className="bg-[#121212] text-zinc-400 uppercase tracking-wider font-bold text-[10px] border-b border-white/10">
                 <tr>
                   <th className="py-3 px-4">TÍTULO DO CONTRATO</th>
                   <th className="py-3 px-4">CONTRATANTE</th>
@@ -479,7 +479,7 @@ const [titulo, setTitulo] = useState('');
                   <th className="py-3 px-4 text-right">AÇÕES</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 font-sans">
+              <tbody className="divide-y divide-white/5 font-sans">
                 {contratosFiltrados.map((c) => {
                   const tit = c.titulo || 'Contrato Sem Título';
                   const cli = c.cliente_nome || 'Cliente Geral';
@@ -487,29 +487,29 @@ const [titulo, setTitulo] = useState('');
                   const stRaw = (c.status || 'rascunho').toLowerCase();
                   const dtStr = c.criado_em || c.created_at;
 
-                  let badgeBg = 'bg-gray-100 text-gray-700';
+                  let badgeBg = 'bg-zinc-800 text-zinc-300';
                   let statusTxt = 'Rascunho';
 
                   if (stRaw === 'assinado' || stRaw === 'aceita') {
-                    badgeBg = c.asaas_cobranca_gerada === 1 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800 border border-amber-200';
+                    badgeBg = c.asaas_cobranca_gerada === 1 ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-500/30' : 'bg-amber-950/60 text-amber-400 border border-amber-500/30';
                     statusTxt = c.asaas_cobranca_gerada === 1 ? '✓ Assinado' : '✓ Assinado • Cobrança Pendente';
                   } else if (stRaw === 'pendente' || stRaw === 'pendente_assinatura') {
-                    badgeBg = 'bg-blue-100 text-blue-800';
+                    badgeBg = 'bg-blue-950/60 text-blue-400 border border-blue-500/30';
                     statusTxt = 'Pendente Assinatura';
                   } else if (stRaw === 'cancelado') {
-                    badgeBg = 'bg-rose-100 text-rose-800';
+                    badgeBg = 'bg-rose-950/60 text-rose-400 border border-rose-500/30';
                     statusTxt = 'Cancelado';
                   }
 
                   return (
-                    <tr key={c.id} className="hover:bg-gray-50/80 transition">
-                      <td className="py-3.5 px-4 font-bold text-gray-900 text-xs">
+                    <tr key={c.id} className="hover:bg-zinc-900/60 transition">
+                      <td className="py-3.5 px-4 font-bold text-white text-xs">
                         {tit}
-                        {c.cliente_cpf_cnpj && <span className="block text-[10px] text-gray-400 font-mono">CPF/CNPJ: {c.cliente_cpf_cnpj}</span>}
+                        {c.cliente_cpf_cnpj && <span className="block text-[10px] text-zinc-400 font-mono">CPF/CNPJ: {c.cliente_cpf_cnpj}</span>}
                       </td>
-                      <td className="py-3.5 px-4 text-gray-700 text-xs font-medium">
+                      <td className="py-3.5 px-4 text-zinc-300 text-xs font-medium">
                         {cli}
-                        {c.cliente_email && <span className="block text-[10px] text-gray-400">{c.cliente_email}</span>}
+                        {c.cliente_email && <span className="block text-[10px] text-zinc-400">{c.cliente_email}</span>}
                       </td>
                       <td className="py-3.5 px-4 text-center">
                         {c.proposta_slug ? (
@@ -517,7 +517,7 @@ const [titulo, setTitulo] = useState('');
                             href={`/p/${c.proposta_slug}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-block px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-lg text-[10px] font-bold transition"
+                            className="inline-block px-2.5 py-1 bg-purple-950/60 text-purple-400 border border-purple-500/30 rounded-lg text-[10px] font-bold transition hover:bg-purple-900/60"
                           >
                             Proposta #{c.proposta_slug.substring(0, 8)}
                           </a>

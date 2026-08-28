@@ -166,12 +166,12 @@ export const AsaasView: React.FC = () => {
     .reduce((acc, c) => acc + parseFloat(c.value || c.valor || 0), 0);
 
   return (
-    <div className="space-y-6 font-sans text-gray-900">
+    <div className="space-y-6 font-sans text-white bg-[#050505] min-h-screen">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-900 tracking-tight">Gestão de Pagamentos Asaas</h2>
-          <p className="text-xs text-gray-500 mt-1">
+          <h2 className="text-xl font-bold text-white tracking-tight">Gestão de Pagamentos Asaas</h2>
+          <p className="text-xs text-zinc-400 mt-1">
             Painel de entradas, saídas e extrato consolidado da conta Asaas
           </p>
         </div>
@@ -179,7 +179,7 @@ export const AsaasView: React.FC = () => {
         <div className="flex items-center space-x-3">
           <button
             onClick={() => setModalConfigAberta(true)}
-            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-xs font-bold transition flex items-center space-x-2 border border-gray-200"
+            className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl text-xs font-bold transition flex items-center space-x-2 border border-white/5"
           >
             <span className="material-symbols-outlined text-sm leading-none">key</span>
             <span>{configurada ? 'Alterar Chave API' : 'Configurar Chave API'}</span>
@@ -187,7 +187,7 @@ export const AsaasView: React.FC = () => {
 
           <button
             onClick={carregarDadosAsaas}
-            className="px-4 py-2 bg-black text-white hover:bg-gray-800 rounded-xl text-xs font-bold transition flex items-center space-x-2 shadow-sm"
+            className="px-4 py-2 bg-white text-black hover:bg-zinc-200 rounded-xl text-xs font-bold transition flex items-center space-x-2 shadow-sm"
           >
             <span className="material-symbols-outlined text-sm leading-none">sync</span>
             <span>Sincronizar Agora</span>
@@ -196,20 +196,20 @@ export const AsaasView: React.FC = () => {
       </div>
 
       {/* Hero Card: Saldo Atual no Asaas */}
-      <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-black p-6 rounded-2xl text-white shadow-md space-y-4">
+      <div className="bg-[#0c0c0c] border border-white/10 p-6 rounded-2xl text-white shadow-md space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center space-x-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">Saldo Líquido Atual no Asaas</span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">Saldo Líquido Atual no Asaas</span>
               {configurada ? (
-                <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded text-[10px] font-bold flex items-center space-x-1">
+                <span className="bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded text-[10px] font-bold flex items-center space-x-1">
                   <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
                   <span>Conectado via API Asaas</span>
                 </span>
               ) : (
                 <button
                   onClick={() => setModalConfigAberta(true)}
-                  className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded text-[10px] font-bold transition"
+                  className="bg-amber-950/80 hover:bg-amber-900/80 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded text-[10px] font-bold transition"
                 >
                   ⚡ Cadastrar Chave de API para Sincronizar
                 </button>
@@ -223,28 +223,28 @@ export const AsaasView: React.FC = () => {
             </div>
 
             {configurada && maskedKey && (
-              <p className="text-[11px] text-gray-400 mt-2 font-mono">
-                Chave: <span className="text-gray-300">{maskedKey}</span> ({novoModo === 'prod' ? 'Produção' : 'Sandbox'})
+              <p className="text-[11px] text-zinc-400 mt-2 font-mono">
+                Chave: <span className="text-zinc-300">{maskedKey}</span> ({novoModo === 'prod' ? 'Produção' : 'Sandbox'})
               </p>
             )}
           </div>
 
           <div className="grid grid-cols-3 gap-3">
-            <div className="bg-white/10 backdrop-blur-md p-3.5 rounded-xl border border-white/10">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-gray-300 block">Total Recebido (Entradas)</span>
+            <div className="bg-zinc-900/80 p-3.5 rounded-xl border border-white/5">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block">Total Recebido (Entradas)</span>
               <span className="text-base font-bold font-mono text-emerald-400 mt-1 block">
                 + R$ {totalEntradas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </span>
             </div>
-            <div className="bg-white/10 backdrop-blur-md p-3.5 rounded-xl border border-white/10">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-gray-300 block">Total Saídas</span>
-              <span className="text-base font-bold font-mono text-red-400 mt-1 block">
+            <div className="bg-zinc-900/80 p-3.5 rounded-xl border border-white/5">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block">Total Saídas</span>
+              <span className="text-base font-bold font-mono text-rose-400 mt-1 block">
                 - R$ {totalSaidas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </span>
             </div>
-            <div className="bg-white/10 backdrop-blur-md p-3.5 rounded-xl border border-white/10">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-gray-300 block">Pendente de Recebimento</span>
-              <span className="text-base font-bold font-mono text-amber-300 mt-1 block">
+            <div className="bg-zinc-900/80 p-3.5 rounded-xl border border-white/5">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block">Pendente de Recebimento</span>
+              <span className="text-base font-bold font-mono text-amber-400 mt-1 block">
                 R$ {totalPendente.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </span>
             </div>
@@ -253,11 +253,11 @@ export const AsaasView: React.FC = () => {
       </div>
 
       {/* Barra de Filtros em Português */}
-      <div className="bg-white border border-gray-200/80 p-4 rounded-2xl shadow-2xs space-y-3">
+      <div className="bg-[#0c0c0c] border border-white/10 p-4 rounded-2xl shadow-2xs space-y-3">
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
           {/* Campo de Busca */}
           <div className="relative flex-1">
-            <span className="material-symbols-outlined absolute left-3 top-2.5 text-gray-400 text-sm leading-none">
+            <span className="material-symbols-outlined absolute left-3 top-2.5 text-zinc-400 text-sm leading-none">
               search
             </span>
             <input
@@ -265,7 +265,7 @@ export const AsaasView: React.FC = () => {
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Buscar por cliente ou ID da cobrança..."
-              className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-black transition font-sans"
+              className="w-full pl-9 pr-4 py-2 bg-zinc-900 border border-zinc-700 rounded-xl text-xs text-white placeholder-zinc-500 focus:border-white outline-none transition font-sans"
             />
           </div>
 
@@ -283,8 +283,8 @@ export const AsaasView: React.FC = () => {
                 onClick={() => setFiltroStatus(f.id)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
                   filtroStatus === f.id
-                    ? 'bg-black text-white shadow-xs'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-white text-black shadow-xs'
+                    : 'bg-zinc-900 text-zinc-400 hover:text-white border border-white/5'
                 }`}
               >
                 {f.label}
@@ -296,7 +296,7 @@ export const AsaasView: React.FC = () => {
           <select
             value={filtroForma}
             onChange={(e) => setFiltroForma(e.target.value)}
-            className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-black"
+            className="px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-xl text-xs font-bold text-white outline-none"
           >
             <option value="TODAS">Todas as Formas</option>
             <option value="PIX">Somente PIX</option>
@@ -307,30 +307,30 @@ export const AsaasView: React.FC = () => {
       </div>
 
       {/* Tabela Exclusiva de Transações do Asaas em Português */}
-      <div className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-2xs">
-        <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+      <div className="bg-[#0c0c0c] border border-white/10 rounded-2xl overflow-hidden shadow-2xs">
+        <div className="p-5 border-b border-white/10 flex items-center justify-between">
           <div>
-            <h3 className="font-bold text-gray-900 text-sm">Extrato de Movimentações Asaas</h3>
-            <p className="text-xs text-gray-400">Classificação de entradas, saídas e movimentações pendentes</p>
+            <h3 className="font-bold text-white text-sm">Extrato de Movimentações Asaas</h3>
+            <p className="text-xs text-zinc-400">Classificação de entradas, saídas e movimentações pendentes</p>
           </div>
-          <span className="text-xs font-bold bg-gray-100 text-gray-600 px-3 py-1 rounded-full font-mono">
+          <span className="text-xs font-bold bg-zinc-900 text-zinc-300 px-3 py-1 rounded-full font-mono border border-white/5">
             {cobrancasFiltradas.length} de {cobrancas.length} movimentações
           </span>
         </div>
 
         {loading ? (
-          <div className="p-8 text-center text-xs text-gray-400">Carregando movimentações do Asaas...</div>
+          <div className="p-8 text-center text-xs text-zinc-500">Carregando movimentações do Asaas...</div>
         ) : cobrancasFiltradas.length === 0 ? (
           <div className="p-12 text-center">
-            <span className="material-symbols-outlined text-4xl text-gray-300 mb-2 leading-none">filter_alt_off</span>
-            <p className="text-sm font-bold text-gray-800">Nenhuma movimentação encontrada com os filtros selecionados.</p>
+            <span className="material-symbols-outlined text-4xl text-zinc-600 mb-2 leading-none">filter_alt_off</span>
+            <p className="text-sm font-bold text-white">Nenhuma movimentação encontrada com os filtros selecionados.</p>
             <button
               onClick={() => {
                 setBusca('');
                 setFiltroStatus('TODOS');
                 setFiltroForma('TODAS');
               }}
-              className="mt-4 px-4 py-2 bg-gray-100 text-gray-800 rounded-xl text-xs font-bold hover:bg-gray-200 transition"
+              className="mt-4 px-4 py-2 bg-zinc-800 text-white rounded-xl text-xs font-bold hover:bg-zinc-700 transition"
             >
               Limpar Filtros
             </button>
@@ -338,7 +338,7 @@ export const AsaasView: React.FC = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs font-sans">
-              <thead className="bg-gray-50 text-gray-500 uppercase tracking-wider font-bold text-[10px] border-b border-gray-100">
+              <thead className="bg-[#121212] text-zinc-400 uppercase tracking-wider font-bold text-[10px] border-b border-white/10">
                 <tr>
                   <th className="py-3 px-4">Tipo Movimento</th>
                   <th className="py-3 px-4">ID Cobrança</th>
@@ -350,7 +350,7 @@ export const AsaasView: React.FC = () => {
                   <th className="py-3 px-4 text-right">Fatura / Ação</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-white/5">
                 {cobrancasFiltradas.map((item) => {
                   const valorNum = parseFloat(item.value || item.valor || 0);
                   const statusRaw = item.status || 'PENDING';
@@ -358,24 +358,24 @@ export const AsaasView: React.FC = () => {
                   const statusTraduzido = traduzirStatus(statusRaw, isSaida);
 
                   return (
-                    <tr key={item.id} className="hover:bg-gray-50/80 transition">
+                    <tr key={item.id} className="hover:bg-zinc-900/60 transition">
                       <td className="py-3 px-4">
                         <span
                           className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
-                            isSaida ? 'bg-red-50 text-red-700' : 'bg-emerald-50 text-emerald-700'
+                            isSaida ? 'bg-rose-950/80 text-rose-400 border border-rose-500/30' : 'bg-emerald-950/80 text-emerald-400 border border-emerald-500/30'
                           }`}
                         >
                           {isSaida ? 'SAÍDA' : 'ENTRADA'}
                         </span>
                       </td>
-                      <td className="py-3 px-4 font-mono text-gray-500">{item.id}</td>
-                      <td className="py-3 px-4 font-bold text-gray-900">
+                      <td className="py-3 px-4 font-mono text-zinc-400">{item.id}</td>
+                      <td className="py-3 px-4 font-bold text-white">
                         {item.customerName || item.cliente_fornecedor || item.descricao || 'Cliente Asaas'}
                       </td>
-                      <td className="py-3 px-4 font-mono uppercase text-gray-600">
+                      <td className="py-3 px-4 font-mono uppercase text-zinc-400">
                         {item.billingType || item.forma_pagamento || 'PIX'}
                       </td>
-                      <td className="py-3 px-4 text-gray-600 font-mono">
+                      <td className="py-3 px-4 text-zinc-400 font-mono">
                         {item.dueDate || item.vencimento ? new Date(item.dueDate || item.vencimento).toLocaleDateString('pt-BR') : '—'}
                       </td>
                       <td className="py-3 px-4 font-mono font-bold">

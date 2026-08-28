@@ -452,7 +452,7 @@ export const ModelosContratoView: React.FC = () => {
   });
 
   return (
-    <div className="space-y-6 font-sans text-gray-900 bg-gray-50 min-h-screen">
+    <div className="space-y-6 font-sans text-white bg-[#050505] min-h-screen p-6">
       {/* Input oculto para upload de imagem */}
       <input
         type="file"
@@ -465,11 +465,11 @@ export const ModelosContratoView: React.FC = () => {
       {/* Header Superior */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-gray-900 tracking-tight flex items-center space-x-2">
-            <span className="material-symbols-outlined text-purple-600">article</span>
+          <h1 className="text-2xl font-black text-white tracking-tight flex items-center space-x-2">
+            <span className="material-symbols-outlined text-purple-400">article</span>
             <span>Editor de Modelos de Contrato</span>
           </h1>
-          <p className="text-xs text-gray-500 mt-0.5">
+          <p className="text-xs text-zinc-400 mt-0.5">
             Editor estilo Google Docs com Régua, Divisão de Páginas A4, Edição de Código HTML e Guia de Variáveis
           </p>
         </div>
@@ -477,7 +477,7 @@ export const ModelosContratoView: React.FC = () => {
         <div className="flex items-center space-x-2">
           <button
             onClick={handleNovoModelo}
-            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl text-xs transition flex items-center space-x-1.5"
+            className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-xl text-xs transition flex items-center space-x-1.5"
           >
             <span className="material-symbols-outlined text-sm leading-none">add</span>
             <span>Novo Modelo</span>
@@ -485,7 +485,7 @@ export const ModelosContratoView: React.FC = () => {
           <button
             onClick={handleSalvarModelo}
             disabled={salvando}
-            className="px-5 py-2 bg-black hover:bg-gray-800 text-white font-bold rounded-xl text-xs transition flex items-center space-x-1.5 shadow-md"
+            className="px-5 py-2 bg-white hover:bg-zinc-200 text-black font-bold rounded-xl text-xs transition flex items-center space-x-1.5 shadow-md"
           >
             <span className="material-symbols-outlined text-sm leading-none">save</span>
             <span>{salvando ? 'Salvando...' : 'Salvar Modelo'}</span>
@@ -494,16 +494,16 @@ export const ModelosContratoView: React.FC = () => {
       </div>
 
       {/* Seletor de Modelos Existentes */}
-      <div className="bg-white border border-gray-200/80 p-4 rounded-2xl shadow-2xs flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="bg-[#0c0c0c] border border-white/10 p-4 rounded-2xl shadow-2xs flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center space-x-3 w-full md:w-auto">
-          <span className="text-xs font-bold uppercase text-gray-400">Modelo Selecionado:</span>
+          <span className="text-xs font-bold uppercase text-zinc-400">Modelo Selecionado:</span>
           <select
             value={modeloAtivoId || ''}
             onChange={(e) => {
               const sel = modelos.find((m) => m.id === e.target.value);
               if (sel) carregarModeloNoEditor(sel);
             }}
-            className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-black min-w-[280px]"
+            className="px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-xl text-xs font-bold text-white outline-none min-w-[280px]"
           >
             {modelos.map((m) => (
               <option key={m.id} value={m.id}>
@@ -518,11 +518,11 @@ export const ModelosContratoView: React.FC = () => {
             type="text"
             value={nomeModelo}
             onChange={(e) => setNomeModelo(e.target.value)}
-            placeholder="Nome do Modelo (ex: Modelo Casamento Luxe)"
-            className="px-3 py-2 border border-gray-200 rounded-xl text-xs text-gray-900 font-bold focus:outline-none focus:ring-2 focus:ring-black flex-1 md:w-64"
+            placeholder="Nome do Modelo..."
+            className="px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-xl text-xs text-white placeholder-zinc-500 outline-none w-64"
           />
 
-          <label className="flex items-center space-x-1.5 cursor-pointer text-xs font-bold text-gray-700">
+          <label className="flex items-center space-x-1.5 cursor-pointer text-xs font-bold text-zinc-300">
             <input
               type="checkbox"
               checked={isPadrao}

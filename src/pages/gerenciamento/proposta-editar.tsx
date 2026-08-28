@@ -34,8 +34,6 @@ export default function PropostaEditarPage({ wizard }: EditarPageProps) {
         <link href="/assets/css/tailwind.css" rel="stylesheet" />
         <style dangerouslySetInnerHTML={{ __html: ADMIN_CSS + (wizard.style || '') }} />
 
-        <script defer src="/assets/js/alpine.min.js" />
-        <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js" />
         <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
         <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css" />
@@ -43,11 +41,26 @@ export default function PropostaEditarPage({ wizard }: EditarPageProps) {
         <script src="https://npmcdn.com/flatpickr/dist/l10n/pt.js" />
       </Head>
 
-      <div dangerouslySetInnerHTML={{ __html: wizard.html || '' }} suppressHydrationWarning />
-
       {(wizard.scripts || []).map((s, i) => (
         <script key={i} dangerouslySetInnerHTML={{ __html: s }} />
       ))}
+
+      <script src="/assets/js/alpine.min.js" />
+      <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js" />
+
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            setTimeout(function() {
+              document.querySelectorAll('[x-cloak]').forEach(function(el) {
+                el.removeAttribute('x-cloak');
+              });
+            }, 300);
+          `,
+        }}
+      />
+
+      <div dangerouslySetInnerHTML={{ __html: wizard.html || '' }} suppressHydrationWarning />
     </>
   );
 }

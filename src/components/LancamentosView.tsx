@@ -484,7 +484,7 @@ export const LancamentosView: React.FC = () => {
     .reduce((acc, l) => acc + parseFloat(l.valor || 0), 0);
 
   return (
-    <div className="space-y-6 font-sans text-gray-900 bg-gray-50 min-h-screen">
+    <div className="space-y-6 font-sans text-white bg-[#050505] min-h-screen">
       {/* Input de arquivo OFX escondido */}
       <input
         type="file"
@@ -494,18 +494,18 @@ export const LancamentosView: React.FC = () => {
         className="hidden"
       />
 
-      {/* Header com os Botões Superiores no Tema Claro */}
+      {/* Header com os Botões Superiores no Tema Escuro */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-gray-900 tracking-tight">Fluxo de Caixa</h1>
-          <p className="text-xs text-gray-500 mt-0.5">Gestão completa de lançamentos, transferências e conciliação bancária</p>
+          <h1 className="text-2xl font-black text-white tracking-tight">Fluxo de Caixa</h1>
+          <p className="text-xs text-zinc-400 mt-0.5">Gestão completa de lançamentos, transferências e conciliação bancária</p>
         </div>
 
         {/* Botões de Ação Principais no Topo */}
         <div className="flex items-center space-x-2.5 overflow-x-auto pb-1 lg:pb-0">
           <button
             onClick={() => setModalCategoriasAberta(true)}
-            className="px-3.5 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-2xs"
+            className="px-3.5 py-2 bg-purple-950/60 hover:bg-purple-900/60 text-purple-400 border border-purple-500/30 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-2xs"
           >
             <span className="material-symbols-outlined text-sm leading-none">category</span>
             <span>Gerenciar Categorias</span>
@@ -513,7 +513,7 @@ export const LancamentosView: React.FC = () => {
 
           <button
             onClick={() => alert('IA Scanner ativada para leitura inteligente de faturas e comprovantes PDF/Imagem.')}
-            className="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-2xs"
+            className="px-3.5 py-2 bg-emerald-950/60 hover:bg-emerald-900/60 text-emerald-400 border border-emerald-500/30 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-2xs"
           >
             <span className="material-symbols-outlined text-sm leading-none">auto_awesome</span>
             <span>Scanner IA</span>
@@ -522,7 +522,7 @@ export const LancamentosView: React.FC = () => {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={lendoOfx}
-            className="px-3.5 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-2xs"
+            className="px-3.5 py-2 bg-blue-950/60 hover:bg-blue-900/60 text-blue-400 border border-blue-500/30 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-2xs"
           >
             <span className="material-symbols-outlined text-sm leading-none">upload_file</span>
             <span>{lendoOfx ? 'Lendo OFX...' : 'Importar OFX'}</span>
@@ -530,7 +530,7 @@ export const LancamentosView: React.FC = () => {
 
           <button
             onClick={() => setModalAberta(true)}
-            className="px-4 py-2 bg-black hover:bg-gray-800 text-white font-bold rounded-xl text-xs transition flex items-center space-x-1.5 shadow-sm"
+            className="px-4 py-2 bg-white hover:bg-zinc-200 text-black font-bold rounded-xl text-xs transition flex items-center space-x-1.5 shadow-sm"
           >
             <span className="material-symbols-outlined text-sm leading-none">add</span>
             <span>Novo Lançamento</span>
@@ -538,57 +538,57 @@ export const LancamentosView: React.FC = () => {
         </div>
       </div>
 
-      {/* Cards de Métricas Superiores em Tema Claro */}
+      {/* Cards de Métricas Superiores em Tema Escuro */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Card Total a Receber */}
-        <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs flex items-center justify-between relative overflow-hidden group">
+        <div className="bg-[#0c0c0c] border border-white/10 p-5 rounded-2xl shadow-2xs flex items-center justify-between relative overflow-hidden group">
           <div className="space-y-1">
-            <span className="text-[10px] font-bold tracking-wider text-gray-400 uppercase block">TOTAL A RECEBER</span>
-            <div className="text-2xl font-black font-mono text-emerald-600 tracking-tight">
+            <span className="text-[10px] font-bold tracking-wider text-zinc-400 uppercase block">TOTAL A RECEBER</span>
+            <div className="text-2xl font-black font-mono text-emerald-400 tracking-tight">
               R$ {totalAReceber.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </div>
-            <span className="text-[10px] font-bold text-gray-500 block uppercase">SALDO PREVISTO EM CAIXA</span>
+            <span className="text-[10px] font-bold text-zinc-500 block uppercase">SALDO PREVISTO EM CAIXA</span>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-emerald-950/60 text-emerald-400 border border-emerald-500/30 flex items-center justify-center">
             <span className="material-symbols-outlined text-lg leading-none">south_west</span>
           </div>
         </div>
 
         {/* Card Total a Pagar */}
-        <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs flex items-center justify-between relative overflow-hidden group">
+        <div className="bg-[#0c0c0c] border border-white/10 p-5 rounded-2xl shadow-2xs flex items-center justify-between relative overflow-hidden group">
           <div className="space-y-1">
-            <span className="text-[10px] font-bold tracking-wider text-gray-400 uppercase block">TOTAL A PAGAR</span>
-            <div className="text-2xl font-black font-mono text-rose-600 tracking-tight">
+            <span className="text-[10px] font-bold tracking-wider text-zinc-400 uppercase block">TOTAL A PAGAR</span>
+            <div className="text-2xl font-black font-mono text-rose-400 tracking-tight">
               R$ {totalAPagar.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
             </div>
-            <span className="text-[10px] font-bold text-rose-500 block uppercase">COMPROMISSOS PENDENTES</span>
+            <span className="text-[10px] font-bold text-rose-400 block uppercase">COMPROMISSOS PENDENTES</span>
           </div>
-          <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-rose-950/60 text-rose-400 border border-rose-500/30 flex items-center justify-center">
             <span className="material-symbols-outlined text-lg leading-none">north_east</span>
           </div>
         </div>
 
         {/* Card Ações Rápidas */}
-        <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs flex items-center justify-between">
+        <div className="bg-[#0c0c0c] border border-white/10 p-5 rounded-2xl shadow-2xs flex items-center justify-between">
           <div className="space-y-1">
-            <span className="text-[10px] font-bold tracking-wider text-gray-400 uppercase block">AÇÕES RÁPIDAS</span>
-            <div className="text-base font-bold text-gray-900 tracking-tight">Novo Lançamento</div>
-            <span className="text-[10px] font-bold text-gray-400 block uppercase">REGISTRAR ENTRADA OU SAÍDA</span>
+            <span className="text-[10px] font-bold tracking-wider text-zinc-400 uppercase block">AÇÕES RÁPIDAS</span>
+            <div className="text-base font-bold text-white tracking-tight">Novo Lançamento</div>
+            <span className="text-[10px] font-bold text-zinc-500 block uppercase">REGISTRAR ENTRADA OU SAÍDA</span>
           </div>
           <button
             onClick={() => setModalAberta(true)}
-            className="w-10 h-10 rounded-xl bg-black hover:bg-gray-800 text-white flex items-center justify-center transition shadow-sm"
+            className="w-10 h-10 rounded-xl bg-white hover:bg-zinc-200 text-black flex items-center justify-center transition shadow-sm"
           >
             <span className="material-symbols-outlined text-xl leading-none">add</span>
           </button>
         </div>
       </div>
 
-      {/* Barra de Filtros Completa em Tema Claro */}
-      <div className="bg-white border border-gray-200/80 p-4 rounded-2xl shadow-2xs space-y-3">
+      {/* Barra de Filtros Completa em Tema Escuro */}
+      <div className="bg-[#0c0c0c] border border-white/10 p-4 rounded-2xl shadow-2xs space-y-3">
         {/* Linha 1: Abas de Tipo + Campo de Busca */}
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-          <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-xl border border-gray-200">
+          <div className="flex items-center space-x-1 bg-zinc-900 p-1 rounded-xl border border-white/5">
             {[
               { id: 'TODOS', label: 'TODOS' },
               { id: 'RECEBER', label: 'A RECEBER' },
@@ -599,8 +599,8 @@ export const LancamentosView: React.FC = () => {
                 onClick={() => setFiltroTipo(t.id)}
                 className={`px-4 py-1.5 rounded-lg text-[11px] font-bold transition ${
                   filtroTipo === t.id
-                    ? 'bg-black text-white shadow-xs'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-white text-black shadow-xs'
+                    : 'text-zinc-400 hover:text-white'
                 }`}
               >
                 {t.label}
@@ -609,7 +609,7 @@ export const LancamentosView: React.FC = () => {
           </div>
 
           <div className="relative flex-1">
-            <span className="material-symbols-outlined absolute left-3.5 top-2.5 text-gray-400 text-sm leading-none">
+            <span className="material-symbols-outlined absolute left-3.5 top-2.5 text-zinc-400 text-sm leading-none">
               search
             </span>
             <input
@@ -617,7 +617,7 @@ export const LancamentosView: React.FC = () => {
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Buscar por descrição, cliente ou categoria..."
-              className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-black transition font-sans"
+              className="w-full pl-9 pr-4 py-2 bg-zinc-900 border border-zinc-700 rounded-xl text-xs text-white placeholder-zinc-500 focus:border-white outline-none transition font-sans"
             />
           </div>
         </div>
@@ -628,7 +628,7 @@ export const LancamentosView: React.FC = () => {
           <select
             value={filtroCategoria}
             onChange={(e) => setFiltroCategoria(e.target.value)}
-            className="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-xl text-[11px] font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-black uppercase"
+            className="px-3 py-1.5 bg-zinc-900 border border-zinc-700 rounded-xl text-[11px] font-bold text-white outline-none uppercase"
           >
             <option value="TODAS">TODAS AS CATEGORIAS</option>
             {categorias.map((cat) => (
@@ -642,7 +642,7 @@ export const LancamentosView: React.FC = () => {
           <select
             value={filtroConta}
             onChange={(e) => setFiltroConta(e.target.value)}
-            className="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-xl text-[11px] font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-black uppercase"
+            className="px-3 py-1.5 bg-zinc-900 border border-zinc-700 rounded-xl text-[11px] font-bold text-white outline-none uppercase"
           >
             <option value="TODAS">TODAS AS CONTAS</option>
             {contas.map((c) => (
@@ -738,26 +738,26 @@ export const LancamentosView: React.FC = () => {
         </div>
       </div>
 
-      {/* Tabela de Lançamentos em Tema Claro */}
-      <div className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-2xs">
+      {/* Tabela de Lançamentos em Tema Escuro */}
+      <div className="bg-[#0c0c0c] border border-white/10 rounded-2xl overflow-hidden shadow-2xs">
         {loading ? (
-          <div className="p-12 text-center text-xs text-gray-400">Carregando fluxo de caixa...</div>
+          <div className="p-12 text-center text-xs text-zinc-500">Carregando fluxo de caixa...</div>
         ) : lancamentosFiltrados.length === 0 ? (
           <div className="p-16 text-center">
-            <span className="material-symbols-outlined text-5xl text-gray-300 mb-2 leading-none">receipt_long</span>
-            <p className="text-sm font-bold text-gray-700">Nenhum lançamento encontrado para os filtros selecionados.</p>
+            <span className="material-symbols-outlined text-5xl text-zinc-600 mb-2 leading-none">receipt_long</span>
+            <p className="text-sm font-bold text-white">Nenhum lançamento encontrado para os filtros selecionados.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs font-sans">
-              <thead className="bg-gray-50 text-gray-500 uppercase tracking-wider font-bold text-[10px] border-b border-gray-100">
+              <thead className="bg-[#121212] text-zinc-400 uppercase tracking-wider font-bold text-[10px] border-b border-white/10">
                 <tr>
                   <th className="py-3 px-3 w-10 text-center">
                     <input
                       type="checkbox"
                       onChange={handleSelectAll}
                       checked={selecionados.length === lancamentosFiltrados.length && lancamentosFiltrados.length > 0}
-                      className="rounded border-gray-300 text-black focus:ring-0"
+                      className="rounded border-zinc-700 bg-zinc-800 text-white focus:ring-0"
                     />
                   </th>
                   <th className="py-3 px-2 w-8"></th>
@@ -770,7 +770,7 @@ export const LancamentosView: React.FC = () => {
                   <th className="py-3 px-4 text-right">AÇÕES</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 font-sans">
+              <tbody className="divide-y divide-white/5 font-sans">
                 {lancamentosFiltrados.map((item) => {
                   const isReceber = item.tipo === 'receber' && item.status !== 'saida' && item.status !== 'SAIDA';
                   const isConciliado = Number(item.conciliado) === 1 || Boolean(item.ofx_fitid) || Boolean(item.asaas_id) || Boolean(item.asaas_payment_id);
@@ -780,36 +780,36 @@ export const LancamentosView: React.FC = () => {
 
                   // Definir cor do badge de status
                   const statusStr = (item.status || '').toLowerCase();
-                  let badgeBg = 'bg-amber-100 text-amber-800';
+                  let badgeBg = 'bg-amber-950/60 text-amber-400 border border-amber-500/30';
                   let statusTexto = 'Pendente';
 
                   if (statusStr === 'pago' || statusStr === 'received') {
-                    badgeBg = 'bg-emerald-100 text-emerald-800';
+                    badgeBg = 'bg-emerald-950/60 text-emerald-400 border border-emerald-500/30';
                     statusTexto = 'Pago';
                   } else if (statusStr === 'atrasado' || statusStr === 'overdue') {
-                    badgeBg = 'bg-rose-100 text-rose-800';
+                    badgeBg = 'bg-rose-950/60 text-rose-400 border border-rose-500/30';
                     statusTexto = 'Atrasado';
                   } else if (statusStr === 'saida' || statusStr === 'saída') {
-                    badgeBg = 'bg-rose-100 text-rose-800';
+                    badgeBg = 'bg-rose-950/60 text-rose-400 border border-rose-500/30';
                     statusTexto = 'Saída';
                   }
 
                   return (
-                    <tr key={item.id} className={`hover:bg-gray-50/80 transition ${isSelected ? 'bg-purple-50/50' : ''}`}>
+                    <tr key={item.id} className={`hover:bg-zinc-900/60 transition ${isSelected ? 'bg-purple-950/30' : ''}`}>
                       {/* Checkbox */}
                       <td className="py-3.5 px-3 text-center">
                         <input
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => handleSelectOne(item.id)}
-                          className="rounded border-gray-300 text-black focus:ring-0"
+                          className="rounded border-zinc-700 bg-zinc-800 text-white focus:ring-0"
                         />
                       </td>
 
                       {/* Ícone de Direção */}
                       <td className="py-3.5 px-2 text-center">
                         <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
-                          isReceber ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'
+                          isReceber ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-500/30' : 'bg-rose-950/80 text-rose-400 border border-rose-500/30'
                         }`}>
                           <span className="material-symbols-outlined text-sm leading-none">
                             {isReceber ? 'south_west' : 'north_east'}
@@ -819,58 +819,58 @@ export const LancamentosView: React.FC = () => {
 
                       {/* Descrição / Tags / Cliente */}
                       <td className="py-3.5 px-4">
-                        <div className="font-bold text-gray-900 text-xs">{item.descricao}</div>
+                        <div className="font-bold text-white text-xs">{item.descricao}</div>
                         <div className="flex items-center space-x-1.5 mt-1">
                           {item.asaas_id || item.asaas_payment_id ? (
-                            <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded text-[9px] font-mono font-bold">
+                            <span className="px-1.5 py-0.5 bg-emerald-950/80 text-emerald-400 rounded text-[9px] font-mono font-bold border border-emerald-500/30">
                               ASAAS
                             </span>
                           ) : item.ofx_fitid ? (
-                            <span className="px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded text-[9px] font-mono font-bold">
+                            <span className="px-1.5 py-0.5 bg-blue-950/80 text-blue-400 rounded text-[9px] font-mono font-bold border border-blue-500/30">
                               OFX
                             </span>
                           ) : (
-                            <span className="px-1.5 py-0.5 bg-gray-100 text-gray-700 rounded text-[9px] font-mono font-bold">
+                            <span className="px-1.5 py-0.5 bg-zinc-800 text-zinc-300 rounded text-[9px] font-mono font-bold border border-white/5">
                               {item.categoria || 'Outros'}
                             </span>
                           )}
 
                           {isConciliado && (
-                            <span className="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 text-[9px] font-bold rounded flex items-center space-x-0.5 border border-emerald-200">
+                            <span className="px-1.5 py-0.5 bg-emerald-950/60 text-emerald-400 text-[9px] font-bold rounded flex items-center space-x-0.5 border border-emerald-500/30">
                               <span>🔒 CONCILIADO</span>
                             </span>
                           )}
 
-                          <span className="text-[11px] text-gray-500">
+                          <span className="text-[11px] text-zinc-400">
                             {item.cliente_fornecedor || 'Cliente Asaas'}
                           </span>
                         </div>
                       </td>
 
                       {/* Vencimento */}
-                      <td className="py-3.5 px-4 text-center font-mono text-gray-600 text-xs">
+                      <td className="py-3.5 px-4 text-center font-mono text-zinc-400 text-xs">
                         {item.vencimento ? new Date(item.vencimento).toLocaleDateString('pt-BR') : '—'}
                       </td>
 
                       {/* Data de Pagamento */}
                       <td className="py-3.5 px-4 text-center font-mono text-xs">
                         {item.data_pagamento ? (
-                          <span className="text-emerald-700 font-bold">
+                          <span className="text-emerald-400 font-bold">
                             {new Date(item.data_pagamento).toLocaleDateString('pt-BR')}
                           </span>
                         ) : (
-                          <span className="text-gray-400">—</span>
+                          <span className="text-zinc-600">—</span>
                         )}
                       </td>
 
                       {/* Valor */}
-                      <td className="py-3.5 px-4 text-right font-mono font-bold text-xs text-gray-900">
+                      <td className="py-3.5 px-4 text-right font-mono font-bold text-xs text-white">
                         R$ {valorNum.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </td>
 
                       {/* Valor Pago */}
                       <td className="py-3.5 px-4 text-right font-mono font-bold text-xs">
-                        <span className={valorPagoNum > 0 ? 'text-emerald-700' : 'text-gray-400'}>
+                        <span className={valorPagoNum > 0 ? 'text-emerald-400' : 'text-zinc-600'}>
                           R$ {valorPagoNum.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                         </span>
                       </td>
@@ -887,7 +887,7 @@ export const LancamentosView: React.FC = () => {
                         <div className="flex items-center justify-end space-x-1.5">
                           <button
                             onClick={() => abrirEdicao(item)}
-                            className="p-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-bold transition flex items-center border border-gray-200"
+                            className="p-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg text-xs font-bold transition flex items-center border border-white/5"
                             title="Editar Lançamento"
                           >
                             <span className="material-symbols-outlined text-sm leading-none">edit</span>

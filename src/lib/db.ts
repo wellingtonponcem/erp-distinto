@@ -267,6 +267,22 @@ export async function initTables() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
+    // 13. Orcamentos B2B (Orcamentos simples para clientes existentes)
+    await p.query(`
+      CREATE TABLE IF NOT EXISTS orcamentos_b2b (
+        id VARCHAR(64) PRIMARY KEY,
+        cliente_nome VARCHAR(255) NOT NULL,
+        cliente_empresa VARCHAR(255),
+        titulo VARCHAR(255) NOT NULL,
+        slug VARCHAR(255) UNIQUE NOT NULL,
+        status VARCHAR(32) DEFAULT 'rascunho',
+        valor_total DECIMAL(15,2) DEFAULT 0.00,
+        validade DATE,
+        dados_json LONGTEXT NOT NULL,
+        criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
   } catch (err: any) {
     console.error('Erro ao inicializar tabelas MySQL:', err.message);
   }

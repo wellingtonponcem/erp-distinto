@@ -73,12 +73,12 @@ export function pkgSuffix(nome: string): 'Heritage' | 'Cinematic' | 'Essencial' 
  */
 export const ADMIN_CSS = `
 * { box-sizing: border-box; }
-html { background: #e0e2eb; }
+html { background: #050505; }
 body {
   min-height: 100vh;
   margin: 0;
   background: #050505;
-  color: #111111;
+  color: #eaeaea;
   font-family: 'Hanken Grotesk', Arial, sans-serif;
   overflow-x: hidden;
 }
@@ -87,9 +87,13 @@ body {
   z-index: 1;
   display: flex;
   min-height: 100vh;
-  background: transparent;
+  background: #050505;
   padding: 16px;
   gap: 16px;
+}
+#app-wrapper.is-modal-layout {
+  padding: 0;
+  background: #050505;
 }
 #main-content,
 .content-sheet {
@@ -100,10 +104,16 @@ body {
   padding: 30px 34px !important;
   overflow-y: auto;
   max-width: none !important;
-  background: #fbfbfb;
+  background: #050505;
+  color: #eaeaea;
   border: 0;
-  border-radius: 32px;
   box-shadow: none;
+}
+.is-modal-layout #main-content,
+.is-modal-layout .content-sheet {
+  min-height: 100vh;
+  border-radius: 0;
+  background: #050505;
 }
 .app-topbar {
   display: flex;
@@ -206,7 +216,7 @@ body {
   font-size: 12px;
   font-weight: 800;
 }
-[x-cloak] { display: none !important; }
+[x-cloak] { opacity: 0; }
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.18); border-radius: 999px; }

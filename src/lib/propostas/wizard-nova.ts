@@ -220,7 +220,7 @@ ${upgradesHtml}
 
   const html = `
 <div id="app-wrapper" class="${isModal ? 'is-modal-layout' : ''}">
-    <main id="main-content" class="content-sheet ${isModal ? 'p-0' : ''}" x-data="proposta">
+    <main id="main-content" class="content-sheet ${isModal ? 'p-0' : ''}" x-data="proposta()">
         ${isModal ? '' : `
         <div class="app-topbar">
             <div class="top-nav">
@@ -235,7 +235,7 @@ ${upgradesHtml}
             <p class="page-subtitle text-zinc-500">Preencha os dados abaixo para gerar uma proposta personalizada com IA.</p>
         </div>
 
-        <form id="formGerarProposta" x-cloak class="grid grid-cols-1 lg:grid-cols-3 gap-6 ${isModal ? 'px-8 pb-12' : ''}">
+        <form id="formGerarProposta" class="grid grid-cols-1 lg:grid-cols-3 gap-6 ${isModal ? 'px-8 pb-12' : ''}">
             <input type="hidden" name="pasta_id" value="${esc(pastaId)}">
 
             <!-- PASSO 1: ESCOLHA DO TIPO -->
@@ -634,7 +634,7 @@ ${pkgCards}
                     </div>
                 </section>
 
-                <section class="card p-6" id="sectionServicos" x-show="tipoProposta === 'marketing'">
+                <section class="card p-6" id="sectionServicos" x-show="tipoProposta !== 'casamento'">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-sm font-bold text-zinc-900">Serviços Inclusos</h3>
                         <button type="button" @click="adicionarServico()" class="text-[10px] bg-zinc-900 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-zinc-800 transition-all flex items-center gap-1">
@@ -849,8 +849,8 @@ ${optionsFornecedores}
 
   const alpineScript = `
 // 1. Registro do componente Alpine.js (Escopo Global)
-document.addEventListener('alpine:init', () => {
-    Alpine.data('proposta', () => ({
+window.proposta = function() {
+    return {
         catalogoServicos: ${servicosJson},
         servicosSelecionados: [],
         valorSubtotal: 0,
@@ -929,16 +929,21 @@ document.addEventListener('alpine:init', () => {
         depoimento02Autor: 'Mariana & Lucas',
         
         init() {
-            if (this.tipoProposta === 'marketing') {
+            if (this.tipoProposta !== 'casamento' && this.servicosSelecionados.length === 0) {
                 this.adicionarServico();
             }
             
             this.$watch('tipoProposta', (value) => {
+                if (value !== 'casamento' && this.servicosSelecionados.length === 0) {
+                    this.adicionarServico();
+                }
                 const section = document.getElementById('sectionServicos');
-                if (value === 'marketing') {
-                    section.classList.remove('hidden');
-                } else {
-                    section.classList.add('hidden');
+                if (section) {
+                    if (value !== 'casamento') {
+                        section.classList.remove('hidden');
+                    } else {
+                        section.classList.add('hidden');
+                    }
                 }
             });
         },
@@ -1027,11 +1032,10 @@ document.addEventListener('alpine:init', () => {
             else desconto = desc;
 
             const mensalFinal = Math.max(0, sub - desconto);
-            // valor_total = total do contrato (mensal × meses) — template exibe ÷ meses para /mês
             this.valorTotal = Math.round(mensalFinal * meses * 100) / 100;
         }
-    }));
-});
+    };
+};
 `;
 
   const domScript = `

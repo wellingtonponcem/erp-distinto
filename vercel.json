@@ -5,6 +5,14 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/orcamento/:slug",
+      "destination": "/o/:slug"
+    },
+    {
+      "source": "/orcamento-b2b/:slug",
+      "destination": "/b2b/:slug"
+    },
+    {
       "source": "/sistema/api/financeiro/webhook_asaas.php",
       "destination": "/api/financeiro/webhook-asaas"
     },

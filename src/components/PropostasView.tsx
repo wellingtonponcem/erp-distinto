@@ -583,7 +583,7 @@ export const PropostasView: React.FC = () => {
 
   return (
     <div
-      className="bg-[#050505] text-white flex flex-col min-h-screen rounded-2xl overflow-hidden"
+      className="bg-[#050505] text-white flex flex-col min-h-screen"
       onContextMenu={(e) => showContextMenu(e, 'root')}
     >
       <style>{`
@@ -1179,7 +1179,7 @@ export const PropostasView: React.FC = () => {
                 <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
               </button>
             </div>
-            <div className="flex-1 bg-[#fcfcfc] overflow-hidden">
+            <div className="flex-1 bg-[#050505] overflow-hidden">
               <iframe src={novaUrl} className="w-full h-full border-0" />
             </div>
           </div>
@@ -1196,7 +1196,7 @@ export const PropostasView: React.FC = () => {
                 <X className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
               </button>
             </div>
-            <div className="flex-1 bg-[#fcfcfc] overflow-hidden">
+            <div className="flex-1 bg-[#050505] overflow-hidden">
               <iframe src={editUrl} className="w-full h-full border-0" />
             </div>
           </div>
