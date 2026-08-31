@@ -15,6 +15,7 @@ import { render as renderMarketing } from '@/lib/propostas/templates/marketing';
 import { render as renderFilmmaker } from '@/lib/propostas/templates/filmmaker';
 import { render as renderQuinze } from '@/lib/propostas/templates/quinze';
 import { LgpdConsent } from '@/components/LgpdConsent';
+import DOMPurify from 'isomorphic-dompurify';
 
 const MESES_PT: Record<string, string> = {
   '1': 'JANEIRO', '2': 'FEVEREIRO', '3': 'MARÇO', '4': 'ABRIL', '5': 'MAIO', '6': 'JUNHO',
@@ -211,9 +212,14 @@ ${upgradesHtml}
     </div>`;
 }
 
-/** Injeta HTML (slides) e re-executa eventuais <script> após o hydration. */
+/** Injeta HTML sanitizado (anti-XSS) e re-executa eventuais <script> após o hydration. */
 function Injected({ html }: { html: string }) {
   const ref = useRef<HTMLDivElement>(null);
+  const sanitized = DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['div','section','p','h1','h2','h3','h4','span','a','img','ul','ol','li','br','hr','strong','em','u','b','i','style','button','svg','path','picture','source','link'],
+    ALLOWED_ATTR: ['style','class','src','href','alt','id','data-*','width','height','viewBox','fill','stroke','stroke-width','stroke-linecap','stroke-linejoin','crossorigin','rel','media','srcset'],
+    ALLOW_UNKNOWN_PROTOCOLS: false,
+  });
 
   useEffect(() => {
     const container = ref.current;
@@ -230,7 +236,7 @@ function Injected({ html }: { html: string }) {
     });
   }, []);
 
-  return <div ref={ref} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: html }} />;
+  return <div ref={ref} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: sanitized }} />;
 }
 
 export default function PublicProposalPage(props: PageProps) {
@@ -262,21 +268,23 @@ export default function PublicProposalPage(props: PageProps) {
         condE: casamento.condE,
       };
 
-      const executeDynamicScript = (code: string) => {
+      const injectScript = (code: string) => {
         try {
-          const fn = new Function(code);
-          fn();
+          const s = document.createElement('script');
+          s.textContent = code;
+          document.body.appendChild(s);
+          s.remove();
         } catch (e) {}
       };
 
-      executeDynamicScript(scriptCode);
-      executeDynamicScript(casamentoClosingScript());
-      executeDynamicScript(planModalScript(planParams));
+      injectScript(scriptCode);
+      injectScript(casamentoClosingScript());
+      injectScript(planModalScript(planParams));
 
       const timer = setTimeout(() => {
-        executeDynamicScript(scriptCode);
-        executeDynamicScript(casamentoClosingScript());
-        executeDynamicScript(planModalScript(planParams));
+        injectScript(scriptCode);
+        injectScript(casamentoClosingScript());
+        injectScript(planModalScript(planParams));
       }, 300);
 
       return () => clearTimeout(timer);

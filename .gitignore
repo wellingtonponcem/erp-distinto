@@ -11,6 +11,7 @@ config/env.php
 .env.local
 .env.development.local
 .env.production.local
+scratch/
 
 # IDEs e Ferramentas
 .claude/

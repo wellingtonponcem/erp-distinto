@@ -1,16 +1,31 @@
 <?php
-// Cria o usuário administrador inicial
-// Acessar UMA vez: http://seu-site.com/setup/seed.php
-// APAGAR ESTE ARQUIVO após criar o usuário!
+// Cria o usuário administrador inicial — PROTEGIDO: exige admin autenticado.
+// Em produção deve ser removido do deploy. Acesso sem auth retorna 403.
 
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../includes/helpers.php';
 
-$nome  = 'Administrador';
-$email = 'admin@distinto.com.br';
-$senha = 'Distinto@2026';  // Alterar após primeiro login
+// Primeiro boot: se users vazio, permite sem auth (criação inicial). Caso contrário exige admin.
+$dbCheck = Database::get();
+try { $cnt = (int)$dbCheck->query("SELECT COUNT(*) FROM users")->fetchColumn(); } catch(Throwable $e){ $cnt = 1; }
+if ($cnt > 0) {
+    exigirAutenticacao();
+    $__u = usuarioAtual();
+    if (($__u['nivel'] ?? 0) != 1) {
+        http_response_code(403);
+        header('Content-Type: application/json');
+        echo json_encode(['erro' => 'Acesso negado: apenas administradores. Remova setup/seed.php em produção.']);
+        exit;
+    }
+    $db = $dbCheck;
+} else {
+    $db = $dbCheck;
+}
 
-$db = Database::get();
+$nome  = 'Administrador';
+$email = getenv('SEED_ADMIN_EMAIL') ?: 'admin@distinto.com.br';
+$senha = getenv('SEED_ADMIN_PASSWORD') ?: 'Distinto@2026';  // Definir SEED_ADMIN_PASSWORD no env em produção e trocar após primeiro login
 
 $existe = $db->prepare('SELECT id FROM users WHERE email = ?');
 $existe->execute([$email]);

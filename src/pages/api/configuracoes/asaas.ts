@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { requireAuth } from '@/lib/helpers';
+import { requireAuth, requireAdmin } from '@/lib/helpers';
 import { query, queryOne } from '@/lib/db';
 import { asaasService } from '@/lib/asaas';
 
@@ -46,6 +46,9 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, use
   }
 
   if (method === 'POST') {
+    if (user.nivel !== 1) {
+      return res.status(403).json({ erro: 'Acesso negado: permissão de administrador requerida.' });
+    }
     try {
       const { apiKey, mode } = req.body || {};
 

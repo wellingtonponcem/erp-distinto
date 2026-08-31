@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import DOMPurify from 'isomorphic-dompurify';
 
 const safeFetchJson = async (url: string, options?: RequestInit) => {
   try {
@@ -731,7 +732,7 @@ export const ModelosContratoView: React.FC = () => {
             <div className="bg-gray-200 p-8 rounded-2xl overflow-y-auto max-h-[78vh] flex justify-center shadow-inner">
               <div
                 className="bg-white border border-gray-300 rounded-sm shadow-2xl p-12 min-h-[1123px] w-full max-w-[794px] text-gray-900 font-sans text-xs leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: codigoHtmlRaw }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(codigoHtmlRaw) }}
               />
             </div>
           )}

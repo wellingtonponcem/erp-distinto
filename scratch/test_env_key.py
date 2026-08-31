@@ -3,7 +3,10 @@ import json
 import os
 
 def main():
-    key = "AIzaSyCEK588doDrGt5myWeF3BmfRDd4o_aXTaA"
+    import os
+    key = os.getenv('GEMINI_API_KEY')
+    if not key:
+        raise RuntimeError('GEMINI_API_KEY missing')
     print(f"Testing environment variable Gemini Key: {key[:8]}...{key[-8:]}")
     
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={key}"

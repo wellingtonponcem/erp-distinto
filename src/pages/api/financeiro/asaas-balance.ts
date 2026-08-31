@@ -1,8 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { AsaasService } from '@/lib/asaas';
 import { queryOne } from '@/lib/db';
+import { requireAuth } from '@/lib/helpers';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const asaas = new AsaasService();
     await asaas.initFromDb();
@@ -34,3 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 }
+
+export default requireAuth(async (req, res, _user) => {
+  await handler(req, res);
+});

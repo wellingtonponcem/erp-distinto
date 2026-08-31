@@ -1,12 +1,13 @@
 const mysql = require('mysql2/promise');
 
 async function run() {
+  if (!process.env.MYSQL_HOST || !process.env.MYSQL_DATABASE || !process.env.MYSQL_USER || !process.env.MYSQL_PASSWORD) throw new Error('MYSQL_* env vars missing');
   const p = mysql.createPool({
-    host: process.env.MYSQL_HOST || 'srv952.hstgr.io',
+    host: process.env.MYSQL_HOST,
     port: parseInt(process.env.MYSQL_PORT || '3306'),
-    database: process.env.MYSQL_DATABASE || 'u306254544_distinto',
-    user: process.env.MYSQL_USER || 'u306254544_poncem',
-    password: process.env.MYSQL_PASSWORD || '!@Jeane&w#1'
+    database: process.env.MYSQL_DATABASE,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD
   });
 
   const [props] = await p.query('SELECT * FROM propostas WHERE slug LIKE ? OR cliente_nome LIKE ?', ['%igor%', '%Igor%']);

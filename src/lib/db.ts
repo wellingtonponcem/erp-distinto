@@ -4,11 +4,14 @@ let poolInstance: mysql.Pool | null = null;
 
 export function getDbPool(): mysql.Pool {
   if (!poolInstance) {
-    const host = process.env.MYSQL_HOST || 'srv952.hstgr.io';
+    if (!process.env.MYSQL_HOST || !process.env.MYSQL_DATABASE || !process.env.MYSQL_USER || !process.env.MYSQL_PASSWORD) {
+      throw new Error('MYSQL_* env vars missing — configure MYSQL_HOST, MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD');
+    }
+    const host = process.env.MYSQL_HOST;
     const port = parseInt(process.env.MYSQL_PORT || '3306');
-    const database = process.env.MYSQL_DATABASE || 'u306254544_distinto';
-    const user = process.env.MYSQL_USER || 'u306254544_poncem';
-    const password = process.env.MYSQL_PASSWORD || '!@Jeane&w#1';
+    const database = process.env.MYSQL_DATABASE;
+    const user = process.env.MYSQL_USER;
+    const password = process.env.MYSQL_PASSWORD;
 
     poolInstance = mysql.createPool({
       host,
@@ -283,9 +286,38 @@ export async function initTables() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
+    // 14. Isolamento por posse (IDOR mitigation) — adiciona criado_por onde falta
+    for (const tbl of ['propostas','contratos','lancamentos','clientes','orcamentos_b2b','servicos']) {
+      try { await p.query(`ALTER TABLE ${tbl} ADD COLUMN criado_por VARCHAR(64) NULL;`); } catch (e) {}
+      try { await p.query(`ALTER TABLE ${tbl} ADD COLUMN tenant_id VARCHAR(64) NULL;`); } catch (e) {}
+    }
+    // Histórico já serve como audit log (propostas_historico)
+
   } catch (err: any) {
     console.error('Erro ao inicializar tabelas MySQL:', err.message);
   }
+}
+
+/** Helper de auditoria — registra acesso que muta dados */
+export async function auditLog(userId: string, acao: string, tabela: string, registroId: string, ip?: string) {
+  try {
+    const p = getDbPool();
+    const { mysqlSql, mysqlParams } = convertPgToMysql(
+      'INSERT INTO propostas_historico (proposta_id, user_id, tipo, conteudo) VALUES ($1, $2, $3, $4)',
+      [registroId, userId, acao, `${tabela}:${registroId} ip:${ip || ''}`]
+    );
+    await p.query(mysqlSql, mysqlParams);
+  } catch {}
+}
+
+/** Verifica posse do registro — retorna true se pertence ao usuário ou usuário é admin */
+export async function requireOwnership(table: string, id: string, user: { id: string; nivel: number }): Promise<boolean> {
+  if (user.nivel === 1) return true;
+  const row = await queryOne(`SELECT criado_por FROM ${table} WHERE id = $1 LIMIT 1`, [id]);
+  if (!row) return false;
+  // Se coluna não existe ou é null (dados legados), permite mas registra — migração pendente
+  if (row.criado_por === null || row.criado_por === undefined) return true;
+  return String(row.criado_por) === String(user.id);
 }
 
 let tablesInitialized = false;

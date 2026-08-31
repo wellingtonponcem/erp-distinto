@@ -904,7 +904,7 @@ Entrega em até 45 dias.`;
                 </p>
                 <p
                     style="font-family: var(--wedding-montserrat); font-size: 1.1rem; line-height: 1.8; color: #444; font-weight: 400;">
-                    ${nl2br(mensagemPessoal)}
+                    ${nl2br(esc(mensagemPessoal))}
                 </p>
             </div>
 
@@ -1084,7 +1084,7 @@ Entrega em até 45 dias.`;
                 <p style="margin-bottom: 20px;">Na Distinto, não começamos com ideias soltas. Começamos com clareza.</p>
 
                 <p style="margin-bottom: 20px;">
-                    Desenhamos três caminhos estratégicos para que a história de <strong>${nomeCasal}</strong> seja
+                    Desenhamos três caminhos estratégicos para que a história de <strong>${esc(nomeCasal)}</strong> seja
                     preservada com a força e a verdade que merecem.
                 </p>
 
@@ -1230,7 +1230,7 @@ ${(!precoUnicoAtivo && (d.show_heritage ?? true) !== false) ? `
                 <ul style="list-style: none; padding: 0; margin-bottom: 30px;">
 ${linhasH.filter((l) => !vazio(l)).map((linha) => `                    <li style="margin-bottom: 12px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        ${linha}
+                        ${esc(linha)}
                     </li>`).join('\n')}
 ${renderItensPersonalizadosCasamento(itensPersonalizados.heritage)}
                 </ul>
@@ -1287,7 +1287,7 @@ ${(!precoUnicoAtivo && (d.show_cinematic ?? true) !== false) ? `
                 <ul style="list-style: none; padding: 0; margin-bottom: 20px;">
 ${linhasC.filter((l) => !vazio(l)).map((linha) => `                    <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        ${linha}
+                        ${esc(linha)}
                     </li>`).join('\n')}
 ${renderItensPersonalizadosCasamento(itensPersonalizados.cinematic)}
                 </ul>
@@ -1378,7 +1378,7 @@ ${(!precoUnicoAtivo && (d.show_essencial ?? true) !== false) ? `
                 <ul style="list-style: none; padding: 0; margin-bottom: 20px;">
 ${linhasE.filter((l) => !vazio(l)).map((linha) => `                    <li style="margin-bottom: 10px; position: relative; padding-left: 20px;">
                         <span style="position: absolute; left: 0; color: #1a1a1a;">•</span>
-                        ${linha}
+                        ${esc(linha)}
                     </li>`).join('\n')}
 ${renderItensPersonalizadosCasamento(itensPersonalizados.essencial)}
                 </ul>

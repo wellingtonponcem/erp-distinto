@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { requireAuth } from '@/lib/helpers';
-import { query, queryOne } from '@/lib/db';
+import { query, queryOne, auditLog, requireOwnership } from '@/lib/db';
 import { generateId } from '@/lib/helpers';
 
 export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, user) => {
@@ -8,11 +8,9 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, use
 
   if (method === 'GET') {
     try {
-      const rows = await query(`
-        SELECT p.*
-        FROM propostas p
-        ORDER BY p.id DESC
-      `);
+      const rows = user.nivel === 1
+        ? await query(`SELECT p.* FROM propostas p ORDER BY p.id DESC`)
+        : await query(`SELECT p.* FROM propostas p WHERE p.criado_por = $1 ORDER BY p.id DESC`, [user.id]);
 
       const formatadas = rows.map((r: any) => {
         let dadosParsed: any = {};
@@ -68,8 +66,8 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, use
 
       await query(
         `INSERT INTO propostas (
-          id, slug, titulo, subtitulo, tipo, cliente_id, cliente_nome, pasta_id, validade, valor_total, status, dados_json
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+          id, slug, titulo, subtitulo, tipo, cliente_id, cliente_nome, pasta_id, validade, valor_total, status, dados_json, criado_por
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
         [
           id,
           slug,
@@ -82,9 +80,11 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, use
           validade || null,
           valTotalNum,
           status || 'enviada',
-          dadosJson
+          dadosJson,
+          user.id
         ]
       );
+      await auditLog(user.id, 'CREATE', 'propostas', id, req.headers['x-forwarded-for'] as string || req.socket.remoteAddress);
 
       // Automação financeira ao aprovar proposta
       if ((status === 'aprovada' || status === 'aceita') && valTotalNum > 0) {
@@ -111,10 +111,12 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, use
     try {
       const { id, titulo, subtitulo, tipo, cliente_nome, cliente_id, validade, valor_total, status, dados } = req.body || {};
       if (!id) return res.status(422).json({ erro: 'ID da proposta é obrigatório' });
+      if (!(await requireOwnership('propostas', id, user))) return res.status(403).json({ erro: 'Acesso negado: registro pertence a outro usuário' });
 
       const dadosJson = typeof dados === 'object' ? JSON.stringify(dados) : (dados || '{}');
       const valTotalNum = parseFloat(valor_total || 0);
 
+      await auditLog(user.id, 'UPDATE', 'propostas', id, req.headers['x-forwarded-for'] as string || req.socket.remoteAddress);
       await query(
         `UPDATE propostas SET 
           titulo = $1, subtitulo = $2, tipo = $3, cliente_nome = $4, validade = $5, valor_total = $6, status = $7, dados_json = $8
@@ -157,7 +159,8 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, use
     try {
       const { id } = req.query;
       if (!id) return res.status(422).json({ erro: 'ID da proposta é obrigatório' });
-
+      if (!(await requireOwnership('propostas', String(id), user))) return res.status(403).json({ erro: 'Acesso negado: registro pertence a outro usuário' });
+      await auditLog(user.id, 'DELETE', 'propostas', String(id), req.headers['x-forwarded-for'] as string || req.socket.remoteAddress);
       await query('DELETE FROM propostas WHERE id = $1', [id]);
       return res.status(200).json({ ok: true });
     } catch (err: any) {

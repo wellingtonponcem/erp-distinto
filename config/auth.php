@@ -22,9 +22,15 @@ function estaAutenticado(): bool {
 
 function exigirAutenticacao(): void {
     if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-        header("Access-Control-Allow-Origin: *");
+        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+        $allowed = ['https://wedistinto.com','https://www.wedistinto.com'];
+        $isAllowed = in_array($origin, $allowed, true) || str_ends_with($origin, '.vercel.app');
+        if ($isAllowed) {
+            header("Access-Control-Allow-Origin: $origin");
+            header("Access-Control-Allow-Credentials: true");
+        }
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
-        header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Origin, Accept");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Origin, Accept, asaas-access-token, X-Asaas-Signature");
         header("Access-Control-Max-Age: 86400");
         exit;
     }

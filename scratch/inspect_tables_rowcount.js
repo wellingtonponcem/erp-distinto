@@ -1,7 +1,8 @@
 const { Client } = require('pg');
 
-const oldConnectionString = 'postgresql://neondb_owner:npg_KZkR3eNUW7qJ@ep-divine-star-acx7crrn-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require';
-const newConnectionString = 'postgresql://neondb_owner:npg_y9elwYoUx3nz@ep-patient-moon-acgcdcuv-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require';
+if (!process.env.NEON_PASSWORD) throw new Error('NEON_PASSWORD missing');
+const oldConnectionString = `postgresql://neondb_owner:${process.env.NEON_PASSWORD}@ep-divine-star-acx7crrn-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require`;
+const newConnectionString = `postgresql://neondb_owner:${process.env.NEON_PASSWORD}@ep-patient-moon-acgcdcuv-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require`;
 
 async function check() {
   const oldClient = new Client({ connectionString: oldConnectionString });

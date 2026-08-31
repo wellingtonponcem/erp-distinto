@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import DOMPurify from 'isomorphic-dompurify';
 
 const safeFetchJson = async (url: string, options?: RequestInit) => {
   try {
@@ -1021,7 +1022,7 @@ const [titulo, setTitulo] = useState('');
               {contratoPdf.dados?.contrato_texto ? (
                 <div
                   className="bg-white p-6 rounded-lg shadow-xs leading-relaxed text-xs text-gray-900 font-sans"
-                  dangerouslySetInnerHTML={{ __html: contratoPdf.dados.contrato_texto }}
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(contratoPdf.dados.contrato_texto) }}
                 />
               ) : (
                 <div className="space-y-6 text-xs text-gray-800 leading-relaxed font-sans bg-white p-6 rounded-lg shadow-xs">

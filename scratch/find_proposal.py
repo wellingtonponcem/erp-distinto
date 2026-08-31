@@ -1,11 +1,15 @@
 import psycopg2
 
 def main():
+    import os
+    pwd = os.getenv('NEON_PASSWORD')
+    if not pwd:
+        raise RuntimeError('NEON_PASSWORD missing')
     conn = psycopg2.connect(
         host='ep-crimson-sun-ac4t9f9a-pooler.sa-east-1.aws.neon.tech',
         database='neondb',
         user='neondb_owner',
-        password='npg_3fXdCHMbS2xJ',
+        password=pwd,
         port=5432,
         sslmode='require'
     )

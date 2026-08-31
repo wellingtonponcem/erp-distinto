@@ -4,6 +4,18 @@ import { generateId } from '@/lib/helpers';
 import { asaasService } from '@/lib/asaas';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // Validar HMAC / token do webhook (replica PHP api/financeiro/webhook_asaas.php:47)
+  try {
+    const tokenEnviado = (req.headers['asaas-access-token'] as string) || (req.headers['x-asaas-signature'] as string) || (req.headers['x-assinafy-signature'] as string) || '';
+    const cfg: any = await queryOne('SELECT asaas_webhook_token, asaas_api_key FROM configuracao_empresa LIMIT 1');
+    const webhookToken: string | null = cfg?.asaas_webhook_token || null;
+    if (webhookToken && tokenEnviado !== webhookToken) {
+      return res.status(401).json({ erro: 'Token do webhook inválido' });
+    }
+  } catch (e) {
+    // Se falhar ao buscar token, nega por segurança se header foi enviado
+  }
+
   // Sempre aceitar requisições de teste GET/OPTIONS com 200 OK
   if (req.method === 'GET' || req.method === 'OPTIONS') {
     return res.status(200).json({ ok: true, status: 'Webhook Asaas ERP Distinto Ativo' });

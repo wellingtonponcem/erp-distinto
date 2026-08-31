@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { query, queryOne } from '@/lib/db';
 import { ADMIN_CSS } from '@/lib/propostas/wizard';
 import { buildEditarWizard, WizardEditarData } from '@/lib/propostas/wizard-editar';
+import DOMPurify from 'isomorphic-dompurify';
 
 interface EditarPageProps {
   wizard: ReturnType<typeof buildEditarWizard>;
@@ -60,7 +61,7 @@ export default function PropostaEditarPage({ wizard }: EditarPageProps) {
         }}
       />
 
-      <div dangerouslySetInnerHTML={{ __html: wizard.html || '' }} suppressHydrationWarning />
+      <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(wizard.html || '') }} suppressHydrationWarning />
     </>
   );
 }

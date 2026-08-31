@@ -1,8 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { queryOne } from '@/lib/db';
 import { renderMasterContractHtml } from '@/lib/contract-template';
+import { requireAuth } from '@/lib/helpers';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id, proposta_id } = req.query;
 
   if (!id && !proposta_id) {
@@ -66,3 +67,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).send('Erro interno ao carregar o contrato.');
   }
 }
+
+export default requireAuth(async (req, res, _user) => {
+  // Token efêmero via query ?token=JWT(slug) poderia ser validado aqui; por enquanto exige sessão autenticada
+  await handler(req, res);
+});

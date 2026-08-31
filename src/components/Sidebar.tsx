@@ -9,6 +9,7 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ user, activeTab, setActiveTab, onLogout }) => {
+  const isAdmin = user.nivel === 1;
   const menuGroups = [
     {
       section: 'Principal',
@@ -16,6 +17,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ user, activeTab, setActiveTab,
     },
     {
       section: 'Financeiro',
+      adminOnly: true,
       items: [
         { id: 'lancamentos', label: 'Lançamentos', icon: 'receipt_long' },
         { id: 'bancos', label: 'Bancos', icon: 'account_balance' },
@@ -44,7 +46,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ user, activeTab, setActiveTab,
         { id: 'oportunidades', label: 'Oportunidades', icon: 'trending_up' },
       ],
     },
-  ];
+  ].filter((g: any) => !(g.adminOnly && !isAdmin));
 
   return (
     <aside className="w-64 bg-[#050505] border-r border-white/10 min-h-screen flex flex-col justify-between font-sans select-none shrink-0 text-white">

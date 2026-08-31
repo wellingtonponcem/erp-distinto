@@ -12,11 +12,17 @@ export function requireAuth(
     // Set JSON headers by default
     res.setHeader('Content-Type', 'application/json');
 
-    // Tratar requisição prévia de CORS OPTIONS
+    // Tratar requisição prévia de CORS OPTIONS — restrito a origens confiáveis
     if (req.method === 'OPTIONS') {
-      res.setHeader('Access-Control-Allow-Origin', '*');
+      const origin = (req.headers.origin as string) || '';
+      const allowed = ['https://wedistinto.com', 'https://www.wedistinto.com'];
+      const isAllowed = allowed.some((o) => origin === o) || origin.endsWith('.vercel.app');
+      if (isAllowed) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+      }
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE, PATCH');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, asaas-access-token, X-Asaas-Signature');
       return res.status(200).end();
     }
 

@@ -7,6 +7,10 @@
  * interpolações literais (\${) do JavaScript são escapadas para aparecerem
  * literalmente no output.
  */
+import { esc } from '@/lib/propostas/common';
+
+// Escapa para interpolação segura dentro de innerHTML gerado via JS
+function escJs(v: unknown): string { return esc(v); }
 
 export interface InvestimentoCtx {
   slug: string;
@@ -60,6 +64,7 @@ export function investimentoScript(ctx: InvestimentoCtx): string {
                 let activeUpgrades = {};
 
                 const fmt = (v) => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                const escHtml = (s) => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 
                 window.selectPlan = function (id) {
                     selectedPlan = id;
@@ -133,7 +138,7 @@ export function investimentoScript(ctx: InvestimentoCtx): string {
                     
                     div.innerHTML = \`
                         <div style="flex: 1;">
-                            <p style="font-size: 0.75rem; font-weight: 500; color: rgba(255,255,255,0.82); margin: 0 0 1px; text-transform: uppercase; letter-spacing: 0.04em;">\${nome}</p>
+                            <p style="font-size: 0.75rem; font-weight: 500; color: rgba(255,255,255,0.82); margin: 0 0 1px; text-transform: uppercase; letter-spacing: 0.04em;">\${escHtml(nome)}</p>
                             <p style="font-size: 0.72rem; font-weight: 300; color: rgba(255,255,255,0.45); margin: 0;">\${isOptional ? fmt(valor) : 'Já incluso no pacote'}</p>
                         </div>
                         \${isOptional ? \`
@@ -202,7 +207,7 @@ export function investimentoScript(ctx: InvestimentoCtx): string {
                     const div = document.createElement('div');
                     div.className = 'linha-upgrade';
                     div.style = "display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06);";
-                    div.innerHTML = \`<span style="font-size: 0.78rem; color: rgba(255,255,255,0.7);">\${nome}</span><span style="font-size: 0.78rem; color: rgba(255,255,255,0.7);">\${fmt(valor)}</span>\`;
+                    div.innerHTML = \`<span style="font-size: 0.78rem; color: rgba(255,255,255,0.7);">\${escHtml(nome)}</span><span style="font-size: 0.78rem; color: rgba(255,255,255,0.7);">\${escHtml(fmt(valor))}</span>\`;
                     container.appendChild(div);
                 }
 

@@ -2,7 +2,10 @@ import jwt from 'jsonwebtoken';
 import { parse, serialize } from 'cookie';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'erp_distinto_jwt_secret_key_2026_vercel';
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET missing — configure a variável de ambiente JWT_SECRET');
+}
+const JWT_SECRET: string = process.env.JWT_SECRET;
 const COOKIE_NAME = 'distinto_token';
 const MAX_AGE = 86400 * 30; // 30 dias em segundos
 
@@ -52,8 +55,8 @@ export function getUserFromRequest(req: NextApiRequest): UserPayload | null {
     }
   }
 
-  // Fallback em ambiente de desenvolvimento para evitar erros de sessao expirada
-  if (process.env.NODE_ENV !== 'production') {
+  // Dev bypass apenas com flag explícita — nunca em preview/produção
+  if (process.env.ALLOW_DEV_AUTH === 'true' && process.env.NODE_ENV !== 'production') {
     return {
       id: 'faustinosdg@gmail.com',
       nome: 'Wellington Poncem',

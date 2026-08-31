@@ -1,14 +1,15 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { requireAuth, generateId } from '@/lib/helpers';
-import { query, queryOne } from '@/lib/db';
+import { query, queryOne, auditLog, requireOwnership } from '@/lib/db';
 import { asaasService } from '@/lib/asaas';
 
 export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, user) => {
   const method = req.method;
 
   if (method === 'GET') {
-    // 1. Busca lançamentos do banco local (Neon PostgreSQL)
-    const rows = await query(`
+    // 1. Busca lançamentos do banco local — filtra por posse se não for admin (IDOR mitigation)
+    const rows = user.nivel === 1
+      ? await query(`
       SELECT *,
         CASE
           WHEN COALESCE(valor_pago, 0) >= valor THEN 'pago'
@@ -18,7 +19,18 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, use
         END AS status
       FROM lancamentos
       ORDER BY COALESCE(data_pagamento, vencimento) DESC, id DESC
-    `);
+    `)
+      : await query(`
+      SELECT *,
+        CASE
+          WHEN COALESCE(valor_pago, 0) >= valor THEN 'pago'
+          WHEN COALESCE(valor_pago, 0) > 0 THEN 'pago_parcial'
+          WHEN vencimento < CURRENT_DATE AND status NOT IN ('pago','cancelado') THEN 'atrasado'
+          ELSE status
+        END AS status
+      FROM lancamentos WHERE criado_por = $1
+      ORDER BY COALESCE(data_pagamento, vencimento) DESC, id DESC
+    `, [user.id]);
 
     // 2. Tenta mesclar transações em tempo real da API do Asaas se estiver configurada
     let asaasRows: any[] = [];
@@ -67,6 +79,7 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, use
 
   if (method === 'POST') {
     const d = req.body || {};
+    d.criado_por = user.id;
     if (!d.descricao || !d.valor || !d.vencimento) {
       return res.status(422).json({ erro: 'Descrição, valor e vencimento são obrigatórios' });
     }
@@ -119,6 +132,7 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, use
   if (method === 'PUT') {
     const d = req.body || {};
     if (!d.id) return res.status(422).json({ erro: 'ID obrigatório' });
+    if (!(await requireOwnership('lancamentos', d.id, user))) return res.status(403).json({ erro: 'Acesso negado: registro pertence a outro usuário' });
 
     // Lançamento virtual em tempo real do Asaas
     if (d.id.startsWith('asaas_')) {
@@ -158,6 +172,7 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, use
       return res.status(200).json({ ok: true, mensagem: 'Lançamento conciliado: alterado apenas descrição e categoria.' });
     }
 
+    await auditLog(user.id, 'UPDATE', 'lancamentos', d.id, req.headers['x-forwarded-for'] as string || req.socket.remoteAddress);
     const valorTotal = parseFloat(d.valor);
     const valorPago = d.valor_pago !== undefined ? parseFloat(d.valor_pago) : parseFloat(old.valor_pago || 0);
     let dataPagamento = old.data_pagamento || null;
@@ -199,6 +214,9 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, use
     const body = req.body || {};
     const ids = Array.isArray(body.ids) ? body.ids : (req.query.id ? [req.query.id] : []);
     if (ids.length === 0) return res.status(422).json({ erro: 'ID obrigatório' });
+    for (const oid of ids) {
+      if (!(await requireOwnership('lancamentos', String(oid), user))) return res.status(403).json({ erro: `Acesso negado no registro ${oid}` });
+    }
 
     // Bloquear exclusão de itens virtuais do Asaas
     if (ids.some((id: string) => id.startsWith('asaas_'))) {
@@ -215,6 +233,7 @@ export default requireAuth(async (req: NextApiRequest, res: NextApiResponse, use
     }
 
     await query('DELETE FROM lancamentos WHERE id = ANY($1::text[])', [ids]);
+    for (const oid of ids) await auditLog(user.id, 'DELETE', 'lancamentos', String(oid), req.headers['x-forwarded-for'] as string || req.socket.remoteAddress);
     return res.status(200).json({ ok: true });
   }
 
@@ -242,14 +261,14 @@ async function insertLancamento(
     `INSERT INTO lancamentos (
       id, tipo, descricao, valor, valor_pago, categoria, cliente_fornecedor,
       vencimento, status, modalidade, total_parcelas, parcela_atual, lancamento_pai_id,
-      frequencia, data_termino, observacao, forma_pagamento, conta_id, data_pagamento, conciliado
-    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)`,
+      frequencia, data_termino, observacao, forma_pagamento, conta_id, data_pagamento, conciliado, criado_por
+    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)`,
     [
       id, d.tipo, d.descricao, valor, valorPago, d.categoria || 'outros',
       d.cliente_fornecedor || null, vencimento, status, d.modalidade || 'avista',
       totalParcelas, parcelaAtual, paiId, d.frequencia || null, d.data_termino || null,
       d.observacao || null, d.forma_pagamento || null, d.conta_id || null, dataPagamento,
-      d.conciliado || 0
+      d.conciliado || 0, d.criado_por || null
     ]
   );
 }

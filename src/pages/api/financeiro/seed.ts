@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { query, queryOne } from '@/lib/db';
-import { generateId } from '@/lib/helpers';
+import { generateId, requireAdmin } from '@/lib/helpers';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ erro: 'Método não permitido' });
   }
@@ -116,3 +116,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json({ erro: err.message });
   }
 }
+
+export default requireAdmin(async (req, res, _user) => {
+  await handler(req, res);
+});
