@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import crypto from 'crypto';
-import { query, queryOne } from '@/lib/db';
+import { query, queryOne, getDbPool } from '@/lib/db';
 import { brevoService } from '@/lib/brevo';
 import { generateId } from '@/lib/helpers';
 
@@ -41,13 +41,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   };
 
   try {
-    // Rate limit simples: max 3 por e-mail e throttle global
+    // Rate limit simples: max 3 por e-mail e throttle global (usa raw pool para evitar conversao created_at->criado_em)
     try {
       const fifteenAgo = new Date(Date.now() - 15 * 60 * 1000);
-      const recentCount = await queryOne('SELECT COUNT(*) as cnt FROM password_reset_tokens WHERE criado_em > $1 OR created_at > $2', [
-        fifteenAgo,
-        fifteenAgo,
-      ] as any);
+      const p = getDbPool();
+      const [rows] = await p.query('SELECT COUNT(*) as cnt FROM password_reset_tokens WHERE criado_em > ? OR created_at > ?', [fifteenAgo, fifteenAgo]) as any;
+      const recentCount = { cnt: rows?.[0]?.cnt ?? 0 };
       const recentCnt = parseInt((recentCount as any)?.cnt || '0', 10);
       if (recentCnt > 30) {
         return res.status(429).json({ erro: 'Muitas solicitações. Tente novamente em alguns minutos.' });
@@ -66,11 +65,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Verificar limite por usuário: max 3 tokens ativos recentes (compatível com created_at legada)
     try {
       const fifteenAgo2 = new Date(Date.now() - 15 * 60 * 1000);
-      const recentUser = await query('SELECT id FROM password_reset_tokens WHERE user_id = $1 AND (criado_em > $2 OR created_at > $3)', [
-        user.id,
-        fifteenAgo2,
-        fifteenAgo2,
-      ] as any);
+      const p2 = getDbPool();
+      const [rows2] = await p2.query('SELECT id FROM password_reset_tokens WHERE user_id = ? AND (criado_em > ? OR created_at > ?)', [user.id, fifteenAgo2, fifteenAgo2]) as any;
+      const recentUser = rows2 as any[];
       if (recentUser.length >= 3) {
         return res.status(200).json(genericSuccess);
       }
@@ -91,28 +88,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
     const id = generateId();
 
-    // Insert compatível com ambas as colunas created_at/criado_em (tenta ambas, fallback para uma)
-    try {
-      await query(
-        'INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at, criado_em, created_at) VALUES ($1, $2, $3, $4, NOW(), NOW())',
-        [id, user.id, tokenHash, expiresAt]
-      );
-    } catch (e: any) {
-      if (e.message?.includes('Unknown column')) {
-        // Fallback para schema que só tem uma das colunas
-        try {
-          await query(
-            'INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at, criado_em) VALUES ($1, $2, $3, $4, NOW())',
-            [id, user.id, tokenHash, expiresAt]
-          );
-        } catch (e2: any) {
-          await query(
-            'INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at, created_at) VALUES ($1, $2, $3, $4, NOW())',
-            [id, user.id, tokenHash, expiresAt]
-          );
+    // Insert compatível com ambas as colunas created_at/criado_em — usa pool direto para evitar conversao
+    {
+      const p3 = getDbPool();
+      try {
+        await p3.query('INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at, criado_em, created_at) VALUES (?, ?, ?, ?, NOW(), NOW())', [id, user.id, tokenHash, expiresAt]);
+      } catch (e: any) {
+        if (e.message?.includes('Unknown column') || e.message?.includes('specified twice')) {
+          try {
+            await p3.query('INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at, criado_em) VALUES (?, ?, ?, ?, NOW())', [id, user.id, tokenHash, expiresAt]);
+          } catch (e2: any) {
+            await p3.query('INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at, created_at) VALUES (?, ?, ?, ?, NOW())', [id, user.id, tokenHash, expiresAt]);
+          }
+        } else {
+          throw e;
         }
-      } else {
-        throw e;
       }
     }
 
