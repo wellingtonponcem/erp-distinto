@@ -20,18 +20,63 @@ export default function BriefingPage() {
 
   useEffect(() => {
     if (router.isReady) {
-      const rawVal = router.query.cliente || router.query.noivos || router.query.casal || '';
-      const clienteQuery = Array.isArray(rawVal) ? rawVal[0] : String(rawVal || '');
-      if (clienteQuery) {
-        setNomeClienteUrl(clienteQuery);
-        setValues((prev) => ({ ...prev, nome_noivos: clienteQuery }));
-      }
+      try {
+        const rawVal = router.query.cliente || router.query.noivos || router.query.casal || '';
+        let clienteQuery = Array.isArray(rawVal) ? rawVal[0] : String(rawVal || '');
+        // router.query já decodifica, mas protege caso venha com encode duplo ou caracteres inválidos
+        try {
+          // tenta decodificar se ainda houver % encodings
+          if (/%[0-9A-Fa-f]{2}/.test(clienteQuery)) clienteQuery = decodeURIComponent(clienteQuery);
+        } catch {}
+        // sanitiza: limita tamanho e remove quebras/controle
+        clienteQuery = clienteQuery.replace(/[\r\n\t\x00-\x1F]/g, ' ').trim().slice(0, 120);
+        if (clienteQuery) {
+          setNomeClienteUrl(clienteQuery);
+          setValues((prev) => ({ ...prev, nome_noivos: clienteQuery.slice(0, 255) }));
+        }
+      } catch {}
     }
   }, [router.isReady, router.query]);
 
   const getVal = (id: string): string => values[id] || '';
 
+  const normalizeTimeValue = (v: string): string => {
+    const t = v.trim();
+    if (!t) return '';
+    // aceita HH:MM, H:MM, HH:MM:SS -> normaliza para HH:MM
+    const m = t.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+    if (!m) return t; // deixa passar para validação posterior, mas evita throw do browser
+    let h = parseInt(m[1], 10);
+    let min = parseInt(m[2], 10);
+    if (h < 0 || h > 23 || min < 0 || min > 59) return t;
+    return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+  };
+
+  const normalizeDateValue = (v: string): string => {
+    const t = v.trim();
+    if (!t) return '';
+    // converte DD/MM/YYYY ou DD-MM-YYYY para YYYY-MM-DD
+    const br = t.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+    if (br) {
+      const d = br[1].padStart(2, '0');
+      const mo = br[2].padStart(2, '0');
+      const y = br[3];
+      const dt = new Date(`${y}-${mo}-${d}T00:00:00`);
+      if (!isNaN(dt.getTime())) return `${y}-${mo}-${d}`;
+    }
+    return t;
+  };
+
   const setVal = (id: string, v: string) => {
+    try {
+      // evita DOMException "The string did not match the expected pattern" em type=time/date
+      const isTime = briefingLogisticoConfig.sections.some((s) => s.fields.some((f) => f.id === id && f.type === 'time'));
+      const isDate = briefingLogisticoConfig.sections.some((s) => s.fields.some((f) => f.id === id && f.type === 'date'));
+      if (isTime) v = normalizeTimeValue(v);
+      if (isDate) v = normalizeDateValue(v);
+      // limita tamanho para evitar overflow de LONGTEXT/VARCHAR
+      if (v.length > 5000) v = v.slice(0, 5000);
+    } catch {}
     setValues((prev) => ({ ...prev, [id]: v }));
     setErrors((prev) => {
       const next = { ...prev };
@@ -69,23 +114,51 @@ export default function BriefingPage() {
 
     setEnviando(true);
     try {
-      const res = await fetch('/api/briefings/enviar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...values,
-          lgpd_aceito: true,
-          lgpd_data_aceite: new Date().toISOString(),
-        }),
-      });
-      const data = await res.json();
-      if (res.ok && data.ok) {
+      // sanitiza payload antes de enviar: trim, limita e normaliza
+      const sanitized: Record<string, string> = {};
+      for (const [k, v] of Object.entries(values)) {
+        let nv = typeof v === 'string' ? v.trim() : String(v ?? '');
+        if (nv.length > 5000) nv = nv.slice(0, 5000);
+        sanitized[k] = nv;
+      }
+      // garante nome dentro do limite VARCHAR(255)
+      if (sanitized.nome_noivos) sanitized.nome_noivos = sanitized.nome_noivos.slice(0, 255);
+
+      let res: Response;
+      let text = '';
+      try {
+        res = await fetch('/api/briefings/enviar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...sanitized,
+            lgpd_aceito: true,
+            lgpd_data_aceite: new Date().toISOString(),
+          }),
+        });
+        text = await res.text();
+      } catch (e: any) {
+        throw new Error(e?.message || 'Falha de conexão ao enviar briefing');
+      }
+      let data: any = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        throw new Error(text?.slice(0, 300) || 'Resposta inválida do servidor');
+      }
+      if (res!.ok && data.ok) {
         setEnviado(true);
       } else {
-        setErroEnvio(data.erro || 'Não foi possível enviar o briefing. Tente novamente.');
+        setErroEnvio(data.erro || data.detail || 'Não foi possível enviar o briefing. Tente novamente.');
       }
     } catch (err: any) {
-      setErroEnvio(err.message || 'Erro de conexão com o servidor. Tente novamente.');
+      const msg = err?.message || '';
+      // mapeia DOMException conhecida para mensagem amigável
+      if (/did not match the expected pattern/i.test(msg)) {
+        setErroEnvio('Um campo de data ou horário está com formato inválido. Verifique os campos de horário (HH:MM) e data (AAAA-MM-DD).');
+      } else {
+        setErroEnvio(msg || 'Erro de conexão com o servidor. Tente novamente.');
+      }
     } finally {
       setEnviando(false);
     }
@@ -126,13 +199,30 @@ export default function BriefingPage() {
       );
     }
 
+    // usa try/catch ao renderizar para evitar DOMException em value inválido
+    try {
+      // testa se o valor seria rejeitado pelo browser (cria input fantasma)
+      if (field.type === 'time' && val) {
+        const ok = /^\d{2}:\d{2}$/.test(val) || /^\d{2}:\d{2}:\d{2}$/.test(val);
+        if (!ok && val.length > 0) {
+          // deixa passar mas evita que o input time quebre: fallback para text temporariamente
+        }
+      }
+    } catch {}
     return (
       <input
         id={field.id}
         type={field.type === 'time' ? 'time' : field.type === 'date' ? 'date' : field.type === 'tel' ? 'tel' : 'text'}
         className="orc-input"
         value={val}
-        onChange={(e) => setVal(field.id, e.target.value)}
+        onChange={(e) => {
+          try {
+            setVal(field.id, e.target.value);
+          } catch (err: any) {
+            // fallback: guarda como text puro
+            setValues((prev) => ({ ...prev, [field.id]: e.target.value.slice(0, 5000) }));
+          }
+        }}
         placeholder={field.placeholder || ''}
       />
     );

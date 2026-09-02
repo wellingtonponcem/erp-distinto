@@ -25,6 +25,8 @@ export function getDbPool(): mysql.Pool {
       connectTimeout: 10000,
       enableKeepAlive: true,
       keepAliveInitialDelay: 0,
+      charset: 'utf8mb4',
+      supportBigNumbers: true,
     });
   }
 
