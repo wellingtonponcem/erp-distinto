@@ -5,6 +5,14 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/esqueci-senha.php",
+      "destination": "/esqueci-senha"
+    },
+    {
+      "source": "/redefinir-senha.php",
+      "destination": "/redefinir-senha"
+    },
+    {
       "source": "/orcamento/:slug",
       "destination": "/o/:slug"
     },

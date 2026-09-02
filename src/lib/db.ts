@@ -286,7 +286,22 @@ export async function initTables() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 14. Isolamento por posse (IDOR mitigation) — adiciona criado_por onde falta
+    // 14. Recuperação de senha — tokens de redefinição
+    await p.query(`
+      CREATE TABLE IF NOT EXISTS password_reset_tokens (
+        id VARCHAR(64) PRIMARY KEY,
+        user_id VARCHAR(64) NOT NULL,
+        token_hash VARCHAR(64) NOT NULL,
+        expires_at DATETIME NOT NULL,
+        used_at DATETIME NULL,
+        criado_em DATETIME DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_password_reset_token_hash (token_hash),
+        INDEX idx_password_reset_user_id (user_id),
+        UNIQUE KEY uq_token_hash (token_hash)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
+    // 15. Isolamento por posse (IDOR mitigation) — adiciona criado_por onde falta
     for (const tbl of ['propostas','contratos','lancamentos','clientes','orcamentos_b2b','servicos']) {
       try { await p.query(`ALTER TABLE ${tbl} ADD COLUMN criado_por VARCHAR(64) NULL;`); } catch (e) {}
       try { await p.query(`ALTER TABLE ${tbl} ADD COLUMN tenant_id VARCHAR(64) NULL;`); } catch (e) {}

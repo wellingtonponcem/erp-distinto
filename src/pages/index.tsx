@@ -21,8 +21,16 @@ export default function Home() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
+  const [mensagemSucesso, setMensagemSucesso] = useState('');
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('senha_redefinida') === '1') {
+        setMensagemSucesso('Senha redefinida com sucesso. Entre com a nova senha.');
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    }
     fetch('/api/auth/me')
       .then((res) => res.json())
       .then((data) => {
@@ -82,8 +90,13 @@ export default function Home() {
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
+            {mensagemSucesso && (
+              <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs rounded-xl font-semibold text-center">
+                {mensagemSucesso}
+              </div>
+            )}
             {erro && (
-              <div className="p-3 bg-red-500/10 border border-red-500/30 text-red-400 text-xs rounded-xl font-semibold">
+              <div className="p-3 bg-red-500/10 border border-red-500/30 text-red-400 text-xs rounded-xl font-semibold text-center">
                 {erro}
               </div>
             )}
@@ -115,6 +128,11 @@ export default function Home() {
             >
               Entrar no ERP
             </button>
+            <div className="text-center mt-3">
+              <a href="/esqueci-senha" className="text-xs text-zinc-400 hover:text-[#c5a880] transition font-medium">
+                Esqueci minha senha
+              </a>
+            </div>
           </form>
         </div>
       </div>
