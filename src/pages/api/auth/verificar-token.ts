@@ -14,6 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     );
     return res.status(200).json({ valido: !!row });
   } catch (err: any) {
-    return res.status(200).json({ valido: false });
+    console.error('verificar-token error:', err?.message);
+    return res.status(200).json({ valido: false, detail: err?.message });
   }
 }

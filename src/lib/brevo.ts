@@ -21,15 +21,17 @@ export interface CreateCampaignOptions {
 }
 
 export class BrevoService {
-  private apiKey: string;
-  private defaultSenderEmail: string;
-  private defaultSenderName: string;
-
-  constructor() {
-    this.apiKey = process.env.BREVO_API_KEY || process.env.SENDINBLUE_API_KEY || '';
-    this.defaultSenderEmail = process.env.BREVO_SENDER_EMAIL || 'atendimento@wedistinto.com';
-    this.defaultSenderName = process.env.BREVO_SENDER_NAME || 'ERP Distinto';
+  private get apiKey(): string {
+    return process.env.BREVO_API_KEY || process.env.SENDINBLUE_API_KEY || '';
   }
+  private get defaultSenderEmail(): string {
+    return process.env.BREVO_SENDER_EMAIL || 'atendimento@wedistinto.com';
+  }
+  private get defaultSenderName(): string {
+    return process.env.BREVO_SENDER_NAME || 'ERP Distinto';
+  }
+
+  constructor() {}
 
   public isConfigured(): boolean {
     return Boolean(this.apiKey);

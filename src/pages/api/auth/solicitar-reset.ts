@@ -41,27 +41,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   };
 
   try {
-    const ip = getClientIp(req);
-
-    // Rate limit simples: max 5 por IP e 3 por e-mail nos últimos 15 min
+    // Rate limit simples: max 3 por e-mail e throttle global
     try {
       const fifteenAgo = new Date(Date.now() - 15 * 60 * 1000);
-      const byIp = await queryOne('SELECT COUNT(*) as cnt FROM password_reset_tokens WHERE criado_em > $1 AND id LIKE $2', [
+      const recentCount = await queryOne('SELECT COUNT(*) as cnt FROM password_reset_tokens WHERE criado_em > $1 OR created_at > $2', [
         fifteenAgo,
-        `ip:${ip}%`,
-      ]);
-      // Fallback: contar por created_at sem ip tracking real — usa contagem global recente por IP via log separado
-      // Implementação pragmática: contar tokens criados recentemente (proxy para rate limit)
-      const recentCount = await queryOne('SELECT COUNT(*) as cnt FROM password_reset_tokens WHERE criado_em > $1', [
         fifteenAgo,
-      ]);
-      // Se houver mais de 20 solicitações globais recentes, aplica throttle leve
+      ] as any);
       const recentCnt = parseInt((recentCount as any)?.cnt || '0', 10);
       if (recentCnt > 30) {
         return res.status(429).json({ erro: 'Muitas solicitações. Tente novamente em alguns minutos.' });
       }
-    } catch (e) {
-      // ignora falha de rate limit check
+    } catch (e: any) {
+      console.warn('rate limit check skip:', e?.message);
     }
 
     // Anti-enumeração: buscar usuário mas sempre responder genérico
@@ -71,22 +63,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json(genericSuccess);
     }
 
-    // Verificar limite por usuário: max 3 tokens ativos recentes
+    // Verificar limite por usuário: max 3 tokens ativos recentes (compatível com created_at legada)
     try {
-      const recentUser = await query('SELECT id FROM password_reset_tokens WHERE user_id = $1 AND criado_em > $2', [
+      const fifteenAgo2 = new Date(Date.now() - 15 * 60 * 1000);
+      const recentUser = await query('SELECT id FROM password_reset_tokens WHERE user_id = $1 AND (criado_em > $2 OR created_at > $3)', [
         user.id,
-        new Date(Date.now() - 15 * 60 * 1000),
-      ]);
+        fifteenAgo2,
+        fifteenAgo2,
+      ] as any);
       if (recentUser.length >= 3) {
-        // Já tem 3 solicitações recentes — ainda retorna sucesso mas não cria novo
         return res.status(200).json(genericSuccess);
       }
-    } catch (e) {}
+    } catch (e: any) {
+      console.warn('recentUser check skip:', e?.message);
+    }
 
     // Invalidar tokens anteriores pendentes
     try {
       await query('UPDATE password_reset_tokens SET used_at = NOW() WHERE user_id = $1 AND used_at IS NULL', [user.id]);
-    } catch (e) {}
+    } catch (e: any) {
+      console.warn('invalidate old tokens skip:', e?.message);
+    }
 
     // Gerar token seguro
     const token = crypto.randomBytes(32).toString('base64url');
@@ -94,10 +91,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
     const id = generateId();
 
-    await query(
-      'INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at, criado_em) VALUES ($1, $2, $3, $4, NOW())',
-      [id, user.id, tokenHash, expiresAt]
-    );
+    // Insert compatível com ambas as colunas created_at/criado_em (tenta ambas, fallback para uma)
+    try {
+      await query(
+        'INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at, criado_em, created_at) VALUES ($1, $2, $3, $4, NOW(), NOW())',
+        [id, user.id, tokenHash, expiresAt]
+      );
+    } catch (e: any) {
+      if (e.message?.includes('Unknown column')) {
+        // Fallback para schema que só tem uma das colunas
+        try {
+          await query(
+            'INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at, criado_em) VALUES ($1, $2, $3, $4, NOW())',
+            [id, user.id, tokenHash, expiresAt]
+          );
+        } catch (e2: any) {
+          await query(
+            'INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at, created_at) VALUES ($1, $2, $3, $4, NOW())',
+            [id, user.id, tokenHash, expiresAt]
+          );
+        }
+      } else {
+        throw e;
+      }
+    }
 
     // Montar URL de redefinição
     const appUrl = getAppUrl(req);
@@ -137,11 +154,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Limpeza assíncrona de tokens expirados antigos (best-effort)
     query('DELETE FROM password_reset_tokens WHERE expires_at < $1 AND used_at IS NOT NULL', [
       new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-    ]).catch(() => {});
+    ]).catch((e) => console.warn('cleanup skip:', e?.message));
 
     return res.status(200).json(genericSuccess);
   } catch (err: any) {
-    console.error('solicitar-reset error:', err);
-    return res.status(500).json({ erro: 'Não foi possível iniciar a recuperação agora. Tente novamente.' });
+    console.error('solicitar-reset error:', err?.message, err?.stack);
+    // Em produção retorna erro detalhado se for falha de config (ajuda debug Vercel logs)
+    const isDbMissing = err?.message?.includes('MYSQL_');
+    const msg = isDbMissing ? `Erro de configuração do banco: ${err.message}` : err?.message || 'Erro interno';
+    return res.status(500).json({ erro: msg, detail: err?.message });
   }
 }

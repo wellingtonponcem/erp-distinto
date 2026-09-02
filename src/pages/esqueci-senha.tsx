@@ -28,7 +28,8 @@ export default function EsqueciSenha() {
       if (res.ok && data.ok) {
         setMensagem(data.mensagem || 'Se o e-mail estiver cadastrado, enviaremos um link de redefinição em alguns minutos.');
       } else {
-        setErro(data.erro || 'Não foi possível iniciar a recuperação. Tente novamente.');
+        setErro((data.erro || data.detail || 'Não foi possível iniciar a recuperação. Tente novamente.') + (data.detail ? ` (${data.detail})` : ''));
+        console.error('solicitar-reset fail', data);
       }
     } catch {
       setErro('Erro de conexão. Verifique sua internet.');

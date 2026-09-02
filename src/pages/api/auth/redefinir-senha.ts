@@ -64,7 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     return res.status(200).json({ ok: true, mensagem: 'Senha redefinida com sucesso. Faça login com a nova senha.' });
   } catch (err: any) {
-    console.error('redefinir-senha error:', err);
-    return res.status(500).json({ erro: 'Não foi possível redefinir a senha agora. Tente novamente.' });
+    console.error('redefinir-senha error:', err?.message, err?.stack);
+    return res.status(500).json({ erro: err?.message || 'Não foi possível redefinir a senha agora. Tente novamente.', detail: err?.message });
   }
 }

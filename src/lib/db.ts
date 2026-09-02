@@ -286,7 +286,7 @@ export async function initTables() {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
-    // 14. Recuperação de senha — tokens de redefinição
+    // 14. Recuperação de senha — tokens de redefinição (compatível com tabela legada PHP que usa created_at)
     await p.query(`
       CREATE TABLE IF NOT EXISTS password_reset_tokens (
         id VARCHAR(64) PRIMARY KEY,
@@ -300,6 +300,17 @@ export async function initTables() {
         UNIQUE KEY uq_token_hash (token_hash)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
+    // Migrações para tabela legada criada pelo PHP (id VARCHAR(36), user_id VARCHAR(255), created_at, TIMESTAMP, etc)
+    try { await p.query(`ALTER TABLE password_reset_tokens ADD COLUMN criado_em DATETIME DEFAULT CURRENT_TIMESTAMP`); } catch (e) {}
+    try { await p.query(`ALTER TABLE password_reset_tokens ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP`); } catch (e) {}
+    try { await p.query(`ALTER TABLE password_reset_tokens MODIFY COLUMN id VARCHAR(64)`); } catch (e) {}
+    try { await p.query(`ALTER TABLE password_reset_tokens MODIFY COLUMN user_id VARCHAR(64)`); } catch (e) {}
+    try { await p.query(`ALTER TABLE password_reset_tokens MODIFY COLUMN token_hash VARCHAR(64)`); } catch (e) {}
+    try { await p.query(`ALTER TABLE password_reset_tokens ADD INDEX idx_password_reset_token_hash (token_hash)`); } catch (e) {}
+    try { await p.query(`ALTER TABLE password_reset_tokens ADD INDEX idx_password_reset_user_id (user_id)`); } catch (e) {}
+    // Backfill: se criado_em existe mas created_at é usado pelo PHP, sincroniza
+    try { await p.query(`UPDATE password_reset_tokens SET criado_em = created_at WHERE criado_em IS NULL AND created_at IS NOT NULL`); } catch (e) {}
+    try { await p.query(`UPDATE password_reset_tokens SET created_at = criado_em WHERE created_at IS NULL AND criado_em IS NOT NULL`); } catch (e) {}
 
     // 15. Isolamento por posse (IDOR mitigation) — adiciona criado_por onde falta
     for (const tbl of ['propostas','contratos','lancamentos','clientes','orcamentos_b2b','servicos']) {
