@@ -41,12 +41,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   };
 
   try {
-    // Rate limit simples: max 3 por e-mail e throttle global (usa raw pool para evitar conversao created_at->criado_em)
+    // Rate limit simples: max 3 por e-mail e throttle global
     try {
       const fifteenAgo = new Date(Date.now() - 15 * 60 * 1000);
       const p = getDbPool();
-      const [rows] = await p.query('SELECT COUNT(*) as cnt FROM password_reset_tokens WHERE criado_em > ? OR created_at > ?', [fifteenAgo, fifteenAgo]) as any;
-      const recentCount = { cnt: rows?.[0]?.cnt ?? 0 };
+      let cnt = 0;
+      try {
+        const [rows] = await p.query('SELECT COUNT(*) as cnt FROM password_reset_tokens WHERE criado_em > ? OR created_at > ?', [fifteenAgo, fifteenAgo]) as any;
+        cnt = rows?.[0]?.cnt ?? 0;
+      } catch (e: any) {
+        if (e.message?.includes('Unknown column')) {
+          try {
+            const [rows2] = await p.query('SELECT COUNT(*) as cnt FROM password_reset_tokens WHERE criado_em > ?', [fifteenAgo]) as any;
+            cnt = rows2?.[0]?.cnt ?? 0;
+          } catch {
+            const [rows3] = await p.query('SELECT COUNT(*) as cnt FROM password_reset_tokens WHERE created_at > ?', [fifteenAgo]) as any;
+            cnt = rows3?.[0]?.cnt ?? 0;
+          }
+        } else throw e;
+      }
+      const recentCount = { cnt };
       const recentCnt = parseInt((recentCount as any)?.cnt || '0', 10);
       if (recentCnt > 30) {
         return res.status(429).json({ erro: 'Muitas solicitações. Tente novamente em alguns minutos.' });
@@ -62,12 +76,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json(genericSuccess);
     }
 
-    // Verificar limite por usuário: max 3 tokens ativos recentes (compatível com created_at legada)
+    // Verificar limite por usuário: max 3 tokens ativos recentes
     try {
       const fifteenAgo2 = new Date(Date.now() - 15 * 60 * 1000);
       const p2 = getDbPool();
-      const [rows2] = await p2.query('SELECT id FROM password_reset_tokens WHERE user_id = ? AND (criado_em > ? OR created_at > ?)', [user.id, fifteenAgo2, fifteenAgo2]) as any;
-      const recentUser = rows2 as any[];
+      let recentUser: any[] = [];
+      try {
+        const [rows2] = await p2.query('SELECT id FROM password_reset_tokens WHERE user_id = ? AND (criado_em > ? OR created_at > ?)', [user.id, fifteenAgo2, fifteenAgo2]) as any;
+        recentUser = rows2 as any[];
+      } catch (e: any) {
+        if (e.message?.includes('Unknown column')) {
+          try {
+            const [r] = await p2.query('SELECT id FROM password_reset_tokens WHERE user_id = ? AND criado_em > ?', [user.id, fifteenAgo2]) as any;
+            recentUser = r as any[];
+          } catch {
+            const [r2] = await p2.query('SELECT id FROM password_reset_tokens WHERE user_id = ? AND created_at > ?', [user.id, fifteenAgo2]) as any;
+            recentUser = r2 as any[];
+          }
+        } else throw e;
+      }
       if (recentUser.length >= 3) {
         return res.status(200).json(genericSuccess);
       }
@@ -88,20 +115,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
     const id = generateId();
 
-    // Insert compatível com ambas as colunas created_at/criado_em — usa pool direto para evitar conversao
+    // Insert — deixa timestamps com DEFAULT (evita divergencia criado_em vs created_at)
     {
       const p3 = getDbPool();
       try {
-        await p3.query('INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at, criado_em, created_at) VALUES (?, ?, ?, ?, NOW(), NOW())', [id, user.id, tokenHash, expiresAt]);
+        await p3.query('INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at) VALUES (?, ?, ?, ?)', [id, user.id, tokenHash, expiresAt]);
       } catch (e: any) {
-        if (e.message?.includes('Unknown column') || e.message?.includes('specified twice')) {
-          try {
-            await p3.query('INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at, criado_em) VALUES (?, ?, ?, ?, NOW())', [id, user.id, tokenHash, expiresAt]);
-          } catch (e2: any) {
-            await p3.query('INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at, created_at) VALUES (?, ?, ?, ?, NOW())', [id, user.id, tokenHash, expiresAt]);
-          }
-        } else {
-          throw e;
+        console.error('insert without timestamps failed:', e?.message);
+        // Fallback: tenta com explicit NOW() para coluna existente
+        try {
+          await p3.query('INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at, criado_em) VALUES (?, ?, ?, ?, NOW())', [id, user.id, tokenHash, expiresAt]);
+        } catch (e2: any) {
+          console.error('insert criado_em fallback failed:', e2?.message);
+          await p3.query('INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at, created_at) VALUES (?, ?, ?, ?, NOW())', [id, user.id, tokenHash, expiresAt]);
         }
       }
     }
