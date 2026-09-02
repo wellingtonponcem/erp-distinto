@@ -2,12 +2,15 @@ import jwt from 'jsonwebtoken';
 import { parse, serialize } from 'cookie';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-if (!process.env.JWT_SECRET) {
-  throw new Error('JWT_SECRET missing — configure a variável de ambiente JWT_SECRET');
-}
-const JWT_SECRET: string = process.env.JWT_SECRET;
+const JWT_SECRET: string = process.env.JWT_SECRET || '';
 const COOKIE_NAME = 'distinto_token';
 const MAX_AGE = 86400 * 30; // 30 dias em segundos
+
+function assertJwtSecret() {
+  if (!JWT_SECRET) {
+    throw new Error('JWT_SECRET missing — configure a variável de ambiente JWT_SECRET na Vercel (Settings > Environment Variables)');
+  }
+}
 
 export interface UserPayload {
   id: string;
@@ -17,6 +20,7 @@ export interface UserPayload {
 }
 
 export function generateToken(user: { id: string | number; nome: string; email: string; nivel?: number }): string {
+  assertJwtSecret();
   const payload: UserPayload = {
     id: String(user.id),
     nome: user.nome,
@@ -28,6 +32,7 @@ export function generateToken(user: { id: string | number; nome: string; email: 
 }
 
 export function verifyToken(token: string): UserPayload | null {
+  if (!JWT_SECRET) return null;
   try {
     return jwt.verify(token, JWT_SECRET) as UserPayload;
   } catch (err) {
