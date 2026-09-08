@@ -48,10 +48,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const descricao = payment.description || `Recebimento Asaas (${payment.billingType || 'PIX'})`;
       const formaPagamento = (payment.billingType || 'PIX').toLowerCase();
 
-      const lancamentoExistente = await queryOne(
-        'SELECT id FROM lancamentos WHERE asaas_payment_id = $1 OR asaas_id = $1',
-        [asaasId]
-      );
+      // Busca idempotente — compatível com schema que tem ou não a coluna asaas_payment_id
+      let lancamentoExistente: any = null;
+      try {
+        lancamentoExistente = await queryOne(
+          'SELECT id FROM lancamentos WHERE asaas_id = $1 LIMIT 1',
+          [asaasId]
+        );
+      } catch (e) {
+        // fallback se coluna ainda não existe (migração pendente)
+        lancamentoExistente = null;
+      }
+      // Fallback extra para coluna legada asaas_payment_id se existir
+      if (!lancamentoExistente) {
+        try {
+          lancamentoExistente = await queryOne(
+            'SELECT id FROM lancamentos WHERE asaas_payment_id = $1 LIMIT 1',
+            [asaasId]
+          );
+        } catch {}
+      }
 
       if (event === 'PAYMENT_RECEIVED' || event === 'PAYMENT_CONFIRMED') {
         if (lancamentoExistente) {
@@ -66,13 +82,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           );
         } else {
           const novoId = generateId();
-          await query(
-            `INSERT INTO lancamentos (
-              id, tipo, descricao, valor, valor_pago, categoria, cliente_fornecedor, 
-              vencimento, data_pagamento, status, conciliado, asaas_payment_id, asaas_id, forma_pagamento
-            ) VALUES ($1, 'receber', $2, $3, $4, 'Asaas', $5, $6, $7, 'pago', 1, $8, $8, $9)`,
-            [novoId, descricao, valor, valorPago, clienteNome, vencimento, dataPagamento, asaasId, formaPagamento]
-          );
+          // FIX: $8 duplicado virava 10 '?' mas só 9 params => erro "near '?'". Corrigido para $8,$9,$10 com asaasId duplicado
+          // Tenta inserir com ambas as colunas (compatível com DB novo); se falhar por coluna inexistente, faz fallback só com asaas_id
+          try {
+            await query(
+              `INSERT INTO lancamentos (
+                id, tipo, descricao, valor, valor_pago, categoria, cliente_fornecedor, 
+                vencimento, data_pagamento, status, conciliado, asaas_payment_id, asaas_id, forma_pagamento
+              ) VALUES ($1, 'receber', $2, $3, $4, 'Asaas', $5, $6, $7, 'pago', 1, $8, $9, $10)`,
+              [novoId, descricao, valor, valorPago, clienteNome, vencimento, dataPagamento, asaasId, asaasId, formaPagamento]
+            );
+          } catch (e: any) {
+            if (e.message?.includes('Unknown column') && e.message?.includes('asaas_payment_id')) {
+              await query(
+                `INSERT INTO lancamentos (
+                  id, tipo, descricao, valor, valor_pago, categoria, cliente_fornecedor, 
+                  vencimento, data_pagamento, status, conciliado, asaas_id, forma_pagamento
+                ) VALUES ($1, 'receber', $2, $3, $4, 'Asaas', $5, $6, $7, 'pago', 1, $8, $9)`,
+                [novoId, descricao, valor, valorPago, clienteNome, vencimento, dataPagamento, asaasId, formaPagamento]
+              );
+            } else {
+              throw e;
+            }
+          }
         }
       } else if (event === 'PAYMENT_OVERDUE') {
         if (lancamentoExistente) {

@@ -81,6 +81,7 @@ export async function initTables() {
     try { await p.query(`ALTER TABLE configuracao_empresa ADD COLUMN nome_empresa VARCHAR(255) DEFAULT 'ERP Distinto';`); } catch (e) {}
     try { await p.query(`ALTER TABLE configuracao_empresa ADD COLUMN asaas_api_key TEXT;`); } catch (e) {}
     try { await p.query(`ALTER TABLE configuracao_empresa ADD COLUMN asaas_mode VARCHAR(32) DEFAULT 'prod';`); } catch (e) {}
+    try { await p.query(`ALTER TABLE configuracao_empresa ADD COLUMN asaas_webhook_token TEXT;`); } catch (e) {}
 
     // 4. Clientes
     await p.query(`
@@ -147,6 +148,8 @@ export async function initTables() {
     try { await p.query(`ALTER TABLE lancamentos ADD COLUMN conta_id VARCHAR(64);`); } catch (e) {}
     try { await p.query(`ALTER TABLE lancamentos ADD COLUMN conciliado INT DEFAULT 0;`); } catch (e) {}
     try { await p.query(`ALTER TABLE lancamentos ADD COLUMN asaas_id VARCHAR(100);`); } catch (e) {}
+    try { await p.query(`ALTER TABLE lancamentos ADD COLUMN asaas_payment_id VARCHAR(100);`); } catch (e) {}
+    try { await p.query(`ALTER TABLE lancamentos ADD COLUMN forma_pagamento VARCHAR(50);`); } catch (e) {}
     try { await p.query(`ALTER TABLE lancamentos ADD COLUMN ofx_fitid VARCHAR(100);`); } catch (e) {}
 
     // 7. Pastas de Propostas
