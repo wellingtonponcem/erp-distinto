@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Florescer 2026 — Apresentação do Key Visual</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.cdnfonts.com/css/gilroy-bold" rel="stylesheet">
+<style>
+  @import url('https://fonts.cdnfonts.com/css/gilroy-bold');
+  :root{
+    --navy:#001735;
+    --navy2:#235382;
+    --jade:#00533e;
+    --jade2:#008f6b;
+    --sand:#d2c8b8;
+    --sand2:#ede4dd;
+    --sand3:#d8b495;
+    --copper:#c6773c;
+    --ink:#001a36;
+  }
+  html{scroll-behavior:smooth; scroll-snap-type:y mandatory;}
+  body{font-family:'Gilroy-Bold','Gilroy','Inter',sans-serif; background:#001735; color:#fff; overflow-x:hidden;}
+  .gilroy-light{font-family:'Gilroy-Light','Gilroy','Inter',sans-serif; font-weight:300;}
+  .gilroy-bold{font-family:'Gilroy-Bold','Gilroy','Inter',sans-serif; font-weight:700;}
+  .alegreya{font-family:'Alegreya',serif;}
+  .cormorant{font-family:'Cormorant Garamond',serif;}
+  .slide{scroll-snap-align:start; scroll-snap-stop:always; min-height:100vh; position:relative; display:flex; align-items:center; overflow:hidden;}
+  .nav-dot{width:32px; height:2px; background:rgba(255,255,255,.25); transition:all .4s; border-radius:999px;}
+  .nav-dot.active{background:#d8b495; width:48px;}
+  .glass{background:rgba(255,255,255,.07); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,.09);}
+  .text-balance{text-wrap:balance;}
+  /* shimmer */
+  @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+  /* float */
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important; transition:none!important}
+    video{animation:none!important; display:none!important}
+    .video-fallback{display:block!important; opacity:1!important}
+  }
+  @media print{
+    .no-print{display:none!important}
+    video{display:none!important}
+    html{scroll-snap-type:none}
+    .slide{min-height:auto; page-break-after:always; padding:40px 0}
+  }
+</style>
+</head>
+<body class="antialiased selection:bg-[#c6773c] selection:text-white">
+
+<!-- PROGRESS -->
+<div class="fixed top-0 left-0 right-0 h-[2px] bg-white/10 z-[50] no-print">
+  <div id="progress" class="h-full bg-[#d8b495] transition-all duration-300" style="width:11%"></div>
+</div>
+
+<!-- TOP BAR -->
+<header class="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-6 md:px-10 py-5 no-print">
+  <div class="flex items-center gap-3">
+    <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+      <span class="text-[11px] font-bold tracking-[0.2em] text-[#001735]">F</span>
+    </div>
+    <div class="hidden md:block">
+      <p class="text-[10px] tracking-[0.28em] text-white/60 leading-none">FLORESCER 2026</p>
+      <p class="text-[11px] tracking-[0.14em] text-white font-semibold -mt-[1px]">KEY VISUAL • APRESENTAÇÃO</p>
+    </div>
+  </div>
+  <div class="flex items-center gap-4">
+    <span id="counter" class="text-[11px] tracking-[0.18em] text-white/70 font-mono">01 / 09</span>
+    <button onclick="window.print()" class="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-[#001735] text-[11px] tracking-[0.14em] font-bold hover:bg-[#ede4dd] transition">EXPORTAR PDF</button>
+    <button onclick="document.getElementById('s01').scrollIntoView({behavior:'smooth'})" class="w-9 h-9 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-[#001735] transition text-white">↗</button>
+  </div>
+</header>
+
+<!-- DOTS -->
+<nav class="fixed right-4 md:right-6 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col gap-3 no-print" id="dots">
+  <button data-i="0" class="nav-dot active" aria-label="Slide 1"></button>
+  <button data-i="1" class="nav-dot" aria-label="Slide 2"></button>
+  <button data-i="2" class="nav-dot" aria-label="Slide 3"></button>
+  <button data-i="3" class="nav-dot" aria-label="Slide 4"></button>
+  <button data-i="4" class="nav-dot" aria-label="Slide 5"></button>
+  <button data-i="5" class="nav-dot" aria-label="Slide 6"></button>
+  <button data-i="6" class="nav-dot" aria-label="Slide 7"></button>
+  <button data-i="7" class="nav-dot" aria-label="Slide 8"></button>
+  <button data-i="8" class="nav-dot" aria-label="Slide 9"></button>
+</nav>
+
+<!-- HINT -->
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 px-4 py-2 rounded-full glass text-[11px] tracking-[0.12em] text-white/80 no-print">
+  <span class="hidden md:inline">Use ↑ ↓ ou scroll</span><span class="w-px h-3 bg-white/20 hidden md:block"></span><span class="md:hidden">Deslize</span> <span class="animate-bounce">↓</span>
+</div>
+
+<!-- SLIDE 01 HERO - VIDEO BLUR BG -->
+<section id="s01" class="slide" style="background: radial-gradient(1200px 600px at 70% -10%, #235382 0%, transparent 60%), linear-gradient(180deg, #001735 0%, #001a36 55%, #052d52 100%);">
+  <!-- video desfocado loop painel - sem controles -->
+  <video autoplay muted loop playsinline preload="metadata" poster="backdrop_florescer_2026.jpg" aria-hidden="true" tabindex="-1" class="absolute inset-0 w-full h-full object-cover scale-105 blur-[18px] brightness-[0.62] opacity-90">
+    <source src="backdrop_florescer_2026.mp4" type="video/mp4">
+  </video>
+  <!-- imagem fallback caso video não carregue -->
+  <div class="absolute inset-0 opacity-[0.18] hidden video-fallback">
+    <img src="backdrop_florescer_2026.jpg" alt="" class="w-full h-full object-cover object-top">
+  </div>
+  <!-- folhas decorativas topo com video também desfocado -->
+  <div class="absolute top-0 left-0 right-0 h-[42%] opacity-90 pointer-events-none">
+    <video autoplay muted loop playsinline preload="metadata" poster="backdrop_florescer_2026.jpg" aria-hidden="true" tabindex="-1" class="w-full h-full object-cover object-top blur-[12px] brightness-[0.75]" style="mask-image: linear-gradient(to bottom, black 60%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);">
+      <source src="backdrop_florescer_2026.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#001735]/40 to-[#001735]"></div>
+
+  <div class="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-10 pt-24 pb-10">
+    <div class="grid lg:grid-cols-[1.15fr_.85fr] gap-10 items-center">
+      <div>
+        <p class="inline-flex items-center gap-2 text-[10px] tracking-[0.32em] text-[#d8b495] border border-[#d8b495]/30 px-3 py-1.5 rounded-full bg-[#d8b495]/10 mb-6">APRESENTAÇÃO OFICIAL • KV 2026</p>
+        <h1 class="gilroy-bold text-[52px] md:text-[84px] lg:text-[96px] leading-[0.88] tracking-[-0.02em]">
+          <span class="gilroy-light font-light tracking-[0.14em] text-[42px] md:text-[62px] block text-white/90">FLORESCER</span>
+          <span class="text-white">2026</span>
+        </h1>
+        <div class="w-16 h-[2px] bg-[#c6773c] mt-6 mb-6"></div>
+        <h2 class="gilroy-light text-[18px] md:text-[26px] leading-[1.25] tracking-[0.18em] text-white/95 max-w-[640px] text-balance">
+          UMA NOITE PARA DESPERTAR<br>
+          <span class="text-[#d8b495]">O QUE JÁ EXISTE EM VOCÊ.</span>
+        </h2>
+        <p class="cormorant italic text-[15px] md:text-[17px] text-white/60 mt-4 max-w-[520px] leading-relaxed">
+          Um visual que floresce de dentro para fora — elegante, orgânico e inesquecível. Criado para mulheres que lideram, conectam e transformam.
+        </p>
+        <div class="flex flex-wrap gap-3 mt-8">
+          <a href="#s03" class="px-7 py-3 rounded-full bg-white text-[#001735] text-[12px] tracking-[0.14em] font-bold hover:bg-[#ede4dd] transition">VER KEY VISUAL →</a>
+          <a href="#s07" class="px-7 py-3 rounded-full border border-white/20 text-white text-[12px] tracking-[0.14em] font-bold hover:bg-white hover:text-[#001735] transition">VER APLICAÇÕES</a>
+        </div>
+        <!-- pilares mini -->
+        <div class="grid grid-cols-2 gap-4 mt-10 max-w-[520px]">
+          <div class="glass rounded-2xl px-5 py-4">
+            <p class="text-[10px] tracking-[0.22em] text-[#d8b495]">PILAR 01</p>
+            <p class="gilroy-bold text-[13px] tracking-[0.12em] mt-1">CONEXÃO &<br>LIDERANÇA</p>
+          </div>
+          <div class="glass rounded-2xl px-5 py-4">
+            <p class="text-[10px] tracking-[0.22em] text-[#d8b495]">PILAR 02</p>
+            <p class="gilroy-bold text-[13px] tracking-[0.12em] mt-1">ESTRATÉGIA &<br>CRESCIMENTO</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- card data -->
+      <div class="lg:justify-self-end w-full max-w-[440px]">
+        <div class="bg-[#ede4dd] rounded-[28px] p-7 md:p-8 text-[#001735] shadow-[0_30px_80px_rgba(0,0,0,.4)] relative overflow-hidden">
+          <div class="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-[#c6773c]/10"></div>
+          <p class="text-[10px] tracking-[0.3em] text-[#705b5e]">SAVE THE DATE</p>
+          <p class="cormorant text-[34px] leading-none mt-3 text-[#001735]">22 de setembro</p>
+          <p class="text-[13px] tracking-[0.18em] text-[#001735]/70 mt-1">Espaço Villa Alphaville • 19h</p>
+          <div class="h-px bg-[#001735]/10 my-5"></div>
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-[10px] tracking-[0.2em] text-[#705b5e]">REALIZAÇÃO</p>
+              <p class="alegreya text-[11px] tracking-[0.14em] font-medium mt-1">MULHERES CONECTAM O MUNDO</p>
+            </div>
+            <div class="w-10 h-10 rounded-full bg-[#001735] text-white flex items-center justify-center text-[10px]">◆</div>
+          </div>
+          <div class="mt-6 flex items-center gap-3 text-[10px] tracking-[0.14em] text-[#001735]/40">
+            <span class="w-8 h-px bg-[#001735]/15"></span> 22.09 • VILLA ALPHAVILLE
+          </div>
+        </div>
+        <p class="text-center text-[10px] tracking-[0.18em] text-white/40 mt-4">01 — CAPA • CONCEITO ASPIRACIONAL</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 02 MANIFESTO -->
+<section id="s02" class="slide bg-[#ede4dd] text-[#001735]">
+  <div class="absolute inset-0 opacity-[0.04]" style="background-image: radial-gradient(circle at 1px 1px, #001735 1px, transparent 0); background-size:22px 22px;"></div>
+  <div class="relative w-full max-w-[1400px] mx-auto px-6 md:px-10 py-16 md:py-10">
+    <div class="flex flex-wrap items-end justify-between gap-6 mb-10">
+      <div>
+        <p class="text-[11px] tracking-[0.3em] text-[#c6773c] font-bold">02 — MANIFESTO</p>
+        <h2 class="gilroy-bold text-[36px] md:text-[52px] leading-[0.9] tracking-[-0.02em] mt-2">Florescer é<br><span class="gilroy-light font-light italic cormorant text-[38px] md:text-[54px]">lembrar quem você já é.</span></h2>
+      </div>
+      <p class="max-w-[420px] text-[14px] leading-relaxed text-[#001735]/60">Não criamos algo novo. Revelamos. O KV nasce da ideia de que toda mulher já carrega — em potência — a liderança, a estratégia e a beleza do seu próprio florescimento.</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-5 md:gap-6">
+      <div class="bg-white rounded-[24px] p-7 shadow-[0_10px_40px_rgba(0,23,53,.08)] border border-black/5">
+        <div class="w-10 h-10 rounded-full bg-[#001735] text-white flex items-center justify-center text-[16px]">◈</div>
+        <h3 class="gilroy-bold text-[13px] tracking-[0.14em] mt-5">DESPERTAR</h3>
+        <p class="text-[13px] leading-relaxed text-[#001735]/60 mt-3">A noite que acende o que estava adormecido. Luz suave, dourado quente e folhagens que abraçam — não competem.</p>
+        <div class="mt-5 flex gap-1.5"><span class="h-1 w-8 rounded-full bg-[#c6773c]"></span><span class="h-1 w-2 rounded-full bg-black/10"></span><span class="h-1 w-2 rounded-full bg-black/10"></span></div>
+      </div>
+      <div class="bg-[#001735] rounded-[24px] p-7 text-white shadow-[0_20px_60px_rgba(0,23,53,.25)]">
+        <div class="w-10 h-10 rounded-full bg-[#d8b495] text-[#001735] flex items-center justify-center">✦</div>
+        <h3 class="gilroy-bold text-[13px] tracking-[0.14em] mt-5 text-[#d8b495]">CONECTAR</h3>
+        <p class="text-[13px] leading-relaxed text-white/70 mt-3">Mulheres que se reconhecem. Traços que se entrelaçam como ramos — conexão como  raiz, liderança como flor.</p>
+        <p class="text-[11px] tracking-[0.16em] text-white/40 mt-6">CONEXÃO & LIDERANÇA</p>
+      </div>
+      <div class="bg-white rounded-[24px] p-7 shadow-[0_10px_40px_rgba(0,23,53,.08)] border border-black/5">
+        <div class="w-10 h-10 rounded-full bg-[#008f6b] text-white flex items-center justify-center">⬢</div>
+        <h3 class="gilroy-bold text-[13px] tracking-[0.14em] mt-5">CRESCER</h3>
+        <p class="text-[13px] leading-relaxed text-[#001735]/60 mt-3">Estratégia que floresce. Crescimento que não é pressa — é direção. Cada elemento do KV aponta para o futuro.</p>
+        <p class="text-[11px] tracking-[0.16em] text-[#00533e]/60 mt-6">ESTRATÉGIA & CRESCIMENTO</p>
+      </div>
+    </div>
+
+    <div class="mt-8 grid md:grid-cols-[1.2fr_.8fr] gap-6 items-center">
+      <div class="flex items-center gap-4 text-[12px] tracking-[0.14em] text-[#001735]/50">
+        <span class="hidden md:block w-12 h-px bg-[#001735]/20"></span> “UMA NOITE PARA DESPERTAR O QUE JÁ EXISTE EM VOCÊ.” — tagline oficial, Gilroy Light, tracking .15em
+      </div>
+      <div class="flex justify-end gap-2 text-[11px]">
+        <span class="px-3 py-1.5 rounded-full bg-white border border-black/10">Elegante</span>
+        <span class="px-3 py-1.5 rounded-full bg-white border border-black/10">Orgânico</span>
+        <span class="px-3 py-1.5 rounded-full bg-[#c6773c] text-white">Sofisticado</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 03 KV COMPLETO - LIMPO -->
+<section id="s03" class="slide bg-[#ede4dd] text-[#001735]">
+  <div class="relative w-full max-w-[1400px] mx-auto px-6 md:px-10 py-8 flex flex-col justify-center min-h-[100vh]">
+    <div class="flex flex-wrap items-end justify-between gap-4 mb-5">
+      <div>
+        <p class="text-[11px] tracking-[0.3em] text-[#c6773c] font-bold">03 — KEY VISUAL OFICIAL</p>
+        <h2 class="gilroy-bold text-[30px] md:text-[42px] leading-none mt-2">O KV em seu estado puro.</h2>
+        <p class="text-[13px] text-[#001735]/60 mt-2">Sem interferências. É exatamente assim que o KV deve ser visto e entregue.</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="px-3 py-1 rounded-full bg-white border border-black/10 text-[11px] tracking-[0.12em]">5669 × 3401 PX</span>
+        <span class="px-3 py-1 rounded-full bg-[#001735] text-white text-[11px] tracking-[0.12em]">MASTER</span>
+        <button id="toggleGuia" class="ml-2 px-4 py-1.5 rounded-full border border-[#c6773c]/30 text-[#c6773c] text-[11px] tracking-[0.12em] font-bold hover:bg-[#c6773c] hover:text-white transition">VER GUIA ^</button>
+      </div>
+    </div>
+
+    <!-- IMAGEM 100% LIMPA - SEM NADA POR CIMA -->
+    <div class="relative rounded-[20px] overflow-hidden bg-[#001735] shadow-[0_30px_90px_rgba(0,0,0,.18)] border border-black/5">
+      <img id="kvMaster" src="backdrop_florescer_2026.jpg" alt="Key Visual Florescer 2026 - versão master completa" class="w-full h-auto block">
+      <!-- guia opcional desligado por padrão -->
+      <div id="kvGuia" class="hidden absolute inset-0 pointer-events-none">
+        <div class="absolute inset-[3%] border border-white/25 rounded-[12px]"></div>
+        <div class="absolute top-[3%] left-1/2 -translate-x-1/2 bg-[#c6773c] text-white text-[10px] tracking-[0.18em] px-3 py-1 rounded-full">ÁREA DE RESPIRO 3%</div>
+        <div class="absolute top-[18%] left-1/2 -translate-x-1/2 w-px h-[22%] bg-white/30"></div>
+        <div class="absolute left-[16%] top-1/2 -translate-y-1/2 h-px w-[12%] bg-white/30 hidden md:block"></div>
+        <div class="absolute right-[16%] top-1/2 -translate-y-1/2 h-px w-[12%] bg-white/30 hidden md:block"></div>
+        <div class="absolute bottom-[14%] left-1/2 -translate-x-1/2 w-px h-[14%] bg-white/30"></div>
+      </div>
+    </div>
+    <p class="text-center text-[11px] tracking-[0.14em] text-[#001735]/40 mt-3">↑ Imagem 100% fiel ao arquivo master. Nenhum elemento acima faz parte do KV.</p>
+
+    <!-- Legenda fora da imagem -->
+    <div class="grid md:grid-cols-3 gap-3 mt-5">
+      <div class="bg-white rounded-2xl px-5 py-4 flex gap-3 items-center border border-black/5">
+        <span class="w-9 h-9 rounded-full bg-[#ede4dd] border border-black/10 flex items-center justify-center text-[11px] font-bold">A</span>
+        <div><p class="text-[11px] tracking-[0.14em] font-bold">TOPO FLORAL</p><p class="text-[12px] text-black/50">Moldura orgânica • acolhimento</p></div>
+      </div>
+      <div class="bg-white rounded-2xl px-5 py-4 flex gap-3 items-center border border-black/5">
+        <span class="w-9 h-9 rounded-full bg-[#001735] text-white flex items-center justify-center text-[11px] font-bold">B</span>
+        <div><p class="text-[11px] tracking-[0.14em] font-bold">NÚCLEO TIPOGRÁFICO</p><p class="text-[12px] text-black/50">Gilroy Light + Bold • manifesto</p></div>
+      </div>
+      <div class="bg-white rounded-2xl px-5 py-4 flex gap-3 items-center border border-black/5">
+        <span class="w-9 h-9 rounded-full bg-[#c6773c] text-white flex items-center justify-center text-[11px] font-bold">C</span>
+        <div><p class="text-[11px] tracking-[0.14em] font-bold">BASE INSTITUCIONAL</p><p class="text-[12px] text-black/50">Data + Realização</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 04 PALETA -->
+<section id="s04" class="slide bg-[#faf8f6] text-[#001735]">
+  <div class="w-full max-w-[1400px] mx-auto px-6 md:px-10 py-12">
+    <p class="text-[11px] tracking-[0.3em] text-[#c6773c] font-bold">04 — PALETA CROMÁTICA</p>
+    <div class="grid lg:grid-cols-[.95fr_1.05fr] gap-10 mt-6 items-start">
+      <div>
+        <h2 class="gilroy-bold text-[38px] md:text-[48px] leading-[0.9]">Noite profunda.<br><span class="cormorant italic font-light">Toque de ouro.</span></h2>
+        <p class="text-[14px] leading-relaxed text-[#001735]/60 mt-4 max-w-[520px]">Paleta extraída do backdrop master. Contraste alto para palco, calor humano para digital. Cada cor tem função emocional e técnica.</p>
+        <div class="mt-8 grid grid-cols-2 gap-3">
+          <div class="rounded-2xl p-5 text-white" style="background: linear-gradient(135deg, #001735, #235382)">
+            <p class="text-[10px] tracking-[0.2em] opacity-70">PRIMÁRIO</p>
+            <p class="font-bold tracking-[0.06em]">#001735 → #235382</p>
+            <p class="text-[12px] opacity-70 mt-1">Fundo hero, autoridade, noite</p>
+          </div>
+          <div class="rounded-2xl p-5 text-white" style="background: linear-gradient(135deg, #00533e, #008f6b)">
+            <p class="text-[10px] tracking-[0.2em] opacity-70">SECUNDÁRIO</p>
+            <p class="font-bold">#00533E → #008F6B</p>
+            <p class="text-[12px] opacity-70 mt-1">Folhagens, crescimento</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3">
+        <div class="rounded-[20px] p-4 bg-white border border-black/5 shadow-sm">
+          <div class="h-24 rounded-xl" style="background:#001a36"></div>
+          <p class="text-[11px] font-bold tracking-[0.12em] mt-3">#001A36</p><p class="text-[11px] text-black/50">Navy Ink • títulos</p>
+        </div>
+        <div class="rounded-[20px] p-4 bg-white border border-black/5 shadow-sm">
+          <div class="h-24 rounded-xl" style="background:#d2c8b8"></div>
+          <p class="text-[11px] font-bold tracking-[0.12em] mt-3">#D2C8B8</p><p class="text-[11px] text-black/50">Areia • fundos claros</p>
+        </div>
+        <div class="rounded-[20px] p-4 bg-white border border-black/5 shadow-sm">
+          <div class="h-24 rounded-xl" style="background:#c6773c"></div>
+          <p class="text-[11px] font-bold tracking-[0.12em] mt-3">#C6773C</p><p class="text-[11px] text-black/50">Cobre • detalhe premium</p>
+        </div>
+        <div class="rounded-[20px] p-4 bg-white border border-black/5 shadow-sm">
+          <div class="h-24 rounded-xl" style="background:#ede4dd"></div>
+          <p class="text-[11px] font-bold tracking-[0.12em] mt-3">#EDE4DD</p><p class="text-[11px] text-black/50">Off-white • respiro</p>
+        </div>
+        <div class="rounded-[20px] p-4 bg-white border border-black/5 shadow-sm">
+          <div class="h-24 rounded-xl" style="background:#d8b495"></div>
+          <p class="text-[11px] font-bold tracking-[0.12em] mt-3">#D8B495</p><p class="text-[11px] text-black/50">Dourado suave • highlights</p>
+        </div>
+        <div class="rounded-[20px] p-4 bg-white border border-black/5 shadow-sm">
+          <div class="h-24 rounded-xl" style="background:#705b5e"></div>
+          <p class="text-[11px] font-bold tracking-[0.12em] mt-3">#705B5E</p><p class="text-[11px] text-black/50">Taupe • apoio</p>
+        </div>
+        <div class="col-span-3 flex items-center gap-3 px-4 py-3 rounded-full bg-[#001735] text-white text-[11px] tracking-[0.14em] justify-center">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span> CONTRASTE WCAG AA APROVADO • BRANCO SOBRE NAVY 15.2:1
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 05 TIPOGRAFIA -->
+<section id="s05" class="slide bg-[#001735] text-white">
+  <div class="w-full max-w-[1400px] mx-auto px-6 md:px-10 py-10">
+    <div class="flex flex-wrap justify-between gap-4">
+      <div>
+        <p class="text-[11px] tracking-[0.3em] text-[#d8b495]">05 — TIPOGRAFIA</p>
+        <h2 class="gilroy-bold text-[32px] md:text-[44px] leading-none mt-2">Gilroy. <span class="gilroy-light font-light">Clara. Forte. Humana.</span></h2>
+      </div>
+      <p class="text-[13px] text-white/50 max-w-[380px]">Uma família, três vozes. Tracking generoso e respiro para transmitir elegância e confiança.</p>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-5 mt-8">
+      <div class="rounded-[20px] bg-white text-[#001735] p-7">
+        <div class="flex justify-between items-start">
+          <p class="text-[10px] tracking-[0.22em] text-black/40">01 • HEADLINE MANIFESTO</p><span class="text-[10px] px-2 py-1 rounded-full bg-black text-white">LIGHT 300</span>
+        </div>
+        <p class="gilroy-light text-[28px] tracking-[0.16em] leading-none mt-6">UMA NOITE PARA<br>DESPERTAR</p>
+        <p class="text-[11px] tracking-[0.18em] text-black/40 mt-4">127.64PX • LETTER SPACING .15EM</p>
+        <div class="h-px bg-black/10 my-4"></div>
+        <p class="text-[12px] leading-relaxed text-black/60">Uso: frases manifesto, hero. Sempre caixa alta, tracking amplo.</p>
+      </div>
+      <div class="rounded-[20px] bg-[#d8b495] text-[#001735] p-7">
+        <div class="flex justify-between items-start">
+          <p class="text-[10px] tracking-[0.22em] text-black/50">02 • PILARES / DATA</p><span class="text-[10px] px-2 py-1 rounded-full bg-[#001735] text-white">BOLD 700</span>
+        </div>
+        <p class="gilroy-bold text-[22px] tracking-[0.14em] leading-none mt-6">ESTRATÉGIA &<br>CRESCIMENTO</p>
+        <p class="gilroy-bold text-[16px] tracking-[0.14em] mt-3">22 DE SETEMBRO</p>
+        <p class="text-[11px] tracking-[0.18em] text-black/40 mt-4">124.7PX / 96PX • BOLD .15EM</p>
+        <div class="h-px bg-black/10 my-4"></div>
+        <p class="text-[12px] leading-relaxed text-black/60">Uso: pilares, data, CTA. Peso máximo, presença.</p>
+      </div>
+      <div class="rounded-[20px] glass p-7">
+        <div class="flex justify-between items-start">
+          <p class="text-[10px] tracking-[0.22em] text-white/50">03 • SELO & APOIO</p><span class="text-[10px] px-2 py-1 rounded-full bg-white text-[#001735]">LIGHT ITALIC</span>
+        </div>
+        <p class="cormorant italic text-[18px] tracking-[0.16em] mt-6">Realização</p>
+        <p class="alegreya text-[12px] tracking-[0.42em] mt-4">MULHERES CONECTAM O MUNDO</p>
+        <p class="text-[11px] tracking-[0.18em] text-white/40 mt-4">41PX • ALEGREYA 31.12PX .52EM</p>
+        <div class="h-px bg-white/10 my-4"></div>
+        <p class="text-[12px] leading-relaxed text-white/60">Uso: créditos, selos. Tom institucional leve.</p>
+      </div>
+    </div>
+
+    <div class="mt-6 glass rounded-2xl px-6 py-4 flex flex-wrap gap-4 items-center justify-between">
+      <p class="text-[11px] tracking-[0.18em] text-white/60">ALFABETO GILROY • Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz • 0 1 2 3 4 5 6 7 8 9</p>
+      <span class="text-[11px] px-3 py-1 rounded-full bg-white text-[#001735] font-bold">TRACKING .15EM — RESPIRO É LUXO</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 06 ELEMENTOS -->
+<section id="s06" class="slide bg-[#ede4dd] text-[#001735]">
+  <div class="w-full max-w-[1400px] mx-auto px-6 md:px-10 py-10">
+    <p class="text-[11px] tracking-[0.3em] text-[#c6773c] font-bold">06 — SISTEMA GRÁFICO</p>
+    <div class="grid lg:grid-cols-[1.1fr_.9fr] gap-10 mt-4 items-center">
+      <div>
+        <h2 class="gilroy-bold text-[36px] md:text-[44px] leading-[0.9]">Folhas que abraçam,<br><span class="cormorant italic font-light">não que competem.</span></h2>
+        <p class="text-[14px] leading-relaxed text-black/60 mt-4 max-w-[560px]">Elementos orgânicos vetorizados do master. Curvas suaves, sobreposição translúcida e filetes dourados que conduzem o olhar para o centro.</p>
+        <div class="grid grid-cols-3 gap-3 mt-8">
+          <div class="bg-white rounded-2xl p-4 border border-black/5 text-center">
+            <div class="w-full h-20 rounded-xl flex items-center justify-center overflow-hidden p-2" style="background:linear-gradient(135deg,#001735,#235382)"><img src="logo_florecer-2026.svg" alt="Ícone Florescer" class="h-[52px] w-auto object-contain"></div>
+            <p class="text-[11px] font-bold tracking-[0.12em] mt-3">FOLHAGEM TOPO</p><p class="text-[11px] text-black/50">Moldura orgânica</p>
+          </div>
+          <div class="bg-white rounded-2xl p-4 border border-black/5 text-center">
+            <div class="w-full h-20 rounded-xl flex items-center justify-center bg-[#d2c8b8]"><span class="text-[#001735]">— — —</span></div>
+            <p class="text-[11px] font-bold tracking-[0.12em] mt-3">FILETE DOURADO</p><p class="text-[11px] text-black/50">#D2C8B8 • 1px</p>
+          </div>
+          <div class="bg-white rounded-2xl p-4 border border-black/5 text-center">
+            <div class="w-full h-20 rounded-xl flex items-center justify-center bg-white border border-black/10"><span class="w-10 h-10 rounded-full border border-[#c6773c] flex items-center justify-center text-[#c6773c]">◆</span></div>
+            <p class="text-[11px] font-bold tracking-[0.12em] mt-3">ÁREA DE RESPIRO</p><p class="text-[11px] text-black/50">1.5x altura do logo</p>
+          </div>
+        </div>
+      </div>
+      <div class="relative rounded-[24px] overflow-hidden bg-[#001735] p-2 shadow-[0_20px_60px_rgba(0,0,0,.2)]">
+        <div class="rounded-[16px] overflow-hidden bg-[#001735] relative aspect-[4/3]">
+          <img src="backdrop_florescer_2026.jpg" alt="" class="w-full h-full object-cover object-top opacity-80">
+          <div class="absolute inset-0 bg-gradient-to-t from-[#001735] via-transparent to-transparent"></div>
+          <div class="absolute bottom-0 left-0 right-0 p-6">
+            <div class="flex gap-2">
+              <span class="px-3 py-1 rounded-full bg-white text-[#001735] text-[11px] font-bold">RESPIRA</span>
+              <span class="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-[11px]">NÃO CORTAR FOLHAS</span>
+              <span class="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-[11px] hidden md:inline">NÃO ESTICAR</span>
+            </div>
+          </div>
+          <!-- grid -->
+          <div class="absolute inset-4 border border-white/10 rounded-xl pointer-events-none">
+            <div class="absolute left-1/2 top-0 bottom-0 w-px bg-white/10"></div>
+            <div class="absolute top-1/2 left-0 right-0 h-px bg-white/10"></div>
+          </div>
+        </div>
+        <p class="text-center text-[11px] tracking-[0.14em] text-white/50 py-3">GRID DE CONSTRUÇÃO • MARGEM 5% • CENTRO ÓTICO</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 07 APLICAÇÕES / MOCKUPS - REDES EM DESTAQUE -->
+<section id="s07" class="slide bg-[#001735]">
+  <div class="w-full max-w-[1400px] mx-auto px-6 md:px-10 py-8 flex flex-col justify-center min-h-[100vh]">
+    <div class="flex flex-wrap justify-between gap-4 mb-6">
+      <div>
+        <p class="text-[11px] tracking-[0.3em] text-[#d8b495]">07 — APLICAÇÕES</p>
+        <h2 class="gilroy-bold text-[30px] md:text-[42px] leading-none mt-2">Do palco ao feed. <span class="gilroy-light font-light">Sem perder a alma.</span></h2>
+        <p class="text-[13px] text-white/55 mt-2">Clique para ampliar • imagens em resolução original 1080px</p>
+      </div>
+      <p class="text-[13px] text-white/60 max-w-[360px] self-end">Mockups reais gerados a partir dos arquivos finais. Prontos para postar, imprimir e projetar.</p>
+    </div>
+
+    <!-- BACKDROP - VIDEO LOOP PAINEL NÍTIDO -->
+    <div class="rounded-[20px] overflow-hidden bg-[#0a1f3a] border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,.45)] mb-5">
+      <div class="h-[22vh] md:h-[28vh] relative overflow-hidden bg-black">
+        <video autoplay muted loop playsinline preload="metadata" poster="backdrop_florescer_2026.jpg" aria-hidden="true" tabindex="-1" class="w-full h-full object-cover object-center">
+          <source src="backdrop_florescer_2026.mp4" type="video/mp4">
+        </video>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent pointer-events-none"></div>
+        <div class="absolute bottom-3 left-3 glass px-3 py-1 rounded-full text-[11px] tracking-[0.12em]">MOCKUP • BACKDROP 5,6M • PAINEL EM LOOP</div>
+        <div class="absolute bottom-3 right-3 px-3 py-1 rounded-full bg-[#c6773c] text-white text-[11px] font-bold">VIDEO LOOP • 5,6 × 3,4 m</div>
+        <div class="absolute top-3 left-3 w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,.8)]"></div>
+      </div>
+    </div>
+
+    <!-- REDES - AGORA GRANDES E CLICÁVEIS -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <button onclick="openLightbox('florescer_2026-feed.png')" class="group text-left rounded-[20px] bg-white p-3 shadow-[0_20px_60px_rgba(0,0,0,.35)] hover:shadow-[0_30px_80px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300">
+        <div class="rounded-[14px] overflow-hidden aspect-square bg-[#ede4dd] relative">
+          <img src="florescer_2026-feed.png" alt="Feed 1080x1080" class="w-full h-full object-cover group-hover:scale-[1.02] transition duration-500">
+          <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition flex items-center justify-center opacity-0 group-hover:opacity-100">
+            <span class="bg-white text-[#001735] text-[11px] tracking-[0.14em] font-bold px-4 py-2 rounded-full shadow-lg">AMPLIAR ⊕</span>
+          </div>
+        </div>
+        <div class="px-1 pt-3 pb-1">
+          <p class="text-[12px] tracking-[0.14em] font-bold text-[#001735]">FEED • 1080×1080</p>
+          <p class="text-[11px] text-black/50">Post principal • Instagram / LinkedIn</p>
+        </div>
+      </button>
+
+      <button onclick="openLightbox('florescer_2026-stories.png')" class="group text-left rounded-[20px] bg-white p-3 shadow-[0_20px_60px_rgba(0,0,0,.35)] hover:shadow-[0_30px_80px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300">
+        <div class="rounded-[14px] overflow-hidden aspect-[9/16] max-h-[420px] mx-auto bg-[#001735] relative">
+          <img src="florescer_2026-stories.png" alt="Stories 1080x1920" class="w-full h-full object-cover object-top group-hover:scale-[1.02] transition duration-500">
+          <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition flex items-center justify-center opacity-0 group-hover:opacity-100">
+            <span class="bg-white text-[#001735] text-[11px] tracking-[0.14em] font-bold px-4 py-2 rounded-full shadow-lg">AMPLIAR ⊕</span>
+          </div>
+        </div>
+        <div class="px-1 pt-3 pb-1">
+          <p class="text-[12px] tracking-[0.14em] font-bold text-[#001735]">STORIES • 1080×1920</p>
+          <p class="text-[11px] text-black/50">Vertical full • Reels / Stories</p>
+        </div>
+      </button>
+
+      <button onclick="openLightbox('florescer_faltam_x_dias-feed.png')" class="group text-left rounded-[20px] bg-white p-3 shadow-[0_20px_60px_rgba(0,0,0,.35)] hover:shadow-[0_30px_80px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300">
+        <div class="rounded-[14px] overflow-hidden aspect-square bg-[#ede4dd] relative">
+          <img src="florescer_faltam_x_dias-feed.png" alt="Countdown Feed" class="w-full h-full object-cover group-hover:scale-[1.02] transition duration-500">
+          <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition flex items-center justify-center opacity-0 group-hover:opacity-100">
+            <span class="bg-white text-[#001735] text-[11px] tracking-[0.14em] font-bold px-4 py-2 rounded-full shadow-lg">AMPLIAR ⊕</span>
+          </div>
+        </div>
+        <div class="px-1 pt-3 pb-1">
+          <p class="text-[12px] tracking-[0.14em] font-bold text-[#001735]">COUNTDOWN • 1080×1080</p>
+          <p class="text-[11px] text-black/50">Faltam X dias • variável</p>
+        </div>
+      </button>
+    </div>
+
+    <div class="mt-5 glass rounded-2xl px-5 py-3 flex flex-wrap items-center justify-between gap-3">
+      <p class="text-[11px] tracking-[0.14em] flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> KIT REDES • PRONTO PARA POSTAR • CLIQUE PARA VER EM TELA CHEIA</p>
+      <div class="flex gap-2 text-[11px]">
+        <span class="px-3 py-1 rounded-full bg-white text-[#001735] font-bold">✓ Grid preservado</span>
+        <span class="px-3 py-1 rounded-full bg-white/10 border border-white/20">Gilroy intacta</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" class="fixed inset-0 z-[100] hidden bg-[#001735]/90 backdrop-blur-md p-4 md:p-8" onclick="closeLightbox()">
+  <button class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white text-[#001735] flex items-center justify-center text-xl font-light hover:bg-[#ede4dd] transition" onclick="closeLightbox()">×</button>
+  <p class="absolute top-4 left-1/2 -translate-x-1/2 hidden md:block text-[11px] tracking-[0.18em] text-white/60">CLIQUE FORA OU ESC PARA FECHAR</p>
+  <div class="w-full h-full flex items-center justify-center pt-8">
+    <img id="lightboxImg" src="" alt="" class="max-w-full max-h-[88vh] w-auto h-auto rounded-2xl shadow-[0_40px_120px_rgba(0,0,0,.6)] object-contain">
+  </div>
+</div>
+
+<!-- SLIDE 08 USOS -->
+<section id="s08" class="slide bg-[#faf8f6] text-[#001735]">
+  <div class="w-full max-w-[1400px] mx-auto px-6 md:px-10 py-10">
+    <p class="text-[11px] tracking-[0.3em] text-[#c6773c] font-bold">08 — CURADORIA</p>
+    <h2 class="gilroy-bold text-[32px] md:text-[44px] leading-none mt-2">O que valoriza. <span class="cormorant italic font-light">O que fere.</span></h2>
+    <p class="text-[13px] text-black/60 mt-2">Pequenas escolhas que mantêm o KV premium.</p>
+
+    <div class="grid md:grid-cols-2 gap-6 mt-8">
+      <div class="rounded-[24px] overflow-hidden bg-white border border-black/5 shadow-sm">
+        <div class="px-6 py-3 flex items-center gap-2 bg-emerald-50 border-b border-emerald-100">
+          <span class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[12px]">✓</span>
+          <p class="text-[12px] tracking-[0.14em] font-bold text-emerald-700">FAÇA ASSIM</p>
+        </div>
+        <div class="p-6 grid grid-cols-2 gap-4">
+          <div class="rounded-xl overflow-hidden aspect-[4/3] relative bg-[#001735] flex items-center justify-center">
+            <img src="backdrop_florescer_2026.jpg" alt="" class="absolute inset-0 w-full h-full object-cover opacity-90">
+            <span class="relative glass px-3 py-1 rounded-full text-white text-[11px]">FUNDO ESCURO</span>
+          </div>
+          <div class="space-y-3 text-[13px] leading-relaxed">
+            <p><span class="font-bold">Fundo escuro</span> sempre. O dourado precisa de noite para brilhar.</p>
+            <p><span class="font-bold">Respiro 5%</span> ao redor. Deixe as folhas respirarem.</p>
+            <p><span class="font-bold">Logo sobre área limpa</span> — base clara do KV.</p>
+          </div>
+        </div>
+      </div>
+      <div class="rounded-[24px] overflow-hidden bg-white border border-black/5 shadow-sm">
+        <div class="px-6 py-3 flex items-center gap-2 bg-red-50 border-b border-red-100">
+          <span class="w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center text-[12px]">×</span>
+          <p class="text-[12px] tracking-[0.14em] font-bold text-red-600">EVITE</p>
+        </div>
+        <div class="p-6 grid grid-cols-2 gap-4">
+          <div class="rounded-xl overflow-hidden aspect-[4/3] relative bg-[#ede4dd] flex items-center justify-center grayscale opacity-70">
+            <img src="backdrop_florescer_2026.jpg" alt="" class="absolute inset-0 w-full h-full object-cover mix-blend-luminosity">
+            <span class="relative bg-red-500 text-white px-3 py-1 rounded-full text-[11px]">FUNDO CLARO ✕</span>
+          </div>
+          <div class="space-y-3 text-[13px] leading-relaxed text-black/60">
+            <p><span class="font-bold text-red-600">Não esticar</span> nem espremer folhagens.</p>
+            <p><span class="font-bold text-red-600">Não mudar cores</span> — sem filtro, sem neon.</p>
+            <p><span class="font-bold text-red-600">Não sobrepor texto</span> sobre topo floral.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 flex flex-wrap gap-3">
+      <span class="px-4 py-2 rounded-full bg-[#001735] text-white text-[11px] tracking-[0.12em]">VERSÃO MONO BRANCA PARA FUNDOS ESCUROS</span>
+      <span class="px-4 py-2 rounded-full bg-white border border-black/10 text-[11px] tracking-[0.12em]">TAMANHO MÍNIMO LOGO: 24MM / 90PX</span>
+      <span class="px-4 py-2 rounded-full bg-[#c6773c] text-white text-[11px] tracking-[0.12em]">SEMPRE EM ALTA • NUNCA ESTICADO</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 09 FECHAMENTO -->
+<section id="s09" class="slide" style="background: radial-gradient(900px 500px at 50% 0%, #235382 0%, #001735 60%), linear-gradient(180deg, #001735 0%, #001a36 100%);">
+  <div class="absolute inset-0 opacity-20">
+    <img src="backdrop_florescer_2026.jpg" alt="" class="w-full h-full object-cover object-center">
+  </div>
+  <div class="absolute inset-0 bg-gradient-to-t from-[#001735] via-[#001735]/70 to-transparent"></div>
+  <div class="relative w-full max-w-[1100px] mx-auto px-6 md:px-10 py-12 text-center">
+    <p class="text-[11px] tracking-[0.32em] text-[#d8b495]">09 — CONVITE</p>
+    <h2 class="gilroy-light text-[32px] md:text-[56px] leading-[0.95] tracking-[-0.02em] mt-4 text-balance">
+      Florescer não é sobre<br>
+      <span class="gilroy-bold text-white">se tornar outra pessoa.</span><br>
+      <span class="cormorant italic font-light text-[#d8b495]">É sobre finalmente se permitir ser quem você já é.</span>
+    </h2>
+    <div class="w-16 h-px bg-[#c6773c] mx-auto my-8"></div>
+    <div class="inline-flex flex-col md:flex-row items-center gap-6 glass rounded-[20px] px-8 py-6">
+      <div class="text-left">
+        <p class="text-[11px] tracking-[0.2em] text-[#d8b495]">22 DE SETEMBRO • 19H</p>
+        <p class="gilroy-bold text-[18px] tracking-[0.08em]">ESPAÇO VILLA ALPHAVILLE</p>
+        <p class="text-[13px] text-white/60">Uma noite. Conexões reais. Crescimento que fica.</p>
+      </div>
+      <div class="hidden md:block w-px h-16 bg-white/10"></div>
+      <div class="flex flex-col gap-2">
+        <a href="#s01" onclick="window.scrollTo({top:0,behavior:'smooth'});return false" class="px-8 py-3 rounded-full bg-white text-[#001735] text-[12px] tracking-[0.14em] font-bold hover:bg-[#ede4dd] transition">VOLTAR AO INÍCIO ↑</a>
+        <button onclick="window.print()" class="px-8 py-3 rounded-full border border-white/20 text-white text-[12px] tracking-[0.14em] font-bold hover:bg-white hover:text-[#001735] transition">EXPORTAR APRESENTAÇÃO PDF</button>
+      </div>
+    </div>
+
+    <div class="mt-10 flex flex-wrap justify-center items-center gap-8 opacity-80">
+      <div class="text-center">
+        <p class="text-[10px] tracking-[0.2em] text-white/40">REALIZAÇÃO</p>
+        <p class="alegreya text-[12px] tracking-[0.2em] font-medium">MULHERES CONECTAM O MUNDO</p>
+      </div>
+    </div>
+    <p class="text-[11px] tracking-[0.16em] text-white/30 mt-8">© 2026 Florescer • Key Visual desenvolvido com Gilroy • Uso exclusivo do evento</p>
+  </div>
+</section>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const dots=[...document.querySelectorAll('.nav-dot')];
+const progress=document.getElementById('progress');
+const counter=document.getElementById('counter');
+let current=0;
+function update(){
+  const h=window.innerHeight;
+  const y=window.scrollY + h*0.5;
+  let idx=0;
+  slides.forEach((s,i)=>{ if(y >= s.offsetTop) idx=i; });
+  current=idx;
+  dots.forEach((d,i)=>d.classList.toggle('active', i===idx));
+  progress.style.width = ((idx+1)/slides.length*100)+'%';
+  counter.textContent = String(idx+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+}
+window.addEventListener('scroll', update, {passive:true});
+update();
+dots.forEach(d=>{
+  d.addEventListener('click', ()=>{
+    slides[+d.dataset.i].scrollIntoView({behavior:'smooth'});
+  });
+});
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowDown' || e.key==='PageDown' || e.key===' '){
+    e.preventDefault(); slides[Math.min(current+1, slides.length-1)].scrollIntoView({behavior:'smooth'});
+  }
+  if(e.key==='ArrowUp' || e.key==='PageUp'){
+    e.preventDefault(); slides[Math.max(current-1,0)].scrollIntoView({behavior:'smooth'});
+  }
+});
+const btnGuia=document.getElementById('toggleGuia');
+const guia=document.getElementById('kvGuia');
+if(btnGuia && guia){
+  btnGuia.addEventListener('click', ()=>{
+    const hidden=guia.classList.contains('hidden');
+    guia.classList.toggle('hidden', !hidden);
+    btnGuia.textContent = hidden ? 'OCULTAR GUIA ×' : 'VER GUIA ^';
+    btnGuia.classList.toggle('bg-[#c6773c]', hidden);
+    btnGuia.classList.toggle('text-white', hidden);
+  });
+}
+function openLightbox(src){
+  const lb=document.getElementById('lightbox');
+  const img=document.getElementById('lightboxImg');
+  img.src=src;
+  lb.classList.remove('hidden');
+  document.body.style.overflow='hidden';
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.add('hidden');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeLightbox(); });
+// touch hint hide after first scroll
+let hintHidden=false;
+window.addEventListener('scroll', ()=>{
+  if(!hintHidden && window.scrollY>80){
+    document.querySelector('.fixed.bottom-6').style.opacity='0';
+    document.querySelector('.fixed.bottom-6').style.pointerEvents='none';
+    hintHidden=true;
+  }
+}, {passive:true});
+</script>
+</body>
+</html>
